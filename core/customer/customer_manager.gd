@@ -1,0 +1,64 @@
+class_name CustomerManager
+extends RefCounted
+
+func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> void:
+	state.visits.clear()
+	var rng := RandomNumberGenerator.new()
+	rng.seed = state.run_seed + state.current_night_index * 104729
+	for slot in run.customer_slots:
+		var customer := catalog.get_definition("customers", slot.customer_id) as CustomerDefinition
+		var item_id: String = slot.item_id if not slot.item_id.is_empty() else customer.item_pool[rng.randi_range(0, customer.item_pool.size() - 1)]
+		var item_def := catalog.get_definition("items", item_id) as ItemDefinition
+		var variant := item_def.find_variant(slot.variant_id)
+		if variant == null:
+			var total := 0.0
+			for option in item_def.possible_variants: total += option.weight
+			var roll := rng.randf() * total
+			variant = item_def.possible_variants.back()
+			for option in item_def.possible_variants:
+				roll -= option.weight
+				if roll < 0:
+					variant = option
+					break
+		var visit := CustomerVisit.new()
+		visit.visit_id = "%s/%d/%s" % [run.id, state.current_night_index, slot.id]
+		visit.customer_id = customer.id
+		visit.arrival = slot.arrival
+		visit.expires_at = slot.arrival + customer.terms.wait_minutes
+		visit.item = ItemInstance.new()
+		visit.item.instance_id = "item/" + visit.visit_id
+		visit.item.definition_id = item_def.id
+		visit.item.selected_variant_id = variant.id
+		visit.trade.opening_price = maxi(1, int(round(item_def.base_value * customer.terms.ask_multiplier)))
+		visit.trade.asking_price = visit.trade.opening_price
+		visit.trade.reserve_price = maxi(1, int(round(visit.trade.opening_price * customer.terms.reserve_ratio)))
+		visit.trade.rounds_left = customer.max_quote_rounds
+		visit.trade.patience = customer.patience
+		state.visits.append(visit)
+	state.visits.sort_custom(func(a: CustomerVisit, b: CustomerVisit) -> bool: return a.arrival < b.arrival)
+
+func update(state: RunState) -> void:
+	if state.phase == &"pre_open": return
+	for visit in state.visits:
+		if visit.status not in ["scheduled", "waiting", "active"]: continue
+		if state.phase != &"open":
+			finish(state, visit, "shop_closed")
+		elif state.game_minutes >= visit.expires_at:
+			finish(state, visit, "timed_out")
+		elif state.game_minutes >= visit.arrival and visit.status == "scheduled":
+			visit.status = "waiting"
+	if active(state) == null and state.phase == &"open":
+		for visit in state.visits:
+			if visit.status == "waiting":
+				visit.status = "active"
+				break
+
+func active(state: RunState) -> CustomerVisit:
+	for visit in state.visits:
+		if visit.status == "active": return visit
+	return null
+
+func finish(state: RunState, visit: CustomerVisit, outcome: String) -> void:
+	if visit.status not in ["scheduled", "waiting", "active"]: return
+	visit.status = outcome
+	state.visit_history.append({"visit_id": visit.visit_id, "customer_id": visit.customer_id, "night": state.current_night_index, "minute": state.game_minutes, "outcome": outcome})

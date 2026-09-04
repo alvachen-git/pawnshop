@@ -1,0 +1,20 @@
+class_name FinancialSummary
+extends RefCounted
+
+static func build(state: RunState) -> Dictionary:
+	var result := {"realized_profit": 0, "sales_revenue": 0, "purchase_spend": 0, "pawn_disbursed": 0, "redemption_receipts": 0, "inventory_count": 0, "inventory_cost": 0, "pawn_principal": 0}
+	for entry in state.ledger_entries:
+		if entry.night != state.current_night_index: continue
+		result.realized_profit += entry.realized_profit
+		match entry.kind:
+			"sale": result.sales_revenue += entry.amount
+			"acquisition": result.purchase_spend -= entry.amount
+			"pawn_loan": result.pawn_disbursed -= entry.amount
+			"redemption", "extension": result.redemption_receipts += entry.amount
+	for item in state.inventory_instances:
+		if item.ownership_state == "owned":
+			result.inventory_count += 1
+			result.inventory_cost += item.acquisition_price
+	for ticket in state.pawn_tickets:
+		if ticket.status == "active": result.pawn_principal += ticket.principal
+	return result

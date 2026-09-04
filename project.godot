@@ -1,0 +1,29 @@
+; Engine configuration file.
+; Godot 4.7.2 Standard + GDScript.
+
+config_version=5
+
+[application]
+
+config/name="鬼市当铺"
+config/description="固定柜台式 2D 当铺经营与规则恐怖 Prototype"
+run/main_scene="res://scenes/main.tscn"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.023, 0.018, 0.016, 1)
+
+[internationalization]
+
+locale/fallback="zh_CN"
+

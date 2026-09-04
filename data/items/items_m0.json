@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "item_placeholder_porcelain",
+      "name_key": "item.placeholder_porcelain.name",
+      "type": "normal",
+      "category": "porcelain",
+      "tags": ["placeholder", "m0"],
+      "base_value": 20,
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "possible_variants": [
+        {
+          "id": "placeholder_standard",
+          "weight": 1.0
+        }
+      ],
+      "appraisal_actions": [],
+      "clues": [],
+      "valuation_rules": [],
+      "sell_channels": ["regular"],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "asset.item.placeholder_porcelain"
+    }
+  ]
+}
+

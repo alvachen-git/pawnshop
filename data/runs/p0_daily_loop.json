@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "p0_daily_loop",
+      "total_nights": 3,
+      "opening_minute": 1080,
+      "night_minutes": 540,
+      "time_step": 5,
+      "initial_cash": 100,
+      "seed": 1049,
+      "tools": [
+        "magnifier",
+        "lamp",
+        "magnet"
+      ],
+      "customer_slots": [
+        {
+          "id": "early_bowl",
+          "arrival": 0,
+          "customer_id": "customer_citizen",
+          "item_id": "item_blue_bowl",
+          "variant_id": "repaired"
+        },
+        {
+          "id": "passing_hawker",
+          "arrival": 15,
+          "customer_id": "customer_hawker",
+          "item_id": "item_brass_holder",
+          "variant_id": ""
+        },
+        {
+          "id": "late_bowl",
+          "arrival": 90,
+          "customer_id": "customer_citizen",
+          "item_id": "item_blue_bowl",
+          "variant_id": "sound"
+        },
+        {
+          "id": "late_hawker",
+          "arrival": 460,
+          "customer_id": "customer_hawker",
+          "item_id": "item_brass_holder",
+          "variant_id": ""
+        }
+      ],
+      "actions": [
+        {
+          "id": "short_task",
+          "label": "短行动（占位）",
+          "minutes": 5,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "medium_task",
+          "label": "整理桌面（占位）",
+          "minutes": 10,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "long_task",
+          "label": "店内处理（占位）",
+          "minutes": 30,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "wait_hour",
+          "label": "等待",
+          "minutes": 60,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        }
+      ],
+      "buyer_ids": [
+        "buyer_recycler",
+        "buyer_collector"
+      ]
+    }
+  ]
+}

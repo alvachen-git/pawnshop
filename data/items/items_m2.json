@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "item_blue_bowl",
+      "display_name": "青花小碗",
+      "description": "釉色温润，碗沿完整。卖家称它是家中旧藏；仅看外观还无法确定是否修补。",
+      "category": "porcelain",
+      "base_value": 60,
+      "unknown_min": 10,
+      "unknown_max": 75,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 60,
+          "weight": 1,
+          "clue_ids": [
+            "shape",
+            "mark",
+            "intact"
+          ]
+        },
+        {
+          "id": "repaired",
+          "true_value": 20,
+          "weight": 1,
+          "clue_ids": [
+            "shape",
+            "mark",
+            "repair"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "shape",
+          "text": "器型与青花纹样符合普通民窑旧器，尚不能判断完整性。",
+          "min_value": 10,
+          "max_value": 70,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "mark",
+          "text": "底足有自然磨损，款式与器型一致；来历不等于品相保证。",
+          "min_value": 18,
+          "max_value": 65,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "intact",
+          "text": "侧光下釉面连续，无拼接或补釉痕迹。",
+          "min_value": 55,
+          "max_value": 65,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "repair",
+          "text": "侧光下有一圈补釉接缝，说明器物曾被修补。",
+          "min_value": 18,
+          "max_value": 25,
+          "leverage": 40,
+          "judgement": "damaged"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：观察器型",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "shape"
+          ]
+        },
+        {
+          "id": "base",
+          "label": "辨真：放大镜查看底足",
+          "minutes": 10,
+          "required_tool": "magnifier",
+          "requires_clues": [
+            "shape"
+          ],
+          "reveals": [
+            "mark"
+          ]
+        },
+        {
+          "id": "light",
+          "label": "辨真：侧光检查釉面",
+          "minutes": 10,
+          "required_tool": "lamp",
+          "requires_clues": [
+            "mark"
+          ],
+          "reveals": [
+            "intact",
+            "repair"
+          ]
+        }
+      ],
+      "name_key": "item.item_blue_bowl.name",
+      "type": "normal",
+      "tags": [
+        "porcelain",
+        "m2"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "asset.item_blue_bowl"
+    },
+    {
+      "id": "item_brass_holder",
+      "display_name": "黄铜烛台",
+      "description": "一只沉甸甸的烛台。表面颜色均匀，内部材质需要工具检查。",
+      "category": "metal",
+      "base_value": 40,
+      "unknown_min": 5,
+      "unknown_max": 50,
+      "possible_variants": [
+        {
+          "id": "brass",
+          "true_value": 40,
+          "weight": 2,
+          "clue_ids": [
+            "form",
+            "brass_core"
+          ]
+        },
+        {
+          "id": "plated",
+          "true_value": 10,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "iron_core"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "造型为常见日用烛台，仅凭重量不能确定材质。",
+          "min_value": 5,
+          "max_value": 50,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "brass_core",
+          "text": "磁针无吸附，底部旧划痕内外色泽一致。",
+          "min_value": 35,
+          "max_value": 45,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "iron_core",
+          "text": "磁针明显吸附，划痕下露出灰色铁芯；是镀铜件。",
+          "min_value": 8,
+          "max_value": 12,
+          "leverage": 26,
+          "judgement": "fake"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：观察造型",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "magnet",
+          "label": "辨真：磁针与划痕检查",
+          "minutes": 10,
+          "required_tool": "magnet",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "brass_core",
+            "iron_core"
+          ]
+        }
+      ],
+      "name_key": "item.item_brass_holder.name",
+      "type": "normal",
+      "tags": [
+        "metal",
+        "m2"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "asset.item_brass_holder"
+    }
+  ]
+}

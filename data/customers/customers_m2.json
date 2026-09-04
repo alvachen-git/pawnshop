@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "customer_citizen",
+      "name_key": "customer.customer_citizen.name",
+      "portrait_asset_id": "asset.customer_citizen",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_blue_bowl"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "旧城住户",
+        "introduction": "家里急用钱，你给个公道价。东西一直收在柜里。",
+        "wait_minutes": 100,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.2,
+        "reserve_ratio": 0.75,
+        "counter_step": 6,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "condition",
+          "prompt": "问：有没有修补过？",
+          "answer": "没有，一直是完整的。你放心收。",
+          "minutes": 5
+        },
+        {
+          "id": "origin",
+          "prompt": "问：东西从哪来？",
+          "answer": "长辈留下的，具体哪年我也说不准。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_redeem"
+    },
+    {
+      "id": "customer_hawker",
+      "name_key": "customer.customer_hawker.name",
+      "portrait_asset_id": "asset.customer_hawker",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 2,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_brass_holder"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "夜市货郎",
+        "introduction": "我还要赶下一摊，收不收尽快说。",
+        "wait_minutes": 60,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.7,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "material",
+          "prompt": "问：是什么材质？",
+          "answer": "按整铜的价卖。是真是假，你自己掌眼。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_default"
+    }
+  ]
+}

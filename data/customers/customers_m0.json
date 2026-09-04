@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "customer_placeholder_citizen",
+      "name_key": "customer.placeholder_citizen.name",
+      "portrait_asset_id": "asset.customer.placeholder_citizen",
+      "identity_tags": ["citizen", "placeholder", "m0"],
+      "wealth_band": "modest",
+      "urgency_range": [0.2, 0.4],
+      "honesty_profile": "ordinary",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.2,
+      "transaction_modes": ["sell"],
+      "item_pool": ["item_placeholder_porcelain"],
+      "dialogue_profile_id": "",
+      "preferred_categories": ["porcelain"],
+      "schedule_tags": ["m0_placeholder"]
+    }
+  ]
+}
+
