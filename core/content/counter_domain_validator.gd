@@ -54,6 +54,7 @@ static func validate(catalog: ContentCatalog) -> Array:
 		for slot in run.customer_slots:
 			if slot.id.is_empty() or slot.id in slot_ids: _error(issues, run.id, "来访槽ID重复或为空。")
 			slot_ids.append(slot.id)
+			if slot.night_min < 1 or slot.night_max < slot.night_min or slot.night_min > run.total_nights: _error(issues, run.id, "来访夜次区间无效。")
 			if slot.arrival < 0 or slot.arrival >= run.night_minutes or slot.arrival % run.time_step != 0:
 				_error(issues, run.id, "来访时刻无效。")
 			var customer := catalog.get_definition("customers", slot.customer_id) as CustomerDefinition

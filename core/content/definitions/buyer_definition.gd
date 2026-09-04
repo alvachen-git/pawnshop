@@ -1,6 +1,9 @@
 class_name BuyerDefinition
 extends RefCounted
 
+var _required_flags: Array = []
+var required_flags: Array:
+	get: return _required_flags.duplicate()
 var _id: String
 var id: String:
 	get: return _id
@@ -48,5 +51,6 @@ static func from_dto(dto: BuyerDTO) -> BuyerDefinition:
 	result._window_end = dto.window_end
 	result._action_minutes = dto.action_minutes
 	result._capacity_per_night = dto.capacity_per_night
+	result._required_flags = dto.required_flags.duplicate()
 	return result
 

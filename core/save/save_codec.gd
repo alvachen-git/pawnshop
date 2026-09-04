@@ -1,8 +1,8 @@
 class_name SaveCodec
 extends RefCounted
 
-const VERSION := 3
-const CHECKPOINTS := ["pre_open", "day_summary", "run_ended"]
+const VERSION := 5
+const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead"]
 var error_message := ""
 
 func encode(state: RunState, content_version: int) -> Dictionary:
@@ -51,7 +51,7 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		for key in ["night", "opening_cash", "closing_cash", "closed_at", "action_count"]:
 			if not entry.has(key) or not RunSchema.integer(entry[key]) or entry[key] < 0 or entry[key] > 2147483647:
 				return null
-		if entry.night != index + 1 or entry.opening_cash != previous_cash or entry.get("outcome") != "placeholder_peaceful":
+		if entry.night != index + 1 or entry.opening_cash != previous_cash or entry.get("outcome") not in ["placeholder_peaceful"] + RiskManager.OUTCOMES:
 			return null
 		if entry.closed_at > definition.night_minutes or int(entry.closed_at) % definition.time_step != 0 or entry.action_count < 1 or entry.action_count > definition.night_minutes / definition.time_step:
 			return null
@@ -81,5 +81,9 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 			if not RunSchema.integer(entry.get(key)) or abs(entry[key]) > 2147483647: return null
 			state.summaries.back()[key] = int(entry[key])
 	error_message = CounterSaveCodec.restore(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
+	error_message = EventSaveCodec.restore(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
+	error_message = RiskSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
 	return state

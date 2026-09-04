@@ -80,10 +80,20 @@ func validate_collection(kind: String, source: Variant, source_path: String) -> 
 	if not source.has("records") or typeof(source.records) != TYPE_ARRAY:
 		issues.append(_issue("invalid_field", source_path, "records", "必须提供records数组。"))
 		return issues
+	if kind == "ghost_rules":
+		for index in source.records.size():
+			issues.append_array(GhostSchema.validate(source.records[index], source_path, "records[%d]" % index))
+		return issues
+	if kind == "events":
+		for index in source.records.size():
+			issues.append_array(EventSchema.validate(source.records[index], source_path, "records[%d]" % index))
+		return issues
 	if kind == "runs":
 		for index in source.records.size():
 			issues.append_array(RunSchema.validate(source.records[index], source_path, "records[%d]" % index))
 			if source.records[index] is Dictionary:
+				if source.records[index].has("ghost_rule_ids"):
+					CounterSchema._fields(source.records[index], {"ghost_rule_ids": "strings"}, source_path, "records[%d]" % index, issues)
 				issues.append_array(CounterSchema.validate(kind, source.records[index], source_path, "records[%d]" % index))
 				issues.append_array(CommerceSchema.validate(kind, source.records[index], source_path, "records[%d]" % index))
 		return issues

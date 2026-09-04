@@ -1,6 +1,7 @@
 class_name BuyerDTO
 extends RefCounted
 
+var required_flags: Array = []
 var id: String
 var display_name: String
 var channel: String
@@ -26,5 +27,6 @@ static func from_source(source: Dictionary) -> BuyerDTO:
 	dto.window_end = int(source.window_end)
 	dto.action_minutes = int(source.action_minutes)
 	dto.capacity_per_night = int(source.capacity_per_night)
+	dto.required_flags = source.get("required_flags", []).duplicate()
 	return dto
 

@@ -1,0 +1,30 @@
+{
+  "content_version": 5,
+  "default_run_id": "p0_m4",
+  "sources": [
+    {
+      "kind": "runs",
+      "path": "res://data/runs/p0_m4.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/items/items_m4.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/customers/customers_m4.json"
+    },
+    {
+      "kind": "buyers",
+      "path": "res://data/buyers/buyers_m4.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/pawn_terms/terms_m3.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/events/events_m4.json"
+    }
+  ]
+}

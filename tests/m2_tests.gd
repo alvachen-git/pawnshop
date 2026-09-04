@@ -8,7 +8,7 @@ var _paths: Array[String] = []
 
 func run(expect: Callable) -> void:
 	check = expect
-	catalog = JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	catalog = JsonContentProvider.new("res://tests/fixtures/m3_manifest.json").load_catalog().catalog
 	definition = catalog.get_definition("runs", catalog.default_run_id)
 	_evidence()
 	_negotiation()
@@ -20,10 +20,13 @@ func run(expect: Callable) -> void:
 	for path in _paths:
 		if FileAccess.file_exists(path): DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
 
-func _session() -> RunSession:
+func _isolated_save() -> SaveManager:
 	var path := "user://tests/m2_%d_%d.json" % [Time.get_ticks_usec(), _paths.size()]
 	_paths.append(path)
-	return RunSession.new(definition, catalog.content_version, SaveManager.new(path), catalog)
+	return SaveManager.new(path)
+
+func _session() -> RunSession:
+	return RunSession.new(definition, catalog.content_version, _isolated_save(), catalog)
 
 func _open(session: RunSession) -> String:
 	session.execute("open_shop")
@@ -196,7 +199,7 @@ func _content_contract() -> void:
 	memory_catalog.add_definition("runs", RunDefinition.from_dto(RunDTO.from_source(_source("res://data/runs/p0_daily_loop.json").records[0])))
 	check.call(InMemoryContentProvider.new(memory_catalog).load_catalog().is_success(), "独立DTO映射的内存目录通过校验。")
 	var json_session := _session()
-	var memory_session := RunSession.new(memory_catalog.get_definition("runs", memory_catalog.default_run_id), memory_catalog.content_version, SaveManager.new(), memory_catalog)
+	var memory_session := RunSession.new(memory_catalog.get_definition("runs", memory_catalog.default_run_id), memory_catalog.content_version, _isolated_save(), memory_catalog)
 	for session in [json_session, memory_session]:
 		_open(session)
 		for action in ["observe", "base", "light"]: _command(session, "appraise", action)
@@ -223,7 +226,7 @@ func _content_contract() -> void:
 	renamed_catalog.add_definition("customers", CustomerDefinition.from_dto(renamed_customer))
 	renamed_catalog.add_definition("runs", RunDefinition.from_dto(renamed_run))
 	check.call(InMemoryContentProvider.new(renamed_catalog).load_catalog().is_success(), "全新物品/顾客/运行ID只改数据即可通过校验。")
-	var renamed_session := RunSession.new(renamed_catalog.get_definition("runs", renamed_run.id), 3, SaveManager.new(), renamed_catalog)
+	var renamed_session := RunSession.new(renamed_catalog.get_definition("runs", renamed_run.id), 3, _isolated_save(), renamed_catalog)
 	_open(renamed_session)
 	_command(renamed_session, "offer", "", 60)
 	check.call(renamed_session.read_state().inventory_instances[0].definition_id == renamed_item.id, "业务不依赖青花碗或顾客具体ID。")

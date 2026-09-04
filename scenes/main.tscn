@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=19 format=3]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1"]
 [ext_resource type="Script" path="res://core/bootstrap.gd" id="2"]
@@ -13,6 +13,10 @@
 [ext_resource type="Script" path="res://ui/ledger/ledger_panel.gd" id="11"]
 [ext_resource type="Script" path="res://ui/night/night_resolution_view.gd" id="12"]
 [ext_resource type="Script" path="res://ui/day/day_flow_panel.gd" id="13"]
+
+[ext_resource type="Script" path="res://ui/events/event_panel.gd" id="14"]
+
+[ext_resource type="Script" path="res://ui/risk/risk_panel.gd" id="15"]
 
 [sub_resource type="StyleBoxFlat" id="HeaderStyle"]
 bg_color = Color(0.105, 0.078, 0.063, 1)
@@ -119,7 +123,7 @@ text = "鬼 市 当 铺"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.55, 0.48, 1)
 theme_override_font_sizes/font_size = 13
-text = "P0 · M3 库存出货与活当账本"
+text = "铜镜与命灯"
 
 [node name="Spacer" type="Control" parent="CounterScreen/Margin/RootLayout/Header/HeaderMargin/HeaderRow"]
 layout_mode = 2
@@ -276,6 +280,16 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "夜间结算"
 
+[node name="EventButton" type="Button" parent="CounterScreen/Margin/RootLayout/Workspace/SideColumn/Navigation"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "铺中记事"
+
+[node name="RiskButton" type="Button" parent="CounterScreen/Margin/RootLayout/Workspace/SideColumn/Navigation"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "鬼货与绝当录"
+
 [node name="PanelStack" type="Control" parent="CounterScreen/Margin/RootLayout/Workspace/SideColumn"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -369,11 +383,35 @@ theme_override_styles/panel = SubResource("PanelStyle")
 script = ExtResource("12")
 panel_id = &"night"
 
+[node name="EventPanel" type="PanelContainer" parent="CounterScreen/Margin/RootLayout/Workspace/SideColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("PanelStyle")
+script = ExtResource("14")
+panel_id = &"events"
+
+[node name="RiskPanel" type="PanelContainer" parent="CounterScreen/Margin/RootLayout/Workspace/SideColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("PanelStyle")
+script = ExtResource("15")
+panel_id = &"risk"
+
 [node name="Footer" type="Label" parent="CounterScreen/Margin/RootLayout"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.43, 0.39, 0.36, 1)
 theme_override_font_sizes/font_size = 12
-text = "M3 经营骨架 · 买家出货 / 活当 / 赎回 / 绝当 · 鬼货尚未接入 · 仅夜末自动保存"
+text = "货有来路，当有归期。"
 horizontal_alignment = 1
 
 [node name="ScreenFlowCoordinator" type="Node" parent="CounterScreen"]

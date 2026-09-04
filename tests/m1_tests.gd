@@ -15,7 +15,7 @@ var version: int
 
 func run(expect: Callable) -> void:
 	check = expect
-	var loaded := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://tests/fixtures/m3_manifest.json").load_catalog()
 	definition = loaded.catalog.get_definition("runs", loaded.catalog.default_run_id)
 	version = loaded.catalog.content_version
 	_schema_and_adapter()

@@ -1,66 +1,74 @@
 # 鬼市当铺
 
-Godot 4.7.2 Standard + GDScript。当前交付为 **M3：库存、买家出售、活当与账本**，尚非完整三夜经营P0。
+固定柜台式2D经营与规则恐怖游戏。当前本地版本为 **M5：泣血铜镜、存放规则、夜间异常与《绝当录》**，工程验证与负责人试玩均已通过，现已按反馈修订玩家文案。M4已由负责人确认测试通过。完整P0仍需债务功能与30–50分钟体验验收。
 
 ## 启动
 
-1. 使用 Godot 4.7.2 Standard 导入本目录的 `project.godot`。
-2. 按 F5 运行项目，直接进入固定柜台2D场景。
-3. 在「营业」页点击「开铺」，顾客出现后去「对话」「鉴定」「交易」页接待。单纯查看面板不耗时。
-4. 正式询问、检查、报价、施压、拒客均耗时。营业页等待也会影响柜台及排队顾客。可随时关门，但本夜不能重开，顾客交易机会随之结束。
-5. 「等到封铺」消耗全部剩余时间；03:00进入夜间结算。点击结算后生成日结并自动保存。
-6. 日结后进入下一夜；第3夜结束本轮。新游戏/读取存档在「营业」页，均需确认。
+```sh
+godot --path /Users/alvachen/Documents/ChatGPT/pawn
+```
 
-## M3建议试玩路径
+也可用Godot导入本目录`project.godot`，按F5。项目原技术基线标注4.7.2 Standard；本次Mac验证使用 **Godot 4.6.1 Standard**，尚未在4.7.2复核。先关闭旧试玩窗口，再运行新版并新游戏。
 
-1. 开铺后先问第一位顾客“有没有修补过”，再依次观察器型、查看底足、侧光检查釉面。证据估值应收窄到18–25。
-2. 记录自己的判断；到交易页用补釉接缝证据施压，把报价输入改为18后提交。现银应由100变成82，库存与账本各出现一条记录。
-3. 去库存接受「杂货回收商」的12报价：现银变为94，已实现亏损6。另开一局按18收购同样物品，等到19:00后卖给「瓷器收藏客」可得24、盈利6。买家各有偏好、窗口和每夜1件额度；重复查看免费，正式交货耗时10分钟。
-4. 另开新游戏，不鉴定就把第一件货判断为完好品并报价60：现金会真实扣除。随后卖给回收商只得12，最终已实现亏损48。收购占款不等于亏损，出售时才确认成本。
-5. 连续提交过低报价，或拿无关线索施压，观察有限轮次和不耐烦反馈；已离场的顾客不能再成交。
-6. 故意等待90分钟，观察排队客超时离场。关门后仍可做店内占位行动，但不能交易。
-7. 夜末日结后进第二夜，再收一件后读取存档：应恢复到第二夜开铺前的现金、库存及流水。继续三夜可到本轮结束。
+查看面板和现实思考不耗时，正式动作推进18:00–03:00的营业时间。顾客会等待、超时或因耐心耗尽离开；可以自由关门，本夜不可重开。待办「铺中记事」处理后才能继续经营。03:00封铺后，在「夜间结算」保存并进入下一夜。
 
-长面板可滚动，报价输入框可以修改。鉴定、询问和证据施压不可重复刷信息。精确底价、精确耐心和未揭露真实变体不显示给玩家。
+## M5试玩路线
 
-### 活当、赎回与绝当测试
+快速到铜镜：前两夜处理铺中记事，开铺后直接等到封铺、结算、进入下一夜，保留100现金。第三夜第一位顾客带来泣血铜镜。
 
-- 新游戏，开铺后到交易页，在第二个输入框填写活当放款27，点击「正式报价并活当」。现金73，当票本金27，赎金33，第2夜到期。在当物品不可出售；收购与活当共用议价轮次和耐心。
-- 关门 → 等到封铺 → 结算 → 下一夜 → 开铺 → 账本。第2夜18:00–20:00内点击「收赎金33并交还原物」，现金106、利息利润6；到20:00才办完则错过窗口。
-- 未赎绝当：新游戏拒绝第一客（5分钟），在营业页整理桌面10分钟，第二客出现后活当报价20。跨到第2夜夜末，未返店的当票自动转现货，现金不变；第3夜可到库存出售。
-- 当票列表和流水可以滚动。这里的「绝当」是当票到期转现货，不是玩家死亡。到第3夜结束仍未到期的当票保留在当，不提前强制绝当。
-- 一次续当接口有自动测试夹具；当前两类正式测试当约分别为返店赎回和未返店，不主动提供续当内容。
+1. 「鉴定」观察镜缘、读镜背刻字；两次各5分钟，获得血痕与规矩证据。
+2. 「交易」报价54收购，现金46。入库自动打开「鬼货与绝当录」，显示完整存放规矩。
+3. **安全路径**：关门前「盖好红布」，耗时10分钟。关门后不要再揭，封铺结算得到「红布无声」。
+4. **补救路径**：未盖就关门，财神香出现异常。封铺前补盖，得到「余祟未散」；已产生的缠祟不会被补救或读档抹去。
+5. **危机路径**：不遮盖直接封铺结算，会先保存可挽救警告。「低头退开，将红布覆上」保命但留下缠祟；明确选择「抬眼看向镜中人」则结束本轮并记入《绝当录》。
+6. **时间边界**：02:50开始遮盖，动作完成后自动封铺，算完成遮盖；02:55才关门，剩余5分钟不足以做10分钟处理，只能进入夜间应对。
+7. **收益机会**：持镜营业到00:00–02:00，可向库存中的夜半收镜客卖90，54收购时实现36利润；关门后不能出售。在当的铜镜也需要处理，但不能出售。
 
-本阶段使用2件普通物品定义、2个普通顾客模板、2个买家、2种当约，每夜4个来访槽；三个夜晚复用同一测试编排。8件普通物品、4种顾客、正式三夜差异内容和EventDirector留至M4；鬼货与异常留至M5。尚不代表30–50分钟完整P0体验。
+死亡记录保留夜次、关键鬼货、死因、遗银、现货成本与在当本金。读取死亡检查点不会复活。可新游戏开始另一轮，旧《绝当录》会保留；资产成本不是可清算售价。
+
+## 经营与内容
+
+当前加载8件普通物品、1件鬼货、4类顾客、4名买家、2种当约、7个事件。每夜4个来访槽，事件不保证全部出现。
+
+保留M4经营路线：首夜请沈怀川介绍买家，第一客活当27，现金73；次夜收下回信，收赎金33后现金106；按80买怀表，等60分钟后向商会旧货客卖100，现金126、该笔利润20。第三夜第一客改为铜镜，其余来访仍是钢笔、砚台、怀表。
+
+在当物不可出售；未到期当票不会因三夜结束而提前绝当。续当仍只有测试夹具。沈怀川已有背景与买家介绍，正式债务金额、到期支付、融资/破产尚未实现。画面为文本与色块占位，没有正式美术、完整鬼市或49夜内容。
 
 ## 存档
 
-夜末结算、进入下一夜及结束运行时保存检查点。不支持夜内即时保存；退出会丢失本夜未保存进度。
-启动默认展示新运行，可主动点击「读取夜末存档」。新游戏不会立即删除旧档，但新运行首次日结将覆盖它。
+默认`user://p0/autosave.json`，Mac通常位于`~/Library/Application Support/Godot/app_userdata/鬼市当铺/p0/autosave.json`。
 
-默认路径：`user://p0/autosave.json`，Windows通常为 `%APPDATA%/Godot/app_userdata/鬼市当铺/p0/autosave.json`。
-测试使用独立 `user://tests/` 文件，不读写玩家存档。
-损坏或版本不匹配时保留旧文件并报错；写入失败不推进结算/夜次，修复磁盘问题后可以重试。
-M3使用 `save_version=3` / `content_version=4`，不自动迁移M1/M2存档。升级后请先关闭旧试玩窗口，再重新启动并新游戏；旧文件在读取失败时保留，新运行首次夜末保存会覆盖旧检查点。仅支持单个试玩窗口写档。
+M5使用 **save_version=5 / content_version=6**。旧M4档不迁移；读取失败保留旧文件。新游戏不会立即覆盖旧档，但本次首次日结会替换同一路径。
+
+在日结、夜间应对、进入下一夜和结束本轮时自动保存。危机与永久死亡都是有效检查点，普通夜内行动不即时保存。启动不自动读档，需在营业页主动读取。只支持单窗口写档。
+
+鬼货后果由处理历史重建，事件、交易与财务也分别校验。死亡记录和当前运行写入同一个原子文件，重开后的检查点继承历史；写入失败回滚这次结算/应对，原存档保留，可重试。损坏的绝当录会阻止覆盖，避免丢失历史。测试仅写独立`user://tests/`文件。
 
 ## 自动验证
 
-```powershell
-Godot_v4.7.2-stable_win64_console.exe --headless --editor --quit --path .
-Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/run_all.gd
-Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/checkpoint_process.gd -- write
-Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/checkpoint_process.gd -- read
-Godot_v4.7.2-stable_win64_console.exe --path . --script res://tests/ui_smoke.gd
-Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/m2_checkpoint_process.gd -- write
-Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/m2_checkpoint_process.gd -- read
-Godot_v4.7.2-stable_win64_console.exe --path . --script res://tests/m2_ui_smoke.gd
-Godot_v4.7.2-stable_win64_console.exe --path . --script res://tests/m3_ui_smoke.gd
-Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/m3_checkpoint_process.gd -- write
-Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/m3_checkpoint_process.gd -- redeem
-Godot_v4.7.2-stable_win64_console.exe --headless --path . --script res://tests/m3_checkpoint_process.gd -- read
+在项目目录运行：
+
+```sh
+godot --headless --editor --quit --path .
+godot --headless --path . --script res://tests/run_all.gd
+godot --path . --script res://tests/m5_ui_smoke.gd
+godot --path . --script res://tests/m5_ui_smoke.gd -- wide
+godot --headless --path . --script res://tests/m5_checkpoint_process.gd -- warning
+godot --headless --path . --script res://tests/m5_checkpoint_process.gd -- death
+godot --headless --path . --script res://tests/m5_checkpoint_process.gd -- restart
+godot --headless --path . --script res://tests/m5_checkpoint_process.gd -- archive
 ```
 
-UI脚本打开真实渲染窗口，以视口鼠标输入和报价控件输入执行三夜回归，截图输出到被忽略的 `.godot/qa/`。
-还可用 `--headless` 跑UI输入回归（不输出截图）。首次拉取后先运行上面的编辑器导入，以生成全局类缓存。
+M1–M4真实UI脚本为`tests/ui_smoke.gd`、`m2_ui_smoke.gd`、`m3_ui_smoke.gd`、`m4_ui_smoke.gd`，显式加载对应历史Manifest；原核心388条断言保留。M5测试使用生产内容，另有首夜铜镜夹具验证跨夜后果。
 
-M3验收后再进入M4，不自动推进。架构和验收记录见 `docs/TECH_ARCH.md`、`docs/P0_STATUS.md`。
+实际UI测试用视口鼠标与报价控件操作，截图在忽略目录`.godot/qa/`。默认1280×720，`wide`为1600×900；headless运行不生成截图。
+
+## 开发资料
+
+- `01_鬼市当铺_GDD_V0.4.docx`与`02_鬼市当铺_Codex启动包_V1.0.docx`：设计与P0范围。
+- `docs/M4_CONTENT_GUIDE.md`：普通物品、顾客、事件的内容制作。
+- `docs/PLAYER_COPY_GUIDE.md`：玩家文案规范，后续对白、警告、选项与结果应遵循。
+- `docs/M5_GHOST_GUIDE.md`：鬼货规则、状态与验证边界。
+- `docs/TECH_ARCH.md`、`docs/DECISIONS.md`、`docs/P0_STATUS.md`：架构、决策和验收记录。
+
+M5已通过负责人试玩，本次授权提交并推送到`codex/m4-data-driven`。后续处理P0剩余项验收，不自动推进P1。

@@ -8,7 +8,7 @@ var paths: Array[String] = []
 
 func run(expect: Callable) -> void:
 	check = expect
-	catalog = JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	catalog = JsonContentProvider.new("res://tests/fixtures/m3_manifest.json").load_catalog().catalog
 	definition = catalog.get_definition("runs", catalog.default_run_id)
 	_sales()
 	_pawn_redemption()

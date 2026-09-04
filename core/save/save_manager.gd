@@ -28,6 +28,17 @@ func load_state(definition: RunDefinition, content_version: int) -> RunState:
 
 func save_state(state: RunState, definition: RunDefinition, content_version: int) -> bool:
 	error_message = ""
+	var archive := read_archive()
+	if not error_message.is_empty(): return false
+	for record in archive:
+		var found := false
+		for existing in state.death_archive:
+			if existing.run_token == record.run_token:
+				if existing != record:
+					error_message = "绝当录记录冲突；旧文件已保留。"
+					return false
+				found = true
+		if not found: state.death_archive.append(record)
 	var payload := _codec.encode(state, content_version)
 	if _codec.decode(payload, definition, content_version, catalog) == null:
 		error_message = _codec.error_message
@@ -67,3 +78,30 @@ func save_state(state: RunState, definition: RunDefinition, content_version: int
 		error_message = "存档替换失败：%s；旧存档保留。" % error_string(rename_error)
 		return false
 	return true
+
+func read_archive() -> Array[Dictionary]:
+	error_message = ""
+	var archive: Array[Dictionary] = []
+	if not exists(): return archive
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		error_message = "无法读取旧存档，未覆盖绝当录。"
+		return archive
+	var parser := JSON.new()
+	if parser.parse(file.get_as_text()) != OK or not parser.data is Dictionary:
+		error_message = "旧存档损坏；无法安全保留绝当录，未覆盖旧文件。"
+		return archive
+	var data: Dictionary = parser.data
+	# M0-M4 had no death archive; incompatible checkpoints remain readable as history only.
+	var rows: Variant = data.get("death_archive", [])
+	if not RiskSaveCodec.valid_archive(rows):
+		error_message = "绝当录损坏；未覆盖旧文件。"
+		return archive
+	for row in rows:
+		var copy: Dictionary = row.duplicate(true)
+		copy.night = int(copy.night)
+		copy.cash = int(copy.cash)
+		copy.inventory_cost = int(copy.inventory_cost)
+		copy.pawn_principal = int(copy.pawn_principal)
+		archive.append(copy)
+	return archive

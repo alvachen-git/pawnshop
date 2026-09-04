@@ -24,6 +24,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var found_slot := false
 		for slot in run.customer_slots:
 			if entry.visit_id == "%s/%d/%s" % [run.id, int(entry.night), slot.id] and slot.customer_id == entry.customer_id: found_slot = true
+		if not expected_visits.has(entry.visit_id): return "来访不属于该夜编排。"
 		if not found_slot: return "来访ID不属于当前运行配置。"
 		var planned: CustomerVisit = expected_visits[entry.visit_id]
 		if entry.outcome in ["bought", "pawned"] and (entry.minute < planned.arrival or entry.minute >= mini(planned.expires_at, run.night_minutes)): return "成交不在来访窗口内。"

@@ -10,6 +10,8 @@ func _ready() -> void:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var panels: Array[FeaturePanel] = [
 		%DayFlowPanel,
+		%EventPanel,
+		%RiskPanel,
 		%AppraisalPanel,
 		%DialoguePanel,
 		%TradePanel,
@@ -26,6 +28,8 @@ func _ready() -> void:
 	%InventoryButton.pressed.connect(_flow.show_panel.bind(&"inventory"))
 	%LedgerButton.pressed.connect(_flow.show_panel.bind(&"ledger"))
 	%NightButton.pressed.connect(_flow.show_panel.bind(&"night"))
+	%EventButton.pressed.connect(_flow.show_panel.bind(&"events"))
+	%RiskButton.pressed.connect(_flow.show_panel.bind(&"risk"))
 	%DayButton.pressed.connect(_flow.show_panel.bind(&"day"))
 	_flow.show_panel(&"day")
 
@@ -47,6 +51,15 @@ func bind_session(session: RunSession) -> void:
 	for index in presenters.size():
 		add_child(presenters[index])
 		presenters[index].bind(session, views[index])
+
+	var event_presenter := EventPresenter.new()
+	add_child(event_presenter)
+	event_presenter.route_requested.connect(_flow.show_panel)
+	event_presenter.bind(session, %EventPanel)
+	var risk_presenter := RiskPresenter.new()
+	add_child(risk_presenter)
+	risk_presenter.route_requested.connect(_flow.show_panel)
+	risk_presenter.bind(session, %RiskPanel)
 
 
 func show_content_ready(catalog: ContentCatalog) -> void:

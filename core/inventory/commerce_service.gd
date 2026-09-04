@@ -13,6 +13,8 @@ func quote(item: ItemInstance, buyer: BuyerDefinition) -> int:
 
 func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition) -> String:
 	if item == null or buyer == null or buyer.id not in day.definition.buyer_ids: return "物品或买家机会不存在。"
+	for flag in buyer.required_flags:
+		if flag not in day.state.narrative_flags: return "尚未取得买家介绍；请查看铺中记事。"
 	if item.ownership_state != "owned": return "只有店铺所有的现货可出售；在当物品不可出售。"
 	if day.state.phase != &"open": return "买家只在营业时收货。"
 	if day.state.current_night_index < buyer.night_min or day.state.current_night_index > buyer.night_max or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家到访窗口。"

@@ -19,17 +19,19 @@ func _run() -> void:
 	M1Tests.new().run(_expect)
 	M2Tests.new().run(_expect)
 	M3Tests.new().run(_expect)
+	M4Tests.new().run(_expect)
+	M5Tests.new().run(_expect)
 
 	if _failures == 0:
-		print("M0–M3 TESTS PASSED · %d assertions" % _passes)
+		print("M0–M5 TESTS PASSED · %d assertions" % _passes)
 		quit(0)
 	else:
-		push_error("M0–M3 TESTS FAILED · %d failures / %d passes" % [_failures, _passes])
+		push_error("M0–M5 TESTS FAILED · %d failures / %d passes" % [_failures, _passes])
 		quit(1)
 
 
 func _test_json_provider_loads_catalog() -> void:
-	var provider := JsonContentProvider.new("res://data/content_manifest.json")
+	var provider := JsonContentProvider.new("res://tests/fixtures/m3_manifest.json")
 	var result := provider.load_catalog()
 	_expect(result.is_success(), "JSON Provider应加载有效目录。")
 	if result.is_success():
@@ -39,7 +41,7 @@ func _test_json_provider_loads_catalog() -> void:
 
 
 func _test_in_memory_provider_uses_same_catalog_contract() -> void:
-	var json_result := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var json_result := JsonContentProvider.new("res://tests/fixtures/m3_manifest.json").load_catalog()
 	if not json_result.is_success():
 		_expect(false, "JSON目录必须先成功，才能验证内存Provider。")
 		return
@@ -85,6 +87,7 @@ func _test_main_scene_and_panel_flow() -> void:
 	if packed_scene == null:
 		return
 	var main := packed_scene.instantiate()
+	main.get_node("Bootstrap").manifest_path = "res://tests/fixtures/m3_manifest.json"
 	root.add_child(main)
 	var coordinator := main.get_node("CounterScreen/ScreenFlowCoordinator") as ScreenFlowCoordinator
 	_expect(coordinator != null, "主场景应包含独立ScreenFlowCoordinator。")
