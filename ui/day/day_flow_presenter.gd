@@ -4,7 +4,7 @@ extends Node
 signal status_updated(text: String)
 signal route_requested(panel_id: StringName)
 
-const PHASE_LABELS := {"pre_open": "开铺前", "open": "营业中", "closed_processing": "已关门 · 店内处理", "night_resolution": "封铺 · 夜间结算", "day_summary": "日结", "run_ended": "三夜已过", "dead": "命灯已灭"}
+const PHASE_LABELS := {"pre_open": "开铺前", "open": "营业中", "closed_processing": "已关门 · 店内处理", "night_resolution": "封铺 · 夜间结算", "day_summary": "日结", "run_ended": "三夜已过", "dead": "命灯已灭", "bankrupt": "铺门已封"}
 var _session: RunSession
 var _view: DayFlowPanel
 var _last_phase := ""
@@ -33,7 +33,7 @@ func refresh() -> void:
 	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(definition.opening_minute, state.game_minutes), state.cash])
 	if state.phase != _last_phase:
 		_last_phase = state.phase
-		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead"] else &"day")
+		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")
 
 func _on_command(command: String) -> void:
 	_session.execute(command)

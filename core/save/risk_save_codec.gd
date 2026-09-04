@@ -6,6 +6,7 @@ static func valid_archive(value: Variant) -> bool:
 	var tokens: Array = []
 	for row in value:
 		if not row is Dictionary or not CounterSaveCodec._text_fields(row, ["run_token", "run_id", "item_id", "rule_id", "cause", "item_name"]) or not CounterSaveCodec._integers(row, ["night", "cash", "inventory_cost", "pawn_principal"]): return false
+		if row.has("encounter_id") and not CounterSaveCodec._text_fields(row, ["encounter_id"]): return false
 		if row.run_token.length() != 32 or not row.run_token.is_valid_hex_number() or row.run_token in tokens or row.night < 1 or row.cash < 0 or row.inventory_cost < 0 or row.pawn_principal < 0: return false
 		for field in ["night", "cash", "inventory_cost", "pawn_principal"]:
 			if row[field] > 2147483647: return false
@@ -23,7 +24,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		copy.pawn_principal = int(copy.pawn_principal)
 		state.death_archive.append(copy)
 	if run.ghost_rule_ids.is_empty():
-		if not state.run_token.is_empty() or not data.risk_pending.is_empty() or not data.risk_history.is_empty() or state.phase == &"dead": return "本运行未启用鬼货。"
+		if (not run.fee_policy.enabled and not state.run_token.is_empty()) or (run.fee_policy.enabled and (state.run_token.length() != 32 or not state.run_token.is_valid_hex_number())) or not data.risk_pending.is_empty() or not data.risk_history.is_empty() or state.phase == &"dead": return "本运行未启用鬼货。"
 		for summary in state.summaries:
 			if summary.outcome != "placeholder_peaceful": return "旧运行日结结果无效。"
 		return ""
@@ -40,7 +41,9 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if night < 1 or night > state.summaries.size() or minute < 0 or minute > run.night_minutes or minute % run.time_step != 0 or stamp < last_stamp: return "鬼货处理时刻无效。"
 		last_stamp = stamp
 		var item := InventoryManager.new().find(state, row.item_id)
-		if item == null or manager.rule_for(item) == null or not manager.held_at(state, item, night, minute): return "鬼货处理没有对应持有物。"
+		var pursuit := MirrorEncounterService.pursuit(state, night)
+		var personal: bool = not pursuit.is_empty() and pursuit.mirror_id == row.item_id
+		if item == null or manager.rule_for(item) == null or (not manager.held_at(state, item, night, minute) and not (personal and row.action in ["retreat", "defy"])): return "鬼货处理没有对应持有物。"
 		var key := "%d/%s" % [night, row.item_id]
 		var cloth := manager.covered(state, row.item_id)
 		var closing: int = state.summaries[night - 1].closed_at
@@ -56,7 +59,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 				for previous in state.risk_history:
 					if previous.night == night and previous.action in ["cover", "uncover"] and previous.minute > minute - cost: return "鬼货处理耗时重叠。"
 			"retreat", "defy":
-				if responses.has(night) or minute != run.night_minutes or not closes.has(key) or cloth or manager.night_outcome(state, night) != "mirror_pending": return "夜间应对无前置警告。"
+				if responses.has(night) or minute != run.night_minutes or (not personal and (not closes.has(key) or cloth)) or manager.night_outcome(state, night) != "mirror_pending": return "夜间应对无前置警告。"
 				responses[night] = row.action
 			_:
 				return "未知鬼货处理动作。"
@@ -73,7 +76,10 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if outcome in ["mirror_death", "mirror_pending"] and (night != state.current_night_index or state.phase != (&"dead" if outcome == "mirror_death" else &"day_summary")): return "未解决的鬼货结果不能推进。"
 	var expected := ""
 	if not state.summaries.is_empty() and state.summaries.back().outcome == "mirror_pending":
+		var pursuit := MirrorEncounterService.pursuit(state, state.current_night_index)
+		if not pursuit.is_empty(): expected = pursuit.mirror_id
 		for item in manager.ghosts(state):
+			if not expected.is_empty(): break
 			if item.ownership_state in ["owned", "pledged"] and not manager.covered(state, item.instance_id):
 				expected = item.instance_id
 				break

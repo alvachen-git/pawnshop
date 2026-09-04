@@ -71,7 +71,30 @@ func _run() -> void:
 	quit(0 if _failures == 0 else 1)
 
 func _click(label: String) -> void:
+	# Secondary entries now live in the functional More drawer.
+	if label in ["铺中记事", "鬼货与绝当录", "夜间结算"] and _find_button(_main, label) == null:
+		await _click("更多")
 	var button := _find_button(_main, label)
+	if button == null:
+		var hidden := _find_any_button(_main, label)
+		var parent: Node = hidden
+		while parent != null and not parent is FeaturePanel: parent = parent.get_parent()
+		if parent is FeaturePanel:
+			var title: String = CounterScreen.PANEL_TITLES.get(String(parent.get_panel_id()), "")
+			if not title.is_empty() and title != label:
+				await _click(title)
+				button = _find_button(_main, label)
+	# Open the actual account tab / item disclosure before clicking its action.
+	if button == null:
+		var hidden := _find_any_button(_main, label)
+		var ancestor: Node = hidden
+		var reveals: Array[String] = []
+		while ancestor != null:
+			if ancestor.has_meta("reveal_label"): reveals.push_front(str(ancestor.get_meta("reveal_label")))
+			ancestor = ancestor.get_parent()
+		for reveal in reveals:
+			await _click(reveal)
+		button = _find_button(_main, label)
 	_check(button != null, "可找到按钮：" + label)
 	if button != null:
 		await _click_button(button)
@@ -138,3 +161,10 @@ func _check(condition: bool, label: String) -> void:
 	if not condition:
 		_failures += 1
 		push_error("UI FAIL: " + label)
+
+func _find_any_button(node: Node, label: String) -> Button:
+	if node is Button and node.text == label: return node
+	for child in node.get_children():
+		var found := _find_any_button(child, label)
+		if found != null: return found
+	return null

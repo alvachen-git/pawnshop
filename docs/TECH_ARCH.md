@@ -1,8 +1,8 @@
-# 《鬼市当铺》技术架构 · M5
+# 《鬼市当铺》技术架构 · 识货与识人
 
 ## 当前边界
 
-M4已由负责人确认测试通过，2026-09-04授权进入M5。当前增加一件泣血铜镜、规则处理、夜间异常、永久死亡和绝当录；正式债务与完整P0体验验收仍待完成。
+M4/M5已通过负责人试玩。当前三笔交易情境叠加在每日息费与铜镜遭遇基础上；生产为 `p0_judgement`、Save v7/content v8。三笔交易数据流、知识边界与回放校验见 `docs/M7_JUDGEMENT_GUIDE.md`；息费与铜镜见 `docs/M6_DEBT_MIRROR_GUIDE.md`。下方M1–M5章节保留阶段设计历史，版本号仅代表当时。完整P0体验验收仍待完成。
 
 ## 依赖方向
 
@@ -165,3 +165,11 @@ RunSession在所有耗时意图后捕获关门（含自动封铺）；结算后�
 存档当前为v5/content v6，在原财务/事件重建后用RiskSaveCodec重建处理结果。run_token区分每次新游戏；risk_history保存处理过程，risk_pending保存未解决应对。death_archive与当前状态在同一文件原子提交，重开合并旧档历史。死亡不得重新解释为存活；写盘失败回滚处理历史、财务摘要、终止阶段和绝当录。
 
 财神香与命灯呈现物品违规、铺中入侵和个人缠祟的文字后果，不是公开数值条。持续缠祟目前保留为跨夜叙事状态。没有实现完整索命夜、阴账清偿、49夜、复杂鬼货组合或正式美术。
+
+## 每日息费与铜镜遭遇接入
+
+- RunDefinition持有只读FeePolicyDefinition和MirrorEncounterDefinition；历史夹具缺省关闭两项。
+- FeeService只通过EconomyManager记现金流水。RunSession负责费用、RiskManager与经营终局的原子次序，UI只读取economy_model、counter_model和risk_model。
+- MirrorEncounterService独立处理来客绑定、窥看选择及证据来源；不占普通事件额度，不扩展万能事件脚本。
+- 新状态为fee_history、fee_arrears、mirror_history、bankruptcy_archive以及bankrupt终止阶段。FinancialSummary增加当夜息费、实际付款和经营净收益。
+- FeeSaveCodec与MirrorSaveCodec参与独立重建，最后联合风险/经营结果核验。默认新存档路径与M5分离，旧档仅用于有效历史记录导入。

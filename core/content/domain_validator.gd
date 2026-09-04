@@ -8,6 +8,7 @@ func validate_catalog(catalog: ContentCatalog) -> Array:
 	issues.append_array(CommerceDomainValidator.validate(catalog))
 	issues.append_array(EventDomainValidator.validate(catalog))
 	issues.append_array(GhostSchema.domain(catalog))
+	issues.append_array(RunExtensionSchema.domain(catalog))
 	for run in catalog.get_all("runs"):
 		if run.total_nights < 1 or run.time_step < 1 or run.night_minutes < 1 or run.initial_cash < 0 or run.opening_minute < 0 or run.opening_minute >= 1440 or run.seed < 0:
 			issues.append(ContentIssue.new("error", "invalid_run", "ContentCatalog", "runs." + run.id, "运行定义不符合领域不变量。"))

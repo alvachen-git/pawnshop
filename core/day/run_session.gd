@@ -12,6 +12,7 @@ var _counter: CounterService
 var _events: EventDirector
 var _commerce: CommerceService
 var _risk: RiskManager
+var _mirror: MirrorEncounterService
 var _risk_error := ""
 
 func _init(run_definition: RunDefinition, version: int, save_manager: SaveManager, catalog: ContentCatalog = null) -> void:
@@ -20,11 +21,13 @@ func _init(run_definition: RunDefinition, version: int, save_manager: SaveManage
 	_save = save_manager
 	_day = DayController.new(definition, RunState.create(definition))
 	_day.state.death_archive = _save.read_archive()
+	_day.state.bankruptcy_archive = _save.read_bankruptcy_archive()
 	if catalog != null:
 		_counter = CounterService.new(catalog)
 		_commerce = CommerceService.new(catalog)
 		_events = EventDirector.new(catalog)
 		if not definition.ghost_rule_ids.is_empty(): _risk = RiskManager.new(catalog)
+		_mirror = MirrorEncounterService.new(catalog)
 		_save.catalog = catalog
 		_counter.customers.prepare_night(_day.state, definition, catalog)
 		_events.poll(_day.state, definition)
@@ -36,22 +39,25 @@ func has_save() -> bool:
 	return _save.exists()
 
 func can_execute(command: String) -> bool:
-	return _day.state.risk_pending.is_empty() and _day.state.phase != &"dead" and _day.state.pending_event_id.is_empty() and _day.can_execute(command)
+	return _day.state.risk_pending.is_empty() and _day.state.phase not in [&"dead", &"bankrupt"] and _day.state.pending_event_id.is_empty() and not mirror_pending() and _day.can_execute(command)
 
 func execute(command: String) -> ActionResult:
-	if not _day.state.risk_pending.is_empty() or _day.state.phase == &"dead": return _risk_blocked()
+	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
+	if mirror_pending(): return _mirror_blocked()
 	# Only these commands create checkpoints. Snapshot before mutation for rollback.
 	var checkpoint := command in ["resolve_night", "continue_run"]
 	var previous: RunState
 	if checkpoint:
 		previous = _copy_state(_day.state)
-	if command == "resolve_night" and _day.can_execute(command) and _commerce != null:
+	if command == "resolve_night" and not mirror_pending() and _day.can_execute(command) and _commerce != null:
 		_commerce.pawns.resolve_maturities(_day.state, definition.night_minutes)
+	if command == "resolve_night" and _day.can_execute(command): FeeService.settle(_day.state, definition)
 	var result := _day.execute(command)
 	if result.ok and _risk != null:
 		_risk.capture_close(_day.state)
 		if command == "resolve_night": _risk.settle(_day.state)
+	if result.ok and command == "resolve_night": FeeService.finish(_day.state, definition)
 	if result.ok and _counter != null:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
 			_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
@@ -82,8 +88,10 @@ func load_checkpoint() -> ActionResult:
 func new_run() -> void:
 	_risk_error = ""
 	var archive := _day.state.death_archive.duplicate(true)
+	var bankruptcies := _day.state.bankruptcy_archive.duplicate(true)
 	_day.state = RunState.create(definition)
 	_day.state.death_archive.assign(archive)
+	_day.state.bankruptcy_archive.assign(bankruptcies)
 	if _counter != null:
 		_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 	if _events != null: _events.poll(_day.state, definition)
@@ -107,8 +115,9 @@ func _copy_state(source: RunState) -> RunState:
 	return copy
 
 func counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
-	if not _day.state.risk_pending.is_empty() or _day.state.phase == &"dead": return _risk_blocked()
+	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
+	if mirror_pending(): return _mirror_blocked()
 	var result := ActionResult.new(false, "当前运行未接入柜台内容。")
 	if _counter != null:
 		result = _counter.execute(_day, command, visit_id, detail, amount)
@@ -121,18 +130,19 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 func counter_model() -> Dictionary:
 	var model := CounterReadModels.build(_day, _counter, message)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
-	if not _day.state.pending_event_id.is_empty():
+	if not _day.state.pending_event_id.is_empty() or mirror_pending() or _day.state.phase in [&"dead", &"bankrupt"]:
 		model.trade.can_offer = false
 		model.trade.can_pawn = false
 		for key in ["appraisal", "dialogue", "trade", "inventory", "ledger"]:
 			for button in model[key].get("buttons", []):
 				button.enabled = false
-				button.reason = "请先处理铺中记事。"
+				button.reason = "请先处理眼前的事情。"
 	return model
 
 func commerce_command(command: String, target: String, detail := "") -> ActionResult:
-	if not _day.state.risk_pending.is_empty() or _day.state.phase == &"dead": return _risk_blocked()
+	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
+	if mirror_pending(): return _mirror_blocked()
 	var result := ActionResult.new(false, "当前运行没有交易内容。")
 	if _commerce != null:
 		result = _commerce.execute(_day, command, target, detail)
@@ -147,7 +157,8 @@ func event_model() -> Dictionary:
 	return _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}
 
 func event_command(event_id: String, choice_id: String) -> ActionResult:
-	if not _day.state.risk_pending.is_empty() or _day.state.phase == &"dead": return _risk_blocked()
+	if mirror_pending(): return _mirror_blocked()
+	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	var result := ActionResult.new(false, "没有事件内容。")
 	if _events != null:
 		result = _events.choose(_day, event_id, choice_id)
@@ -163,15 +174,37 @@ func _event_blocked() -> ActionResult:
 	return ActionResult.new(false, message)
 
 func risk_model() -> Dictionary:
-	return RiskReadModels.build(_day, _risk, _risk_error) if _risk != null else {"body": "本运行未启用鬼货。", "buttons": [], "history": "", "pending_id": "", "held_ids": []}
+	var model := RiskReadModels.build(_day, _risk, _risk_error) if _risk != null else {"body": "柜里暂无异物。", "buttons": [], "history": "", "pending_id": "", "held_ids": [], "intrusion": false}
+	model.attention_id = ""
+	if _mirror != null:
+		var encounter := _mirror.model(_day)
+		model.attention_id = encounter.attention_id
+		if not encounter.body.is_empty():
+			model.body = encounter.body
+			if not mirror_pending(): model.body += "\n\n关门前，请将红布覆回镜面。"
+			if mirror_pending(): model.buttons = []
+			model.buttons = encounter.buttons + model.buttons
+		if not _day.state.mirror_history.is_empty():
+			var latest: Dictionary = _day.state.mirror_history.back()
+			if latest.action == "pursue" and latest.night == _day.state.current_night_index and latest.minute == _day.state.game_minutes and _day.state.phase == &"open":
+				model.body = MirrorEncounterService.find_definition(definition, latest.encounter_id).text("pursue_text") + "\n\n镜面还在眼前，关门前请覆好红布。"
+		for row in _day.state.mirror_history:
+			if row.action == "pursue":
+				var encounter_def := MirrorEncounterService.find_definition(definition, row.encounter_id)
+				model.history = "铺中旧事\n" + encounter_def.text("pursue_text") + "\n\n" + model.history
+	return model
 
 func risk_command(command: String, id: String) -> ActionResult:
+	if command.begins_with("mirror_"): return mirror_command(id, command.trim_prefix("mirror_"))
+	if _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if _risk == null: return ActionResult.new(false, "本运行未启用鬼货。")
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
+	if mirror_pending(): return _mirror_blocked()
 	var result: ActionResult
 	if command in ["retreat", "defy"]:
 		var previous := _copy_state(_day.state)
 		result = _risk.respond(_day.state, id, command)
+		if result.ok: FeeService.finish(_day.state, definition)
 		if result.ok and not _save.save_state(_day.state, definition, content_version):
 			_day.state = previous
 			result = ActionResult.new(false, "应对未提交，请重试。" + _save.error_message)
@@ -186,6 +219,26 @@ func risk_command(command: String, id: String) -> ActionResult:
 	return result
 
 func _risk_blocked() -> ActionResult:
-	message = "灯已冷了，铺中再没有人应声。" if _day.state.phase == &"dead" else "请先在「鬼货与绝当录」应对镜中来客。"
+	message = "铺门上了封条，柜前再无人等候。" if _day.state.phase == &"bankrupt" else ("灯已冷了，铺中再没有人应声。" if _day.state.phase == &"dead" else "请先在「鬼货与绝当录」应对镜中来客。")
 	changed.emit()
 	return ActionResult.new(false, message)
+
+func mirror_pending() -> bool:
+	return _mirror != null and _mirror.pending(_day)
+
+func mirror_command(id: String, command: String) -> ActionResult:
+	if _mirror == null or not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
+	var result := _mirror.choose(_day, id, command)
+	_risk_error = "" if result.ok else result.message
+	if _events != null and not mirror_pending(): _events.poll(_day.state, definition)
+	message = result.message
+	changed.emit()
+	return result
+
+func _mirror_blocked() -> ActionResult:
+	message = "镜里的旧当票还在眼前。请先收回视线，或再看一眼。"
+	changed.emit()
+	return ActionResult.new(false, message)
+
+func economy_model() -> Dictionary:
+	return {"description": FeeService.describe(_day.state, definition), "archive": FeeService.archive_text(_day.state), "outstanding": FeeService.outstanding(_day.state)}

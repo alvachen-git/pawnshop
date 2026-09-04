@@ -46,6 +46,7 @@ static func validate(record: Variant, path: String, location: String) -> Array:
 			for phase in action.phases:
 				if phase not in ["open", "closed_processing"]:
 					errors.append(ContentIssue.new("error", "invalid_phase", path, at + ".phases", "仅支持营业/关门处理阶段。"))
+	errors.append_array(RunExtensionSchema.validate(record, path, location))
 	return errors
 
 static func integer(value: Variant) -> bool:

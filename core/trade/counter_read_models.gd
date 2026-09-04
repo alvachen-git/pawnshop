@@ -33,6 +33,8 @@ static func build(day: DayController, service: CounterService, message: String) 
 	model.active_id = visit.visit_id
 	model.customer = customer.terms.display_name + "\n" + customer.terms.introduction
 	model.item = item.display_name + "\n" + item.description
+	var scenario := TradeScenarioService.for_visit(day.definition, visit)
+	if scenario != null: model.customer = customer.terms.display_name + "\n" + scenario.introduction
 	var bounds := service.appraisal.valuation(visit.item, item)
 	var evidence_lines: PackedStringArray = []
 	for clue_id in visit.item.revealed_clue_ids: evidence_lines.append("• " + item.find_clue(clue_id).text)
@@ -41,16 +43,31 @@ static func build(day: DayController, service: CounterService, message: String) 
 		model.appraisal.buttons.append(_button(day, service, visit, "appraise", action.id, "%s · %d分钟" % [action.label, action.minutes]))
 	for key in JUDGEMENTS:
 		model.appraisal.buttons.append(_button(day, service, visit, "judge", key, "记录判断：" + JUDGEMENTS[key]))
-	model.dialogue.body = customer.terms.introduction + "\n\n卖家口供未证实，不自动收窄估值。"
-	for question in customer.questions:
-		if question.id in visit.asked_question_ids: model.dialogue.body += "\n\n" + question.prompt + "\n" + question.answer
-		model.dialogue.buttons.append(_button(day, service, visit, "question", question.id, "%s · %d分钟" % [question.prompt, question.minutes]))
+	if scenario == null:
+		model.dialogue.body = customer.terms.introduction + "\n\n卖家口供未证实，不自动收窄估值。"
+		for question in customer.questions:
+			if question.id in visit.asked_question_ids: model.dialogue.body += "\n\n" + question.prompt + "\n" + question.answer
+			model.dialogue.buttons.append(_button(day, service, visit, "question", question.id, "%s · %d分钟" % [question.prompt, question.minutes]))
+	else:
+		model.appraisal.images = TradeScenarioService.known_images(visit, scenario)
+		if model.appraisal.images.any(func(row: Dictionary) -> bool: return not row.path.is_empty()): model.appraisal.body += "\n\n翻看正背面、复看细节不耗时；取证另计时间。"
+		model.dialogue.body = scenario.introduction + "\n\n听来的话先记着，物品还须自己掌眼。无凭据地质疑，客人可能不悦。"
+		for question in scenario.questions:
+			if question.id in visit.asked_question_ids: model.dialogue.body += "\n\n" + question.prompt + "\n" + question.answer(visit)
+			elif TradeScenarioService.prerequisites(visit, question):
+				var suffix := ""
+				if not question.pressure_clue.is_empty() and not TradeScenarioService.used(visit, scenario, question.pressure_clue): suffix = " · 议价一轮"
+				model.dialogue.buttons.append(_button(day, service, visit, "question", question.id, "%s · %d分钟%s" % [question.prompt, question.minutes, suffix]))
 	model.trade.body = "%s · 要价 %d\n剩余议价轮次 %d · %s\n报价 %d分钟 / 施压 %d分钟，各消耗一轮。\n收购前请自行判断证据与承受价。" % [item.display_name, visit.trade.asking_price, visit.trade.rounds_left, "显得不耐烦" if visit.trade.patience < customer.patience else "尚愿意交谈", customer.terms.quote_minutes, customer.terms.pressure_minutes]
 	for clue_id in visit.item.revealed_clue_ids:
 		var clue := item.find_clue(clue_id)
 		var button := _button(day, service, visit, "pressure", clue_id, "据此压价：" + clue.text.left(16) + "…")
 		if button.enabled: button.reason = clue.text
 		model.trade.buttons.append(button)
+	if scenario != null and scenario.concession_amount > 0 and scenario.concession_question in visit.asked_question_ids:
+		model.trade.buttons.append(_button(day, service, visit, "concession", "", "请他为赶路再让%d银元 · %d分钟 · 议价一轮" % [scenario.concession_amount, scenario.concession_minutes]))
+		model.trade.body += "\n处境与品相分开谈；不赶路的客人可能反感催价。"
+	model.trade.body += "\n客人最迟留到 %s。" % TimeController.clock_text(day.definition.opening_minute, visit.expires_at)
 	model.trade.buttons.append(_button(day, service, visit, "reject", "", "拒绝收货 · %d分钟" % customer.terms.reject_minutes))
 	model.trade.asking_price = visit.trade.asking_price
 	model.trade.can_offer = service.reason(day, "offer", visit.visit_id, "", 1).is_empty()
@@ -62,6 +79,8 @@ static func build(day: DayController, service: CounterService, message: String) 
 	for feature in ["appraisal", "dialogue", "trade"]:
 		model[feature].visit_id = visit.visit_id
 		model[feature].body += "\n\n" + message
+	CounterVisualReadModels.enrich(model, day, service, visit)
+	for feature in ["appraisal", "dialogue", "trade"]: model[feature].visual.message = message
 	return model
 
 static func _button(day: DayController, service: CounterService, visit: CustomerVisit, command: String, detail: String, label: String) -> Dictionary:

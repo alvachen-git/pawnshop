@@ -9,3 +9,8 @@ var status := "scheduled"
 var item: ItemInstance
 var trade := TradeSession.new()
 var asked_question_ids: Array = []
+
+var scenario_id := ""
+var situation_id := ""
+var reaction_id := ""
+var concession_used := false

@@ -10,6 +10,18 @@ var event_ids: Array:
 var _flag_ids: Array = []
 var flag_ids: Array:
 	get: return _flag_ids.duplicate()
+var _fee_policy := FeePolicyDefinition.new()
+var fee_policy: FeePolicyDefinition:
+	get: return _fee_policy
+var _mirror_encounters: Array[MirrorEncounterDefinition] = []
+var mirror_encounters: Array[MirrorEncounterDefinition]:
+	get: return _mirror_encounters.duplicate()
+var _trade_scenarios: Array[TradeScenarioDefinition] = []
+var trade_scenarios: Array[TradeScenarioDefinition]:
+	get: return _trade_scenarios.duplicate()
+var _randomize_seed := false
+var randomize_seed: bool:
+	get: return _randomize_seed
 var _id: String
 var _total_nights: int
 var _opening_minute: int
@@ -50,6 +62,10 @@ static func from_dto(dto: RunDTO) -> RunDefinition:
 	result._ghost_rule_ids = dto.ghost_rule_ids.duplicate()
 	result._event_ids = dto.event_ids.duplicate()
 	result._flag_ids = dto.flag_ids.duplicate()
+	result._fee_policy = FeePolicyDefinition.new(dto.fee_policy)
+	for row in dto.mirror_encounters: result._mirror_encounters.append(MirrorEncounterDefinition.new(row))
+	for row in dto.trade_scenarios: result._trade_scenarios.append(TradeScenarioDefinition.new(row))
+	result._randomize_seed = dto.randomize_seed
 	result._id = dto.id
 	result._total_nights = dto.total_nights
 	result._opening_minute = dto.opening_minute

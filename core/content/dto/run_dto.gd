@@ -15,6 +15,10 @@ var ghost_rule_ids: Array = []
 var event_ids: Array = []
 var flag_ids: Array = []
 var buyer_ids: Array = []
+var fee_policy: Dictionary = {}
+var mirror_encounters: Array = []
+var trade_scenarios: Array = []
+var randomize_seed := false
 
 static func from_source(source: Dictionary) -> RunDTO:
 	var dto := RunDTO.new()
@@ -32,4 +36,8 @@ static func from_source(source: Dictionary) -> RunDTO:
 	dto.ghost_rule_ids = source.get("ghost_rule_ids", []).duplicate()
 	dto.event_ids = source.get("event_ids", []).duplicate()
 	dto.flag_ids = source.get("flag_ids", []).duplicate()
+	dto.fee_policy = source.get("fee_policy", {}).duplicate(true)
+	dto.mirror_encounters = source.get("mirror_encounters", []).duplicate(true)
+	dto.trade_scenarios = source.get("trade_scenarios", []).duplicate(true)
+	dto.randomize_seed = source.get("randomize_seed", false)
 	return dto

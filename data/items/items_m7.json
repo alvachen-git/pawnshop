@@ -1,0 +1,887 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "item_blue_bowl",
+      "display_name": "青花小碗",
+      "description": "釉色温润，碗沿完整。卖家称它是家中旧藏；仅看外观还无法确定是否修补。",
+      "category": "porcelain",
+      "base_value": 60,
+      "unknown_min": 10,
+      "unknown_max": 75,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 60,
+          "weight": 1,
+          "clue_ids": [
+            "shape",
+            "mark",
+            "intact"
+          ]
+        },
+        {
+          "id": "repaired",
+          "true_value": 20,
+          "weight": 1,
+          "clue_ids": [
+            "shape",
+            "mark",
+            "repair"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "shape",
+          "text": "器型与青花纹样符合普通民窑旧器，尚不能判断完整性。",
+          "min_value": 10,
+          "max_value": 70,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "mark",
+          "text": "底足有自然磨损，款式与器型一致；来历不等于品相保证。",
+          "min_value": 18,
+          "max_value": 65,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "intact",
+          "text": "侧光下釉面连续，无拼接或补釉痕迹。",
+          "min_value": 55,
+          "max_value": 65,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "repair",
+          "text": "侧光下显出细细的补釉接缝，青花在缝边略有错位。",
+          "min_value": 18,
+          "max_value": 25,
+          "leverage": 40,
+          "judgement": "damaged"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：观察器型",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "shape"
+          ]
+        },
+        {
+          "id": "base",
+          "label": "放大镜看底足（辨来历）",
+          "minutes": 10,
+          "required_tool": "magnifier",
+          "requires_clues": [],
+          "reveals": [
+            "mark"
+          ]
+        },
+        {
+          "id": "light",
+          "label": "侧光照釉面（找接缝）",
+          "minutes": 10,
+          "required_tool": "lamp",
+          "requires_clues": [],
+          "reveals": [
+            "intact",
+            "repair"
+          ]
+        }
+      ],
+      "name_key": "item.item_blue_bowl.name",
+      "type": "normal",
+      "tags": [
+        "porcelain",
+        "m2"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "asset.item_blue_bowl"
+    },
+    {
+      "id": "item_brass_holder",
+      "display_name": "黄铜烛台",
+      "description": "一只沉甸甸的烛台。表面颜色均匀，内部材质需要工具检查。",
+      "category": "metal",
+      "base_value": 40,
+      "unknown_min": 5,
+      "unknown_max": 50,
+      "possible_variants": [
+        {
+          "id": "brass",
+          "true_value": 40,
+          "weight": 2,
+          "clue_ids": [
+            "form",
+            "brass_core",
+            "repels"
+          ]
+        },
+        {
+          "id": "plated",
+          "true_value": 10,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "iron_core",
+            "attracts"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "造型为常见日用烛台，仅凭重量不能确定材质。",
+          "min_value": 5,
+          "max_value": 50,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "brass_core",
+          "text": "底部旧划痕里仍是黄色铜料，与表面同色。",
+          "min_value": 35,
+          "max_value": 45,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "iron_core",
+          "text": "底部旧划痕划穿铜皮，露出灰色铁芯。",
+          "min_value": 8,
+          "max_value": 12,
+          "leverage": 26,
+          "judgement": "fake"
+        },
+        {
+          "id": "repels",
+          "text": "磁针靠近底座，没有吸附；能排除铁芯，尚不能单凭这一点认定整铜。",
+          "min_value": 8,
+          "max_value": 45,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "attracts",
+          "text": "磁针被底座明显吸住；内部有铁，不能按整铜算价。",
+          "min_value": 8,
+          "max_value": 12,
+          "leverage": 26,
+          "judgement": "fake"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：观察造型",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "magnet",
+          "label": "靠近磁针（试有无铁芯）",
+          "minutes": 10,
+          "required_tool": "magnet",
+          "requires_clues": [],
+          "reveals": [
+            "repels",
+            "attracts"
+          ]
+        },
+        {
+          "id": "scratch",
+          "label": "放大镜看旧划痕（辨内外材质）",
+          "minutes": 5,
+          "required_tool": "magnifier",
+          "requires_clues": [],
+          "reveals": [
+            "brass_core",
+            "iron_core"
+          ]
+        }
+      ],
+      "name_key": "item.item_brass_holder.name",
+      "type": "normal",
+      "tags": [
+        "metal",
+        "m2"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "asset.item_brass_holder"
+    },
+    {
+      "id": "item_silver_hairpin",
+      "display_name": "银簪",
+      "description": "簪头刻花，簪脚有细小戳记；亮色未必意味着足银。",
+      "category": "jewelry",
+      "base_value": 45,
+      "unknown_min": 7,
+      "unknown_max": 60,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 45,
+          "weight": 2,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 12,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "flaw"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "刻花与焊口符合常见首饰工艺。",
+          "min_value": 9,
+          "max_value": 55,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "戳记清楚，磨损处里外同色，未见镀层剥落。",
+          "min_value": 40,
+          "max_value": 50,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "flaw",
+          "text": "簪脚磨损露出黄底，戳记边缘新锐，疑为镀银。",
+          "min_value": 10,
+          "max_value": 16,
+          "leverage": 35,
+          "judgement": "fake"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：查看银簪",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "辨真：放大镜查看戳记与磨损",
+          "minutes": 10,
+          "required_tool": "magnifier",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "flaw"
+          ]
+        }
+      ],
+      "name_key": "item.silver_hairpin.name",
+      "type": "normal",
+      "tags": [
+        "jewelry",
+        "m4"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "placeholder.silver_hairpin"
+    },
+    {
+      "id": "item_pocket_watch",
+      "display_name": "怀表",
+      "description": "表壳光亮，表针正在移动；短暂走动无法证明机芯完好。",
+      "category": "watches",
+      "base_value": 80,
+      "unknown_min": 17,
+      "unknown_max": 95,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 80,
+          "weight": 2,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 22,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "flaw"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "表壳款式与机芯结构属于常见舶来怀表。",
+          "min_value": 19,
+          "max_value": 90,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "轮系运转平稳，发条回力正常，轴孔未见明显磨损。",
+          "min_value": 75,
+          "max_value": 85,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "flaw",
+          "text": "摆轮时走时停，轴孔磨大，需要维修。",
+          "min_value": 20,
+          "max_value": 26,
+          "leverage": 60,
+          "judgement": "damaged"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：查看怀表",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "辨真：灯下检查机芯走时",
+          "minutes": 10,
+          "required_tool": "lamp",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "flaw"
+          ]
+        }
+      ],
+      "name_key": "item.pocket_watch.name",
+      "type": "normal",
+      "tags": [
+        "watches",
+        "m4"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "placeholder.pocket_watch"
+    },
+    {
+      "id": "item_inkstone",
+      "display_name": "端式砚台",
+      "description": "砚面有细密石纹，卖家声称是旧坑石料。",
+      "category": "stationery",
+      "base_value": 50,
+      "unknown_min": 10,
+      "unknown_max": 65,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 50,
+          "weight": 2,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 15,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "flaw"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "砚堂有使用痕迹，式样常见，石种仍待核对。",
+          "min_value": 12,
+          "max_value": 60,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "天然纹理深入砚堂，磨损处质地细密一致。",
+          "min_value": 45,
+          "max_value": 55,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "flaw",
+          "text": "所谓石眼为后填色点，边缘有着色残留。",
+          "min_value": 13,
+          "max_value": 19,
+          "leverage": 37,
+          "judgement": "fake"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：查看端式砚台",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "辨真：放大镜察石纹",
+          "minutes": 10,
+          "required_tool": "magnifier",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "flaw"
+          ]
+        }
+      ],
+      "name_key": "item.inkstone.name",
+      "type": "normal",
+      "tags": [
+        "stationery",
+        "m4"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "placeholder.inkstone"
+    },
+    {
+      "id": "item_clay_teapot",
+      "display_name": "紫砂小壶",
+      "description": "小壶盖口贴合，腹部包浆深，需查看是否有暗裂。",
+      "category": "porcelain",
+      "base_value": 55,
+      "unknown_min": 13,
+      "unknown_max": 70,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 55,
+          "weight": 2,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 18,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "flaw"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "器型规整，胎质与普通旧紫砂器相符。",
+          "min_value": 15,
+          "max_value": 65,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "侧光下胎面连续，壶把接合自然。",
+          "min_value": 50,
+          "max_value": 60,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "flaw",
+          "text": "壶把根部有胶线，壶腹细裂被茶垢遮住。",
+          "min_value": 16,
+          "max_value": 22,
+          "leverage": 39,
+          "judgement": "damaged"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：查看紫砂小壶",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "辨真：侧光查看壶身",
+          "minutes": 10,
+          "required_tool": "lamp",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "flaw"
+          ]
+        }
+      ],
+      "name_key": "item.clay_teapot.name",
+      "type": "normal",
+      "tags": [
+        "porcelain",
+        "m4"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "placeholder.clay_teapot"
+    },
+    {
+      "id": "item_silk_panel",
+      "display_name": "花鸟绣片",
+      "description": "花鸟纹绣片卷在布包里，表面颜色鲜亮。",
+      "category": "textile",
+      "base_value": 65,
+      "unknown_min": 15,
+      "unknown_max": 80,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 65,
+          "weight": 2,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 20,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "flaw"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "针法细密，题材常见；完整性决定销路。",
+          "min_value": 17,
+          "max_value": 75,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "透光下经纬连续，背面绣线无大片断裂。",
+          "min_value": 60,
+          "max_value": 70,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "flaw",
+          "text": "边角水渍深入纤维，背面绣线脆断。",
+          "min_value": 18,
+          "max_value": 24,
+          "leverage": 47,
+          "judgement": "damaged"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：查看花鸟绣片",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "辨真：透光查看经纬",
+          "minutes": 10,
+          "required_tool": "lamp",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "flaw"
+          ]
+        }
+      ],
+      "name_key": "item.silk_panel.name",
+      "type": "normal",
+      "tags": [
+        "textile",
+        "m4"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "placeholder.silk_panel"
+    },
+    {
+      "id": "item_fountain_pen",
+      "display_name": "赛璐珞钢笔",
+      "description": "笔杆花纹鲜明，笔帽齐全，笔尖需要仔细检查。",
+      "category": "stationery",
+      "base_value": 35,
+      "unknown_min": 7,
+      "unknown_max": 50,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 35,
+          "weight": 2,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 12,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "flaw"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "笔杆与笔帽配套，属于常见洋货文具。",
+          "min_value": 9,
+          "max_value": 45,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "笔尖合缝均匀，供墨槽干净，夹片弹性正常。",
+          "min_value": 30,
+          "max_value": 40,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "flaw",
+          "text": "笔尖歪斜并有细裂，供墨槽残留干墨结块。",
+          "min_value": 10,
+          "max_value": 16,
+          "leverage": 25,
+          "judgement": "damaged"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：查看赛璐珞钢笔",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "辨真：放大镜查看笔尖",
+          "minutes": 10,
+          "required_tool": "magnifier",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "flaw"
+          ]
+        }
+      ],
+      "name_key": "item.fountain_pen.name",
+      "type": "normal",
+      "tags": [
+        "stationery",
+        "m4"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "placeholder.fountain_pen"
+    },
+    {
+      "id": "item_weeping_mirror",
+      "display_name": "泣血铜镜",
+      "description": "镜缘渗着暗红水珠，背刻「闭门先覆红」。一块旧红布搭在镜旁。听说有位收镜客，子夜才来，出手很阔。",
+      "category": "ghost",
+      "base_value": 60,
+      "unknown_min": 40,
+      "unknown_max": 100,
+      "possible_variants": [
+        {
+          "id": "weeping",
+          "true_value": 60,
+          "weight": 1,
+          "clue_ids": [
+            "blood",
+            "inscription"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "blood",
+          "text": "渗出的水痕绕过你的倒影，既非铜锈，也不像普通伤损。",
+          "min_value": 45,
+          "max_value": 90,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "inscription",
+          "text": "镜背刻着一行小字：「关门前，以红布覆面；落闩之后，莫再揭开。」字缝里积着暗红的垢。红布就搭在镜旁。",
+          "min_value": 55,
+          "max_value": 70,
+          "leverage": 18,
+          "judgement": "sound"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：观察镜缘",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "blood"
+          ]
+        },
+        {
+          "id": "inscription",
+          "label": "辨规：读镜背刻字",
+          "minutes": 5,
+          "required_tool": "magnifier",
+          "requires_clues": [
+            "blood"
+          ],
+          "reveals": [
+            "inscription"
+          ]
+        }
+      ],
+      "name_key": "item.weeping_mirror.name",
+      "type": "ghost",
+      "tags": [
+        "mirror",
+        "m5"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "weeping_mirror",
+      "visual_asset_id": "asset.weeping_mirror"
+    }
+  ]
+}

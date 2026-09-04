@@ -3,7 +3,7 @@ extends RefCounted
 
 const STATES := {"owned": "现货", "pledged": "在当（不可售）", "sold": "已售", "redeemed": "已赎回"}
 const TICKETS := {"active": "在当", "redeemed": "已赎回", "defaulted": "已绝当转现货"}
-const KINDS := {"acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费"}
+const KINDS := {"acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费", "daily_fees": "息费付款"}
 
 static func build(day: DayController, service: CommerceService, message: String) -> Dictionary:
 	var financial := FinancialSummary.build(day.state)
@@ -24,9 +24,11 @@ static func build(day: DayController, service: CommerceService, message: String)
 			inventory.body += "%s（%s，每夜%d件）：%s\n" % [buyer.display_name, window, buyer.capacity_per_night, "可成交" if reason.is_empty() else reason]
 			inventory.buttons.append(_button("sell", item.instance_id, buyer_id, label, reason))
 	var ledger := {"body": "现银 %d · 本夜已实现盈亏 %+d\n收购支出/活当本金不是已实现亏损。\n" % [day.state.cash, financial.realized_profit], "buttons": []}
+	if day.definition.fee_policy.enabled:
+		ledger.body = FeeService.describe(day.state, day.definition) + "\n现银 %d · 本夜交易毛利 %+d\n当夜利息 %d · 铺面开支 %d · 经营净收益 %+d\n本夜实际付息费 %d\n" % [day.state.cash, financial.realized_profit, financial.interest_expense, financial.shop_expense, financial.operating_profit, financial.fees_paid]
 	for entry in day.state.ledger_entries:
 		ledger.body += "\n第%d夜 %s · %s %+d · 余额 %d · 盈亏 %+d" % [entry.night, TimeController.clock_text(day.definition.opening_minute, entry.minute), KINDS[entry.kind], entry.amount, entry.balance, entry.realized_profit]
-	ledger.body += "\n\n当票（绝当指到期未赎转现货，不是玩家死亡）\n"
+	ledger.body += "\n\n当票（到期未赎，转为铺中现货）\n"
 	for ticket in day.state.pawn_tickets:
 		var terms := service.catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
 		var customer := service.catalog.get_definition("customers", ticket.customer_id) as CustomerDefinition
@@ -43,8 +45,11 @@ static func build(day: DayController, service: CommerceService, message: String)
 		var label := "收赎金 %d 并交还原物" % ticket.redemption_amount if command == "redeem" else "同意当户续当申请"
 		ledger.buttons.append(_button(command, ticket.ticket_id, "", label, reason))
 	inventory.body += "\n" + message
+	if day.definition.fee_policy.enabled: ledger.body += FeeService.archive_text(day.state)
 	ledger.body += "\n" + message
-	return {"inventory": inventory, "ledger": ledger}
+	var model := {"inventory": inventory, "ledger": ledger}
+	CommerceVisualReadModels.enrich(model, day, service, message)
+	return model
 
 static func _button(command: String, target: String, detail: String, label: String, reason: String) -> Dictionary:
 	return {"command": command, "target_id": target, "detail": detail, "label": label, "reason": reason, "enabled": reason.is_empty()}
