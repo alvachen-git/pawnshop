@@ -8,7 +8,7 @@ var paths: Array = []
 
 func run(expect: Callable) -> void:
 	_expect = expect
-	var loaded := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://tests/fixtures/m5_manifest.json").load_catalog()
 	_expect.call(loaded.is_success(), "M5生产内容通过结构与领域校验")
 	if not loaded.is_success():
 		for issue in loaded.issues: print(issue.format_message())

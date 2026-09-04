@@ -1,8 +1,8 @@
 class_name SaveCodec
 extends RefCounted
 
-const VERSION := 5
-const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead"]
+const VERSION := 7
+const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt"]
 var error_message := ""
 
 func encode(state: RunState, content_version: int) -> Dictionary:
@@ -82,8 +82,14 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 			state.summaries.back()[key] = int(entry[key])
 	error_message = CounterSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
+	error_message = TradeScenarioSaveCodec.restore(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
 	error_message = EventSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
+	error_message = MirrorSaveCodec.restore(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
 	error_message = RiskSaveCodec.restore(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
+	error_message = FeeSaveCodec.finish(data, state, definition)
 	if not error_message.is_empty(): return null
 	return state

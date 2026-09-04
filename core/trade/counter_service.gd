@@ -17,14 +17,28 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		return "当前顾客已离开或柜台未营业。"
 	var customer := catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 	var item := catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
+	var scenario := TradeScenarioService.for_visit(day.definition, visit)
 	var cost := 0
 	match command:
 		"appraise":
 			if not appraisal.can_perform(visit.item, item, detail, day.definition.tools): return "动作已做过、工具缺失或前置证据不足。"
 			cost = item.find_action(detail).minutes
 		"question":
-			if customer.find_question(detail) == null or detail in visit.asked_question_ids: return "问题不存在或已经问过。"
-			cost = customer.find_question(detail).minutes
+			if scenario != null:
+				var question := scenario.find_question(detail)
+				if question == null or detail in visit.asked_question_ids: return "这话已经问过，或不适合眼前这件东西。"
+				if not TradeScenarioService.prerequisites(visit, question): return "尚未听到相关说法，或没有对应的实物证据。"
+				if not question.pressure_clue.is_empty() and not TradeScenarioService.used(visit, scenario, question.pressure_clue) and (visit.trade.rounds_left <= 0 or visit.trade.patience <= 0): return "客人已经不肯再谈价。"
+				cost = question.minutes
+			else:
+				if customer.find_question(detail) == null or detail in visit.asked_question_ids: return "问题不存在或已经问过。"
+				cost = customer.find_question(detail).minutes
+		"concession":
+			if scenario == null or scenario.concession_amount <= 0: return "眼下没有这桩让价可谈。"
+			if visit.concession_used: return "这份让价已经谈过。"
+			if scenario.concession_question not in visit.asked_question_ids: return "先问清客人何时动身。"
+			if visit.trade.rounds_left <= 0 or visit.trade.patience <= 0: return "客人已经不肯再谈价。"
+			cost = scenario.concession_minutes
 		"judge":
 			if detail not in ["unknown", "sound", "damaged", "fake"]: return "判断类型无效。"
 			return ""
@@ -38,6 +52,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 				cost = customer.terms.quote_minutes
 			else:
 				if detail not in visit.item.revealed_clue_ids or detail in visit.trade.used_clue_ids: return "证据未获得或已经使用，不能重复试探。"
+				if scenario != null and TradeScenarioService.used(visit, scenario, detail): return "这处毛病已经折进价里。"
 				cost = customer.terms.pressure_minutes
 		"reject": cost = customer.terms.reject_minutes
 		_: return "未知柜台操作。"
@@ -48,15 +63,26 @@ func execute(day: DayController, command: String, visit_id: String, detail := ""
 	var error := reason(day, command, visit_id, detail, amount)
 	if not error.is_empty(): return ActionResult.new(false, error)
 	var visit := customers.active(day.state)
+	var start := day.state.game_minutes
+	var result := _execute(day, command, visit_id, detail, amount)
+	if not visit.scenario_id.is_empty(): TradeScenarioService.record(day, visit, command, detail, amount, start, result)
+	return result
+
+func _execute(day: DayController, command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	var error := reason(day, command, visit_id, detail, amount)
+	if not error.is_empty(): return ActionResult.new(false, error)
+	var visit := customers.active(day.state)
 	var customer := catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 	var item := catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
 	if command == "judge":
 		visit.item.judgement = detail
 		return ActionResult.new(true, "已记录你的判断；判断本身不会揭露真相或改变物品价值。")
+	var scenario := TradeScenarioService.for_visit(day.definition, visit)
 	var cost := 0
 	match command:
 		"appraise": cost = item.find_action(detail).minutes
-		"question": cost = customer.find_question(detail).minutes
+		"question": cost = scenario.find_question(detail).minutes if scenario != null else customer.find_question(detail).minutes
+		"concession": cost = scenario.concession_minutes
 		"offer", "pawn": cost = customer.terms.quote_minutes
 		"pressure": cost = customer.terms.pressure_minutes
 		"reject": cost = customer.terms.reject_minutes
@@ -69,7 +95,16 @@ func execute(day: DayController, command: String, visit_id: String, detail := ""
 		"appraise": message = appraisal.perform(visit.item, item, detail)
 		"question":
 			visit.asked_question_ids.append(detail)
-			message = "卖家口供（未证实）：" + customer.find_question(detail).answer
+			if scenario != null:
+				var question := scenario.find_question(detail)
+				message = question.answer(visit)
+				visit.trade.patience -= question.patience_cost
+				if not question.pressure_clue.is_empty():
+					if not TradeScenarioService.used(visit, scenario, question.pressure_clue): trades.pressure(visit.trade, customer, item.find_clue(question.pressure_clue))
+					else: message += "\n这处毛病已经折进价里，价钱没有再变。"
+			else:
+				message = "卖家口供（未证实）：" + customer.find_question(detail).answer
+		"concession": message = TradeScenarioService.concede(visit, scenario)
 		"reject":
 			customers.finish(day.state, visit, "rejected")
 			message = "拒绝收货，送客消耗 %d 分钟。" % cost

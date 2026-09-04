@@ -69,6 +69,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	for item in state.inventory_instances:
 		if (item.acquisition_type == "pawn") != tickets.has(item.instance_id) or (item.ownership_state == "sold") != sales.has(item.instance_id): return "缺少对应当票或销售。"
 		if item.acquisition_type == "purchase" and item.ownership_state not in ["owned", "sold"]: return "收购物品权属不符。"
+	var fee_error := FeeSaveCodec.prepare(data, state, run, expected)
+	if not fee_error.is_empty(): return fee_error
 	var balance := run.initial_cash
 	var last_time := -1
 	for row in data.ledger_entries:
@@ -78,7 +80,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		for key in posting:
 			if row.get(key) != posting[key]: return "流水与交易记录不一致。"
 		var stamp := int(row.night) * (run.night_minutes + 1) + int(row.minute)
-		if row.minute > state.summaries[int(row.night) - 1].closed_at: return "关门后不能完成外部交易。"
+		if row.kind != "daily_fees" and row.minute > state.summaries[int(row.night) - 1].closed_at: return "关门后不能完成外部交易。"
 		if stamp < last_time: return "流水时间倒序。"
 		last_time = stamp
 		balance += int(row.amount)
@@ -91,6 +93,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var snapshot := RunState.new()
 		snapshot.current_night_index = summary.night
 		snapshot.ledger_entries = state.ledger_entries
+		snapshot.fee_history = state.fee_history
 		var change := 0
 		for entry in state.ledger_entries:
 			if entry.night == summary.night: change += entry.amount

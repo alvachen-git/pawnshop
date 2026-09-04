@@ -11,7 +11,7 @@ func _initialize() -> void:
 	var mode := OS.get_cmdline_user_args()[0]
 	var fixture := M5Tests.new()
 	fixture._expect = check
-	var loaded := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://tests/fixtures/m5_manifest.json").load_catalog()
 	check(loaded.is_success(), "加载生产目录")
 	fixture.catalog = loaded.catalog
 	fixture.run_def = fixture.catalog.get_definition("runs", fixture.catalog.default_run_id)

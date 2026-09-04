@@ -4,6 +4,7 @@ func _run() -> void:
 	_capture_prefix = "m5_1600" if "wide" in OS.get_cmdline_user_args() else "m5_1280"
 	if "wide" in OS.get_cmdline_user_args(): root.size = Vector2i(1600, 900)
 	_main = load("res://scenes/main.tscn").instantiate()
+	_main.get_node("Bootstrap").manifest_path = "res://tests/fixtures/m5_manifest.json"
 	_main.get_node("Bootstrap").save_path = _save_path
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session

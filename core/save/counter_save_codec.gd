@@ -54,15 +54,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		instance.acquisition_type = entry.acquisition_type
 		instance.ownership_state = entry.ownership_state
 		if not _string_array(entry.get("revealed_clue_ids")) or not _string_array(entry.get("completed_action_ids")): return "库存证据字段无效。"
-		var attainable: Array = []
-		for action_id in entry.completed_action_ids:
-			var action := item.find_action(action_id)
-			if action == null: return "库存鉴定动作失效。"
-			for requirement in action.requires_clues:
-				if requirement not in attainable: return "库存证据顺序无效。"
-			for clue_id in action.reveals:
-				if clue_id in item.find_variant(entry.selected_variant_id).clue_ids and clue_id not in attainable: attainable.append(clue_id)
-		if attainable != entry.revealed_clue_ids: return "库存证据与已完成动作不一致。"
+		var attainable: Variant = MirrorSaveCodec.evidence(data.get("mirror_history"), entry, item, run)
+		if attainable == null or attainable != entry.revealed_clue_ids: return "库存证据与鉴定或窥镜来源不一致。"
 		instance.revealed_clue_ids = entry.revealed_clue_ids.duplicate()
 		instance.completed_action_ids = entry.completed_action_ids.duplicate()
 		inventory_ids[instance.instance_id] = instance

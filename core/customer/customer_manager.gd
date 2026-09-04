@@ -35,6 +35,11 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 		visit.trade.reserve_price = maxi(1, int(round(visit.trade.opening_price * customer.terms.reserve_ratio)))
 		visit.trade.rounds_left = customer.max_quote_rounds
 		visit.trade.patience = customer.patience
+		var scenario := TradeScenarioService.for_slot(run, slot.id)
+		if scenario != null:
+			TradeScenarioService.prepare(visit, scenario, state.run_seed)
+			var selection := {"visit_id": visit.visit_id, "scenario_id": scenario.id, "variant_id": visit.item.selected_variant_id, "situation_id": visit.situation_id, "reaction_id": visit.reaction_id}
+			if selection not in state.scenario_selections: state.scenario_selections.append(selection)
 		state.visits.append(visit)
 	state.visits.sort_custom(func(a: CustomerVisit, b: CustomerVisit) -> bool: return a.arrival < b.arrival)
 

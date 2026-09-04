@@ -7,7 +7,7 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 	var buttons: Array = []
 	var held: Array = []
 	var intrusion := false
-	var haunting := false
+	var haunting := not MirrorEncounterService.pursuit(state, state.current_night_index).is_empty()
 	for summary in state.summaries:
 		if summary.outcome in ["mirror_scar", "mirror_survived", "mirror_death"]: haunting = true
 	var closed: Array = []
@@ -32,19 +32,28 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 	body += "\n财神香：%s\n命灯：%s\n" % ["香灰向镜面倒伏，窗缝里却没有风。" if intrusion else "香烟直上。", "已经熄灭。" if state.phase == &"dead" else ("向镜面倾斜，火苗贴着镜面发颤。" if not state.risk_pending.is_empty() else ("灯芯偏斜，你挪到哪边，它便跟到哪边。" if haunting else "火苗安稳。"))]
 	if state.phase == &"dead":
 		body = "灯芯烧尽了\n\n柜上的账册无风翻开，停在一张空白页上。\n\n门闩还落着。镜面里，映出一间空铺。"
+		if not MirrorEncounterService.pursuit(state, state.current_night_index).is_empty(): body = "灯芯烧尽了\n\n那双脚的影子终于与你重合。命灯冷了，旧当票落在柜上，再没有人伸手去接。"
 	elif not state.summaries.is_empty() and state.summaries.back().outcome == "mirror_survived":
 		body += "\n红布下再无声息，地上的影子却迟迟没有归位。\n"
 	if not state.risk_pending.is_empty():
 		var rule := manager.rule_for(InventoryManager.new().find(state, state.risk_pending))
 		body = "镜中来客\n\n" + rule.crisis + "\n\n财神香：香灰倒伏。命灯：火苗贴着镜面发颤。"
+		var pursuit := MirrorEncounterService.pursuit(state, state.current_night_index)
+		if not pursuit.is_empty():
+			var encounter := MirrorEncounterService.find_definition(day.definition, pursuit.encounter_id)
+			body = "身后的来客\n\n" + encounter.text("crisis")
 		buttons = []
 		for command in ["retreat", "defy"]:
-			buttons.append({"command": command, "target_id": state.risk_pending, "detail": "", "label": "低头退开，将红布覆上" if command == "retreat" else "抬眼看向镜中人", "enabled": true, "reason": ""})
+			buttons.append({"command": command, "target_id": state.risk_pending, "detail": "", "label": (("垂下眼，护住命灯" if command == "retreat" else "回头看向身后的人") if not pursuit.is_empty() else ("低头退开，将红布覆上" if command == "retreat" else "抬眼看向镜中人")), "enabled": true, "reason": ""})
 	var archive := "《绝当录》\n"
 	if state.death_archive.is_empty(): archive += "纸页尚空。"
 	for record in state.death_archive:
 		# IDs identify the recorded consequence; prose can be revised without rewriting history.
 		var record_rule := manager.catalog.get_definition("ghost_rules", record.rule_id) as GhostRuleDefinition
 		var cause: String = record_rule.death_cause if record_rule != null else record.cause
+		if record.has("encounter_id"):
+			var run := manager.catalog.get_definition("runs", record.run_id) as RunDefinition
+			var encounter := MirrorEncounterService.find_definition(run, record.encounter_id) if run != null else null
+			cause = encounter.text("death_cause") if encounter != null else record.cause
 		archive += "第%d夜 · %s\n%s\n遗银%d · 现货成本%d · 在当本金%d\n\n" % [record.night, record.item_name, cause, record.cash, record.inventory_cost, record.pawn_principal]
 	return {"body": body + ("\n\n" + error_message if not error_message.is_empty() else ""), "buttons": buttons, "history": archive, "pending_id": state.risk_pending, "held_ids": held, "intrusion": intrusion}

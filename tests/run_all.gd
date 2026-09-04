@@ -21,12 +21,14 @@ func _run() -> void:
 	M3Tests.new().run(_expect)
 	M4Tests.new().run(_expect)
 	M5Tests.new().run(_expect)
+	M6Tests.new().run(_expect)
+	M7Tests.new().run(_expect)
 
 	if _failures == 0:
-		print("M0–M5 TESTS PASSED · %d assertions" % _passes)
+		print("M0–M7 TESTS PASSED · %d assertions" % _passes)
 		quit(0)
 	else:
-		push_error("M0–M5 TESTS FAILED · %d failures / %d passes" % [_failures, _passes])
+		push_error("M0–M7 TESTS FAILED · %d failures / %d passes" % [_failures, _passes])
 		quit(1)
 
 
@@ -88,16 +90,17 @@ func _test_main_scene_and_panel_flow() -> void:
 		return
 	var main := packed_scene.instantiate()
 	main.get_node("Bootstrap").manifest_path = "res://tests/fixtures/m3_manifest.json"
+	main.get_node("Bootstrap").save_path = "user://tests/core_scene_%d.json" % Time.get_ticks_usec()
 	root.add_child(main)
 	var coordinator := main.get_node("CounterScreen/ScreenFlowCoordinator") as ScreenFlowCoordinator
 	_expect(coordinator != null, "主场景应包含独立ScreenFlowCoordinator。")
 	if coordinator != null:
 		_expect(coordinator.get_active_panel_id() == &"day", "柜台启动时应显示营业Panel。")
-		var inventory_button := main.get_node("CounterScreen/Margin/RootLayout/Workspace/SideColumn/Navigation/InventoryButton") as Button
+		var inventory_button := main.get_node("CounterScreen/%InventoryButton") as Button
 		inventory_button.pressed.emit()
 		_expect(coordinator.get_active_panel_id() == &"inventory", "库存按钮应能独立切换Panel。")
-		var inventory_panel := main.get_node("CounterScreen/Margin/RootLayout/Workspace/SideColumn/PanelStack/InventoryPanel") as InventoryPanel
-		var appraisal_panel := main.get_node("CounterScreen/Margin/RootLayout/Workspace/SideColumn/PanelStack/AppraisalPanel") as AppraisalPanel
+		var inventory_panel := main.get_node("CounterScreen/%InventoryPanel") as InventoryPanel
+		var appraisal_panel := main.get_node("CounterScreen/%AppraisalPanel") as AppraisalPanel
 		_expect(inventory_panel.visible and not appraisal_panel.visible, "Panel切换应只改变表现层显隐。")
 	main.queue_free()
 
