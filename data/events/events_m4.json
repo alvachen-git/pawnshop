@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "shen_opening",
+      "title": "接铺核账",
+      "speaker": "沈怀川",
+      "body": "顾掌柜留下的借据还需要核对，别把库里货的估值当成现银。先把这几夜的买卖做明白，后面的债我们逐笔谈。\n\n你若愿意，我可以递一张名帖，明夜有商会旧货客收钟表、文具、首饰和绣品；挑货细，价也好些。",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 100,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "contact",
+          "label": "请他介绍买家",
+          "result": "已托沈怀川递名帖；明夜开铺前听回信。",
+          "minutes": 0,
+          "grant_flags": [
+            "shen_met",
+            "contact_requested"
+          ]
+        },
+        {
+          "id": "independent",
+          "label": "先自行经营",
+          "result": "已记下核账约定，这几夜先靠已有买家周转。",
+          "minutes": 0,
+          "grant_flags": [
+            "shen_met",
+            "independent"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "cash_lesson",
+      "title": "现银与在当",
+      "speaker": "账房便笺",
+      "body": "第二夜：昨夜收下的货还占着本钱。在当物要等原主赎回或到期；现货也要等买家。\n\n先看账本里的赎当窗口，再决定今天还能收多少货。",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 2,
+      "night_max": 2,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 50,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "noted",
+          "label": "记下今日安排",
+          "result": "已核对现银、现货和在当本金；收货前先留周转。",
+          "minutes": 0,
+          "grant_flags": [
+            "cash_reviewed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "final_stock",
+      "title": "第三夜盘货",
+      "speaker": "账房便笺",
+      "body": "第三夜：昨夜到期未赎的货已转成现货。留意买家窗口，检查真假再出价。\n\n本轮结束不会替你卖掉库存，也不会让未到期的当票提前绝当。",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 3,
+      "night_max": 3,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 50,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "noted",
+          "label": "开始盘算",
+          "result": "已记下最后一夜的出货安排。",
+          "minutes": 0,
+          "grant_flags": [
+            "stock_reviewed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "buyer_reply",
+      "title": "名帖有了回音",
+      "speaker": "沈怀川",
+      "body": "商会旧货客接了名帖。今明两夜19:00–00:00，他收钟表、文具、首饰和绣品，每夜最多两件。\n\n他按实物品相报价；把假货判断成真货，并不能让他多出钱。",
+      "kind": "conditional",
+      "phase": "pre_open",
+      "night_min": 2,
+      "night_max": 3,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 80,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "contact_requested"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "accept",
+          "label": "收下名帖",
+          "result": "已认识商会旧货客。营业时可在库存查看他的实际报价。",
+          "minutes": 0,
+          "grant_flags": [
+            "buyer_introduced"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rain_news",
+      "title": "雨夜闲谈",
+      "speaker": "街坊",
+      "body": "码头那边下了一阵雨。有人说洋货要涨，有人又急着清仓；眼下还没有能核实的报价。",
+      "kind": "random",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 50,
+      "weight": 3,
+      "max_count": 1,
+      "cooldown": 1,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "note",
+          "label": "记为未证实消息",
+          "result": "记下了雨夜传闻，尚无证据影响估价。",
+          "minutes": 0,
+          "grant_flags": [
+            "rumor_heard"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "patient_buyer",
+      "title": "慢生意",
+      "speaker": "邻铺掌柜",
+      "body": "你眼前的货，也许有更合适的买家。只是等价高的时候，手里的钱还够不够再做一笔？",
+      "kind": "random",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 50,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 1,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "note",
+          "label": "记住这句提醒",
+          "result": "记下邻铺提醒：高价买家与及时回款各有代价。",
+          "minutes": 0,
+          "grant_flags": [
+            "liquidity_hint"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "stock_note",
+      "title": "烛台留在柜里",
+      "speaker": "铺中便笺",
+      "body": "柜里还有一只黄铜烛台。买家最终按实物品相报价；若没查过磁针，先别把整铜的价格算进收入。",
+      "kind": "conditional",
+      "phase": "closed_processing",
+      "night_min": 1,
+      "night_max": 3,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 60,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [
+        "item_brass_holder"
+      ],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "note",
+          "label": "核对已有记录",
+          "result": "已经核对烛台持仓提醒；未获得额外鉴定证据。",
+          "minutes": 5,
+          "grant_flags": [
+            "holder_reviewed"
+          ]
+        }
+      ]
+    }
+  ]
+}

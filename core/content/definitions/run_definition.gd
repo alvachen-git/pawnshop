@@ -1,6 +1,15 @@
 class_name RunDefinition
 extends RefCounted
 
+var _ghost_rule_ids: Array = []
+var ghost_rule_ids: Array:
+	get: return _ghost_rule_ids.duplicate()
+var _event_ids: Array = []
+var event_ids: Array:
+	get: return _event_ids.duplicate()
+var _flag_ids: Array = []
+var flag_ids: Array:
+	get: return _flag_ids.duplicate()
 var _id: String
 var _total_nights: int
 var _opening_minute: int
@@ -38,6 +47,9 @@ var actions: Array[DayActionDefinition]:
 static func from_dto(dto: RunDTO) -> RunDefinition:
 	var result := RunDefinition.new()
 	# Copy scalar values; never retain a mutable DTO supplied by the adapter.
+	result._ghost_rule_ids = dto.ghost_rule_ids.duplicate()
+	result._event_ids = dto.event_ids.duplicate()
+	result._flag_ids = dto.flag_ids.duplicate()
 	result._id = dto.id
 	result._total_nights = dto.total_nights
 	result._opening_minute = dto.opening_minute
@@ -48,7 +60,7 @@ static func from_dto(dto: RunDTO) -> RunDefinition:
 	result._tools = dto.tools.duplicate()
 	result._buyer_ids = dto.buyer_ids.duplicate()
 	for slot in dto.customer_slots:
-		result._customer_slots.append(VisitSlotDefinition.new(slot.id, int(slot.arrival), slot.customer_id, slot.item_id, slot.variant_id))
+		result._customer_slots.append(VisitSlotDefinition.new(slot.id, int(slot.arrival), slot.customer_id, slot.item_id, slot.variant_id, int(slot.get("night_min", 1)), int(slot.get("night_max", 2147483647))))
 	for action in dto.actions:
 		result._actions.append(DayActionDefinition.new(action.id, action.label, int(action.minutes), action.phases))
 	return result

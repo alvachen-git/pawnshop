@@ -11,6 +11,9 @@ var seed: int
 var actions: Array
 var customer_slots: Array = []
 var tools: Array = []
+var ghost_rule_ids: Array = []
+var event_ids: Array = []
+var flag_ids: Array = []
 var buyer_ids: Array = []
 
 static func from_source(source: Dictionary) -> RunDTO:
@@ -26,4 +29,7 @@ static func from_source(source: Dictionary) -> RunDTO:
 	dto.customer_slots = source.get("customer_slots", []).duplicate(true)
 	dto.tools = source.get("tools", []).duplicate()
 	dto.buyer_ids = source.get("buyer_ids", []).duplicate()
+	dto.ghost_rule_ids = source.get("ghost_rule_ids", []).duplicate()
+	dto.event_ids = source.get("event_ids", []).duplicate()
+	dto.flag_ids = source.get("flag_ids", []).duplicate()
 	return dto

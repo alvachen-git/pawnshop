@@ -35,6 +35,7 @@ func _ready() -> void:
 
 func render(model: Dictionary) -> void:
 	_body.text = model.body
+	_resolve.text = model.get("resolve_label", "结算本夜（占位）并自动保存")
 	_resolve.disabled = not model.can_resolve
 	_continue.disabled = not model.can_continue
 	_continue.text = model.continue_label

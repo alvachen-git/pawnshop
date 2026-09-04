@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "customer_citizen",
+      "name_key": "customer.customer_citizen.name",
+      "portrait_asset_id": "asset.customer_citizen",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_blue_bowl",
+        "item_silver_hairpin",
+        "item_silk_panel",
+        "item_weeping_mirror"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "旧城住户",
+        "introduction": "家里急用钱，你给个公道价。东西一直收在柜里。",
+        "wait_minutes": 100,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.2,
+        "reserve_ratio": 0.75,
+        "counter_step": 6,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "condition",
+          "prompt": "问：有没有修补过？",
+          "answer": "没有，一直是完整的。你放心收。",
+          "minutes": 5
+        },
+        {
+          "id": "origin",
+          "prompt": "问：东西从哪来？",
+          "answer": "长辈留下的，具体哪年我也说不准。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_redeem"
+    },
+    {
+      "id": "customer_hawker",
+      "name_key": "customer.customer_hawker.name",
+      "portrait_asset_id": "asset.customer_hawker",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 2,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_brass_holder",
+        "item_fountain_pen",
+        "item_pocket_watch"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "夜市货郎",
+        "introduction": "我还要赶下一摊，收不收尽快说。",
+        "wait_minutes": 60,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.7,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "material",
+          "prompt": "问：是什么材质？",
+          "answer": "按整铜的价卖。是真是假，你自己掌眼。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_default"
+    },
+    {
+      "id": "customer_scholar",
+      "name_key": "customer.scholar.name",
+      "portrait_asset_id": "placeholder.scholar",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 4,
+      "max_quote_rounds": 4,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_inkstone",
+        "item_fountain_pen"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m4"
+      ],
+      "counter_terms": {
+        "display_name": "旧书铺先生",
+        "introduction": "近日收账慢，拿几件案头旧物周转。请别伤了东西。",
+        "wait_minutes": 120,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.1,
+        "reserve_ratio": 0.8,
+        "counter_step": 4,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "history",
+          "prompt": "问：平常怎样使用保管？",
+          "answer": "一直放在书案上，用过也修过。细处请掌柜自己看。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_redeem"
+    },
+    {
+      "id": "customer_house_agent",
+      "name_key": "customer.house_agent.name",
+      "portrait_asset_id": "placeholder.house_agent",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell"
+      ],
+      "item_pool": [
+        "item_pocket_watch",
+        "item_clay_teapot",
+        "item_silk_panel"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m4"
+      ],
+      "counter_terms": {
+        "display_name": "富户管事",
+        "introduction": "东家清理库房，我带来的东西不急卖，也不接受活当。",
+        "wait_minutes": 140,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.8,
+        "counter_step": 4,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "history",
+          "prompt": "问：有没有维修记录？",
+          "answer": "库房交给我时没有附记录，完好与否我不作保。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": ""
+    }
+  ]
+}

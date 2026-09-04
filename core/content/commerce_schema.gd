@@ -12,4 +12,5 @@ static func validate(kind: String, record: Dictionary, path: String, at: String)
 				issues.append(ContentIssue.new("error", "invalid_enum", path, at + ".return_mode", "未知返当行为。"))
 		"runs": CounterSchema._fields({"buyer_ids": record.get("buyer_ids", [])}, {"buyer_ids": "strings"}, path, at, issues)
 		"customers": CounterSchema._fields({"pawn_terms_id": record.get("pawn_terms_id", "")}, {"pawn_terms_id": "string"}, path, at, issues)
+	if kind == "buyers": CounterSchema._fields({"required_flags": record.get("required_flags", [])}, {"required_flags": "strings"}, path, at, issues)
 	return issues

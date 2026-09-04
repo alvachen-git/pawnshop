@@ -15,6 +15,13 @@ static func validate(kind: String, record: Dictionary, path: String, at: String)
 			_fields(record.counter_terms, {"display_name": "text", "introduction": "text", "wait_minutes": "positive", "quote_minutes": "positive", "pressure_minutes": "positive", "reject_minutes": "positive", "ask_multiplier": "ratio_positive", "reserve_ratio": "unit_positive", "counter_step": "positive", "failed_quote_cost": "positive", "false_pressure_cost": "positive"}, path, at + ".counter_terms", issues)
 		_rows(record.get("questions", []), {"id": "text", "prompt": "text", "answer": "text", "minutes": "positive"}, path, at + ".questions", issues)
 	elif kind == "runs":
+		for key in ["event_ids", "flag_ids"]:
+			_fields({key: record.get(key, [])}, {key: "strings"}, path, at, issues)
+		if record.get("customer_slots", []) is Array:
+			for slot in record.get("customer_slots", []):
+				if slot is Dictionary:
+					for key in ["night_min", "night_max"]:
+						if slot.has(key): _fields(slot, {key: "positive"}, path, at, issues)
 		_fields({"tools": record.get("tools", [])}, {"tools": "strings"}, path, at, issues)
 		_rows(record.get("customer_slots", []), {"id": "text", "arrival": "nonnegative", "customer_id": "text", "item_id": "string", "variant_id": "string"}, path, at + ".customer_slots", issues)
 	return issues

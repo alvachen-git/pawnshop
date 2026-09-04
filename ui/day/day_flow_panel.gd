@@ -45,7 +45,7 @@ func _ready() -> void:
 	_load.pressed.connect(_confirm.bind("load"))
 	row.add_child(_load)
 	_confirmation = ConfirmationDialog.new()
-	_confirmation.title = "确认切换运行"
+	_confirmation.title = "确认操作"
 	_confirmation.ok_button_text = "确认"
 	_confirmation.cancel_button_text = "取消"
 	_confirmation.confirmed.connect(_accept_confirmation)
@@ -68,6 +68,7 @@ func render(model: Dictionary) -> void:
 
 func _confirm(intent: String) -> void:
 	_pending_intent = intent
+	_confirmation.title = "开始新游戏" if intent == "new" else "读取存档"
 	_confirmation.dialog_text = "将放弃当前未保存的夜内进度。是否继续？"
 	_confirmation.popup_centered()
 

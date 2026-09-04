@@ -6,6 +6,7 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = state.run_seed + state.current_night_index * 104729
 	for slot in run.customer_slots:
+		if state.current_night_index < slot.night_min or state.current_night_index > slot.night_max: continue
 		var customer := catalog.get_definition("customers", slot.customer_id) as CustomerDefinition
 		var item_id: String = slot.item_id if not slot.item_id.is_empty() else customer.item_pool[rng.randi_range(0, customer.item_pool.size() - 1)]
 		var item_def := catalog.get_definition("items", item_id) as ItemDefinition

@@ -1,7 +1,7 @@
 class_name ContentCatalog
 extends RefCounted
 
-const SUPPORTED_KINDS := ["items", "customers", "runs", "buyers", "pawn_terms"]
+const SUPPORTED_KINDS := ["items", "customers", "runs", "buyers", "pawn_terms", "events", "ghost_rules"]
 
 var content_version: int = 0
 var default_run_id: String = ""
@@ -11,6 +11,8 @@ var _collections: Dictionary = {
 	"runs": {},
 	"buyers": {},
 	"pawn_terms": {},
+	"events": {},
+	"ghost_rules": {},
 }
 
 

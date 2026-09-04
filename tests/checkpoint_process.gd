@@ -3,7 +3,7 @@ extends SceneTree
 # Run twice with -- write/read to verify a checkpoint survives process exit.
 func _initialize() -> void:
 	var args := OS.get_cmdline_user_args()
-	var loaded := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://tests/fixtures/m3_manifest.json").load_catalog()
 	var definition: RunDefinition = loaded.catalog.get_definition("runs", loaded.catalog.default_run_id)
 	var save := SaveManager.new("user://tests/process_checkpoint.json")
 	var session := RunSession.new(definition, loaded.catalog.content_version, save)

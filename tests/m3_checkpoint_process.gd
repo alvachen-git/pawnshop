@@ -2,7 +2,7 @@ extends SceneTree
 
 func _initialize() -> void:
 	var args := OS.get_cmdline_user_args()
-	var catalog := JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	var catalog := JsonContentProvider.new("res://tests/fixtures/m3_manifest.json").load_catalog().catalog
 	var run: RunDefinition = catalog.get_definition("runs", catalog.default_run_id)
 	var save := SaveManager.new("user://tests/m3_process_checkpoint.json")
 	var session := RunSession.new(run, catalog.content_version, save, catalog)
