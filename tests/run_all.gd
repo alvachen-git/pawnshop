@@ -96,9 +96,9 @@ func _test_main_scene_and_panel_flow() -> void:
 	_expect(coordinator != null, "主场景应包含独立ScreenFlowCoordinator。")
 	if coordinator != null:
 		_expect(coordinator.get_active_panel_id() == &"day", "柜台启动时应显示营业Panel。")
-		var inventory_button := main.get_node("CounterScreen/%InventoryButton") as Button
-		inventory_button.pressed.emit()
-		_expect(coordinator.get_active_panel_id() == &"inventory", "库存按钮应能独立切换Panel。")
+		var counter_view := main.get_node("CounterScreen/CounterView") as CounterView
+		counter_view.get_hotspot(&"inventory").pressed.emit()
+		_expect(coordinator.get_active_panel_id() == &"inventory", "库存柜热点应能独立切换Panel。")
 		var inventory_panel := main.get_node("CounterScreen/%InventoryPanel") as InventoryPanel
 		var appraisal_panel := main.get_node("CounterScreen/%AppraisalPanel") as AppraisalPanel
 		_expect(inventory_panel.visible and not appraisal_panel.visible, "Panel切换应只改变表现层显隐。")

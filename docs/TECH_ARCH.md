@@ -2,6 +2,10 @@
 
 ## 当前边界
 
+M8-A 技术基线统一为 Godot **4.6.1 Standard / GDScript**，Windows x86_64 使用 Compatibility。历史里程碑中的 4.7.2 记录不改写为当前验证结果。内容仍为 JSON + 两级校验，Save v7/content v8 不变；本轮仅增加发布配置、构建/审计工具和随包字体。
+
+构建层根据生产 Manifest 复制 JSON 依赖闭包、生产脚本及显式动态视觉资源到干净暂存工程，再导出独立 EXE/PCK。导出后在无源码的空工程中挂载 PCK，核对 JSON 集合和哈希、动态图片、字体字形及排除项。此资源审计使用编辑器工具，不冒充正式 EXE 玩法测试。自定义 `m8a_windows` feature 仅覆盖导出包的用户目录；不向领域/交易/事件服务增加构建分支。
+
 M4/M5已通过负责人试玩。当前三笔交易情境叠加在每日息费与铜镜遭遇基础上；生产为 `p0_judgement`、Save v7/content v8。三笔交易数据流、知识边界与回放校验见 `docs/M7_JUDGEMENT_GUIDE.md`；息费与铜镜见 `docs/M6_DEBT_MIRROR_GUIDE.md`。下方M1–M5章节保留阶段设计历史，版本号仅代表当时。完整P0体验验收仍待完成。
 
 ## 依赖方向
@@ -94,9 +98,10 @@ NightResolutionView -> Presenter --+      |              |
 
 主场景组合以下独立节点：
 
-- CounterView + CounterPresenter：顾客描述、当前物品和等待/离场摘要。
+- CounterView + CounterPresenter：顾客描述、当前物品、等待/离场摘要，以及只发导航意图的招牌、客人、货物、库存柜和账本热点。情境动作由CounterReadModel声明，View不推断经营规则。
 - ShopStatusView：夜次、阶段、时钟、现金与内容加载状态。
-- DayFlowPanel + DayFlowPresenter：营业操作意图、可用动作、加载/新游戏确认和状态读模型。
+- DayFlowPanel + DayFlowPresenter：营业操作意图、可用动作和状态读模型。
+- SessionMenuView：右下角“本局/铺务”分组、加载/新游戏确认和次要Panel导航；生命周期意图继续交由DayFlowPresenter处理。
 - AppraisalPanel + AppraisalPresenter：证据、鉴定动作和玩家判断。
 - DialoguePanel + DialoguePresenter：询问及未证实口供。
 - TradePanel + TradePresenter：可编辑报价、有限轮次和证据施压。

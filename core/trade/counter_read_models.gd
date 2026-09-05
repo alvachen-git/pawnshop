@@ -6,7 +6,7 @@ const OUTCOMES := {"bought": "成交", "pawned": "活当放款", "rejected": "�
 
 static func build(day: DayController, service: CounterService, message: String) -> Dictionary:
 	var blank := {"body": "暂无正在接待的顾客。\n请在营业页开铺或等待来客。", "buttons": [], "visit_id": ""}
-	var model := {"active_id": "", "customer": "顾客席 · 暂无顾客", "item": "柜台暂空", "queue": "", "appraisal": blank.duplicate(true), "dialogue": blank.duplicate(true), "trade": blank.duplicate(true), "inventory": {"body": "库存为空。"}, "ledger": {"body": "暂无收购流水。"}}
+	var model := {"active_id": "", "customer": "顾客席 · 暂无顾客", "item": "柜台暂空", "queue": "", "context_actions": {"customer": [], "item": []}, "appraisal": blank.duplicate(true), "dialogue": blank.duplicate(true), "trade": blank.duplicate(true), "inventory": {"body": "库存为空。"}, "ledger": {"body": "暂无收购流水。"}}
 	model.trade.can_offer = false
 	model.trade.asking_price = 1
 	model.trade.max_input = 1000000
@@ -31,6 +31,11 @@ static func build(day: DayController, service: CounterService, message: String) 
 	var customer := service.catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 	var item := service.catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
 	model.active_id = visit.visit_id
+	model.context_actions.customer = [
+		{"id": "dialogue", "label": "对话", "enabled": true},
+		{"id": "trade", "label": "交易", "enabled": true},
+	]
+	model.context_actions.item = [{"id": "appraisal", "label": "鉴定", "enabled": true}]
 	model.customer = customer.terms.display_name + "\n" + customer.terms.introduction
 	model.item = item.display_name + "\n" + item.description
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)

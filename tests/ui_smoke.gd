@@ -19,8 +19,10 @@ func _run() -> void:
 	await _frames()
 	await _capture("01_pre_open")
 	var before := _session.read_state()
-	for label in ["鉴定", "对话", "交易", "库存", "账本", "夜间结算", "营业"]:
+	for label in ["库存", "账本", "夜间结算", "营业"]:
 		await _click(label)
+	var counter_view := _main.get_node("CounterScreen/CounterView") as CounterView
+	_check(not counter_view.get_hotspot(&"customer").visible and not counter_view.get_hotspot(&"item").visible, "无客无货时不显示情境入口")
 	await create_timer(1.0).timeout
 	_check(_session.read_state() == before, "现实等待和面板查看不耗时")
 	await _click("开铺")
@@ -71,9 +73,26 @@ func _run() -> void:
 	quit(0 if _failures == 0 else 1)
 
 func _click(label: String) -> void:
-	# Secondary entries now live in the functional More drawer.
-	if label in ["铺中记事", "鬼货与绝当录", "夜间结算"] and _find_button(_main, label) == null:
-		await _click("更多")
+	var scene_routes := {
+		"营业": &"shop",
+		"库存": &"inventory",
+		"账本": &"ledger",
+	}
+	if scene_routes.has(label) and _find_button(_main, label) == null:
+		var counter_view := _main.get_node("CounterScreen/CounterView") as CounterView
+		await _click_button(counter_view.get_hotspot(scene_routes[label]))
+		return
+	if label in ["对话", "交易"] and _find_button(_main, label) == null:
+		var counter_view := _main.get_node("CounterScreen/CounterView") as CounterView
+		await _click_button(counter_view.get_hotspot(&"customer"))
+	if label == "鉴定" and _find_button(_main, label) == null:
+		var counter_view := _main.get_node("CounterScreen/CounterView") as CounterView
+		await _click_button(counter_view.get_hotspot(&"item"))
+	if label == "更多":
+		label = "菜单"
+	# Secondary entries and run lifecycle controls live in the grouped menu.
+	if label in ["铺中记事", "鬼货与绝当录", "夜间结算", "新游戏", "读取夜末存档"] and _find_button(_main, label) == null:
+		await _click("菜单")
 	var button := _find_button(_main, label)
 	if button == null:
 		var hidden := _find_any_button(_main, label)

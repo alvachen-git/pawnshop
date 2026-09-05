@@ -49,7 +49,7 @@ func _run() -> void:
 		root.size = dimensions
 		await _frames()
 		var viewport_rect := Rect2(Vector2.ZERO, screen.size)
-		for name in ["ShopStatusView", "ClockStatus", "CashStatus", "RiskStatus", "PhaseStatus", "DayButton", "TradeButton", "MoreButton", "ItemText", "CustomerText"]:
+		for name in ["ShopStatusView", "ClockStatus", "CashStatus", "RiskStatus", "PhaseStatus", "MenuButton", "ItemText", "CustomerText"]:
 			var control := screen.get_node("%" + name) as Control
 			if not viewport_rect.grow(0.1).encloses(control.get_global_rect()): print(name, ": ", control.get_global_rect(), " viewport ", viewport_rect)
 			_check(viewport_rect.grow(0.1).encloses(control.get_global_rect()), "缩放后控件不溢出：%s/%s" % [dimensions, name])
@@ -66,6 +66,6 @@ func _run() -> void:
 	quit(0 if _failures == 0 else 1)
 
 func _select_preview(selector: Button) -> void:
-	await _click("更多")
+	await _click("菜单")
 	await _click_button(selector)
 	await _frames()
