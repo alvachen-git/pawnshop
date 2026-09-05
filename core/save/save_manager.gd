@@ -5,6 +5,7 @@ var path: String
 var catalog: ContentCatalog
 var legacy_archive_path := ""
 var prior_version_path := ""
+var import_checkpoint_path := ""
 var error_message := ""
 var _codec := SaveCodec.new()
 
@@ -12,11 +13,12 @@ func _init(save_path := "user://p0/autosave_v7.json") -> void:
 	path = save_path
 
 func exists() -> bool:
-	return FileAccess.file_exists(path)
+	return FileAccess.file_exists(path) or (not import_checkpoint_path.is_empty() and FileAccess.file_exists(import_checkpoint_path))
 
 func load_state(definition: RunDefinition, content_version: int) -> RunState:
 	error_message = ""
-	var file := FileAccess.open(path, FileAccess.READ)
+	var source := path if FileAccess.file_exists(path) or import_checkpoint_path.is_empty() else import_checkpoint_path
+	var file := FileAccess.open(source, FileAccess.READ)
 	if file == null:
 		error_message = "没有可读取的夜末存档（%s）。" % error_string(FileAccess.get_open_error())
 		return null
@@ -111,6 +113,7 @@ func read_archive() -> Array[Dictionary]:
 func read_bankruptcy_archive() -> Array[Dictionary]:
 	# Do not erase a legacy-archive read error during initialization.
 	var records := _read_records(path, "bankruptcy_archive", FeeSaveCodec.valid_archive)
+	if not legacy_archive_path.is_empty(): _merge_records(records, _read_records(legacy_archive_path, "bankruptcy_archive", FeeSaveCodec.valid_archive))
 	if not prior_version_path.is_empty(): _merge_records(records, _read_records(prior_version_path, "bankruptcy_archive", FeeSaveCodec.valid_archive))
 	return records
 

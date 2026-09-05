@@ -1,6 +1,9 @@
 class_name PawnTermsDefinition
 extends RefCounted
 
+var _transfer_ratio := 0.8
+var transfer_ratio: float:
+	get: return _transfer_ratio
 var _id: String
 var id: String:
 	get: return _id
@@ -41,6 +44,7 @@ var extend_minutes: int:
 static func from_dto(dto: PawnTermsDTO) -> PawnTermsDefinition:
 	var result := PawnTermsDefinition.new()
 	result._id = dto.id
+	result._transfer_ratio = dto.transfer_ratio
 	result._display_name = dto.display_name
 	result._loan_ratio = dto.loan_ratio
 	result._term_nights = dto.term_nights

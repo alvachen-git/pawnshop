@@ -1,6 +1,7 @@
 class_name LedgerPanel
 extends IntentPanel
 
+signal panel_requested(panel: StringName)
 var _tabs: HBoxContainer
 var _pages: Array[VBoxContainer] = []
 var _selected := 0
@@ -73,6 +74,10 @@ func render(model: Dictionary) -> void:
 			if entry.target_id == row.id: AccountPaper.action(ticket, entry, _emit_intent)
 	_body.text = v.message
 	select_page(_selected)
+
+func _emit_intent(command: String, visit_id: String, detail: String) -> void:
+	if command == "return_counter": panel_requested.emit(&"trade")
+	else: super._emit_intent(command, visit_id, detail)
 
 func _draw_entries() -> void:
 	AccountPaper.clear(_pages[0])

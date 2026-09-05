@@ -12,6 +12,7 @@ func _init(content: ContentCatalog) -> void:
 	catalog = content
 
 func reason(day: DayController, command: String, visit_id: String, detail := "", amount := 0) -> String:
+	if not PawnReturnService.current(day.state).is_empty(): return "请先接待持票回访的原当户。"
 	var visit := customers.active(day.state)
 	if day.state.phase != &"open" or visit == null or visit.visit_id != visit_id:
 		return "当前顾客已离开或柜台未营业。"

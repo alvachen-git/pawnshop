@@ -68,4 +68,7 @@ static func respond(state: RunState, manager: RiskManager, id: String, command: 
 		state.phase = &"dead"
 		state.death_archive.append(manager.death_record(state, id))
 	update_outcome(state, manager)
+	if command == "retreat":
+		var item := InventoryManager.new().find(state, id)
+		if item != null and item.ownership_state == "transferred": return ActionResult.new(true, "你护住灯火，等柜前那道影子慢慢退开。")
 	return ActionResult.new(true, "灯芯烧尽了。" if command == "defy" else ("你护住灯盏，等那道影子慢慢退开。" if side == "personal" else "红布落下，镜前的脚步声停了。"))

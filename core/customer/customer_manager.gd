@@ -3,6 +3,7 @@ extends RefCounted
 
 func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> void:
 	state.visits.clear()
+	var return_delay := PawnReturnService.prepare(state, catalog)
 	var rng := RandomNumberGenerator.new()
 	rng.seed = state.run_seed + state.current_night_index * 104729
 	for slot in run.customer_slots:
@@ -24,8 +25,8 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 		var visit := CustomerVisit.new()
 		visit.visit_id = "%s/%d/%s" % [run.id, state.current_night_index, slot.id]
 		visit.customer_id = customer.id
-		visit.arrival = slot.arrival
-		visit.expires_at = slot.arrival + customer.terms.wait_minutes
+		visit.arrival = slot.arrival + return_delay
+		visit.expires_at = visit.arrival + customer.terms.wait_minutes
 		visit.item = ItemInstance.new()
 		visit.item.instance_id = "item/" + visit.visit_id
 		visit.item.definition_id = item_def.id
@@ -45,6 +46,7 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 
 func update(state: RunState) -> void:
 	if state.phase == &"pre_open": return
+	PawnReturnService.arrive(state)
 	for visit in state.visits:
 		if visit.status not in ["scheduled", "waiting", "active"]: continue
 		if state.phase != &"open":
@@ -53,7 +55,7 @@ func update(state: RunState) -> void:
 			finish(state, visit, "timed_out")
 		elif state.game_minutes >= visit.arrival and visit.status == "scheduled":
 			visit.status = "waiting"
-	if active(state) == null and state.phase == &"open":
+	if active(state) == null and state.phase == &"open" and PawnReturnService.current(state).is_empty():
 		for visit in state.visits:
 			if visit.status == "waiting":
 				visit.status = "active"

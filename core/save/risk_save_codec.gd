@@ -85,7 +85,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if not pursuit.is_empty(): expected = pursuit.mirror_id
 		for item in manager.ghosts(state):
 			if not expected.is_empty(): break
-			if item.ownership_state in ["owned", "pledged"] and not manager.covered(state, item.instance_id):
+			if manager.held_at(state, item, state.current_night_index, state.game_minutes) and not manager.covered(state, item.instance_id):
 				expected = item.instance_id
 				break
 	if data.risk_pending != expected: return "待处理鬼货与日结不一致。"

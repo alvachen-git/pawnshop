@@ -13,7 +13,7 @@ func _ready() -> void:
 	_tabs = HBoxContainer.new()
 	_column.add_child(_tabs)
 	_column.move_child(_tabs, 0)
-	for title in ["铺中货物", "已售与已赎"]:
+	for title in ["铺中货物", "出柜记录"]:
 		var button := Button.new()
 		button.text = title
 		button.toggle_mode = true

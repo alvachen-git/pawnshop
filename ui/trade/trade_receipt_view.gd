@@ -18,6 +18,9 @@ var _tween: Tween
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	# Counter children use z indices up to 10; both shade and paper must
+	# cover them when the next customer is already waiting behind a receipt.
+	z_index = 20
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	var shade := ColorRect.new()
 	shade.color = Color("171611b8")

@@ -16,6 +16,7 @@ var _receipt: TradeReceiptView
 var _receipt_run := ""
 var _receipt_id := ""
 var _receipt_followup := ""
+var _return_id := ""
 const PANEL_TITLES := {"day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "鬼货与绝当录", "night": "夜间结算"}
 
 
@@ -28,6 +29,7 @@ func _ready() -> void:
 	_counter_view.ledger_requested.connect(_route_from_counter.bind(&"ledger", &"ledger"))
 	_counter_view.background_requested.connect(_close_menu)
 	_counter_view.context_opened.connect(_on_context_opened)
+	%LedgerPanel.panel_requested.connect(_flow.show_panel)
 	%InventoryPanel.panel_requested.connect(func(panel: StringName) -> void:
 		_flow.show_panel(panel)
 		if panel == &"ledger":
@@ -125,10 +127,17 @@ func _receipt_closed(destination: String) -> void:
 		if destination == "ledger": %LedgerPanel.select_page(2)
 	elif not _receipt_followup.is_empty(): _flow.show_panel(StringName(_receipt_followup))
 	elif state.phase != "open": _flow.show_panel(&"night")
+	elif _session.counter_model().trade.get("pawn_return", false): _flow.show_panel(&"trade")
 	else: _close_drawer()
 
 func _sync_room() -> void:
 	var state := _session.read_state()
+	var model := _session.counter_model()
+	var id: String = model.active_id if model.trade.get("pawn_return", false) else ""
+	if id.is_empty(): _return_id = ""
+	elif id != _return_id and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending():
+		_return_id = id
+		_flow.show_panel(&"trade")
 	if _receipt != null and _receipt.visible:
 		var still_present := false
 		for entry in state.ledger_entries:

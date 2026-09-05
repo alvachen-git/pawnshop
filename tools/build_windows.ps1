@@ -66,7 +66,7 @@ $testedFingerprint = Get-ProductionFingerprint
 if ((Get-ProductionFingerprint) -ne $testedFingerprint) { throw 'Production files changed during validation; rebuild against a stable snapshot.' }
 
 $manifest = Get-Content -LiteralPath "$root/data/content_manifest.json" -Raw -Encoding UTF8 | ConvertFrom-Json
-if ($manifest.content_version -ne 9 -or $manifest.default_run_id -ne 'p0_room') { throw 'V06-Room.1 requires content_version=9 and p0_room.' }
+if ($manifest.content_version -ne 9 -or $manifest.default_run_id -ne 'p0_room') { throw 'V06-Pawn.1 requires content_version=9 and p0_room.' }
 $jsonFiles = @('res://data/content_manifest.json') + @($manifest.sources | ForEach-Object { $_.path })
 if (@($jsonFiles | Sort-Object -Unique).Count -ne $jsonFiles.Count) { throw 'Duplicate manifest source path.' }
 $files = [Collections.Generic.List[string]]::new()
@@ -125,7 +125,7 @@ Copy-Item "$root/third_party/godot/COPYRIGHT.txt" "$package/licenses/Godot-COPYR
 Copy-Item "$root/third_party/godot/SOURCE.md" "$package/licenses/Godot-source.md"
 Copy-Item "$PSScriptRoot/PLAYTEST_WINDOWS.txt" "$package/PLAYTEST_WINDOWS.txt"
 $info = [ordered]@{
-    version='V06-Room.1'; engine='4.6.1.stable.official.14d19694e'; target='Windows x86_64'; renderer='gl_compatibility';
+    version='V06-Pawn.1'; engine='4.6.1.stable.official.14d19694e'; target='Windows x86_64'; renderer='gl_compatibility';
     build_id=$buildId; built_at_utc=[DateTime]::UtcNow.ToString('o'); source_commit=$commit; workspace_dirty=($gitStatus.Count -gt 0); workspace_status=$gitStatus;
     content_version=9; save_version=9; run_definition_id=$manifest.default_run_id;
     save_relative_path='user://p0/autosave_v9.json'; user_directory='%APPDATA%/GhostMarketPawnshop-M8A'; signed=$false;
@@ -140,12 +140,12 @@ $info = [ordered]@{
 }
 Write-Utf8 "$package/BUILD_INFO.json" ($info | ConvertTo-Json -Depth 10)
 # A unique output directory preserves previous successful packages and all failed build evidence.
-$candidate = Join-Path $work 'Pawnshop-V06-Room.1-windows-x86_64.zip'
+$candidate = Join-Path $work 'Pawnshop-V06-Pawn.1-windows-x86_64.zip'
 [IO.Compression.ZipFile]::CreateFromDirectory($package, $candidate, [IO.Compression.CompressionLevel]::Optimal, $false)
 if ((Get-ProductionFingerprint) -ne $testedFingerprint) { throw 'Production files changed during packaging; this candidate is not approved.' }
 $destination = Join-Path $root "dist/$buildId"
 New-Item -ItemType Directory -Path $destination | Out-Null
-$zip = Join-Path $destination 'Pawnshop-V06-Room.1-windows-x86_64.zip'
+$zip = Join-Path $destination 'Pawnshop-V06-Pawn.1-windows-x86_64.zip'
 Copy-Item -LiteralPath $candidate -Destination $zip
 Write-Utf8 ($zip + '.sha256') ((Get-FileHash $zip).Hash.ToLower() + '  ' + [IO.Path]::GetFileName($zip) + "`n")
 Copy-Item "$work/pack-audit.json" "$destination/pack-audit.json"

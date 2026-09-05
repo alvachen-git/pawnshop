@@ -30,6 +30,8 @@ var pending_event_id := ""
 var pending_event_minute := -1
 var summaries: Array[Dictionary] = []
 var inventory_instances: Array[ItemInstance] = []
+var pawn_rules_start_night := 1
+var pawn_returns: Array[Dictionary] = []
 var pawn_tickets: Array[PawnTicket] = []
 var sale_records: Array[Dictionary] = []
 var ledger_entries: Array[Dictionary] = []
@@ -79,6 +81,8 @@ func to_read_model() -> Dictionary:
 		"summaries": summaries.duplicate(true),
 		"inventory_instances": inventory_instances.map(func(item: ItemInstance) -> Dictionary: return item.to_data()),
 		"ledger_entries": ledger_entries.duplicate(true),
+		"pawn_rules_start_night": pawn_rules_start_night,
+		"pawn_returns": pawn_returns.duplicate(true),
 		"pawn_tickets": pawn_tickets.map(func(ticket: PawnTicket) -> Dictionary: return ticket.to_data()),
 		"sale_records": sale_records.duplicate(true),
 		"visit_history": visit_history.duplicate(true),

@@ -18,7 +18,10 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		sample.run_seed = state.run_seed
 		CustomerManager.new().prepare_night(sample, run, catalog)
 		selections.append_array(sample.scenario_selections)
+		var delay := PawnReturnService.delay_for(data, night, catalog)
 		for visit in sample.visits:
+			visit.arrival += delay
+			visit.expires_at += delay
 			all_visits[visit.visit_id] = visit
 			if visit.scenario_id.is_empty() or night > state.summaries.size(): continue
 			var replay := RunState.create(run)

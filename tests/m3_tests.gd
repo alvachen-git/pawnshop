@@ -33,7 +33,8 @@ func command(s: RunSession, action: String, detail := "", amount := 0) -> Action
 
 func end_night(s: RunSession) -> void:
 	s.execute("wait_until_seal")
-	check.call(s.execute("resolve_night").ok, "M3夜末对账并存档")
+	for row in s.pawn_disposal_model(): s.choose_pawn_disposal(row.id, "keep")
+	check.call(s.execute("resolve_night").ok, "M3夜末对账并存档：" + s.message)
 
 func _buy(s: RunSession, price := 18) -> String:
 	s.execute("open_shop")
@@ -122,6 +123,7 @@ func _default_and_rollback() -> void:
 	s.execute("open_shop")
 	s.execute("wait_until_seal")
 	var before := s.read_state()
+	for row in s.pawn_disposal_model(): s.choose_pawn_disposal(row.id, "keep")
 	saver.fail_writes = true
 	check.call(not s.execute("resolve_night").ok and s.read_state() == before, "存档失败深度回滚绝当和物品权属")
 	check.call(not s.execute("resolve_night").ok and s.read_state() == before, "重复失败不会提前绝当")
@@ -150,11 +152,12 @@ func _deadlines() -> void:
 	end_night(pawn)
 	pawn.execute("continue_run")
 	pawn.execute("open_shop")
-	while pawn.read_state().game_minutes < 110: pawn.execute("short_task")
+	var before := pawn.read_state()
+	check.call(not pawn.execute("short_task").ok and not pawn.execute("close_shop").ok and pawn.read_state() == before, "原主到店后必须优先接待，不能拖延绝当")
 	cash = pawn.read_state().cash
-	check.call(not pawn.commerce_command("redeem", pawn.read_state().pawn_tickets[0].ticket_id).ok and pawn.read_state().cash == cash and pawn.read_state().game_minutes == 120, "赎回恰到窗口末尾只耗时不交货收款")
+	check.call(pawn.commerce_command("redeem", pawn.read_state().pawn_tickets[0].ticket_id).ok and pawn.read_state().cash == cash + 33 and pawn.read_state().game_minutes == 10, "实际回访办理十分钟后收赎金")
 	end_night(pawn)
-	check.call(pawn.read_state().pawn_tickets[0].status == "defaulted", "错过返店窗口的当票夜末绝当")
+	check.call(pawn.read_state().pawn_tickets[0].status == "redeemed", "原主已赎回，夜末不绝当")
 	_roundtrip(pawn)
 
 func _extensions_and_providers() -> void:

@@ -11,7 +11,7 @@ func _capture(label: String) -> void:
 	var before := _session.read_state()
 	if label == "01_buyers":
 		_check(_session.counter_model().inventory.visual.financial.inventory_cost == 18, "货签成本与真实收购相符")
-		await _click("已售与已赎")
+		await _click("出柜记录")
 		_check(_all_text(stock).contains("尚无出柜记录"), "出柜记录空态明确")
 		await super._capture("00_empty_history")
 		await _click("铺中货物")
@@ -30,6 +30,8 @@ func _capture(label: String) -> void:
 		_check(view._continue.get_global_rect().end.y < 586, "下一夜按钮固定在抽屉内")
 		_check(_all_text(view._account).contains("-53") and _all_text(view._account).contains("-6"), "现金变化与交易毛利分别显示")
 	if label == "05_redeemed":
+		await _click("账本")
+		await _click("当票")
 		_check(_all_text(ledger._pages[2]).contains("已赎回"), "赎回后票据章同步更新")
 		await _click("流水")
 		_check(_all_text(ledger._pages[0]).contains("+33"), "赎金进入真实流水")
@@ -38,8 +40,8 @@ func _capture(label: String) -> void:
 		await _click("全部流水")
 		await _click("当票")
 	if label == "06_defaulted_stock":
-		await _click("已售与已赎")
-		_check(_all_text(stock).contains("已赎回") and _all_text(stock).contains("已售"), "出柜记录可区分已售与已赎")
+		await _click("出柜记录")
+		_check(_all_text(stock).contains("已赎回") and _all_text(stock).contains("已售"), "出柜记录可区分出柜记录")
 		await super._capture("06_history")
 		await _click("铺中货物")
 		await _click("账本")

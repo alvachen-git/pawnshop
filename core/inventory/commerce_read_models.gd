@@ -1,9 +1,9 @@
 class_name CommerceReadModels
 extends RefCounted
 
-const STATES := {"owned": "现货", "pledged": "在当（不可售）", "sold": "已售", "redeemed": "已赎回"}
-const TICKETS := {"active": "在当", "redeemed": "已赎回", "defaulted": "已绝当转现货"}
-const KINDS := {"acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费", "daily_fees": "息费付款"}
+const STATES := {"owned": "现货", "pledged": "在当（不可售）", "sold": "已售", "redeemed": "已赎回", "transferred": "已转当"}
+const TICKETS := {"active": "在当", "redeemed": "已赎回", "transferred": "已转当", "defaulted": "已绝当转现货"}
+const KINDS := {"acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费", "daily_fees": "息费付款", "pawn_transfer": "转当收入"}
 
 static func build(day: DayController, service: CommerceService, message: String) -> Dictionary:
 	var financial := FinancialSummary.build(day.state)
@@ -28,7 +28,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 		ledger.body = FeeService.describe(day.state, day.definition) + "\n现银 %d · 本夜交易毛利 %+d\n当夜利息 %d · 铺面开支 %d · 经营净收益 %+d\n本夜实际付息费 %d\n" % [day.state.cash, financial.realized_profit, financial.interest_expense, financial.shop_expense, financial.operating_profit, financial.fees_paid]
 	for entry in day.state.ledger_entries:
 		ledger.body += "\n第%d夜 %s · %s %+d · 余额 %d · 盈亏 %+d" % [entry.night, TimeController.clock_text(day.definition.opening_minute, entry.minute), KINDS[entry.kind], entry.amount, entry.balance, entry.realized_profit]
-	ledger.body += "\n\n当票（到期未赎，转为铺中现货）\n"
+	ledger.body += "\n\n当票（到期无人来赎，夜末核票处置）\n"
 	for ticket in day.state.pawn_tickets:
 		var terms := service.catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
 		var customer := service.catalog.get_definition("customers", ticket.customer_id) as CustomerDefinition
@@ -36,14 +36,11 @@ static func build(day: DayController, service: CommerceService, message: String)
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 		ledger.body += "\n%s · %s（第%d夜入当）\n本金 %d · 赎金 %d · 第%d夜到期 · %s\n" % [customer.terms.display_name, definition.display_name, ticket.started_night, ticket.principal, ticket.redemption_amount, ticket.due_night, TICKETS[ticket.status]]
 		if ticket.status != "active": continue
-		var command := service.pawns.request_kind(ticket, terms)
-		if command.is_empty():
-			ledger.body += "暂无当户返店请求；到期夜末未赎则转现货。\n"
-			continue
-		var reason := service.pawns.reason(day, ticket, terms, command)
-		ledger.body += "当户约定第%d夜 %s–%s 办理%s。\n" % [ticket.due_night, TimeController.clock_text(day.definition.opening_minute, terms.window_start), TimeController.clock_text(day.definition.opening_minute, terms.window_end), "赎回" if command == "redeem" else "续当"]
-		var label := "收赎金 %d 并交还原物" % ticket.redemption_amount if command == "redeem" else "同意当户续当申请"
-		ledger.buttons.append(_button(command, ticket.ticket_id, "", label, reason))
+		ledger.body += "约定到期日开铺后验票办理；无人来赎，夜末核票处置。\n"
+		var visit := PawnReturnService.current(day.state)
+		if not visit.is_empty() and visit.ticket_id == ticket.ticket_id:
+			ledger.buttons.append(_button("return_counter", ticket.ticket_id, "", "到柜台接待原当户", ""))
+
 	inventory.body += "\n" + message
 	if day.definition.fee_policy.enabled: ledger.body += FeeService.archive_text(day.state)
 	ledger.body += "\n" + message

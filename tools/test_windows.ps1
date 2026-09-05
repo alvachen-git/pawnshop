@@ -28,18 +28,23 @@ try {
     Run-Test 'font' 'm8a_font.gd'
     Run-Test 'core' 'run_all.gd'
     Run-Test 'room-core' 'run_room.gd'
+    Run-Test 'pawn-core' 'run_pawn.gd'
     foreach ($suite in @('ui_smoke','scene_navigation_ui_smoke','m2_ui_smoke','m3_ui_smoke','m4_ui_smoke','m5_ui_smoke','art03_extension_ui_smoke')) {
         Run-Test $suite "$suite.gd" @() $false
     }
     foreach ($wide in @($false,$true)) {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "pawn-$size" 'pawn_ui_smoke.gd' $sizeArgs $false
         Run-Test "room-$size" 'room_ui_smoke.gd' $sizeArgs $false
         Run-Test "receipt-$size" 'receipt_ui_smoke.gd' $sizeArgs $false
         Run-Test "m7-$size" 'm7_ui_smoke.gd' $sizeArgs $false
         Run-Test "m6-production-$size" 'm6_ui_smoke.gd' (@('production') + $sizeArgs) $false
         Run-Test "accounts-$size" 'art03_ui_smoke.gd' $sizeArgs $false
         Run-Test "debt-production-$size" 'art03_debt_ui_smoke.gd' (@('production') + $sizeArgs) $false
+    }
+    foreach ($mode in @('write','settle','read')) {
+        Run-Test "pawn-process-$mode" 'pawn_checkpoint_process.gd' @($mode)
     }
     foreach ($mode in @('write','resume','read')) {
         Run-Test "m7-process-$mode" 'm7_checkpoint_process.gd' @($mode)

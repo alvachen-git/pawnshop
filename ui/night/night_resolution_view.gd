@@ -2,6 +2,8 @@ class_name NightResolutionView
 extends FeaturePanel
 
 signal command_requested(command: String)
+signal pawn_choice_requested(id: String, choice: String)
+var _disposals: VBoxContainer
 var _body: Label
 var _resolve: Button
 var _continue: Button
@@ -31,6 +33,9 @@ func _ready() -> void:
 	_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	content.add_child(_body)
+	_disposals = VBoxContainer.new()
+	_disposals.add_theme_constant_override("separation", 12)
+	content.add_child(_disposals)
 	_resolve = Button.new()
 	_resolve.disabled = true
 	_resolve.text = "结算本夜（占位）并自动保存"
@@ -42,6 +47,19 @@ func _ready() -> void:
 	column.add_child(_continue)
 
 func render(model: Dictionary) -> void:
+	AccountPaper.clear(_disposals)
+	for row in model.get("pawn_disposals", []):
+		var card := AccountPaper.entry(_disposals)
+		AccountPaper.label(card, "当票 " + row.number + " · " + row.item + " / " + row.customer, 18)
+		AccountPaper.label(card, "本金 %d 银元 · 转当实收 %d 银元" % [row.principal, row.quote], 16)
+		AccountPaper.label(card, "去向：" + {"": "尚未选定", "keep": "撕票留货", "transfer": "折价转给同行"}[row.choice], 15)
+		for choice in ["keep", "transfer"]:
+			var button := Button.new()
+			button.text = "撕票留货" if choice == "keep" else "折价转给同行 · 实收 %d 银元" % row.quote
+			button.toggle_mode = true
+			button.set_pressed_no_signal(row.choice == choice)
+			button.pressed.connect(pawn_choice_requested.emit.bind(row.id, choice))
+			card.add_child(button)
 	_resolve_command = model.get("resolve_command", "resolve_night")
 	AccountPaper.clear(_account)
 	var account: Dictionary = model.get("account", {})
@@ -52,6 +70,7 @@ func render(model: Dictionary) -> void:
 	_resolve.text = model.get("resolve_label", "结算本夜（占位）并自动保存")
 	_resolve.disabled = not model.can_resolve
 	_resolve.visible = account.is_empty()
+	_continue.visible = model.can_continue
 	_continue.disabled = not model.can_continue
 	_continue.text = model.continue_label
 
@@ -61,6 +80,7 @@ func _draw_account(a: Dictionary) -> void:
 	AccountPaper.label(header, "第 %d 夜 · 日结" % a.night, 23)
 	AccountPaper.stamp(header, "已结")
 	AccountPaper.label(_account, a.outcome_text, 16)
+	for result in a.get("pawn_results", []): AccountPaper.label(_account, result, 16)
 	if not a.arrears_notice.is_empty():
 		var notice := AccountPaper.label(_account, a.arrears_notice.strip_edges(), 16)
 		notice.name = "ArrearsNotice"
@@ -68,7 +88,7 @@ func _draw_account(a: Dictionary) -> void:
 	AccountPaper.metrics(_account, [["夜末现银", a.closing_cash], ["现金变化", "%+d" % (a.closing_cash - a.opening_cash)], ["经营净收益" if a.fee_enabled else "交易毛利", "%+d" % a.get("operating_profit", a.get("realized_profit", 0))]])
 	AccountPaper.rule(_account)
 	AccountPaper.label(_account, "现金收支 / 银元", 18)
-	var rows := [["开夜现银", a.opening_cash], ["收购支出", -a.get("purchase_spend", 0)], ["活当放款", -a.get("pawn_disbursed", 0)], ["销售收入", a.get("sales_revenue", 0)], ["赎金及续当收入", a.get("redemption_receipts", 0)], ["实际付息费", -a.get("fees_paid", 0)]]
+	var rows := [["开夜现银", a.opening_cash], ["收购支出", -a.get("purchase_spend", 0)], ["活当放款", -a.get("pawn_disbursed", 0)], ["销售收入", a.get("sales_revenue", 0)], ["转当收入", a.get("pawn_transfer_receipts", 0)], ["赎金及续当收入", a.get("redemption_receipts", 0)], ["实际付息费", -a.get("fees_paid", 0)]]
 	for row in rows:
 		var line := HBoxContainer.new()
 		_account.add_child(line)

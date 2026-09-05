@@ -31,7 +31,8 @@ func request_kind(ticket: PawnTicket, terms: PawnTermsDefinition) -> String:
 func reason(day: DayController, ticket: PawnTicket, terms: PawnTermsDefinition, command: String) -> String:
 	if ticket == null or terms == null: return "当票不存在。"
 	if day.state.phase != &"open" or ticket.status != "active": return "当票不在营业可处理状态。"
-	if ticket.due_night != day.state.current_night_index or day.state.game_minutes < terms.window_start or day.state.game_minutes >= terms.window_end: return "当户尚未在约定窗口到访。"
+	var visit := PawnReturnService.current(day.state)
+	if visit.is_empty() or visit.ticket_id != ticket.ticket_id or visit.customer_id != ticket.customer_id or visit.item_instance_id != ticket.item_instance_id or visit.command != command or ticket.due_night != day.state.current_night_index: return "请先接待柜前持票的原当户。"
 	if command != request_kind(ticket, terms) or command not in ["redeem", "extend"]: return "没有此类当户请求；不能凭空收取赎金。"
 	var cost := terms.redeem_minutes if command == "redeem" else terms.extend_minutes
 	if not TimeController.new().can_spend(day.state, day.definition, cost): return "时间不足。"
@@ -40,8 +41,11 @@ func reason(day: DayController, ticket: PawnTicket, terms: PawnTermsDefinition, 
 func execute(day: DayController, ticket: PawnTicket, terms: PawnTermsDefinition, command: String) -> ActionResult:
 	var error := reason(day, ticket, terms, command)
 	if not error.is_empty(): return ActionResult.new(false, error)
+	var visit := PawnReturnService.current(day.state)
+	visit.start = day.state.game_minutes
 	day.spend_action(terms.redeem_minutes if command == "redeem" else terms.extend_minutes)
-	if day.state.phase != &"open" or day.state.game_minutes >= terms.window_end: return ActionResult.new(false, "办理耗时后已错过当户窗口；未收钱或交货。")
+	visit.minute = day.state.game_minutes
+	visit.status = "completed"
 	var item := InventoryManager.new().find(day.state, ticket.item_instance_id)
 	if command == "redeem":
 		EconomyManager.new().commit(day.state, ticket.redemption_amount, item.instance_id, "redeem/" + ticket.ticket_id, "redemption", ticket.redemption_amount - ticket.principal)
@@ -56,10 +60,36 @@ func execute(day: DayController, ticket: PawnTicket, terms: PawnTermsDefinition,
 	ticket.due_night += terms.extension_nights
 	return ActionResult.new(true, "已收续当费 %d，延至第%d夜到期。" % [fee, ticket.due_night])
 
-func resolve_maturities(state: RunState, night_minutes: int) -> void:
+func maturities(state: RunState) -> Array[PawnTicket]:
+	var result: Array[PawnTicket] = []
 	for ticket in state.pawn_tickets:
-		if ticket.status == "active" and ticket.due_night <= state.current_night_index:
+		if ticket.status == "active" and ticket.due_night <= state.current_night_index: result.append(ticket)
+	return result
+
+func transfer_quote(ticket: PawnTicket, terms: PawnTermsDefinition) -> int:
+	return maxi(1, floori(ticket.principal * terms.transfer_ratio))
+
+func disposal_reason(state: RunState, catalog: ContentCatalog, choices: Dictionary) -> String:
+	if state.phase != &"night_resolution": return "封铺后才可核销到期当票。"
+	var due := maturities(state)
+	if choices.size() != due.size(): return "请逐张选好留货或转当，再合账。"
+	for ticket in due:
+		var terms := catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
+		if terms.return_mode != "absent": return "持票到店的当户尚未办结，不能绝当。"
+		if choices.get(ticket.ticket_id, "") not in ["keep", "transfer"]: return "请逐张选好留货或转当，再合账。"
+	return ""
+
+func resolve_maturities(state: RunState, night_minutes: int, catalog: ContentCatalog, choices: Dictionary) -> void:
+	for ticket in maturities(state):
+		var item := InventoryManager.new().find(state, ticket.item_instance_id)
+		ticket.closed_night = state.current_night_index
+		ticket.closed_minute = night_minutes
+		if choices[ticket.ticket_id] == "keep":
 			ticket.status = "defaulted"
-			ticket.closed_night = state.current_night_index
-			ticket.closed_minute = night_minutes
-			InventoryManager.new().find(state, ticket.item_instance_id).ownership_state = "owned"
+			item.ownership_state = "owned"
+		else:
+			var terms := catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
+			var amount := transfer_quote(ticket, terms)
+			ticket.status = "transferred"
+			item.ownership_state = "transferred"
+			EconomyManager.new().commit(state, amount, item.instance_id, "transfer/" + ticket.ticket_id, "pawn_transfer", amount - ticket.principal)

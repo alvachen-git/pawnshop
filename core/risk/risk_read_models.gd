@@ -62,6 +62,12 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 			if lamp_start >= 0:
 				var lamp_end := body.find("\n", lamp_start + 1)
 				body = body.left(lamp_start) + (body.substr(lamp_end) if lamp_end >= 0 else "")
+	if not state.risk_pending.is_empty():
+		var pending_item := InventoryManager.new().find(state, state.risk_pending)
+		if pending_item != null and pending_item.ownership_state == "transferred":
+			body = "空柜前的影子\n\n原物已经交出，柜前却还站着一道影子。它慢慢转过脸来，灯火随之矮了下去。\n\n「别应声，也别看它的眼睛。」"
+			for button in buttons:
+				if button.command in ["retreat", "defy"]: button.label = "垂下眼，护住灯火" if button.command == "retreat" else "抬眼看向那道影子"
 	var archive := "《绝当录》\n"
 	if state.death_archive.is_empty(): archive += "纸页尚空。"
 	for record in state.death_archive:

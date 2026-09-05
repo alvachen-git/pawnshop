@@ -2,7 +2,7 @@ class_name FinancialSummary
 extends RefCounted
 
 static func build(state: RunState) -> Dictionary:
-	var result := {"realized_profit": 0, "sales_revenue": 0, "purchase_spend": 0, "pawn_disbursed": 0, "redemption_receipts": 0, "inventory_count": 0, "inventory_cost": 0, "pawn_principal": 0}
+	var result := {"realized_profit": 0, "pawn_transfer_receipts": 0, "sales_revenue": 0, "purchase_spend": 0, "pawn_disbursed": 0, "redemption_receipts": 0, "inventory_count": 0, "inventory_cost": 0, "pawn_principal": 0}
 	result.merge({"interest_expense": 0, "shop_expense": 0, "fees_paid": 0, "operating_profit": 0})
 	for row in state.fee_history:
 		if row.night == state.current_night_index:
@@ -14,6 +14,7 @@ static func build(state: RunState) -> Dictionary:
 		result.realized_profit += entry.realized_profit
 		match entry.kind:
 			"sale": result.sales_revenue += entry.amount
+			"pawn_transfer": result.pawn_transfer_receipts += entry.amount
 			"acquisition": result.purchase_spend -= entry.amount
 			"pawn_loan": result.pawn_disbursed -= entry.amount
 			"redemption", "extension": result.redemption_receipts += entry.amount

@@ -1,8 +1,8 @@
 # 鬼市当铺
 
-固定柜台式 2D 当铺经营与规则恐怖游戏。当前为 **V06-Room.1 三夜内部原型**，默认 `p0_room`：保留识货与识人、每日息费、铜镜窥探与两种终局，补齐寝屋和分段风险。当前尚未制作七夜 Demo 或第21/49夜还本系统。
+固定柜台式 2D 当铺经营与规则恐怖游戏。当前为 **V06-Pawn.1 三夜内部原型**，默认 `p0_room`：保留识货与识人、每日息费、铜镜窥探与两种终局，补齐寝屋和分段风险，并接入原主优先赎回、夜末留货或折价转当。当前尚未制作七夜 Demo 或第21/49夜还本系统。
 
-当前计划见 [V0.6开发计划](docs/V06_NEXT_STEPS_PROPOSAL.md)，房间流程和验证见 [房间交付记录](docs/V06_ROOM_GUIDE.md)，独立成交页见 [交互验证](docs/trade_receipt/design-qa.md)。负责人已确认本地测试通过，并授权本次源码推送、合并到 main。后续默认不制作试玩包；正式美术保持待规划，公开发布另行确认。
+当前计划见 [V0.6开发计划](docs/V06_NEXT_STEPS_PROPOSAL.md)，当前活当流程和验证见 [活当交付记录](docs/PAWN_RETURN_GUIDE.md)，房间阶段历史见 [房间交付记录](docs/V06_ROOM_GUIDE.md)。每阶段交付改动说明、必要截图和验证结果，负责人评审后进入下一阶段；仅在明确要求时制作试玩包。
 
 ## 启动与操作
 
@@ -18,6 +18,8 @@
 
 夜末流程：**封铺→合账（当票到期、息费）→铺内应对→回房→床确认就寝→个人应对→天明日结**。无危机时直接继续相应步骤。回房后不能经营。寝屋左侧命灯、书桌可免费反复查看，中间床负责就寝；右侧镜面只是位置预留。寝屋为程序绘制的低保真背景，尚无新音效或最终资产。
 
+活当：到期原主在开铺时优先持票回访，柜台验票后收赎金、交还原物；回访办完再迎新客。到期无人来赎的当票，夜末逐张选“撕票留货”或“折价转给同行”，确认后统一合账。转当连同原物交出，按本金八折向下取整（最低1银元）；留货不进现金。详见 [活当交付记录](docs/PAWN_RETURN_GUIDE.md)。
+
 ## 三夜内容与经济边界
 
 第一夜青花碗检查口供与接缝，铜烛台通过磁针/旧划痕判断材质；第二夜怀表分别判断品相与赶船处境。证据不能重复折价，可以提早成交和自由报价。同一运行保存品相、情境与反应，读档不重抽。
@@ -30,15 +32,15 @@
 
 ## 存档
 
-当前 **save_version=8 / content_version=9**，默认 `user://p0/autosave_v8.json`。
+当前 **save_version=9 / content_version=9**，默认 `user://p0/autosave_v9.json`。新档不存在时，可通过读取存档导入同配置的旧 v8 房间档；旧文件保留，历史账目不重算，未到期票据继续按新流程办理。
 
-- Windows包：`%APPDATA%/GhostMarketPawnshop-M8A/p0/autosave_v8.json`
-- 编辑器：`%APPDATA%/Godot/app_userdata/鬼市当铺/p0/autosave_v8.json`
+- Windows包：`%APPDATA%/GhostMarketPawnshop-M8A/p0/autosave_v9.json`
+- 编辑器：`%APPDATA%/Godot/app_userdata/鬼市当铺/p0/autosave_v9.json`
 - 包日志：`%APPDATA%/GhostMarketPawnshop-M8A/logs/godot.log`
 
 包与编辑器目录独立，不自动复制。启动后从菜单读取。封铺结算、每次应对、回房、就寝、日结、进入下一夜与收尾均原子保存；营业中交易不即时保存。写盘失败回滚，重复提交不重复收费或归档；损坏的历史账册阻止覆盖。只支持单窗口写档。
 
-同目录旧 autosave_v7.json 原样保留，只导入经过校验的绝当录/破铺录，不迁移旧局进度。不自动跨越v7导入更早进度。历史M7测试使用独立内容夹具和v7规则。
+同目录旧 autosave_v7.json 原样保留，只导入经过校验的绝当录/破铺录，不迁移旧局进度。不自动跨越v7导入更早进度。历史M7测试使用独立内容夹具；旧版本兼容保留原有账目校验。
 
 ## Windows构建与验证
 
@@ -46,7 +48,7 @@
 
 ```powershell
 ./tools/build_windows.ps1 -GodotPath ./.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe
-./tools/smoke_windows_package.ps1 -ZipPath ./dist/<构建ID>/Pawnshop-V06-Room.1-windows-x86_64.zip
+./tools/smoke_windows_package.ps1 -ZipPath ./dist/<构建ID>/Pawnshop-V06-Pawn.1-windows-x86_64.zip
 ```
 
 产物在 dist/<构建ID>/，日志在 .artifacts/m8a/<构建ID>/。构建没有跳过测试开关：检查固定工具与许可哈希、全部源回归、干净暂存导出、PCK审计，然后生成ZIP/SHA256。原始OFL包含一处行尾空格，按官方字节保留，不应用通用去空格格式化。

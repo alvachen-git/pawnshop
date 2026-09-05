@@ -110,3 +110,4 @@ func _run() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(_session._save.path))
 	print("ROOM UI TESTS: %d assertions, %d failures" % [_assertions, _failures])
 	quit(0 if _failures == 0 else 1)
+

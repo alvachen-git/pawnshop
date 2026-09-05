@@ -29,6 +29,7 @@ func held_at(state: RunState, item: ItemInstance, night: int, minute: int) -> bo
 	for entry in state.ledger_entries:
 		if entry.item_instance_id != item.instance_id: continue
 		if entry.kind in ["acquisition", "pawn_loan"] and entry.night == night and entry.minute > minute: return false
+		if entry.kind == "pawn_transfer" and entry.night < night: return false
 		if entry.kind in ["sale", "redemption"] and (entry.night < night or (entry.night == night and entry.minute <= minute)): return false
 	return true
 
@@ -97,7 +98,7 @@ func settle(state: RunState) -> void:
 			state.risk_pending = pursuit.mirror_id
 			return
 		for item in ghosts(state):
-			if item.ownership_state in ["owned", "pledged"] and not covered(state, item.instance_id):
+			if held_at(state, item, state.current_night_index, state.game_minutes) and not covered(state, item.instance_id):
 				state.risk_pending = item.instance_id
 				break
 

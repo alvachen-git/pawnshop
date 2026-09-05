@@ -184,3 +184,12 @@ RunSession在所有耗时意图后捕获关门（含自动封铺）；结算后�
 - MirrorEncounterService独立处理来客绑定、窥看选择及证据来源；不占普通事件额度，不扩展万能事件脚本。
 - 新状态为fee_history、fee_arrears、mirror_history、bankruptcy_archive以及bankrupt终止阶段。FinancialSummary增加当夜息费、实际付款和经营净收益。
 - FeeSaveCodec与MirrorSaveCodec参与独立重建，最后联合风险/经营结果核验。默认新存档路径与M5分离，旧档仅用于有效历史记录导入。
+
+
+## 活当回访与核票接入（当前v9）
+
+PawnReturnService独立编排/校验原主回访，以ticket/customer/item引用原合同，避免混入新客收购历史。CustomerManager只按回访耗时顺延普通排程；回访完成后才激活新客。PawnReturnReadModels提供柜台展示，账本只导航。
+
+RunSession持有瞬时核票草稿，PawnController验证到期与无人回访条件。resolve_night统一提交留货/转当、息费、风险及保存；失败还原深快照并保留草稿。转当以pawn_transfer单列流水与利润，transferred是票据与原物的终态。夜间转当不作为普通买卖接口开放。
+
+SaveCodec版本9记录pawn_returns与pawn_rules_start_night，兼容同配置的旧7/8。CounterSaveCodec与TradeScenarioSaveCodec按历史回访耗时重建普通来客时间，CommerceSaveCodec重建合同、转当和利润流水，PawnReturnService核验真实接待。旧夜账目按原规则验证，不重算。默认v9路径导入旧v8进度并保留源文件，旧v7生产档只合并账册。详见PAWN_RETURN_GUIDE.md。

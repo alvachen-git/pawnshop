@@ -78,7 +78,7 @@ func _metric(title: String) -> Label:
 
 func render(model: Dictionary) -> void:
 	super.render(model)
-	for control in _forms: control.visible = not _visit_id.is_empty()
+	for control in _forms: control.visible = not _visit_id.is_empty() and not model.get("pawn_return", false)
 	var visual: Dictionary = model.get("visual", {})
 	_metrics.visible = not visual.is_empty()
 	_feedback.text = visual.get("message", "")
