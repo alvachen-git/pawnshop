@@ -38,10 +38,14 @@ final result: pass（草图与交互范围）。当前未发现阻止此次交�
 - 旧版、房间及终局跨进程恢复检查通过；git diff --check通过。
 - 开发时受限环境的系统证书读取错误不被忽略；最终门禁在正常用户环境严格检查日志通过。
 
-记录：[结果JSON](../../.artifacts/trade-receipt-validation-01/results.json)。未制作新试玩包，旧Windows包不包含本次修改；未推送或创建PR。
+记录：[结果JSON](../../.artifacts/trade-receipt-validation-01/results.json)。未制作新试玩包，旧Windows包不包含本次修改。负责人随后确认本地测试通过，授权本批源码推送并合并到 main。
+
+提交范围从已校验的房间生产快照及本任务成交页修改独立整理，保留原工作目录正在进行的活当回访工作。合并前使用相同完整源码门禁重新验证；不将并行任务的新存档版本、赎当规则或本地策划附件纳入本批提交。
 
 ![收购凭据](../../.artifacts/trade-receipt-validation-01/screenshots/receipt_1280_01_purchase.png)
 
 ![活当凭据](../../.artifacts/trade-receipt-validation-01/screenshots/receipt_1600_03_pawn.png)
 
 ![出售凭据](../../.artifacts/trade-receipt-validation-01/screenshots/receipt_1600_02_sale.png)
+
+合并前独立源码复验：47项全部通过。日志保留于本地 .artifacts/room-receipt-merge-validation-02/；没有生成新试玩包。
