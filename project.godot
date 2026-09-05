@@ -8,7 +8,7 @@ config_version=5
 config/name="鬼市当铺"
 config/description="固定柜台式 2D 当铺经营与规则恐怖 Prototype"
 run/main_scene="res://scenes/main.tscn"
-config/version="M8A.1"
+config/version="V06-Room.1"
 config/use_custom_user_dir.m8a_windows=true
 config/custom_user_dir_name.m8a_windows="GhostMarketPawnshop-M8A"
 

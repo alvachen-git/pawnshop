@@ -73,6 +73,11 @@ func _run() -> void:
 	quit(0 if _failures == 0 else 1)
 
 func _click(label: String) -> void:
+	# Historical flow suites acknowledge the new presentation-only receipt
+	# before their next action. receipt_ui_smoke verifies the page explicitly.
+	var receipt := _main.find_child("TradeReceipt", true, false) as TradeReceiptView
+	if receipt != null and receipt.visible and label not in ["收好凭据", "查看库存", "查看当票"]:
+		await _click_button(receipt._primary)
 	var scene_routes := {
 		"营业": &"shop",
 		"库存": &"inventory",

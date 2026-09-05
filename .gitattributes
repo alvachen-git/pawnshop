@@ -1,0 +1,2 @@
+# Preserve the exact upstream license bytes used by the pinned build hash.
+assets/fonts/OFL.txt -text whitespace=-blank-at-eol

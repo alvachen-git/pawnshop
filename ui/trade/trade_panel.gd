@@ -13,6 +13,7 @@ var _ask_value: Label
 var _estimate_value: Label
 var _rounds_value: Label
 var _feedback: Label
+var _forms: Array[Control] = []
 
 func _ready() -> void:
 	super._ready()
@@ -45,6 +46,7 @@ func _ready() -> void:
 	_column.add_child(pawn_caption)
 	var pawn_row := HBoxContainer.new()
 	_column.add_child(pawn_row)
+	_forms.assign([caption, row, pawn_caption, pawn_row])
 	_pawn_price = SpinBox.new()
 	_pawn_price.min_value = 1
 	_pawn_price.step = 1
@@ -76,6 +78,7 @@ func _metric(title: String) -> Label:
 
 func render(model: Dictionary) -> void:
 	super.render(model)
+	for control in _forms: control.visible = not _visit_id.is_empty()
 	var visual: Dictionary = model.get("visual", {})
 	_metrics.visible = not visual.is_empty()
 	_feedback.text = visual.get("message", "")

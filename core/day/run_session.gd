@@ -2,6 +2,7 @@ class_name RunSession
 extends RefCounted
 
 signal changed
+signal transaction_completed(receipt: Dictionary)
 
 var definition: RunDefinition
 var content_version: int
@@ -39,25 +40,27 @@ func has_save() -> bool:
 	return _save.exists()
 
 func can_execute(command: String) -> bool:
-	return _day.state.risk_pending.is_empty() and _day.state.phase not in [&"dead", &"bankrupt"] and _day.state.pending_event_id.is_empty() and not mirror_pending() and _day.can_execute(command)
+	return _day.state.risk_pending.is_empty() and _day.state.phase not in [&"dead", &"bankrupt"] and _day.state.pending_event_id.is_empty() and not mirror_pending() and (_day.can_execute(command) or RoomFlow.can_execute(_day.state, command))
 
 func execute(command: String) -> ActionResult:
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
 	# Only these commands create checkpoints. Snapshot before mutation for rollback.
-	var checkpoint := command in ["resolve_night", "continue_run"]
+	var checkpoint := command in ["resolve_night", "continue_run", "enter_room", "sleep", "finish_sleep"]
 	var previous: RunState
 	if checkpoint:
 		previous = _copy_state(_day.state)
 	if command == "resolve_night" and not mirror_pending() and _day.can_execute(command) and _commerce != null:
 		_commerce.pawns.resolve_maturities(_day.state, definition.night_minutes)
 	if command == "resolve_night" and _day.can_execute(command): FeeService.settle(_day.state, definition)
-	var result := _day.execute(command)
+	var result := RoomFlow.execute(_day.state, _risk, command) if command in ["enter_room", "sleep", "finish_sleep"] else _day.execute(command)
 	if result.ok and _risk != null:
 		_risk.capture_close(_day.state)
-		if command == "resolve_night": _risk.settle(_day.state)
-	if result.ok and command == "resolve_night": FeeService.finish(_day.state, definition)
+		if command == "resolve_night":
+			if definition.private_room: RoomFlow.seal(_day.state, _risk)
+			else: _risk.settle(_day.state)
+	if result.ok and (command == "finish_sleep" or (command == "resolve_night" and not definition.private_room)): FeeService.finish(_day.state, definition)
 	if result.ok and _counter != null:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
 			_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
@@ -119,12 +122,14 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
 	var result := ActionResult.new(false, "当前运行未接入柜台内容。")
+	var ledger_size := _day.state.ledger_entries.size()
 	if _counter != null:
 		result = _counter.execute(_day, command, visit_id, detail, amount)
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
 	changed.emit()
+	_emit_receipt(ledger_size)
 	return result
 
 func counter_model() -> Dictionary:
@@ -144,6 +149,7 @@ func commerce_command(command: String, target: String, detail := "") -> ActionRe
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
 	var result := ActionResult.new(false, "当前运行没有交易内容。")
+	var ledger_size := _day.state.ledger_entries.size()
 	if _commerce != null:
 		result = _commerce.execute(_day, command, target, detail)
 		_counter.customers.update(_day.state)
@@ -151,7 +157,15 @@ func commerce_command(command: String, target: String, detail := "") -> ActionRe
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
 	changed.emit()
+	_emit_receipt(ledger_size)
 	return result
+
+func _emit_receipt(previous_size: int) -> void:
+	# A rejected quote can return ok=true. A new ledger posting, rather than
+	# ActionResult.ok or localized message matching, proves money changed hands.
+	if _counter == null or _day.state.ledger_entries.size() != previous_size + 1: return
+	var receipt := TradeReceiptModel.build(_day, _counter.catalog, _day.state.ledger_entries.back())
+	if not receipt.is_empty(): transaction_completed.emit(receipt)
 
 func event_model() -> Dictionary:
 	return _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}
@@ -203,8 +217,8 @@ func risk_command(command: String, id: String) -> ActionResult:
 	var result: ActionResult
 	if command in ["retreat", "defy"]:
 		var previous := _copy_state(_day.state)
-		result = _risk.respond(_day.state, id, command)
-		if result.ok: FeeService.finish(_day.state, definition)
+		result = RoomFlow.respond(_day.state, _risk, id, command) if definition.private_room else _risk.respond(_day.state, id, command)
+		if result.ok and not definition.private_room: FeeService.finish(_day.state, definition)
 		if result.ok and not _save.save_state(_day.state, definition, content_version):
 			_day.state = previous
 			result = ActionResult.new(false, "应对未提交，请重试。" + _save.error_message)

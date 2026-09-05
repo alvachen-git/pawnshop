@@ -1,6 +1,12 @@
-# 《鬼市当铺》技术架构 · 识货与识人
+# 《鬼市当铺》技术架构
 
-## 当前边界
+## 当前边界 · V06-Room.1
+
+当前默认p0_room，content9/save8，在旧三夜基础上接入RoomFlow与RoomSaveCodec：shop_resolution→private_room→sleep_resolution→day_summary。铺内应对和个人应对分别保存scope，room_history回放不可逆阶段；费用先结算，finish_sleep才判经营失败，死亡优先。UI新增寝屋固定背景、命灯/书桌/床热点。参见 [房间实现与验证](V06_ROOM_GUIDE.md)。
+
+下列版本号和玩法描述保留为历史架构记录。新债务系统及七夜事件扩展尚未接入。
+
+## 历史边界 · M8-A
 
 M8-A 技术基线统一为 Godot **4.6.1 Standard / GDScript**，Windows x86_64 使用 Compatibility。历史里程碑中的 4.7.2 记录不改写为当前验证结果。内容仍为 JSON + 两级校验，Save v7/content v8 不变；本轮仅增加发布配置、构建/审计工具和随包字体。
 
