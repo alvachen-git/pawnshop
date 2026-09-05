@@ -48,7 +48,8 @@ func refresh() -> void:
 		account["arrears_notice"] = ""
 		for debt in state.fee_arrears:
 			account.arrears_notice += "短款 %d 银元 · 第%d夜夜末须补齐\n" % [debt.amount, debt.due_night]
-	_view.render({"account": account, "resolve_label": "合上今夜的账册" if risk_enabled else "结算本夜（占位）并自动保存", "body": body, "can_resolve": _session.can_execute("resolve_night"), "can_continue": _session.can_execute("continue_run"), "continue_label": ("合卷" if risk_enabled else "结束本轮试玩") if state.current_night_index == _session.definition.total_nights else "进入下一夜"})
+	if state.phase == "shop_resolution" and state.risk_pending.is_empty(): body = "铺内收尾\n\n门闩已经落好。柜中的东西安静下来，可以回房了。"
+	_view.render({"resolve_command": "enter_room" if state.phase == "shop_resolution" else "resolve_night", "account": account, "resolve_label": "回房" if state.phase == "shop_resolution" else "合上今夜的账册" if risk_enabled else "结算本夜（占位）并自动保存", "body": body, "can_resolve": _session.can_execute("enter_room") or _session.can_execute("resolve_night"), "can_continue": _session.can_execute("continue_run"), "continue_label": ("合卷" if risk_enabled else "结束本轮试玩") if state.current_night_index == _session.definition.total_nights else "进入下一夜"})
 
 func _on_command(command: String) -> void:
 	_session.execute(command)

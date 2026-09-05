@@ -7,7 +7,7 @@ func _run() -> void:
 	_main.get_node("Bootstrap").save_path = _save_path
 	_main.get_node("Bootstrap").manifest_path = "res://tests/fixtures/m6_manifest.json"
 	if "production" in OS.get_cmdline_user_args():
-		_main.get_node("Bootstrap").manifest_path = "res://data/content_manifest.json"
+		_main.get_node("Bootstrap").manifest_path = "res://tests/fixtures/m7_manifest.json"
 		_capture_prefix += "_production"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session

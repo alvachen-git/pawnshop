@@ -5,7 +5,7 @@ signal content_ready(catalog: ContentCatalog)
 signal content_failed(issues: Array)
 
 @export_file("*.json") var manifest_path := "res://data/content_manifest.json"
-@export var save_path := "user://p0/autosave_v7.json"
+@export var save_path := "user://p0/autosave_v8.json"
 
 var catalog: ContentCatalog
 var session: RunSession
@@ -22,6 +22,8 @@ func initialize() -> ContentLoadResult:
 			content_failed.emit(result.issues)
 			return result
 		var saves := SaveManager.new(save_path)
+		if save_path == "user://p0/autosave_v8.json":
+			saves.prior_version_path = "user://p0/autosave_v7.json"
 		if save_path == "user://p0/autosave_v7.json":
 			saves.legacy_archive_path = "user://p0/autosave.json"
 			saves.prior_version_path = "user://p0/autosave_v6.json"

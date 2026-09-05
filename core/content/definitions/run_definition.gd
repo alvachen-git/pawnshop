@@ -20,6 +20,9 @@ var _trade_scenarios: Array[TradeScenarioDefinition] = []
 var trade_scenarios: Array[TradeScenarioDefinition]:
 	get: return _trade_scenarios.duplicate()
 var _randomize_seed := false
+var _private_room := false
+var private_room: bool:
+	get: return _private_room
 var randomize_seed: bool:
 	get: return _randomize_seed
 var _id: String
@@ -66,6 +69,7 @@ static func from_dto(dto: RunDTO) -> RunDefinition:
 	for row in dto.mirror_encounters: result._mirror_encounters.append(MirrorEncounterDefinition.new(row))
 	for row in dto.trade_scenarios: result._trade_scenarios.append(TradeScenarioDefinition.new(row))
 	result._randomize_seed = dto.randomize_seed
+	result._private_room = dto.private_room
 	result._id = dto.id
 	result._total_nights = dto.total_nights
 	result._opening_minute = dto.opening_minute

@@ -1,10 +1,10 @@
 {
-  "content_version": 8,
-  "default_run_id": "p0_judgement",
+  "content_version": 9,
+  "default_run_id": "p0_room",
   "sources": [
     {
       "kind": "runs",
-      "path": "res://data/runs/p0_judgement.json"
+      "path": "res://data/runs/p0_room.json"
     },
     {
       "kind": "items",

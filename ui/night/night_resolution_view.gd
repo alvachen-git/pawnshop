@@ -6,6 +6,7 @@ var _body: Label
 var _resolve: Button
 var _continue: Button
 var _account: VBoxContainer
+var _resolve_command := "resolve_night"
 
 func _ready() -> void:
 	var margin := MarginContainer.new()
@@ -33,7 +34,7 @@ func _ready() -> void:
 	_resolve = Button.new()
 	_resolve.disabled = true
 	_resolve.text = "结算本夜（占位）并自动保存"
-	_resolve.pressed.connect(command_requested.emit.bind("resolve_night"))
+	_resolve.pressed.connect(func() -> void: command_requested.emit(_resolve_command))
 	column.add_child(_resolve)
 	_continue = Button.new()
 	_continue.disabled = true
@@ -41,6 +42,7 @@ func _ready() -> void:
 	column.add_child(_continue)
 
 func render(model: Dictionary) -> void:
+	_resolve_command = model.get("resolve_command", "resolve_night")
 	AccountPaper.clear(_account)
 	var account: Dictionary = model.get("account", {})
 	_account.visible = not account.is_empty()

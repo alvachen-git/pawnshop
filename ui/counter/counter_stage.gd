@@ -13,6 +13,7 @@ var has_item := false
 var smoke_wrong := false
 var lamp_wrong := false
 var lamp_dead := false
+var show_life_lamp := true
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -119,14 +120,15 @@ func _props() -> void:
 	var smoke := PackedVector2Array([Vector2(211, 416), Vector2(216, 400), Vector2(209, 386), Vector2(213, 370)])
 	if smoke_wrong: smoke = PackedVector2Array([Vector2(211, 416), Vector2(229, 410), Vector2(254, 412), Vector2(274, 410)])
 	draw_polyline(smoke, Color("a4aaa0"), 1.5, true)
-	_rect(1031, 467, 84, 12, "282922")
-	_rect(1066, 391, 12, 77, "7c8064")
-	draw_colored_polygon(PackedVector2Array([Vector2(1029, 406), Vector2(1048, 373), Vector2(1096, 373), Vector2(1117, 406)]), Color("7a7960"))
-	_line(Vector2(1032, 408), Vector2(1114, 408), "b2a983", 3)
-	if not lamp_dead:
-		var light := Color("e3ba70" if not lamp_wrong and atmosphere != 2 else "afc4c9")
-		draw_circle(Vector2(1072, 419), 6, light)
-		_line(Vector2(1072, 425), Vector2(1066 if lamp_wrong else 1072, 410), light.to_html(), 3)
+	if show_life_lamp:
+		_rect(1031, 467, 84, 12, "282922")
+		_rect(1066, 391, 12, 77, "7c8064")
+		draw_colored_polygon(PackedVector2Array([Vector2(1029, 406), Vector2(1048, 373), Vector2(1096, 373), Vector2(1117, 406)]), Color("7a7960"))
+		_line(Vector2(1032, 408), Vector2(1114, 408), "b2a983", 3)
+		if not lamp_dead:
+			var light := Color("e3ba70" if not lamp_wrong and atmosphere != 2 else "afc4c9")
+			draw_circle(Vector2(1072, 419), 6, light)
+			_line(Vector2(1072, 425), Vector2(1066 if lamp_wrong else 1072, 410), light.to_html(), 3)
 	# Closed ledger with ruled fore-edge and one scarce vermilion seal.
 	_rect(1000, 516, 166, 52, "312b23")
 	_rect(1003, 521, 158, 41, "c4b48e")

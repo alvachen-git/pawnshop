@@ -27,12 +27,15 @@ try {
     Run-Test 'environment' 'm8a_environment.gd'
     Run-Test 'font' 'm8a_font.gd'
     Run-Test 'core' 'run_all.gd'
+    Run-Test 'room-core' 'run_room.gd'
     foreach ($suite in @('ui_smoke','scene_navigation_ui_smoke','m2_ui_smoke','m3_ui_smoke','m4_ui_smoke','m5_ui_smoke','art03_extension_ui_smoke')) {
         Run-Test $suite "$suite.gd" @() $false
     }
     foreach ($wide in @($false,$true)) {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "room-$size" 'room_ui_smoke.gd' $sizeArgs $false
+        Run-Test "receipt-$size" 'receipt_ui_smoke.gd' $sizeArgs $false
         Run-Test "m7-$size" 'm7_ui_smoke.gd' $sizeArgs $false
         Run-Test "m6-production-$size" 'm6_ui_smoke.gd' (@('production') + $sizeArgs) $false
         Run-Test "accounts-$size" 'art03_ui_smoke.gd' $sizeArgs $false
@@ -41,6 +44,9 @@ try {
     foreach ($mode in @('write','resume','read')) {
         Run-Test "m7-process-$mode" 'm7_checkpoint_process.gd' @($mode)
         if ($mode -eq 'write') { Run-Test 'v7-copy-compatibility' 'm8a_save_copy.gd' }
+    }
+    foreach ($mode in @('write_room','sleep','summary','read_summary','write_shop','read_shop','write_pursuit','pursuit_sleep','death','read_death')) {
+        Run-Test "room-process-$mode" 'room_checkpoint_process.gd' @($mode)
     }
     foreach ($mode in @('write_debt','resume_bankrupt','read_bankrupt','write_mirror','resume_death','read_death')) {
         Run-Test "m6-process-$mode" 'm6_checkpoint_process.gd' @($mode)

@@ -15,7 +15,7 @@ func check(ok: bool, message: String) -> void:
 
 func run_test() -> void:
 	var mode := OS.get_cmdline_user_args()[0]
-	var catalog := JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	var catalog := JsonContentProvider.new("res://tests/fixtures/m7_manifest.json").load_catalog().catalog
 	var definition := catalog.get_definition("runs", catalog.default_run_id) as RunDefinition
 	if mode == "write": DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))
 	var s := RunSession.new(definition, catalog.content_version, SaveManager.new(PATH), catalog)

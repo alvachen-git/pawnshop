@@ -2,12 +2,13 @@ class_name SaveCodec
 extends RefCounted
 
 const VERSION := 7
-const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt"]
+const ROOM_VERSION := 8
+const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt", "shop_resolution", "private_room", "sleep_resolution"]
 var error_message := ""
 
 func encode(state: RunState, content_version: int) -> Dictionary:
 	var data := state.to_read_model()
-	data.save_version = VERSION
+	data.save_version = ROOM_VERSION if state.room_enabled else VERSION
 	data.content_version = content_version
 	return data
 
@@ -18,7 +19,7 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	for key in ["save_version", "content_version", "current_night_index", "game_minutes", "cash", "run_seed", "closed_at", "night_opening_cash", "action_count"]:
 		if not data.has(key) or not RunSchema.integer(data[key]) or abs(data[key]) > 2147483647:
 			return null
-	if int(data.save_version) != VERSION or int(data.content_version) != content_version:
+	if int(data.save_version) != (ROOM_VERSION if definition.private_room else VERSION) or int(data.content_version) != content_version:
 		error_message = "存档/内容版本不兼容；旧文件已保留。"
 		return null
 	if data.get("run_definition_id") != definition.id:
@@ -26,6 +27,9 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		return null
 	if data.get("phase") not in CHECKPOINTS or not data.get("summaries") is Array:
 		return null
+	if not data.get("room_history", []) is Array: return null
+	if not definition.private_room and (data.phase in RoomFlow.PHASES or data.get("room_enabled", false) != false or not data.get("room_history", []).is_empty()): return null
+	if definition.private_room and (not data.get("room_enabled") is bool or data.room_enabled != true or not data.get("room_history") is Array): return null
 	var night := int(data.current_night_index)
 	var elapsed := int(data.game_minutes)
 	var closed := int(data.closed_at)
@@ -66,6 +70,7 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		return null
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.room_enabled = definition.private_room
 	state.current_night_index = night
 	state.phase = StringName(data.phase)
 	state.game_minutes = elapsed
@@ -90,6 +95,9 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	if not error_message.is_empty(): return null
 	error_message = RiskSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
+	if definition.private_room:
+		error_message = RoomSaveCodec.restore(data, state, definition, catalog)
+		if not error_message.is_empty(): return null
 	error_message = FeeSaveCodec.finish(data, state, definition)
 	if not error_message.is_empty(): return null
 	return state

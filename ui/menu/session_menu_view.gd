@@ -7,6 +7,7 @@ signal panel_requested(panel_id: StringName)
 
 var _confirmation: ConfirmationDialog
 var _pending_intent := ""
+var _error_dialog: AcceptDialog
 
 
 func _ready() -> void:
@@ -25,8 +26,11 @@ func _ready() -> void:
 
 
 func render(model: Dictionary) -> void:
+	%EventButton.visible = not model.get("in_room", false)
+	%NightButton.visible = not model.get("in_room", false)
+	%LoadRunButton.text = "读取存档" if model.get("room_flow", false) else "读取夜末存档"
 	%LoadRunButton.disabled = not bool(model.get("has_save", false))
-	%LoadRunButton.tooltip_text = "尚无可读取的夜末存档。" if %LoadRunButton.disabled else "读取最近的夜末存档。"
+	%LoadRunButton.tooltip_text = "尚无可读取的存档。" if %LoadRunButton.disabled else "读取最近一次保存的进度。"
 
 
 func open_menu() -> void:
@@ -36,6 +40,16 @@ func open_menu() -> void:
 
 func close_menu() -> void:
 	hide()
+
+
+func show_load_error(message: String) -> void:
+	if _error_dialog == null:
+		_error_dialog = AcceptDialog.new()
+		_error_dialog.title = "读取失败"
+		_error_dialog.ok_button_text = "知道了"
+		add_child(_error_dialog)
+	_error_dialog.dialog_text = message
+	_error_dialog.popup_centered(Vector2i(460, 170))
 
 
 func _route(panel_id: StringName) -> void:

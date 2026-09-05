@@ -41,7 +41,7 @@ static func finish(data: Dictionary, state: RunState, run: RunDefinition) -> Str
 		var copy: Dictionary = row.duplicate(true)
 		for key in ["night", "cash", "principal", "arrears", "overdue", "inventory_cost", "pawn_principal"]: copy[key] = int(copy[key])
 		state.bankruptcy_archive.append(copy)
-	var failed := state.phase != &"pre_open" and FeeService.overdue(state) > 0 and state.risk_pending.is_empty() and state.phase != &"dead"
+	var failed := state.phase != &"pre_open" and FeeService.overdue(state) > 0 and state.risk_pending.is_empty() and state.phase != &"dead" and String(state.phase) not in RoomFlow.PHASES
 	if failed != (state.phase == &"bankrupt"): return "经营终局与欠款期限不符。"
 	var current: Dictionary = {}
 	for row in state.bankruptcy_archive:

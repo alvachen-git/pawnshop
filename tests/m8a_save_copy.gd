@@ -13,7 +13,7 @@ func _initialize() -> void:
 	var source_hash := FileAccess.get_sha256(source)
 	check(not source_hash.is_empty(), "generated v7 fixture exists")
 	check(DirAccess.copy_absolute(source, target) == OK, "copy valid v7 fixture")
-	var catalog := JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	var catalog := JsonContentProvider.new("res://tests/fixtures/m7_manifest.json").load_catalog().catalog
 	var definition := catalog.get_definition("runs", catalog.default_run_id) as RunDefinition
 	var save := SaveManager.new(target)
 	var session := RunSession.new(definition, catalog.content_version, save, catalog)
