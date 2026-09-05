@@ -18,6 +18,7 @@ func render_snapshot(state: Dictionary, definition: RunDefinition, intrusion: bo
 	if intrusion: %RiskStatus.text = "香灰倒伏 · 命灯安稳"
 	if haunting: %RiskStatus.text = "香灰倒伏 · 命灯偏斜" if intrusion else "财神香直 · 命灯偏斜"
 	if state.phase == "dead": %RiskStatus.text = "命灯已灭"
+	if definition.private_room: %RiskStatus.text = "香灰倒伏" if intrusion else "香烟直上"
 	%RiskStatus.text = "香火\n" + %RiskStatus.text
 
 

@@ -29,6 +29,7 @@ func held_at(state: RunState, item: ItemInstance, night: int, minute: int) -> bo
 	for entry in state.ledger_entries:
 		if entry.item_instance_id != item.instance_id: continue
 		if entry.kind in ["acquisition", "pawn_loan"] and entry.night == night and entry.minute > minute: return false
+		if entry.kind == "pawn_transfer" and entry.night < night: return false
 		if entry.kind in ["sale", "redemption"] and (entry.night < night or (entry.night == night and entry.minute <= minute)): return false
 	return true
 
@@ -69,6 +70,9 @@ func handle(day: DayController, id: String, command: String) -> ActionResult:
 
 func night_outcome(state: RunState, night: int) -> String:
 	if not MirrorEncounterService.pursuit(state, night).is_empty(): return "mirror_pending"
+	return storage_outcome(state, night)
+
+func storage_outcome(state: RunState, night: int) -> String:
 	var result := "peaceful"
 	for row in state.risk_history:
 		if row.night != night or row.action != "close": continue
@@ -94,7 +98,7 @@ func settle(state: RunState) -> void:
 			state.risk_pending = pursuit.mirror_id
 			return
 		for item in ghosts(state):
-			if item.ownership_state in ["owned", "pledged"] and not covered(state, item.instance_id):
+			if held_at(state, item, state.current_night_index, state.game_minutes) and not covered(state, item.instance_id):
 				state.risk_pending = item.instance_id
 				break
 
@@ -118,7 +122,7 @@ func death_record(state: RunState, id: String) -> Dictionary:
 	var financial := FinancialSummary.build(state)
 	var record := {"run_token": state.run_token, "run_id": String(state.run_definition_id), "night": state.current_night_index, "cash": state.cash, "item_id": id, "rule_id": rule.id, "cause": rule.death_cause, "item_name": item_def.display_name, "inventory_cost": financial.inventory_cost, "pawn_principal": financial.pawn_principal}
 	var pursuit := MirrorEncounterService.pursuit(state, state.current_night_index)
-	if not pursuit.is_empty():
+	if not pursuit.is_empty() and (not state.room_enabled or state.risk_history.back().get("scope", "") == "personal"):
 		var run := catalog.get_definition("runs", String(state.run_definition_id)) as RunDefinition
 		var encounter := MirrorEncounterService.find_definition(run, pursuit.encounter_id) if run != null else null
 		if encounter != null:

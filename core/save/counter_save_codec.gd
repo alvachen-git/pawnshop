@@ -13,7 +13,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			fixture.current_night_index = index + 1
 			fixture.run_seed = state.run_seed
 			CustomerManager.new().prepare_night(fixture, run, catalog)
-			for expected in fixture.visits: expected_visits[expected.visit_id] = expected
+			var delay := PawnReturnService.delay_for(data, index + 1, catalog)
+			for expected in fixture.visits:
+				expected.arrival += delay
+				expected.expires_at += delay
+				expected_visits[expected.visit_id] = expected
 		if data.visit_history.size() != expected_visits.size(): return "夜末来访历史不完整。"
 	var bought: Dictionary = {}
 	var history_ids: Array = []
@@ -49,7 +53,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		instance.acquisition_price = int(entry.acquisition_price)
 		instance.acquired_night = int(entry.acquired_night)
 		instance.source_visit_id = entry.source_visit_id
-		if entry.get("acquisition_type") not in ["purchase", "pawn"] or entry.get("ownership_state") not in ["owned", "pledged", "sold", "redeemed"]: return "库存权属无效。"
+		if entry.get("acquisition_type") not in ["purchase", "pawn"] or entry.get("ownership_state") not in ["owned", "pledged", "sold", "redeemed", "transferred"]: return "库存权属无效。"
 		if (entry.acquisition_type == "pawn") != (bought[entry.source_visit_id].outcome == "pawned"): return "当票与交易模式不符。"
 		instance.acquisition_type = entry.acquisition_type
 		instance.ownership_state = entry.ownership_state

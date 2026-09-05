@@ -26,14 +26,15 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 		var customer := service.catalog.get_definition("customers", ticket.customer_id) as CustomerDefinition
 		var terms := service.catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
-		var command := service.pawns.request_kind(ticket, terms)
-		var request := "暂无当户返店请求。到期夜末未赎，转为现货。"
+		var request := "约定到期日开铺后验票办理。无人来赎，夜末核票处置。"
 		if ticket.status == "redeemed": request = "第%d夜收妥赎金，原物交还。" % ticket.closed_night
-		elif ticket.status == "defaulted": request = "第%d夜到期未赎，原物转为铺中现货。" % ticket.closed_night
-		elif not command.is_empty():
-			request = "约定第%d夜 %s–%s 办理%s。" % [ticket.due_night, TimeController.clock_text(day.definition.opening_minute, terms.window_start), TimeController.clock_text(day.definition.opening_minute, terms.window_end), "赎回" if command == "redeem" else "续当"]
-			request += "\n办理耗时 %d 分钟。" % (terms.redeem_minutes if command == "redeem" else terms.extend_minutes)
-			if command == "extend": request += "续当费 %d 银元，延长 %d 夜。" % [ceili(ticket.principal * terms.extension_fee_ratio), terms.extension_nights]
+		elif ticket.status == "defaulted": request = "第%d夜销票留货，原物转为铺中现货。" % ticket.closed_night
+		elif ticket.status == "transferred": request = "第%d夜折价转当，原物与当票一并交给同行。" % ticket.closed_night
+		else:
+			request += "\n赎回办理 %d 分钟。" % terms.redeem_minutes
+			var visit := PawnReturnService.current(day.state)
+			if not visit.is_empty() and visit.ticket_id == ticket.ticket_id: request = "原当户已持票到店，请到柜台办理。"
+
 		tickets.append({"id": ticket.ticket_id, "number": "%03d" % (index + 1), "item": definition.display_name,
 			"customer": customer.terms.display_name, "principal": ticket.principal, "redemption": ticket.redemption_amount,
 			"start": ticket.started_night, "due": ticket.due_night, "state": ticket.status,

@@ -45,7 +45,8 @@ func _run() -> void:
 	await _click("进入下一夜")
 	await _click("开铺")
 	await _click("账本")
-	await _click("收赎金 33 并交还原物")
+	await _click("到柜台接待原当户")
+	await _click("验票收赎，交还原物")
 	_check(_session.read_state().cash == 80 and _session.read_state().pawn_tickets[1].status == "redeemed", "UI次夜收取赎金并交还原物")
 	await _capture("05_redeemed")
 	await _click("营业")
@@ -55,7 +56,8 @@ func _run() -> void:
 	_check(_session.read_state().cash == 47 and _session.read_state().phase == "pre_open" and _session.read_state().pawn_tickets[1].status == "active", "UI读档恢复本金和当票，不重复赎金")
 	await _click("开铺")
 	await _click("账本")
-	await _click("收赎金 33 并交还原物")
+	await _click("到柜台接待原当户")
+	await _click("验票收赎，交还原物")
 	await _finish_night()
 	_check(_session.read_state().pawn_tickets[0].status == "defaulted", "未返店当户的当票到期绝当")
 	await _click("进入下一夜")
@@ -78,7 +80,10 @@ func _finish_night() -> void:
 	await _click("营业")
 	await _click("关门（本夜不可重开）")
 	await _click("等到封铺（消耗全部剩余时间）")
-	await _click("结算本夜（占位）并自动保存")
+	var due := _session.pawn_disposal_model()
+	for index in due.size():
+		await _click_button(_main.find_child("NightResolutionView", true, false)._disposals.get_child(index).find_children("*", "Button", true, false)[0])
+	await _click("核妥当票，合上账册" if not due.is_empty() else "结算本夜（占位）并自动保存")
 
 func _sell_first() -> void:
 	for entry in _session.counter_model().inventory.buttons:

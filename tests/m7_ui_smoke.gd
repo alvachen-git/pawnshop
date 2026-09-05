@@ -6,6 +6,7 @@ func _run() -> void:
 	root.size = Vector2i(1600, 900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280, 720)
 	_main = load("res://scenes/main.tscn").instantiate()
 	_main.get_node("Bootstrap").save_path = _save_path
+	_main.get_node("Bootstrap").manifest_path = "res://tests/fixtures/m7_manifest.json"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
 	await _frames()

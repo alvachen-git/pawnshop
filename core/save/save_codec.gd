@@ -1,13 +1,14 @@
 class_name SaveCodec
 extends RefCounted
 
-const VERSION := 7
-const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt"]
+const VERSION := 9
+const ROOM_VERSION := 9
+const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt", "shop_resolution", "private_room", "sleep_resolution"]
 var error_message := ""
 
 func encode(state: RunState, content_version: int) -> Dictionary:
 	var data := state.to_read_model()
-	data.save_version = VERSION
+	data.save_version = ROOM_VERSION if state.room_enabled else VERSION
 	data.content_version = content_version
 	return data
 
@@ -18,14 +19,28 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	for key in ["save_version", "content_version", "current_night_index", "game_minutes", "cash", "run_seed", "closed_at", "night_opening_cash", "action_count"]:
 		if not data.has(key) or not RunSchema.integer(data[key]) or abs(data[key]) > 2147483647:
 			return null
-	if int(data.save_version) != VERSION or int(data.content_version) != content_version:
+	var legacy := int(data.save_version) == (8 if definition.private_room else 7)
+	if (int(data.save_version) != VERSION and not legacy) or int(data.content_version) != content_version:
 		error_message = "存档/内容版本不兼容；旧文件已保留。"
 		return null
+	if legacy:
+		data = data.duplicate(true)
+		if not data.get("summaries") is Array or not data.get("pawn_tickets") is Array: return null
+		data.pawn_rules_start_night = data.summaries.size() + 1
+		data.pawn_returns = PawnReturnService.plan(data.pawn_tickets, int(data.current_night_index), catalog) if data.get("phase") == "pre_open" else []
+		for summary in data.summaries:
+			if not summary is Dictionary: return null
+			summary.pawn_transfer_receipts = 0
+	if not RunSchema.integer(data.get("pawn_rules_start_night")) or data.pawn_rules_start_night < 1 or data.pawn_rules_start_night > int(data.current_night_index) + 1: return null
 	if data.get("run_definition_id") != definition.id:
 		error_message = "存档运行配置不存在或不匹配。"
 		return null
 	if data.get("phase") not in CHECKPOINTS or not data.get("summaries") is Array:
 		return null
+	if data.pawn_rules_start_night > data.summaries.size() + 1: return null
+	if not data.get("room_history", []) is Array: return null
+	if not definition.private_room and (data.phase in RoomFlow.PHASES or data.get("room_enabled", false) != false or not data.get("room_history", []).is_empty()): return null
+	if definition.private_room and (not data.get("room_enabled") is bool or data.room_enabled != true or not data.get("room_history") is Array): return null
 	var night := int(data.current_night_index)
 	var elapsed := int(data.game_minutes)
 	var closed := int(data.closed_at)
@@ -66,6 +81,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		return null
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.pawn_rules_start_night = int(data.pawn_rules_start_night)
+	state.room_enabled = definition.private_room
 	state.current_night_index = night
 	state.phase = StringName(data.phase)
 	state.game_minutes = elapsed
@@ -82,6 +99,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 			state.summaries.back()[key] = int(entry[key])
 	error_message = CounterSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
+	error_message = PawnReturnService.validate(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
 	error_message = TradeScenarioSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
 	error_message = EventSaveCodec.restore(data, state, definition, catalog)
@@ -90,6 +109,9 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	if not error_message.is_empty(): return null
 	error_message = RiskSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
+	if definition.private_room:
+		error_message = RoomSaveCodec.restore(data, state, definition, catalog)
+		if not error_message.is_empty(): return null
 	error_message = FeeSaveCodec.finish(data, state, definition)
 	if not error_message.is_empty(): return null
 	return state

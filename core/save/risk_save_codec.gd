@@ -59,8 +59,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 				for previous in state.risk_history:
 					if previous.night == night and previous.action in ["cover", "uncover"] and previous.minute > minute - cost: return "鬼货处理耗时重叠。"
 			"retreat", "defy":
-				if responses.has(night) or minute != run.night_minutes or (not personal and (not closes.has(key) or cloth)) or manager.night_outcome(state, night) != "mirror_pending": return "夜间应对无前置警告。"
-				responses[night] = row.action
+				if run.private_room:
+					if row.get("scope", "") not in ["shop", "personal"] or minute != run.night_minutes: return "房间应对位置无效。"
+				else:
+					if responses.has(night) or minute != run.night_minutes or (not personal and (not closes.has(key) or cloth)) or manager.night_outcome(state, night) != "mirror_pending": return "夜间应对无前置警告。"
+					responses[night] = row.action
 			_:
 				return "未知鬼货处理动作。"
 		var copy: Dictionary = row.duplicate(true)
@@ -70,17 +73,19 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	for night in range(1, state.summaries.size() + 1):
 		for item in manager.ghosts(state):
 			if manager.held_at(state, item, night, state.summaries[night - 1].closed_at) and not closes.has("%d/%s" % [night, item.instance_id]): return "缺少关门鬼货检查。"
+		if run.private_room: continue # RoomSaveCodec replays both risk stages and their outcomes.
 		var outcome := manager.night_outcome(state, night)
 		if responses.has(night): outcome = "mirror_death" if responses[night] == "defy" else "mirror_survived"
 		if state.summaries[night - 1].outcome != outcome: return "鬼货结果与处理历史不符。"
 		if outcome in ["mirror_death", "mirror_pending"] and (night != state.current_night_index or state.phase != (&"dead" if outcome == "mirror_death" else &"day_summary")): return "未解决的鬼货结果不能推进。"
 	var expected := ""
-	if not state.summaries.is_empty() and state.summaries.back().outcome == "mirror_pending":
+	if run.private_room: expected = data.risk_pending
+	elif not state.summaries.is_empty() and state.summaries.back().outcome == "mirror_pending":
 		var pursuit := MirrorEncounterService.pursuit(state, state.current_night_index)
 		if not pursuit.is_empty(): expected = pursuit.mirror_id
 		for item in manager.ghosts(state):
 			if not expected.is_empty(): break
-			if item.ownership_state in ["owned", "pledged"] and not manager.covered(state, item.instance_id):
+			if manager.held_at(state, item, state.current_night_index, state.game_minutes) and not manager.covered(state, item.instance_id):
 				expected = item.instance_id
 				break
 	if data.risk_pending != expected: return "待处理鬼货与日结不一致。"

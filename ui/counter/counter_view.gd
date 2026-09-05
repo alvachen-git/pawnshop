@@ -183,6 +183,7 @@ func render(model: Dictionary) -> void:
 	_speech_panel.visible = active and not visual.is_empty()
 	if not visual.is_empty():
 		%CustomerText.text = "%s\n%s\n最迟留到 %s" % [visual.customer_name, visual.attitude, visual.deadline]
+		if visual.get("pawn_return", false): %CustomerText.text = visual.customer_name + "\n持票回访 · 等候验票"
 		_speech.text = visual.introduction
 		if not visual.speech.is_empty():
 			_speech.text = visual.speech.back().answer

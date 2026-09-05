@@ -29,7 +29,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		for key in ["principal", "started_night", "due_night", "redemption_amount", "closed_night", "closed_minute"]: ticket.set(key, int(row[key]))
 		for extension in row.extensions:
 			if not extension is Dictionary or not CounterSaveCodec._integers(extension, ["night", "minute", "fee", "previous_due", "new_due"]): return "续当记录结构无效。"
-			if extension.night != due or extension.night > completed or extension.previous_due != due or extension.new_due != due + terms.extension_nights or extension.fee != ceili(ticket.principal * terms.extension_fee_ratio) or not _window(extension.minute, terms.window_start, terms.window_end, terms.extend_minutes, run): return "续当与到访窗口或费用不符。"
+			if extension.night != due or extension.night > completed or extension.previous_due != due or extension.new_due != due + terms.extension_nights or extension.fee != ceili(ticket.principal * terms.extension_fee_ratio) or not _return_time(extension.minute, int(extension.night), terms, terms.extend_minutes, run, state): return "续当与到访窗口或费用不符。"
 			var normalized := {}
 			for key in ["night", "minute", "fee", "previous_due", "new_due"]: normalized[key] = int(extension[key])
 			ticket.extensions.append(normalized)
@@ -40,10 +40,15 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			"active":
 				if due <= completed or ticket.closed_night != 0 or ticket.closed_minute != -1 or item.ownership_state != "pledged": return "在当状态与期限不符。"
 			"defaulted":
+				if due >= state.pawn_rules_start_night and terms.return_mode != "absent": return "已回访当户不能绝当。"
 				if due > completed or ticket.closed_night != due or ticket.closed_minute != run.night_minutes or item.ownership_state not in ["owned", "sold"]: return "绝当状态或时刻不符。"
 			"redeemed":
-				if due > completed or ticket.closed_night != due or item.ownership_state != "redeemed" or terms.return_mode == "absent" or (terms.return_mode == "extend_once" and ticket.extensions.is_empty()) or not _window(ticket.closed_minute, terms.window_start, terms.window_end, terms.redeem_minutes, run): return "赎回没有有效当户请求。"
+				if due > completed or ticket.closed_night != due or item.ownership_state != "redeemed" or terms.return_mode == "absent" or (terms.return_mode == "extend_once" and ticket.extensions.is_empty()) or not _return_time(ticket.closed_minute, ticket.closed_night, terms, terms.redeem_minutes, run, state): return "赎回没有有效当户请求。"
 				_post(expected, "redeem/" + ticket.ticket_id, item.instance_id, due, ticket.closed_minute, ticket.redemption_amount, "redemption", ticket.redemption_amount - ticket.principal)
+			"transferred":
+				if due < state.pawn_rules_start_night or due > completed or ticket.closed_night != due or ticket.closed_minute != run.night_minutes or item.ownership_state != "transferred" or terms.return_mode != "absent": return "转当状态、期限或权属不符。"
+				var price := PawnController.new().transfer_quote(ticket, terms)
+				_post(expected, "transfer/" + ticket.ticket_id, item.instance_id, due, run.night_minutes, price, "pawn_transfer", price - ticket.principal)
 			_: return "未知当票状态。"
 		tickets[item.instance_id] = ticket
 		state.pawn_tickets.append(ticket)
@@ -80,7 +85,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		for key in posting:
 			if row.get(key) != posting[key]: return "流水与交易记录不一致。"
 		var stamp := int(row.night) * (run.night_minutes + 1) + int(row.minute)
-		if row.kind != "daily_fees" and row.minute > state.summaries[int(row.night) - 1].closed_at: return "关门后不能完成外部交易。"
+		if row.kind not in ["daily_fees", "pawn_transfer"] and row.minute > state.summaries[int(row.night) - 1].closed_at: return "关门后不能完成外部交易。"
 		if stamp < last_time: return "流水时间倒序。"
 		last_time = stamp
 		balance += int(row.amount)
@@ -108,7 +113,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 					var active := PawnTicket.new()
 					active.principal = ticket.principal
 					snapshot.pawn_tickets.append(active)
-				elif ticket.status == "redeemed": clone.ownership_state = "redeemed"
+				elif ticket.status in ["redeemed", "transferred"]: clone.ownership_state = ticket.status
 			if sales.has(item.instance_id) and sales[item.instance_id].night <= summary.night: clone.ownership_state = "sold"
 			snapshot.inventory_instances.append(clone)
 		var financial := FinancialSummary.build(snapshot)
@@ -122,3 +127,7 @@ static func _post(entries: Dictionary, id: String, item: String, night: int, min
 
 static func _window(minute: int, start: int, end: int, cost: int, run: RunDefinition) -> bool:
 	return minute >= start + cost and minute < end and minute < run.night_minutes and minute % run.time_step == 0
+
+static func _return_time(minute: int, night: int, terms: PawnTermsDefinition, cost: int, run: RunDefinition, state: RunState) -> bool:
+	if night < state.pawn_rules_start_night: return _window(minute, terms.window_start, terms.window_end, cost, run)
+	return minute >= cost and minute <= run.night_minutes and minute % run.time_step == 0

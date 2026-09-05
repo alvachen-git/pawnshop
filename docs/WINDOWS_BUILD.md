@@ -1,4 +1,4 @@
-# M8-A Windows 构建与验收指南
+# Windows 构建与验收指南
 
 ## 工具准备
 
@@ -50,7 +50,7 @@ JSON 清单来自 `data/content_manifest.json` 的 `sources`，当前精确为 M
 ## 正式 EXE 的独立检查
 
 ```powershell
-./tools/smoke_windows_package.ps1 -ZipPath ./dist/<构建ID>/Pawnshop-M8A.1-windows-x86_64.zip
+./tools/smoke_windows_package.ps1 -ZipPath ./dist/<构建ID>/Pawnshop-V06-Pawn.1-windows-x86_64.zip
 ```
 
 必须在非管理员会话运行。脚本校验 ZIP 和解压后的二进制哈希，解压到 `%TEMP%/鬼市当铺 M8A Test <唯一ID>/game/`，将 APPDATA 临时指向该次检查目录并恢复环境变量。正式 EXE 不接受源码目录或外部测试脚本参数。检查普通/图形启动、默认日志落点及开发存档哈希不变；截图若生成则来自 EXE 的引擎录帧能力。

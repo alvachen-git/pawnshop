@@ -3,7 +3,7 @@ extends M6Tests
 
 func run(expect: Callable) -> void:
 	_expect = expect
-	var loaded := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://tests/fixtures/m7_manifest.json").load_catalog()
 	_expect.call(loaded.is_success(), "M7生产内容通过校验")
 	if not loaded.is_success():
 		for issue in loaded.issues: print(issue.format_message())

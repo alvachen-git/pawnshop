@@ -1,6 +1,12 @@
-# 《鬼市当铺》技术架构 · 识货与识人
+# 《鬼市当铺》技术架构
 
-## 当前边界
+## 当前边界 · V06-Room.1
+
+当前默认p0_room，content9/save8，在旧三夜基础上接入RoomFlow与RoomSaveCodec：shop_resolution→private_room→sleep_resolution→day_summary。铺内应对和个人应对分别保存scope，room_history回放不可逆阶段；费用先结算，finish_sleep才判经营失败，死亡优先。UI新增寝屋固定背景、命灯/书桌/床热点。参见 [房间实现与验证](V06_ROOM_GUIDE.md)。
+
+下列版本号和玩法描述保留为历史架构记录。新债务系统及七夜事件扩展尚未接入。
+
+## 历史边界 · M8-A
 
 M8-A 技术基线统一为 Godot **4.6.1 Standard / GDScript**，Windows x86_64 使用 Compatibility。历史里程碑中的 4.7.2 记录不改写为当前验证结果。内容仍为 JSON + 两级校验，Save v7/content v8 不变；本轮仅增加发布配置、构建/审计工具和随包字体。
 
@@ -178,3 +184,12 @@ RunSession在所有耗时意图后捕获关门（含自动封铺）；结算后�
 - MirrorEncounterService独立处理来客绑定、窥看选择及证据来源；不占普通事件额度，不扩展万能事件脚本。
 - 新状态为fee_history、fee_arrears、mirror_history、bankruptcy_archive以及bankrupt终止阶段。FinancialSummary增加当夜息费、实际付款和经营净收益。
 - FeeSaveCodec与MirrorSaveCodec参与独立重建，最后联合风险/经营结果核验。默认新存档路径与M5分离，旧档仅用于有效历史记录导入。
+
+
+## 活当回访与核票接入（当前v9）
+
+PawnReturnService独立编排/校验原主回访，以ticket/customer/item引用原合同，避免混入新客收购历史。CustomerManager只按回访耗时顺延普通排程；回访完成后才激活新客。PawnReturnReadModels提供柜台展示，账本只导航。
+
+RunSession持有瞬时核票草稿，PawnController验证到期与无人回访条件。resolve_night统一提交留货/转当、息费、风险及保存；失败还原深快照并保留草稿。转当以pawn_transfer单列流水与利润，transferred是票据与原物的终态。夜间转当不作为普通买卖接口开放。
+
+SaveCodec版本9记录pawn_returns与pawn_rules_start_night，兼容同配置的旧7/8。CounterSaveCodec与TradeScenarioSaveCodec按历史回访耗时重建普通来客时间，CommerceSaveCodec重建合同、转当和利润流水，PawnReturnService核验真实接待。旧夜账目按原规则验证，不重算。默认v9路径导入旧v8进度并保留源文件，旧v7生产档只合并账册。详见PAWN_RETURN_GUIDE.md。

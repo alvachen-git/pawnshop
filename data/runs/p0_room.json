@@ -1,0 +1,591 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "p0_room",
+      "total_nights": 3,
+      "opening_minute": 1080,
+      "night_minutes": 540,
+      "time_step": 5,
+      "initial_cash": 100,
+      "seed": 1049,
+      "tools": [
+        "magnifier",
+        "lamp",
+        "magnet"
+      ],
+      "customer_slots": [
+        {
+          "id": "n1_visit1",
+          "arrival": 0,
+          "customer_id": "customer_citizen",
+          "item_id": "item_blue_bowl",
+          "variant_id": "",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit2",
+          "arrival": 90,
+          "customer_id": "customer_hawker",
+          "item_id": "item_brass_holder",
+          "variant_id": "",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit3",
+          "arrival": 210,
+          "customer_id": "customer_citizen",
+          "item_id": "item_silver_hairpin",
+          "variant_id": "sound",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit4",
+          "arrival": 360,
+          "customer_id": "customer_scholar",
+          "item_id": "item_fountain_pen",
+          "variant_id": "flawed",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n2_visit1",
+          "arrival": 0,
+          "customer_id": "customer_house_agent",
+          "item_id": "item_pocket_watch",
+          "variant_id": "",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit2",
+          "arrival": 90,
+          "customer_id": "customer_scholar",
+          "item_id": "item_inkstone",
+          "variant_id": "flawed",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit3",
+          "arrival": 210,
+          "customer_id": "customer_house_agent",
+          "item_id": "item_clay_teapot",
+          "variant_id": "sound",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit4",
+          "arrival": 360,
+          "customer_id": "customer_citizen",
+          "item_id": "item_silk_panel",
+          "variant_id": "flawed",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n3_visit1",
+          "arrival": 0,
+          "customer_id": "customer_citizen",
+          "item_id": "item_weeping_mirror",
+          "variant_id": "weeping",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit2",
+          "arrival": 90,
+          "customer_id": "customer_scholar",
+          "item_id": "item_fountain_pen",
+          "variant_id": "sound",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit3",
+          "arrival": 210,
+          "customer_id": "customer_scholar",
+          "item_id": "item_inkstone",
+          "variant_id": "sound",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit4",
+          "arrival": 360,
+          "customer_id": "customer_hawker",
+          "item_id": "item_pocket_watch",
+          "variant_id": "flawed",
+          "night_min": 3,
+          "night_max": 3
+        }
+      ],
+      "actions": [
+        {
+          "id": "short_task",
+          "label": "歇一歇",
+          "minutes": 5,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "medium_task",
+          "label": "收拾柜面",
+          "minutes": 10,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "long_task",
+          "label": "在铺里走走",
+          "minutes": 30,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "wait_hour",
+          "label": "等待",
+          "minutes": 60,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        }
+      ],
+      "buyer_ids": [
+        "buyer_recycler",
+        "buyer_collector",
+        "buyer_introduced",
+        "buyer_mirror"
+      ],
+      "event_ids": [
+        "shen_opening",
+        "cash_lesson",
+        "final_stock",
+        "buyer_reply",
+        "rain_news",
+        "patient_buyer",
+        "stock_note"
+      ],
+      "flag_ids": [
+        "shen_met",
+        "contact_requested",
+        "independent",
+        "cash_reviewed",
+        "stock_reviewed",
+        "buyer_introduced",
+        "rumor_heard",
+        "liquidity_hint",
+        "holder_reviewed"
+      ],
+      "ghost_rule_ids": [
+        "weeping_mirror"
+      ],
+      "fee_policy": {
+        "principal": 300,
+        "interest_bps": 100,
+        "overhead": 5,
+        "grace_nights": 1
+      },
+      "mirror_encounters": [
+        {
+          "id": "midnight_old_ticket",
+          "slot_id": "n3_visit4",
+          "mirror_item_id": "item_weeping_mirror",
+          "clue_id": "flaw",
+          "start_minute": 360,
+          "peek_minutes": 5,
+          "pursue_minutes": 5,
+          "invitation": "子时，柜前的人将怀表放下，门上的铜铃却没有响。\n\n红布一角微微鼓起。镜背刻着一行小字：借镜照客，只可一瞥；倒影若回身，莫追。\n\n他按住表盖，不让你看背面的旧刻痕。镜子那边，却像有一只手正替你翻开它。",
+          "peek_text": "镜里的客人没有抬头。他手中的表盖自行翻开，露出摆轮旁的一处暗影。\n\n顺着那位置细看，你发现轴孔已经磨大，摆轮时走时停。这只表需要修理。\n\n倒影忽然从衣襟里抽出一张旧当票。票角的折法，像极了旧掌柜的习惯。镜前的香灰忽然折断——镜里的那个人，正在回头。",
+          "pursue_text": "你看清了票角：那道折痕下，是旧掌柜亲笔写的一个“留”字。\n\n镜中人把当票推向柜外。票没有过来，他脚边的影子却越过了镜缘。你往后退了一步，地上的影子没有跟着动。",
+          "crisis": "你刚躺下，床边便多出一双脚的影子。它停在你身后，手里捏着那张旧当票。\n\n有人贴着你的耳朵问：“掌柜的，这笔还认不认？”\n\n命灯几乎伏倒。镜背的小字忽然想起来了：倒影若回身，莫追。别回头，也别应声。",
+          "death_cause": "掌柜回过头时，身后的影子终于与他重合。命灯熄了，旧当票落在床边，再没有人伸手去接。"
+        }
+      ],
+      "randomize_seed": true,
+      "trade_scenarios": [
+        {
+          "id": "bowl_testimony",
+          "slot_id": "n1_visit1",
+          "item_id": "item_blue_bowl",
+          "variant_ids": [
+            "sound",
+            "repaired"
+          ],
+          "situations": [
+            "ordinary"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "客人把青花碗搁在柜上，用袖口抹了抹碗沿。",
+          "questions": [
+            {
+              "id": "repairs",
+              "prompt": "问这碗是否修补过",
+              "answers": {
+                "default": "“一直收在家里，没磕没补。掌柜尽管看。”"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0
+            },
+            {
+              "id": "origin",
+              "prompt": "问这碗的来历",
+              "answers": {
+                "default": "“母亲留下的。搬了几回家，别的都散了，就剩它。”"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0
+            },
+            {
+              "id": "doubt",
+              "prompt": "说这碗看着不太稳妥",
+              "answers": {
+                "default": "他把手伸向碗沿：“哪里不妥？总得说出个地方。”"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 1
+            },
+            {
+              "id": "seam",
+              "prompt": "指着接缝，问为何说没补过",
+              "answers": {
+                "admit": "他低下头：“那年摔过一次，请人补的。方才是我没说实话。这道接缝，算进价里吧。”",
+                "explain": "“我接手时就是这样。”他停了一下，“家里老人从没提过修补。既然有缝，价钱再商量。”",
+                "evade": "他避开灯光：“碗还能用。您就按手上的东西出价，别再问家里的事了。”"
+              },
+              "minutes": 5,
+              "requires_questions": [
+                "repairs"
+              ],
+              "requires_clues": [
+                "repair"
+              ],
+              "pressure_clue": "repair",
+              "patience_cost": 0
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "sound",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "intact"
+              ]
+            },
+            {
+              "id": "repaired",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "repair"
+              ]
+            }
+          ],
+          "benefit_groups": {
+            "repair": "bowl_repair"
+          },
+          "concession_question": "",
+          "concession_amount": 0,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        },
+        {
+          "id": "holder_material",
+          "slot_id": "n1_visit2",
+          "item_id": "item_brass_holder",
+          "variant_ids": [
+            "brass",
+            "plated"
+          ],
+          "situations": [
+            "ordinary"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "货郎将烛台墩在柜上，底座发出一声闷响。",
+          "questions": [
+            {
+              "id": "material",
+              "prompt": "问烛台是什么料",
+              "answers": {
+                "default": "“整铜的，掂着就知道。收铜器的都认这个分量。”"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0
+            },
+            {
+              "id": "origin",
+              "prompt": "问从哪里收来的",
+              "answers": {
+                "default": "“拆旧屋时收的，原主也用了些年。底下的伤是旧伤，可不是我划的。”"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0
+            },
+            {
+              "id": "doubt",
+              "prompt": "说分量重未必就是铜",
+              "answers": {
+                "default": "“您有道理，也得拿个凭据。”他将烛台朝自己挪了挪。"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 1
+            },
+            {
+              "id": "core",
+              "prompt": "指着灰芯，问整铜的说法",
+              "answers": {
+                "admit": "“里头确实夹了铁。”货郎松开底座，“就按这料算。”",
+                "explain": "“我收来时也看走眼了。既然露了底，这价得改。”",
+                "evade": "“总归表面是铜。”他不再谈分量，只问你肯出多少。"
+              },
+              "minutes": 5,
+              "requires_questions": [
+                "material"
+              ],
+              "requires_clues": [
+                "iron_core"
+              ],
+              "pressure_clue": "iron_core",
+              "patience_cost": 0
+            },
+            {
+              "id": "magnetic_core",
+              "prompt": "指着吸住的磁针，问整铜为何吸铁",
+              "answers": {
+                "admit": "他瞧着吸住的磁针：“里头是有铁。方才整铜那话，说满了。”",
+                "explain": "“收来的时候没试过。”他松开手，“既然吸得住，就不能照整铜算。”",
+                "evade": "“您手上有凭据，我就不争了。”他避开磁针，只问你肯出多少。"
+              },
+              "minutes": 5,
+              "requires_questions": [
+                "material"
+              ],
+              "requires_clues": [
+                "attracts"
+              ],
+              "pressure_clue": "attracts",
+              "patience_cost": 0
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "brass",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "brass_core"
+              ]
+            },
+            {
+              "id": "plated",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "iron_core"
+              ]
+            }
+          ],
+          "benefit_groups": {
+            "iron_core": "holder_material",
+            "attracts": "holder_material"
+          },
+          "concession_question": "",
+          "concession_amount": 0,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        },
+        {
+          "id": "watch_circumstance",
+          "slot_id": "n2_visit1",
+          "item_id": "item_pocket_watch",
+          "variant_ids": [
+            "sound",
+            "flawed"
+          ],
+          "situations": [
+            "ordinary",
+            "urgent"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "来客解下表链，将怀表推到灯下。衣着齐整，看不出这一路来得是否匆忙。",
+          "questions": [
+            {
+              "id": "condition",
+              "prompt": "问这表走得准不准",
+              "answers": {
+                "default": "“出门前还对过钟，一路都在走。您瞧，针不是还动着么？”"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0
+            },
+            {
+              "id": "reason",
+              "prompt": "问为何出让怀表",
+              "answers": {
+                "urgent": "“今夜得赶船，盘缠还差一点。带着它上路不如换些现钱。”",
+                "ordinary": "“家里另有一只，闲着也是闲着。价钱合适就留下。”"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0
+            },
+            {
+              "id": "deadline",
+              "prompt": "问何时动身，请看凭据",
+              "answers": {
+                "urgent": "他掏出今夜的船票。票上开船时刻与他说的相合，码头还远。“我只能再留一会儿。”",
+                "ordinary": "他摇摇头：“不赶路，哪来的船票？您慢慢看，我不急着脱手。”"
+              },
+              "minutes": 5,
+              "requires_questions": [
+                "reason"
+              ],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0
+            },
+            {
+              "id": "doubt",
+              "prompt": "说这表恐怕藏着毛病",
+              "answers": {
+                "default": "“不能凭一句恐怕就折价。”他将表盖扣在指间。"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 1
+            },
+            {
+              "id": "movement",
+              "prompt": "指着停摆处，问刚才的走时",
+              "answers": {
+                "admit": "“近来是停过几回。”他声音低了些，“修表钱您扣吧。”",
+                "explain": "“在家放着还好，许是走路颠的。”他看着停住的摆轮，“修理这笔，您算进去。”",
+                "evade": "“旧表哪有一分不差的。”他不再坚持走时，只把价钱让了下来。"
+              },
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "flaw"
+              ],
+              "pressure_clue": "flaw",
+              "patience_cost": 0
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "sound",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "sound"
+              ]
+            },
+            {
+              "id": "flawed",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "flaw"
+              ]
+            }
+          ],
+          "benefit_groups": {
+            "flaw": "watch_movement"
+          },
+          "concession_question": "deadline",
+          "concession_amount": 5,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        }
+      ],
+      "private_room": true
+    }
+  ]
+}

@@ -19,6 +19,7 @@ var fee_policy: Dictionary = {}
 var mirror_encounters: Array = []
 var trade_scenarios: Array = []
 var randomize_seed := false
+var private_room := false
 
 static func from_source(source: Dictionary) -> RunDTO:
 	var dto := RunDTO.new()
@@ -40,4 +41,5 @@ static func from_source(source: Dictionary) -> RunDTO:
 	dto.mirror_encounters = source.get("mirror_encounters", []).duplicate(true)
 	dto.trade_scenarios = source.get("trade_scenarios", []).duplicate(true)
 	dto.randomize_seed = source.get("randomize_seed", false)
+	dto.private_room = source.get("private_room", false)
 	return dto

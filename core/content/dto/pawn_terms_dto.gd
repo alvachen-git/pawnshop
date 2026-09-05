@@ -1,6 +1,7 @@
 class_name PawnTermsDTO
 extends RefCounted
 
+var transfer_ratio := 0.8
 var id: String
 var display_name: String
 var loan_ratio: float
@@ -17,6 +18,7 @@ var extend_minutes: int
 static func from_source(source: Dictionary) -> PawnTermsDTO:
 	var dto := PawnTermsDTO.new()
 	dto.id = source.id
+	dto.transfer_ratio = float(source.get("transfer_ratio", 0.8))
 	dto.display_name = source.display_name
 	dto.loan_ratio = float(source.loan_ratio)
 	dto.term_nights = int(source.term_nights)

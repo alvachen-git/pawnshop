@@ -2,6 +2,7 @@ class_name RunSession
 extends RefCounted
 
 signal changed
+signal transaction_completed(receipt: Dictionary)
 
 var definition: RunDefinition
 var content_version: int
@@ -14,6 +15,7 @@ var _commerce: CommerceService
 var _risk: RiskManager
 var _mirror: MirrorEncounterService
 var _risk_error := ""
+var _pawn_choices: Dictionary = {}
 
 func _init(run_definition: RunDefinition, version: int, save_manager: SaveManager, catalog: ContentCatalog = null) -> void:
 	definition = run_definition
@@ -39,25 +41,36 @@ func has_save() -> bool:
 	return _save.exists()
 
 func can_execute(command: String) -> bool:
-	return _day.state.risk_pending.is_empty() and _day.state.phase not in [&"dead", &"bankrupt"] and _day.state.pending_event_id.is_empty() and not mirror_pending() and _day.can_execute(command)
+	if not PawnReturnService.current(_day.state).is_empty(): return false
+	if command == "resolve_night" and _commerce != null and not _commerce.pawns.disposal_reason(_day.state, _commerce.catalog, _pawn_choices).is_empty(): return false
+	return _day.state.risk_pending.is_empty() and _day.state.phase not in [&"dead", &"bankrupt"] and _day.state.pending_event_id.is_empty() and not mirror_pending() and (_day.can_execute(command) or RoomFlow.can_execute(_day.state, command))
 
 func execute(command: String) -> ActionResult:
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
+	if not PawnReturnService.current(_day.state).is_empty(): return _return_blocked()
+	if command == "resolve_night" and _commerce != null:
+		var error := _commerce.pawns.disposal_reason(_day.state, _commerce.catalog, _pawn_choices)
+		if not error.is_empty():
+			message = error
+			changed.emit()
+			return ActionResult.new(false, error)
 	# Only these commands create checkpoints. Snapshot before mutation for rollback.
-	var checkpoint := command in ["resolve_night", "continue_run"]
+	var checkpoint := command in ["resolve_night", "continue_run", "enter_room", "sleep", "finish_sleep"]
 	var previous: RunState
 	if checkpoint:
 		previous = _copy_state(_day.state)
 	if command == "resolve_night" and not mirror_pending() and _day.can_execute(command) and _commerce != null:
-		_commerce.pawns.resolve_maturities(_day.state, definition.night_minutes)
+		_commerce.pawns.resolve_maturities(_day.state, definition.night_minutes, _commerce.catalog, _pawn_choices)
 	if command == "resolve_night" and _day.can_execute(command): FeeService.settle(_day.state, definition)
-	var result := _day.execute(command)
+	var result := RoomFlow.execute(_day.state, _risk, command) if command in ["enter_room", "sleep", "finish_sleep"] else _day.execute(command)
 	if result.ok and _risk != null:
 		_risk.capture_close(_day.state)
-		if command == "resolve_night": _risk.settle(_day.state)
-	if result.ok and command == "resolve_night": FeeService.finish(_day.state, definition)
+		if command == "resolve_night":
+			if definition.private_room: RoomFlow.seal(_day.state, _risk)
+			else: _risk.settle(_day.state)
+	if result.ok and (command == "finish_sleep" or (command == "resolve_night" and not definition.private_room)): FeeService.finish(_day.state, definition)
 	if result.ok and _counter != null:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
 			_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
@@ -69,6 +82,7 @@ func execute(command: String) -> ActionResult:
 			result = ActionResult.new(false, "未推进；请重试。" + _save.error_message)
 		else:
 			result.message = "这一夜的账，记下了。"
+	if result.ok and command == "resolve_night": _pawn_choices.clear()
 	message = result.message
 	changed.emit()
 	return result
@@ -79,6 +93,7 @@ func load_checkpoint() -> ActionResult:
 	var result := ActionResult.new(restored != null, "账册翻回了上次合拢的那一页。" if restored != null else _save.error_message)
 	if restored != null:
 		_day.state = restored
+		_pawn_choices.clear()
 		if _counter != null and restored.phase == &"pre_open":
 			_counter.customers.prepare_night(restored, definition, _counter.catalog)
 	message = result.message
@@ -86,6 +101,7 @@ func load_checkpoint() -> ActionResult:
 	return result
 
 func new_run() -> void:
+	_pawn_choices.clear()
 	_risk_error = ""
 	var archive := _day.state.death_archive.duplicate(true)
 	var bankruptcies := _day.state.bankruptcy_archive.duplicate(true)
@@ -115,20 +131,28 @@ func _copy_state(source: RunState) -> RunState:
 	return copy
 
 func counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	if command in ["redeem", "extend"]:
+		var visit := PawnReturnService.current(_day.state)
+		if visit.is_empty() or visit.id != visit_id: return _return_blocked()
+		return commerce_command(command, visit.ticket_id)
+	if not PawnReturnService.current(_day.state).is_empty(): return _return_blocked()
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
 	var result := ActionResult.new(false, "当前运行未接入柜台内容。")
+	var ledger_size := _day.state.ledger_entries.size()
 	if _counter != null:
 		result = _counter.execute(_day, command, visit_id, detail, amount)
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
 	changed.emit()
+	_emit_receipt(ledger_size)
 	return result
 
 func counter_model() -> Dictionary:
 	var model := CounterReadModels.build(_day, _counter, message)
+	PawnReturnReadModels.enrich(model, _day, _commerce)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
 	if not _day.state.pending_event_id.is_empty() or mirror_pending() or _day.state.phase in [&"dead", &"bankrupt"]:
 		model.trade.can_offer = false
@@ -140,10 +164,12 @@ func counter_model() -> Dictionary:
 	return model
 
 func commerce_command(command: String, target: String, detail := "") -> ActionResult:
+	if command not in ["redeem", "extend"] and not PawnReturnService.current(_day.state).is_empty(): return _return_blocked()
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
 	var result := ActionResult.new(false, "当前运行没有交易内容。")
+	var ledger_size := _day.state.ledger_entries.size()
 	if _commerce != null:
 		result = _commerce.execute(_day, command, target, detail)
 		_counter.customers.update(_day.state)
@@ -151,7 +177,15 @@ func commerce_command(command: String, target: String, detail := "") -> ActionRe
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
 	changed.emit()
+	_emit_receipt(ledger_size)
 	return result
+
+func _emit_receipt(previous_size: int) -> void:
+	# A rejected quote can return ok=true. A new ledger posting, rather than
+	# ActionResult.ok or localized message matching, proves money changed hands.
+	if _counter == null or _day.state.ledger_entries.size() != previous_size + 1: return
+	var receipt := TradeReceiptModel.build(_day, _counter.catalog, _day.state.ledger_entries.back())
+	if not receipt.is_empty(): transaction_completed.emit(receipt)
 
 func event_model() -> Dictionary:
 	return _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}
@@ -195,6 +229,7 @@ func risk_model() -> Dictionary:
 	return model
 
 func risk_command(command: String, id: String) -> ActionResult:
+	if command in ["cover", "uncover"] and not PawnReturnService.current(_day.state).is_empty(): return _return_blocked()
 	if command.begins_with("mirror_"): return mirror_command(id, command.trim_prefix("mirror_"))
 	if _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if _risk == null: return ActionResult.new(false, "本运行未启用鬼货。")
@@ -203,8 +238,8 @@ func risk_command(command: String, id: String) -> ActionResult:
 	var result: ActionResult
 	if command in ["retreat", "defy"]:
 		var previous := _copy_state(_day.state)
-		result = _risk.respond(_day.state, id, command)
-		if result.ok: FeeService.finish(_day.state, definition)
+		result = RoomFlow.respond(_day.state, _risk, id, command) if definition.private_room else _risk.respond(_day.state, id, command)
+		if result.ok and not definition.private_room: FeeService.finish(_day.state, definition)
 		if result.ok and not _save.save_state(_day.state, definition, content_version):
 			_day.state = previous
 			result = ActionResult.new(false, "应对未提交，请重试。" + _save.error_message)
@@ -242,3 +277,28 @@ func _mirror_blocked() -> ActionResult:
 
 func economy_model() -> Dictionary:
 	return {"description": FeeService.describe(_day.state, definition), "archive": FeeService.archive_text(_day.state), "outstanding": FeeService.outstanding(_day.state)}
+
+func _return_blocked() -> ActionResult:
+	message = "持票的老客正在柜前等候，请先验票办理。"
+	changed.emit()
+	return ActionResult.new(false, message)
+
+func pawn_disposal_model() -> Array[Dictionary]:
+	var rows: Array[Dictionary] = []
+	if _commerce == null or _day.state.phase != &"night_resolution": return rows
+	for ticket in _commerce.pawns.maturities(_day.state):
+		var item := InventoryManager.new().find(_day.state, ticket.item_instance_id)
+		var terms := _commerce.catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
+		rows.append({"id": ticket.ticket_id, "number": "%03d" % (_day.state.pawn_tickets.find(ticket) + 1), "item": (_commerce.catalog.get_definition("items", item.definition_id) as ItemDefinition).display_name,
+			"customer": (_commerce.catalog.get_definition("customers", ticket.customer_id) as CustomerDefinition).terms.display_name,
+			"principal": ticket.principal, "quote": _commerce.pawns.transfer_quote(ticket, terms), "choice": _pawn_choices.get(ticket.ticket_id, "")})
+	return rows
+
+func choose_pawn_disposal(id: String, choice: String) -> ActionResult:
+	if _commerce == null or _day.state.phase != &"night_resolution" or choice not in ["keep", "transfer"]: return ActionResult.new(false, "眼下不能处置当票。")
+	var ticket := _commerce.pawns.find(_day.state, id)
+	if ticket == null or ticket not in _commerce.pawns.maturities(_day.state): return ActionResult.new(false, "当票尚未到期或已经结清。")
+	_pawn_choices[id] = choice
+	message = "选好后可改动；逐张核妥，再一并合账。"
+	changed.emit()
+	return ActionResult.new(true, message)

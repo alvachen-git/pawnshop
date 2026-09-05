@@ -39,12 +39,35 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 		var rule := manager.rule_for(InventoryManager.new().find(state, state.risk_pending))
 		body = "镜中来客\n\n" + rule.crisis + "\n\n财神香：香灰倒伏。命灯：火苗贴着镜面发颤。"
 		var pursuit := MirrorEncounterService.pursuit(state, state.current_night_index)
+		if state.room_enabled and state.phase == &"shop_resolution": pursuit = {}
 		if not pursuit.is_empty():
 			var encounter := MirrorEncounterService.find_definition(day.definition, pursuit.encounter_id)
 			body = "身后的来客\n\n" + encounter.text("crisis")
 		buttons = []
 		for command in ["retreat", "defy"]:
 			buttons.append({"command": command, "target_id": state.risk_pending, "detail": "", "label": (("垂下眼，护住命灯" if command == "retreat" else "回头看向身后的人") if not pursuit.is_empty() else ("低头退开，将红布覆上" if command == "retreat" else "抬眼看向镜中人")), "enabled": true, "reason": ""})
+	if state.room_enabled:
+		if state.phase == &"shop_resolution" and not state.risk_pending.is_empty():
+			body = "镜中来客\n\n镜面里的柜台比屋里暗了一层。香灰伏向铜镜，身后有人轻声道：\n\n「别应声，也别看它的眼睛。」\n\n红布就在手边。"
+		elif state.phase == &"sleep_resolution" and not state.risk_pending.is_empty():
+			body = "床边的影子\n\n你刚躺下，床边便响起第二个人的呼吸。先前镜里那张旧当票，正贴着门缝往里滑。命灯的火苗低了下去。\n\n「别应声，也别看它的眼睛。」那句话忽然又在耳边响起。"
+		elif state.phase == &"dead" and not state.room_history.is_empty() and state.room_history.back().action == "personal_defy":
+			body = "灯芯烧尽了\n\n门缝下的当票不再动了。床边那道影子终于与你重合，屋里只剩下一盏冷灯。"
+		elif state.phase == &"dead":
+			body = "柜前再无人声\n\n镜面里映出一间空铺。楼上的命灯冷了，床铺还原样放着。"
+		elif state.phase in [&"private_room", &"sleep_resolution"]:
+			body = "寝屋无声\n\n" + ("床边的影子没有归位。命灯的火苗慢慢直起，你没有再看门缝。" if RoomFlow.response(state, state.current_night_index, "personal") == "retreat" else ("灯芯偏斜，你挪到哪边，它便跟到哪边。" if haunting else "楼下已经落闩，命灯的火苗安稳。"))
+		elif state.phase != &"dead":
+			var lamp_start := body.find("\n命灯：")
+			if lamp_start >= 0:
+				var lamp_end := body.find("\n", lamp_start + 1)
+				body = body.left(lamp_start) + (body.substr(lamp_end) if lamp_end >= 0 else "")
+	if not state.risk_pending.is_empty():
+		var pending_item := InventoryManager.new().find(state, state.risk_pending)
+		if pending_item != null and pending_item.ownership_state == "transferred":
+			body = "空柜前的影子\n\n原物已经交出，柜前却还站着一道影子。它慢慢转过脸来，灯火随之矮了下去。\n\n「别应声，也别看它的眼睛。」"
+			for button in buttons:
+				if button.command in ["retreat", "defy"]: button.label = "垂下眼，护住灯火" if button.command == "retreat" else "抬眼看向那道影子"
 	var archive := "《绝当录》\n"
 	if state.death_archive.is_empty(): archive += "纸页尚空。"
 	for record in state.death_archive:

@@ -24,7 +24,9 @@ static func validate(record: Variant, path: String, location: String) -> Array:
 	if not record.actions is Array:
 		errors.append(ContentIssue.new("error", "invalid_type", path, location + ".actions", "需要行动数组。"))
 		return errors
-	var ids: Array = ["open_shop", "close_shop", "wait_until_seal", "resolve_night", "continue_run"]
+	if record.has("private_room") and not record.private_room is bool:
+		errors.append(ContentIssue.new("error", "invalid_type", path, location + ".private_room", "房间开关必须为布尔值。"))
+	var ids: Array = ["open_shop", "close_shop", "wait_until_seal", "resolve_night", "continue_run", "enter_room", "sleep", "finish_sleep"]
 	for index in record.actions.size():
 		var action: Variant = record.actions[index]
 		var at := location + ".actions[%d]" % index
