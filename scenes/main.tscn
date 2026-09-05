@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1"]
 [ext_resource type="Script" path="res://core/bootstrap.gd" id="2"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" path="res://ui/risk/risk_panel.gd" id="15"]
 
 [ext_resource type="Script" path="res://ui/counter/counter_stage.gd" id="16"]
+[ext_resource type="Script" path="res://ui/menu/session_menu_view.gd" id="17"]
 
 
 [node name="Main" type="Node"]
@@ -41,7 +42,7 @@ layout_mode = 1
 anchor_left = 0.0
 anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.82
+anchor_bottom = 0.9
 script = ExtResource("4")
 
 [node name="Room" type="Control" parent="CounterScreen/CounterView"]
@@ -139,9 +140,9 @@ text = "顾客席 · 暂无顾客"
 unique_name_in_owner = true
 layout_mode = 1
 anchor_left = 0.285
-anchor_top = 0.59
+anchor_top = 0.65
 anchor_right = 0.73
-anchor_bottom = 0.645
+anchor_bottom = 0.71
 theme_override_font_sizes/font_size = 14
 theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
 text = ""
@@ -154,7 +155,7 @@ mouse_filter = 2
 unique_name_in_owner = true
 layout_mode = 1
 anchor_left = 0.475
-anchor_top = 0.715
+anchor_top = 0.8
 anchor_right = 0.706
 anchor_bottom = 0.955
 theme_override_font_sizes/font_size = 18
@@ -210,55 +211,15 @@ vertical_alignment = 1
 mouse_filter = 2
 
 
-[node name="Navigation" type="HBoxContainer" parent="CounterScreen"]
+[node name="MenuButton" type="Button" parent="CounterScreen"]
+unique_name_in_owner = true
 layout_mode = 1
-anchor_left = 0.025
-anchor_top = 0.833
+anchor_left = 0.885
+anchor_top = 0.837
 anchor_right = 0.975
-anchor_bottom = 0.899
-theme_override_constants/separation = 8
-
-[node name="DayButton" type="Button" parent="CounterScreen/Navigation"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "营业"
-
-[node name="AppraisalButton" type="Button" parent="CounterScreen/Navigation"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "鉴定"
-
-[node name="DialogueButton" type="Button" parent="CounterScreen/Navigation"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "对话"
-
-[node name="TradeButton" type="Button" parent="CounterScreen/Navigation"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "交易"
-
-[node name="InventoryButton" type="Button" parent="CounterScreen/Navigation"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "库存"
-
-[node name="LedgerButton" type="Button" parent="CounterScreen/Navigation"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "账本"
-
-[node name="MoreButton" type="Button" parent="CounterScreen/Navigation"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-text = "更多"
+anchor_bottom = 0.895
+text = "菜单"
+tooltip_text = "本局与铺务菜单"
 
 [node name="ShopStatusView" type="PanelContainer" parent="CounterScreen"]
 unique_name_in_owner = true
@@ -460,36 +421,70 @@ anchor_bottom = 1.0
 script = ExtResource("15")
 panel_id = &"risk"
 
-[node name="MoreMenu" type="PanelContainer" parent="CounterScreen"]
+[node name="SessionMenu" type="PanelContainer" parent="CounterScreen"]
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
-anchor_left = 0.77
-anchor_top = 0.48
+anchor_left = 0.72
+anchor_top = 0.16
 anchor_right = 0.975
-anchor_bottom = 0.82
+anchor_bottom = 0.825
+script = ExtResource("17")
 
+[node name="MenuMargin" type="MarginContainer" parent="CounterScreen/SessionMenu"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
 
-[node name="MoreColumn" type="VBoxContainer" parent="CounterScreen/MoreMenu"]
+[node name="MenuColumn" type="VBoxContainer" parent="CounterScreen/SessionMenu/MenuMargin"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="EventButton" type="Button" parent="CounterScreen/MoreMenu/MoreColumn"]
+[node name="RunSectionLabel" type="Label" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+layout_mode = 2
+text = "本局"
+theme_override_font_sizes/font_size = 14
+
+[node name="NewRunButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "新游戏"
+
+[node name="LoadRunButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "读取夜末存档"
+
+[node name="ShopSectionSeparator" type="HSeparator" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+layout_mode = 2
+
+[node name="ShopSectionLabel" type="Label" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+layout_mode = 2
+text = "铺务"
+theme_override_font_sizes/font_size = 14
+
+[node name="EventButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "铺中记事"
 
-[node name="RiskButton" type="Button" parent="CounterScreen/MoreMenu/MoreColumn"]
+[node name="RiskButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "鬼货与绝当录"
 
-[node name="NightButton" type="Button" parent="CounterScreen/MoreMenu/MoreColumn"]
+[node name="NightButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "夜间结算"
 
-[node name="PreviewSelector" type="Button" parent="CounterScreen/MoreMenu/MoreColumn"]
+[node name="DebugSectionSeparator" type="HSeparator" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PreviewSelector" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
 unique_name_in_owner = true
 layout_mode = 2
 text = "美术预览：随游戏"

@@ -1,16 +1,36 @@
 # 鬼市当铺
 
-固定柜台式2D经营与规则恐怖游戏。当前本地版本为**识货与识人**，默认运行 `p0_judgement`：青花碗、铜烛台与怀表采用不同检查、追问和议价路径，保留每日息费、《破铺录》及铜镜窥探。三夜试玩已于2026-09-04通过负责人测试，本轮获准发布。
+固定柜台式2D经营与规则恐怖游戏。当前玩法为 M7 **识货与识人**，默认运行 `p0_judgement`：青花碗、铜烛台与怀表采用不同检查、追问和议价路径，保留每日息费、《破铺录》及铜镜窥探。M7 三夜试玩于2026-09-04通过负责人测试；当前 M8-A 仅做本地 Windows 内测包，不代表获得上传、Release 或新一轮推送授权。
+
+## Windows 内测包与构建（M8-A）
+
+统一技术基线为 **Godot 4.6.1 Standard**，Windows x86_64 / Compatibility。ZIP 完整解压后双击 `Pawnshop.exe`，同目录保留 `Pawnshop.pck`，无需安装 Godot。包内 `PLAYTEST_WINDOWS.txt` 为中文试玩说明，`BUILD_INFO.json` 记录构建状态，`licenses` 包含原始第三方许可；包旁 `.sha256` 用于校验。
+
+Windows 本地构建入口（先从官方归档准备同版本编辑器 ZIP 和模板 TPZ）：
+
+```powershell
+./tools/build_windows.ps1 -GodotPath ./.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe
+```
+
+可用 `-EditorArchive`、`-TemplatesArchive` 指定归档位置。默认缓存为 `.tools/downloads/`，产物为 `dist/<独立构建ID>/Pawnshop-M8A.1-windows-x86_64.zip`，完整日志位于 `.artifacts/m8a/<构建ID>/`。构建命令默认执行全部源工程回归、干净暂存工程导出和 PCK 资源审计，失败即停止。分段下载辅助脚本需要 PowerShell 7。
+
+实际包启动检查：
+
+```powershell
+./tools/smoke_windows_package.ps1 -ZipPath ./dist/<构建ID>/Pawnshop-M8A.1-windows-x86_64.zip
+```
+
+它将 ZIP 解压到工程之外、含中文与空格的临时目录，用非管理员身份启动 EXE；不等同于完整三夜人工验收。完整步骤、限制与验收状态见 [Windows 构建指南](docs/WINDOWS_BUILD.md) 和 [M8-A 验证报告](docs/RELEASE_M8A_VALIDATION.md)。
 
 ## 启动
 
-```sh
-godot --path /Users/alvachen/Documents/ChatGPT/pawn
+```powershell
+& ./.tools/godot-4.6.1/Godot_v4.6.1-stable_win64.exe --path .
 ```
 
-也可在Godot导入本目录的 `project.godot`，按F5。关闭旧试玩窗口后启动新版，并选择新游戏。本机验证使用Godot **4.6.1 Standard/macOS**；项目原4.7.2技术基线尚未在对应环境复核。
+也可在Godot导入本目录的 `project.godot`，按F5。关闭旧试玩窗口后启动新版，并选择新游戏。当前引擎统一为 **4.6.1 Standard**；M0–M3 的 4.7.2 和 M7 的 macOS 验证是历史记录，保留在阶段文档中。
 
-查看面板和现实思考不耗时。正式动作推进18:00–03:00的时间，顾客会继续等待和离店。先处理「铺中记事」才能开铺；「夜间结算」「铺中记事」「鬼货与绝当录」可从「更多」打开。
+查看面板和现实思考不耗时。正式动作推进18:00–03:00的时间，顾客会继续等待和离店。点击左上铺面招牌打开营业，点击客人后选择「对话/交易」，点击柜台货物后选择「鉴定」；左侧库存柜和桌上账本可直接打开对应功能。右下角「菜单」按「本局/铺务」分组，新游戏与读档在本局，夜间结算、铺中记事和鬼货与绝当录在铺务。
 
 ## 三笔交易试玩
 
@@ -49,6 +69,8 @@ godot --path /Users/alvachen/Documents/ChatGPT/pawn
 ```text
 ~/Library/Application Support/Godot/app_userdata/鬼市当铺/p0/autosave_v7.json
 ```
+
+Windows 内测包通过 `m8a_windows` 导出 feature 隔离到 `%APPDATA%/GhostMarketPawnshop-M8A/p0/autosave_v7.json`；普通编辑器运行仍在 `%APPDATA%/Godot/app_userdata/鬼市当铺/p0/autosave_v7.json`。不自动复制开发版进度或旧账册。内测包日志在 `%APPDATA%/GhostMarketPawnshop-M8A/logs/godot.log`。
 
 旧 `autosave.json` 与 `autosave_v6.json` 保留，不迁移旧进度、不补扣费用；只导入通过校验的《绝当录》《破铺录》。日结、夜间应对、进入下一夜与收尾时原子保存，夜内不即时保存。写入失败回滚本次变化并保留旧文件；损坏的历史记录会阻止覆盖。只支持单窗口写档。
 

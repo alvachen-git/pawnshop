@@ -2,15 +2,10 @@ class_name DayFlowPanel
 extends FeaturePanel
 
 signal command_requested(command: String)
-signal new_requested
-signal load_requested
 
 var _description: Label
 var _message: Label
 var _commands: VBoxContainer
-var _load: Button
-var _confirmation: ConfirmationDialog
-var _pending_intent := ""
 var _buttons: Dictionary = {}
 
 func _ready() -> void:
@@ -34,27 +29,10 @@ func _ready() -> void:
 	_message.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_message.add_theme_font_size_override("font_size", 13)
 	column.add_child(_message)
-	var row := HBoxContainer.new()
-	column.add_child(row)
-	var restart := Button.new()
-	restart.text = "新游戏"
-	restart.pressed.connect(_confirm.bind("new"))
-	row.add_child(restart)
-	_load = Button.new()
-	_load.text = "读取夜末存档"
-	_load.pressed.connect(_confirm.bind("load"))
-	row.add_child(_load)
-	_confirmation = ConfirmationDialog.new()
-	_confirmation.title = "确认操作"
-	_confirmation.ok_button_text = "确认"
-	_confirmation.cancel_button_text = "取消"
-	_confirmation.confirmed.connect(_accept_confirmation)
-	add_child(_confirmation)
 
 func render(model: Dictionary) -> void:
 	_description.text = model.description
 	_message.text = model.message
-	_load.disabled = not model.has_save
 	if _buttons.is_empty():
 		for entry in model.commands:
 			var button := Button.new()
@@ -65,15 +43,3 @@ func render(model: Dictionary) -> void:
 	for entry in model.commands:
 		_buttons[entry.id].disabled = not entry.enabled
 		_buttons[entry.id].tooltip_text = "" if entry.enabled else "当前阶段不可用或剩余时间不足。"
-
-func _confirm(intent: String) -> void:
-	_pending_intent = intent
-	_confirmation.title = "开始新游戏" if intent == "new" else "读取存档"
-	_confirmation.dialog_text = "将放弃当前未保存的夜内进度。是否继续？"
-	_confirmation.popup_centered()
-
-func _accept_confirmation() -> void:
-	if _pending_intent == "new":
-		new_requested.emit()
-	else:
-		load_requested.emit()

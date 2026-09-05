@@ -4,8 +4,10 @@ extends RefCounted
 # Shared ink/paper controls remain legible in every atmosphere.
 static func build() -> Theme:
 	var result := Theme.new()
-	var font := SystemFont.new()
-	font.font_names = PackedStringArray(["Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei"])
+	var font := FontVariation.new()
+	font.base_font = preload("res://assets/fonts/NotoSansSC.ttf")
+	# Godot uses OpenType axis IDs (wght = 0x77676874), not the raw tag string.
+	font.variation_opentype = {0x77676874: 400.0}
 	result.default_font = font
 	result.default_font_size = 17
 	result.set_color("font_color", "Label", Color("302a24"))

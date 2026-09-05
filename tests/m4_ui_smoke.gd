@@ -80,8 +80,10 @@ func _run() -> void:
 	_check(_session.read_state().phase == "run_ended", "M4连续三夜UI闭环")
 	await _click("铺中记事")
 	await _capture("07_history")
-	var panel := _main.get_node("CounterScreen/%EventPanel")
-	_check(panel.get_global_rect().end.x <= root.size.x and panel.get_global_rect().end.y <= root.size.y, "事件面板在视口内")
+	var panel := _main.get_node("CounterScreen/%EventPanel") as Control
+	var panel_rect: Rect2 = panel.get_global_rect()
+	var viewport_size: Vector2 = (_main.get_node("CounterScreen") as Control).size
+	_check(panel_rect.end.x <= viewport_size.x and panel_rect.end.y <= viewport_size.y, "事件面板在视口内")
 	print("M4 UI SMOKE: %d assertions, %d failures" % [_assertions, _failures])
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(_save_path))
 	_main.queue_free()
