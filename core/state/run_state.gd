@@ -22,6 +22,7 @@ var fee_arrears: Array[Dictionary] = []
 var bankruptcy_archive: Array[Dictionary] = []
 var scenario_selections: Array[Dictionary] = []
 var scenario_history: Array[Dictionary] = []
+var bargaining_history: Array[Dictionary] = []
 var mirror_history: Array[Dictionary] = []
 var death_archive: Array[Dictionary] = []
 var narrative_flags: Array = []
@@ -64,6 +65,7 @@ func to_read_model() -> Dictionary:
 		"bankruptcy_archive": bankruptcy_archive.duplicate(true),
 		"mirror_history": mirror_history.duplicate(true),
 		"scenario_history": scenario_history.duplicate(true),
+		"bargaining_history": bargaining_history.duplicate(true),
 		"scenario_selections": scenario_selections.duplicate(true),
 		"death_archive": death_archive.duplicate(true),
 		"current_night_index": current_night_index,

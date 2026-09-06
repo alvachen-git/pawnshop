@@ -24,6 +24,16 @@ static func validate(kind: String, record: Dictionary, path: String, at: String)
 						if slot.has(key): _fields(slot, {key: "positive"}, path, at, issues)
 		_fields({"tools": record.get("tools", [])}, {"tools": "strings"}, path, at, issues)
 		_rows(record.get("customer_slots", []), {"id": "text", "arrival": "nonnegative", "customer_id": "text", "item_id": "string", "variant_id": "string"}, path, at + ".customer_slots", issues)
+	if kind == "items" and record.get("clues") is Array:
+		for clue in record.clues:
+			if clue is Dictionary:
+				for key in ["bargain_line", "bargain_response"]:
+					if clue.has(key): _fields(clue, {key: "text"}, path, at + ".clues", issues)
+	if kind == "customers" and record.has("belittle"):
+		var policy: Variant = record.belittle
+		_fields(policy, {"reaction": "text", "minutes": "positive", "ordinary_discount": "nonnegative", "urgent_discount": "nonnegative", "patience_cost": "nonnegative", "cue": "text", "response": "text"}, path, at + ".belittle", issues)
+		if policy is Dictionary and policy.get("reaction") not in ["yielding", "firm", "proud"]:
+			issues.append(ContentIssue.new("error", "invalid_field", path, at + ".belittle.reaction", "议价反应无效。"))
 	return issues
 
 static func _rows(rows: Variant, shape: Dictionary, path: String, at: String, issues: Array) -> void:

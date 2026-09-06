@@ -12,8 +12,7 @@ func _run() -> void:
 	await _click("鉴定")
 	for label in ["识货：观察器型 · 5分钟", "辨真：放大镜查看底足 · 10分钟", "辨真：侧光检查釉面 · 10分钟"]: await _click(label)
 	await _click("交易")
-	for entry in _session.counter_model().trade.buttons:
-		if entry.detail == "repair": await _click(entry.label)
+	await _click_trade_intent("pressure", "repair")
 	var trade := _find_trade(_main)
 	trade._price.value = 18
 	await _click("正式报价并收购")

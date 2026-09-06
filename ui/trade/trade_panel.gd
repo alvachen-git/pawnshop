@@ -88,6 +88,9 @@ func render(model: Dictionary) -> void:
 		_estimate_value.text = visual.estimate
 		_rounds_value.text = "%d 轮" % visual.rounds_left
 		_body.text = "%s · %s\n最迟留到 %s\n报价 %d分钟 · 施压 %d分钟\n活当：%s" % [visual.item_name, visual.attitude, visual.deadline, visual.quote_minutes, visual.pressure_minutes, visual.pawn_terms]
+		_body.text += "\n线索未必是毛病，牵强压价可能惹恼客人。"
+		if not String(visual.get("bargaining_cue", "")).is_empty(): _body.text += "\n" + String(visual.bargaining_cue)
+	_style_bargaining(model)
 	_pawn_price.max_value = model.max_input
 	_pawn_submit.disabled = not model.get("can_pawn", false)
 	if _last_visit != _visit_id or int(_pawn_price.value) == _last_pawn_suggested:
@@ -103,6 +106,28 @@ func render(model: Dictionary) -> void:
 func _offer() -> void:
 	_price.apply()
 	intent.emit("offer", _visit_id, "", int(_price.value))
+
+func _style_bargaining(model: Dictionary) -> void:
+	# Only this panel uses evidence cards; other IntentPanel layouts stay unchanged.
+	var buttons := _buttons.get_children()
+	var entries: Array = model.get("buttons", [])
+	for index in buttons.size():
+		var button := buttons[index] as Button
+		button.set_meta("trade_command", entries[index].command)
+		button.set_meta("trade_detail", entries[index].detail)
+		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		button.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
+		button.custom_minimum_size.y = 48
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		if not entries[index].has("evidence"): continue
+		var evidence := Label.new()
+		evidence.name = "Evidence_" + String(entries[index].detail)
+		evidence.text = "已知线索：" + String(entries[index].evidence)
+		evidence.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		evidence.add_theme_font_size_override("font_size", 14)
+		evidence.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_buttons.add_child(evidence)
+		_buttons.move_child(evidence, button.get_index() + 1)
 
 func _pawn() -> void:
 	_pawn_price.apply()

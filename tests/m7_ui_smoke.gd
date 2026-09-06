@@ -90,6 +90,9 @@ func _active_visit() -> CustomerVisit:
 
 func _command(panel: String, command: String, detail := "") -> void:
 	await _click(CounterScreen.PANEL_TITLES[panel])
+	if panel == "trade":
+		await _click_trade_intent(command, detail)
+		return
 	for row in _session.counter_model()[panel].buttons:
 		if row.command == command and row.detail == detail:
 			await _click(row.label)

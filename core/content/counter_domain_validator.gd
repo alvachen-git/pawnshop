@@ -61,6 +61,7 @@ static func validate(catalog: ContentCatalog) -> Array:
 			if customer == null or customer.terms == null:
 				_error(issues, run.id, "缺少可交易顾客：" + slot.customer_id)
 				continue
+			if not customer.belittle.is_empty() and int(customer.belittle.minutes) % run.time_step != 0: _error(issues, customer.id, "试探耗时未匹配步长。")
 			var terms := customer.terms
 			for minutes in [terms.wait_minutes, terms.quote_minutes, terms.pressure_minutes, terms.reject_minutes]:
 				if minutes <= 0 or minutes % run.time_step != 0: _error(issues, customer.id, "顾客耗时未匹配步长。")

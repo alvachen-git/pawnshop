@@ -29,6 +29,7 @@ try {
     Run-Test 'core' 'run_all.gd'
     Run-Test 'room-core' 'run_room.gd'
     Run-Test 'pawn-core' 'run_pawn.gd'
+    Run-Test 'bargaining-core' 'run_bargaining.gd'
     foreach ($suite in @('ui_smoke','scene_navigation_ui_smoke','m2_ui_smoke','m3_ui_smoke','m4_ui_smoke','m5_ui_smoke','art03_extension_ui_smoke')) {
         Run-Test $suite "$suite.gd" @() $false
     }
@@ -38,6 +39,7 @@ try {
         Run-Test "pawn-$size" 'pawn_ui_smoke.gd' $sizeArgs $false
         Run-Test "room-$size" 'room_ui_smoke.gd' $sizeArgs $false
         Run-Test "receipt-$size" 'receipt_ui_smoke.gd' $sizeArgs $false
+        Run-Test "bargaining-$size" 'bargaining_ui_smoke.gd' $sizeArgs $false
         Run-Test "m7-$size" 'm7_ui_smoke.gd' $sizeArgs $false
         Run-Test "m6-production-$size" 'm6_ui_smoke.gd' (@('production') + $sizeArgs) $false
         Run-Test "accounts-$size" 'art03_ui_smoke.gd' $sizeArgs $false
@@ -49,6 +51,11 @@ try {
     foreach ($mode in @('write','resume','read')) {
         Run-Test "m7-process-$mode" 'm7_checkpoint_process.gd' @($mode)
         if ($mode -eq 'write') { Run-Test 'v7-copy-compatibility' 'm8a_save_copy.gd' }
+    }
+    foreach ($kind in @('scenario','ordinary')) {
+        foreach ($step in @('write','sleep','read')) {
+            Run-Test "bargaining-process-$step-$kind" 'bargaining_checkpoint_process.gd' @("${step}_${kind}")
+        }
     }
     foreach ($mode in @('write_room','sleep','summary','read_summary','write_shop','read_shop','write_pursuit','pursuit_sleep','death','read_death')) {
         Run-Test "room-process-$mode" 'room_checkpoint_process.gd' @($mode)

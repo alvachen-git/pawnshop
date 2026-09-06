@@ -16,6 +16,7 @@ var item_pool: Array
 var dialogue_profile_id: String
 var preferred_categories: Array
 var schedule_tags: Array
+var belittle: Dictionary
 var counter_terms: Dictionary
 var questions: Array
 var pawn_terms_id: String
@@ -38,6 +39,7 @@ static func from_source(source: Dictionary) -> CustomerDTO:
 	dto.dialogue_profile_id = source.dialogue_profile_id
 	dto.preferred_categories = source.preferred_categories.duplicate(true)
 	dto.schedule_tags = source.schedule_tags.duplicate(true)
+	dto.belittle = source.get("belittle", {}).duplicate(true)
 	dto.counter_terms = source.get("counter_terms", {}).duplicate(true)
 	dto.questions = source.get("questions", []).duplicate(true)
 	dto.pawn_terms_id = source.get("pawn_terms_id", "")

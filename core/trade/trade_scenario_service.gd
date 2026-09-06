@@ -47,4 +47,8 @@ static func concede(visit: CustomerVisit, scenario: TradeScenarioDefinition) -> 
 	return "他把表链收拢：“我又不赶路，何必拿这话催我？”"
 
 static func record(day: DayController, visit: CustomerVisit, command: String, detail: String, amount: int, start: int, result: ActionResult) -> void:
-	day.state.scenario_history.append({"scenario_id": visit.scenario_id, "visit_id": visit.visit_id, "variant_id": visit.item.selected_variant_id, "situation_id": visit.situation_id, "reaction_id": visit.reaction_id, "night": day.state.current_night_index, "start": start, "minute": day.state.game_minutes, "command": command, "detail": detail, "amount": amount, "ok": result.ok, "clues": visit.item.revealed_clue_ids.duplicate(), "questions": visit.asked_question_ids.duplicate(), "used_clues": visit.trade.used_clue_ids.duplicate(), "concession_used": visit.concession_used})
+	var history: Array = day.state.bargaining_history if visit.scenario_id.is_empty() else day.state.scenario_history
+	var entry := {"scenario_id": visit.scenario_id, "visit_id": visit.visit_id, "variant_id": visit.item.selected_variant_id, "situation_id": visit.situation_id, "reaction_id": visit.reaction_id, "night": day.state.current_night_index, "start": start, "minute": day.state.game_minutes, "command": command, "detail": detail, "amount": amount, "ok": result.ok, "clues": visit.item.revealed_clue_ids.duplicate(), "questions": visit.asked_question_ids.duplicate(), "used_clues": visit.trade.used_clue_ids.duplicate(), "concession_used": visit.concession_used}
+	if command == "belittle":
+		entry.belittle_result = {"used": visit.trade.belittle_used, "asking": visit.trade.asking_price, "rounds": visit.trade.rounds_left, "patience": visit.trade.patience}
+	history.append(entry)
