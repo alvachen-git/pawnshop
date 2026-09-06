@@ -25,7 +25,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		"provenance": ProvenanceService.known_text(visit.item, item),
 		"item_asset": item.visual_asset_id, "customer_name": VarietyService.name_for(visit.person, customer),
 		"portrait_asset": customer.portrait_asset_id,
-		"introduction": (customer.terms.introduction if not visit.person.is_empty() else (scenario.introduction if scenario != null else customer.terms.introduction)) + ("\n" + String(customer.belittle.cue) if not customer.belittle.is_empty() else ""),
+		"introduction": String(visit.voice.get("introduction", customer.terms.introduction if not visit.person.is_empty() else (scenario.introduction if scenario != null else customer.terms.introduction))) + ("\n" + String(customer.belittle.cue) if not customer.belittle.is_empty() else ""),
 		"clues": clues, "speech": speech,
 		"estimate": "%d–%d" % [bounds.x, bounds.y],
 		"judgement": CounterReadModels.JUDGEMENTS[visit.item.judgement],
@@ -37,6 +37,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		"pawn_terms": "期限%d夜 · 息费%.0f%%" % [terms.term_nights, terms.redemption_fee_ratio * 100] if terms != null else "此客不办理活当",
 		"message": "",
 		"bargaining_cue": customer.belittle.get("cue", ""),
+		"visit_constraint": visit.voice.get("introduction", ""),
 	}
 	# Reuse the same user-visible operation feedback passed into the main model.
 	model.visual = visual

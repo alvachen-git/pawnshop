@@ -30,13 +30,26 @@ func load_state(definition: RunDefinition, content_version: int) -> RunState:
 	if parser.parse(file.get_as_text()) != OK:
 		error_message = "存档JSON损坏；原文件已保留。"
 		return null
-	if parser.data is Dictionary and content_version == 10 and parser.data.get("content_version") == 9 and parser.data.get("run_definition_id") == "p0_room":
+	if parser.data is Dictionary and content_version >= 10 and parser.data.get("content_version") == 9 and parser.data.get("run_definition_id") == "p0_room":
 		var result := JsonContentProvider.new("res://data/legacy/content_v9.json").load_catalog()
 		if result.catalog == null:
 			error_message = "旧局内容不可用；原文件已保留。"
 			return null
 		loaded_catalog = result.catalog
 		loaded_definition = loaded_catalog.get_definition("runs", "p0_room")
+	if parser.data is Dictionary and content_version >= 11 and parser.data.get("content_version") == 10 and parser.data.get("run_definition_id") == "p0_variety":
+		# Both historical inputs are validated completely, never inferred from current cash.
+		for manifest in ["res://data/legacy/content_v10_released.json", "res://data/legacy/content_v10.json", "res://data/legacy/content_v10_100_300.json"]:
+			var old_result := JsonContentProvider.new(manifest).load_catalog()
+			if not old_result.is_success(): continue
+			var old_run := old_result.catalog.get_definition("runs", "p0_variety") as RunDefinition
+			var old_state := _codec.decode(parser.data, old_run, 10, old_result.catalog)
+			if old_state != null:
+				loaded_catalog = old_result.catalog
+				loaded_definition = old_run
+				return old_state
+		error_message = "旧v10局未通过对应资金配置的完整历史校验；原文件已保留。" + _codec.error_message
+		return null
 	var state := _codec.decode(parser.data, loaded_definition, loaded_catalog.content_version if loaded_catalog != null else content_version, loaded_catalog)
 	error_message = _codec.error_message
 	return state

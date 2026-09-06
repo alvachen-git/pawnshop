@@ -6,7 +6,7 @@ var batch_results: Array = []
 
 func run(expect: Callable) -> void:
 	_expect = expect
-	var loaded := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://data/legacy/content_v10.json").load_catalog()
 	_expect.call(loaded.is_success(), "v10 production catalog")
 	for issue in loaded.issues: print(issue.format_message())
 	if not loaded.is_success(): return
@@ -162,7 +162,7 @@ func _watchmaker() -> void:
 		open(s)
 		var visit := active(s)
 		_expect.call(visit.trade.patience == 1 and visit.trade.rounds_left == 3, "watchmaker 1 patience / 3 rounds")
-		_expect.call(visit.expires_at - visit.arrival == 80, "watchmaker waits configured eighty minutes")
+		_expect.call(visit.expires_at - visit.arrival == (80 if run_def.variety.get("profession_wait", false) or visit.situation_id != "urgent" else 60), "watchmaker waits configured eighty minutes")
 		if command == "offer": action(s, "offer", "", 1)
 		elif command == "pressure":
 			action(s, "appraise", "observe")
@@ -199,7 +199,7 @@ func _provenance_money() -> void:
 			_expect.call(not service.execute(day, "inquire", obj.instance_id, "").ok and after == day.state.to_read_model(), "no repeat charge")
 			for buyer: BuyerDefinition in catalog.get_all("buyers"):
 				var base := maxi(1, roundi(item.possible_variants[0].true_value * buyer.value_multiplier))
-				var premium := floori(base * 0.15) if truth == "authentic" and buyer.id in ["buyer_collector", "buyer_introduced"] else 0
+				var premium := floori(base * 0.15) if truth == "authentic" and buyer.id in ["buyer_collector", "buyer_introduced", "buyer_appointment"] else 0
 				_expect.call(service.quote(obj, buyer) == base + premium, "buyer-specific premium and floor")
 			var summary := FinancialSummary.build(day.state)
 			_expect.call(summary.operating_profit == -2 and summary.realized_profit == 0 and summary.inventory_cost == base_cost, "investigation is expense only")
@@ -250,7 +250,7 @@ func _checkpoint_sources() -> void:
 			resume(s, "source " + truth)
 			var summary: Dictionary = s.read_state().summaries.back()
 			_expect.call(summary.provenance_expense == expense and summary.realized_profit == price - obj.acquisition_price and summary.operating_profit == summary.realized_profit - expense - run_def.fee_policy.interest - run_def.fee_policy.overhead, "fees and sale gross margin separate")
-			var payload := SaveCodec.new().encode(s._day.state, 10)
+			var payload := SaveCodec.new().encode(s._day.state, catalog.content_version)
 			for change in ["truth", "name", "source", "fee", "history", "shape"]:
 				var corrupt: Dictionary = payload.duplicate(true)
 				match change:
@@ -260,7 +260,7 @@ func _checkpoint_sources() -> void:
 					"fee": corrupt.summaries[0].provenance_expense += 2
 					"history": corrupt.provenance_history.append(corrupt.provenance_history[0])
 					"shape": corrupt.scenario_history = [3]
-				_expect.call(SaveCodec.new().decode(corrupt, run_def, 10, catalog) == null, "reject corrupt source save " + change)
+				_expect.call(SaveCodec.new().decode(corrupt, run_def, catalog.content_version, catalog) == null, "reject corrupt source save " + change)
 
 func _pawn_identity() -> void:
 	for term in ["short_redeem", "short_default"]:
@@ -348,7 +348,7 @@ func _multiple_owners() -> void:
 	if finish(s): resume(s, "multiple named owner results")
 	# Retain the existing test-only extension contract using a dedicated catalog.
 	var original_catalog := catalog
-	catalog = JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	catalog = JsonContentProvider.new("res://data/legacy/content_v10.json").load_catalog().catalog
 	var term: PawnTermsDefinition = catalog.get_definition("pawn_terms", "short_redeem")
 	term._return_mode = "extend_once"
 	s = seeded(chosen)

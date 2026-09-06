@@ -2,6 +2,14 @@ class_name VarietySaveCodec
 extends RefCounted
 
 static func selections(data: Dictionary, state: RunState, run: RunDefinition, catalog: ContentCatalog) -> String:
+	if not data.get("sample_plan", []) is Array or not data.get("buyer_appointment", {}) is Dictionary: return "本局编排结构无效。"
+	if OrdinarySamplePlan.enabled(run):
+		var full_plan := VarietyService.plan(run, catalog, state.run_seed)
+		var appointment := OrdinarySamplePlan.appointment(full_plan, catalog, state.run_seed)
+		if normalize_plan(data.get("sample_plan")) != full_plan or normalize_appointment(data.get("buyer_appointment")) != appointment: return "本局来访编排或收货约定与种子不符。"
+		state.sample_plan.assign(full_plan)
+		state.buyer_appointment = appointment
+	elif not data.get("sample_plan", []).is_empty() or not data.get("buyer_appointment", {}).is_empty(): return "旧局不能混入四夜编排。"
 	for key in ["ordinary_selections", "provenance_history"]:
 		if not data.get(key, []) is Array: return "随机来客或来源记录结构无效。"
 	if run.variety.is_empty():
@@ -14,31 +22,12 @@ static func selections(data: Dictionary, state: RunState, run: RunDefinition, ca
 		var copy: Dictionary = row.duplicate(true)
 		copy.night = int(copy.night)
 		copy.arrival = int(copy.arrival)
+		if copy.has("wait_minutes"):
+			if not RunSchema.integer(copy.wait_minutes): return "来客等待期限无效。"
+			copy.wait_minutes = int(copy.wait_minutes)
 		normalized.append(copy)
 	if normalized != expected: return "来客身份、物品或来源与本局编排不符。"
 	state.ordinary_selections.assign(expected)
-	return ""
-
-static func validate_timing(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> String:
-	for source in state.provenance_history:
-		for event in state.event_history:
-			if event.night == source.night and event.offered_minute < source.minute and event.minute > source.start: return "来源行动与剧情办理耗时重叠。"
-		var pending_mirrors := {}
-		for encounter in state.mirror_history:
-			if encounter.night != source.night: continue
-			var definition := MirrorEncounterService.find_definition(run, encounter.encounter_id)
-			var cost := definition.peek_minutes if encounter.action.begins_with("peek") else (definition.pursue_minutes if encounter.action.begins_with("pursue") else 0)
-			if encounter.minute > source.start and encounter.minute - cost < source.minute: return "来源行动与窥镜耗时重叠。"
-			if encounter.action == "peek": pending_mirrors[encounter.visit_id] = encounter.minute
-			elif pending_mirrors.has(encounter.visit_id):
-				if source.start >= pending_mirrors[encounter.visit_id] and source.start < encounter.minute: return "窥镜未决时不能办理来源。"
-				pending_mirrors.erase(encounter.visit_id)
-		for treatment in state.risk_history:
-			if treatment.night != source.night or treatment.action not in ["cover", "uncover"]: continue
-			var item := InventoryManager.new().find(state, treatment.item_id)
-			var rule := RiskManager.new(catalog).rule_for(item)
-			var cost := rule.cover_minutes if treatment.action == "cover" else rule.uncover_minutes
-			if treatment.minute > source.start and treatment.minute - cost < source.minute: return "来源行动与存放处理耗时重叠。"
 	return ""
 
 static func selection(state: RunState, visit_id: String) -> Dictionary:
@@ -104,4 +93,47 @@ static func restore_sources(data: Dictionary, state: RunState, run: RunDefinitio
 		last_stamp = int(row.night) * (run.night_minutes + 1) + int(row.minute)
 	for item in state.inventory_instances:
 		if item.provenance != simulated[item.source_visit_id].provenance: return "库存来源证据与调查历史不符。"
+	return ""
+
+static func normalize_plan(value: Variant) -> Variant:
+	if not value is Array: return null
+	var result: Array = []
+	for raw in value:
+		if not raw is Dictionary: return null
+		var row: Dictionary = raw.duplicate(true)
+		for key in ["night", "arrival", "wait_minutes"]:
+			if not row.has(key): continue
+			if not RunSchema.integer(row[key]): return null
+			row[key] = int(row[key])
+		result.append(row)
+	return result
+
+static func normalize_appointment(value: Variant) -> Variant:
+	if not value is Dictionary: return null
+	var row: Dictionary = value.duplicate(true)
+	for key in ["night", "window_start", "window_end", "capacity"]:
+		if not RunSchema.integer(row.get(key)): return null
+		row[key] = int(row[key])
+	return row
+
+static func validate_timing(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> String:
+	for source in state.provenance_history:
+		for event in state.event_history:
+			if event.night == source.night and event.offered_minute < source.minute and event.minute > source.start: return "来源行动与剧情办理耗时重叠。"
+		var pending_mirrors := {}
+		for encounter in state.mirror_history:
+			if encounter.night != source.night: continue
+			var definition := MirrorEncounterService.find_definition(run, encounter.encounter_id)
+			var cost := definition.peek_minutes if encounter.action.begins_with("peek") else (definition.pursue_minutes if encounter.action.begins_with("pursue") else 0)
+			if encounter.minute > source.start and encounter.minute - cost < source.minute: return "来源行动与窥镜耗时重叠。"
+			if encounter.action == "peek": pending_mirrors[encounter.visit_id] = encounter.minute
+			elif pending_mirrors.has(encounter.visit_id):
+				if source.start >= pending_mirrors[encounter.visit_id] and source.start < encounter.minute: return "窥镜未决时不能办理来源。"
+				pending_mirrors.erase(encounter.visit_id)
+		for treatment in state.risk_history:
+			if treatment.night != source.night or treatment.action not in ["cover", "uncover"]: continue
+			var item := InventoryManager.new().find(state, treatment.item_id)
+			var rule := RiskManager.new(catalog).rule_for(item)
+			var cost := rule.cover_minutes if treatment.action == "cover" else rule.uncover_minutes
+			if treatment.minute > source.start and treatment.minute - cost < source.minute: return "来源行动与存放处理耗时重叠。"
 	return ""

@@ -20,6 +20,8 @@ func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	if day.state.phase != &"open": return "买家只在营业时收货。"
 	if day.state.current_night_index < buyer.night_min or day.state.current_night_index > buyer.night_max or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家到访窗口。"
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
+	var appointment_error := OrdinarySamplePlan.buyer_reason(day.state, buyer.id, definition.category, day.state.current_night_index, day.state.game_minutes)
+	if not appointment_error.is_empty(): return appointment_error
 	if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
 	var count := 0
 	for sale in day.state.sale_records:

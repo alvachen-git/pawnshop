@@ -68,6 +68,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if row.night < item.acquired_night or row.night > completed or row.night < buyer.night_min or row.night > buyer.night_max or not _window(row.minute, buyer.window_start, buyer.window_end, buyer.action_minutes, run): return "销售不在有效买家窗口内。"
 		if row.night == item.acquired_night and row.minute < acquisitions[item.source_visit_id].minute + buyer.action_minutes: return "先出售后收货。"
 		if item.acquisition_type == "pawn" and (not tickets.has(item.instance_id) or tickets[item.instance_id].status != "defaulted" or row.night <= tickets[item.instance_id].closed_night): return "在当物品不可出售。"
+		if not OrdinarySamplePlan.buyer_reason(state, buyer.id, definition.category, int(row.night), int(row.minute) - buyer.action_minutes).is_empty(): return "销售不符合本局收货约定。"
 		if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels or row.price != CommerceService.new(catalog).quote(item, buyer) or row.cost_basis != item.acquisition_price or row.realized_profit != row.price - row.cost_basis: return "销售报价、偏好或成本不符。"
 		var quota := "%d/%s" % [int(row.night), buyer.id]
 		buyer_counts[quota] = buyer_counts.get(quota, 0) + 1

@@ -8,6 +8,7 @@ const KINDS := {"acquisition": "收购", "pawn_loan": "活当放款", "sale": "�
 static func build(day: DayController, service: CommerceService, message: String) -> Dictionary:
 	var financial := FinancialSummary.build(day.state)
 	var inventory := {"body": "库存 %d 件现货 · 成本占款 %d · 在当本金 %d\n估值不是现金。只可出售给当前买家；在当物品不可售。\n" % [financial.inventory_count, financial.inventory_cost, financial.pawn_principal], "buttons": []}
+	if not day.state.buyer_appointment.is_empty(): inventory.body += OrdinarySamplePlan.notice(day.state) + "\n"
 	for item in day.state.inventory_instances:
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 		inventory.body += "\n%s · %s · 成本 %d\n" % [definition.display_name, STATES[item.ownership_state], item.acquisition_price]

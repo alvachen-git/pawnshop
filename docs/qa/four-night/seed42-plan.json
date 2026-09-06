@@ -1,0 +1,284 @@
+[
+  {
+    "arrival": 0,
+    "customer_id": "customer_scholar",
+    "item_id": "item_inkstone",
+    "night": 1,
+    "person": {
+      "id": "person/ordinary_four/1/n1_visit1",
+      "name": "林德顺",
+      "portrait": "placeholder.scholar"
+    },
+    "reaction": "evade",
+    "situation": "ordinary",
+    "source": "authentic",
+    "terms_id": "sample_three_default",
+    "variant_id": "flawed",
+    "visit_id": "ordinary_four/1/n1_visit1"
+  },
+  {
+    "arrival": 90,
+    "customer_id": "customer_scholar",
+    "item_id": "item_fountain_pen",
+    "night": 1,
+    "person": {
+      "id": "person/ordinary_four/1/n1_visit2",
+      "name": "陆德顺",
+      "portrait": "placeholder.scholar"
+    },
+    "reaction": "admit",
+    "situation": "ordinary",
+    "source": "mismatch",
+    "terms_id": "sample_three_default",
+    "variant_id": "replacement_nib",
+    "visit_id": "ordinary_four/1/n1_visit2"
+  },
+  {
+    "arrival": 210,
+    "customer_id": "customer_seamstress",
+    "item_id": "item_silk_panel",
+    "night": 1,
+    "person": {
+      "id": "person/ordinary_four/1/n1_visit3",
+      "name": "曹玉琴",
+      "portrait": "asset.customer_seamstress"
+    },
+    "reaction": "explain",
+    "sample_role": "pawn",
+    "situation": "ordinary",
+    "source": "none",
+    "terms_id": "sample_three_redeem",
+    "transaction_modes": [
+      "pawn"
+    ],
+    "variant_id": "sound",
+    "visit_id": "ordinary_four/1/n1_visit3"
+  },
+  {
+    "arrival": 360,
+    "customer_id": "customer_citizen",
+    "item_id": "item_silk_panel",
+    "night": 1,
+    "person": {
+      "id": "person/ordinary_four/1/n1_visit4",
+      "name": "许培元",
+      "portrait": "asset.customer_citizen"
+    },
+    "reaction": "admit",
+    "sample_role": "hold",
+    "situation": "ordinary",
+    "source": "mismatch",
+    "terms_id": "sample_three_redeem",
+    "variant_id": "sound",
+    "visit_id": "ordinary_four/1/n1_visit4"
+  },
+  {
+    "arrival": 0,
+    "customer_id": "customer_teahouse",
+    "item_id": "item_blue_bowl",
+    "night": 2,
+    "person": {
+      "id": "person/ordinary_four/2/n2_visit1",
+      "name": "蒋和生",
+      "portrait": "asset.customer_teahouse"
+    },
+    "reaction": "explain",
+    "sample_role": "invalid",
+    "situation": "ordinary",
+    "source": "mismatch",
+    "terms_id": "sample_three_default",
+    "variant_id": "sound",
+    "visit_id": "ordinary_four/2/n2_visit1"
+  },
+  {
+    "arrival": 90,
+    "customer_id": "customer_seamstress",
+    "item_id": "item_silver_hairpin",
+    "night": 2,
+    "person": {
+      "id": "person/ordinary_four/2/n2_visit2",
+      "name": "许月娥",
+      "portrait": "asset.customer_seamstress"
+    },
+    "reaction": "evade",
+    "situation": "ordinary",
+    "source": "none",
+    "terms_id": "sample_three_redeem",
+    "variant_id": "flawed",
+    "visit_id": "ordinary_four/2/n2_visit2"
+  },
+  {
+    "arrival": 210,
+    "customer_id": "customer_bookkeeper",
+    "item_id": "item_pocket_watch",
+    "night": 2,
+    "person": {
+      "id": "person/ordinary_four/2/n2_visit3",
+      "name": "方文衡",
+      "portrait": "asset.customer_bookkeeper"
+    },
+    "reaction": "explain",
+    "situation": "urgent",
+    "source": "none",
+    "terms_id": "sample_three_redeem",
+    "variant_id": "sound",
+    "visit_id": "ordinary_four/2/n2_visit3"
+  },
+  {
+    "arrival": 360,
+    "customer_id": "customer_teahouse",
+    "item_id": "item_inkstone",
+    "night": 2,
+    "person": {
+      "id": "person/ordinary_four/2/n2_visit4",
+      "name": "许文泰",
+      "portrait": "asset.customer_teahouse"
+    },
+    "reaction": "evade",
+    "situation": "urgent",
+    "source": "none",
+    "terms_id": "sample_three_default",
+    "variant_id": "flawed",
+    "visit_id": "ordinary_four/2/n2_visit4"
+  },
+  {
+    "arrival": 0,
+    "customer_id": "customer_bookkeeper",
+    "item_id": "item_fountain_pen",
+    "night": 3,
+    "person": {
+      "id": "person/ordinary_four/3/n3_visit1",
+      "name": "何绍元",
+      "portrait": "asset.customer_bookkeeper"
+    },
+    "reaction": "evade",
+    "situation": "ordinary",
+    "source": "mismatch",
+    "terms_id": "sample_three_redeem",
+    "variant_id": "flawed",
+    "visit_id": "ordinary_four/3/n3_visit1"
+  },
+  {
+    "arrival": 90,
+    "customer_id": "customer_seamstress",
+    "item_id": "item_silver_hairpin",
+    "night": 3,
+    "person": {
+      "id": "person/ordinary_four/3/n3_visit2",
+      "name": "何玉琴",
+      "portrait": "asset.customer_seamstress"
+    },
+    "reaction": "admit",
+    "sample_role": "flaw",
+    "situation": "ordinary",
+    "source": "authentic",
+    "terms_id": "sample_three_default",
+    "variant_id": "mended",
+    "visit_id": "ordinary_four/3/n3_visit2"
+  },
+  {
+    "arrival": 210,
+    "customer_id": "customer_seamstress",
+    "item_id": "item_silver_hairpin",
+    "night": 3,
+    "person": {
+      "id": "person/ordinary_four/3/n3_visit3",
+      "name": "顾桂芳",
+      "portrait": "asset.customer_seamstress"
+    },
+    "reaction": "explain",
+    "situation": "urgent",
+    "source": "authentic",
+    "terms_id": "sample_three_default",
+    "variant_id": "sound",
+    "visit_id": "ordinary_four/3/n3_visit3"
+  },
+  {
+    "arrival": 360,
+    "customer_id": "customer_hawker",
+    "item_id": "item_pocket_watch",
+    "night": 3,
+    "person": {
+      "id": "person/ordinary_four/3/n3_visit4",
+      "name": "顾培元",
+      "portrait": "asset.customer_hawker"
+    },
+    "reaction": "evade",
+    "situation": "urgent",
+    "source": "none",
+    "terms_id": "sample_three_redeem",
+    "variant_id": "sound",
+    "visit_id": "ordinary_four/3/n3_visit4"
+  },
+  {
+    "arrival": 0,
+    "customer_id": "customer_watchmaker",
+    "item_id": "item_fountain_pen",
+    "night": 4,
+    "person": {
+      "id": "person/ordinary_four/4/n4_visit1",
+      "name": "曹守时",
+      "portrait": "asset.customer_watchmaker"
+    },
+    "reaction": "evade",
+    "situation": "ordinary",
+    "source": "mismatch",
+    "terms_id": "sample_three_default",
+    "variant_id": "flawed",
+    "visit_id": "ordinary_four/4/n4_visit1"
+  },
+  {
+    "arrival": 90,
+    "customer_id": "customer_citizen",
+    "item_id": "item_silk_panel",
+    "night": 4,
+    "person": {
+      "id": "person/ordinary_four/4/n4_visit2",
+      "name": "顾德顺",
+      "portrait": "asset.customer_citizen"
+    },
+    "reaction": "explain",
+    "sample_role": "source",
+    "situation": "ordinary",
+    "source": "authentic",
+    "terms_id": "sample_three_default",
+    "variant_id": "sound",
+    "visit_id": "ordinary_four/4/n4_visit2"
+  },
+  {
+    "arrival": 210,
+    "customer_id": "customer_house_agent",
+    "item_id": "item_pocket_watch",
+    "night": 4,
+    "person": {
+      "id": "person/ordinary_four/4/n4_visit3",
+      "name": "陆正庭",
+      "portrait": "placeholder.house_agent"
+    },
+    "reaction": "admit",
+    "sample_role": "urgent",
+    "situation": "urgent",
+    "source": "mismatch",
+    "terms_id": "sample_three_redeem",
+    "variant_id": "sound",
+    "visit_id": "ordinary_four/4/n4_visit3",
+    "wait_minutes": 30
+  },
+  {
+    "arrival": 360,
+    "customer_id": "customer_teahouse",
+    "item_id": "item_inkstone",
+    "night": 4,
+    "person": {
+      "id": "person/ordinary_four/4/n4_visit4",
+      "name": "曹德茂",
+      "portrait": "asset.customer_teahouse"
+    },
+    "reaction": "admit",
+    "situation": "urgent",
+    "source": "none",
+    "terms_id": "sample_three_redeem",
+    "variant_id": "chipped",
+    "visit_id": "ordinary_four/4/n4_visit4"
+  }
+]

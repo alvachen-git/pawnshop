@@ -173,7 +173,7 @@ func _rollback_and_corruption() -> void:
 		_expect.call(s.execute(command).ok, "重试成功 " + command)
 		resume(s, "重试 " + command)
 	var payload := SaveCodec.new().encode(s._day.state, catalog.content_version)
-	_expect.call(payload.save_version == 10, "当前统一保存容器使用v10")
+	_expect.call(payload.save_version == 9, "冻结的旧内容继续使用v9存档")
 	for index in payload.room_history.size():
 		var bad: Dictionary = payload.duplicate(true)
 		bad.room_history.remove_at(index)

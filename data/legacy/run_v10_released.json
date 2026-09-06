@@ -1,0 +1,1338 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "p0_variety",
+      "total_nights": 3,
+      "opening_minute": 1080,
+      "night_minutes": 540,
+      "time_step": 5,
+      "initial_cash": 300,
+      "seed": 1049,
+      "tools": [
+        "magnifier",
+        "lamp",
+        "magnet"
+      ],
+      "customer_slots": [
+        {
+          "id": "n1_visit1",
+          "arrival": 0,
+          "customer_id": "customer_citizen",
+          "item_id": "item_blue_bowl",
+          "variant_id": "",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit2",
+          "arrival": 90,
+          "customer_id": "customer_hawker",
+          "item_id": "item_brass_holder",
+          "variant_id": "",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit3",
+          "arrival": 210,
+          "customer_id": "customer_citizen",
+          "item_id": "item_silver_hairpin",
+          "variant_id": "sound",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit4",
+          "arrival": 360,
+          "customer_id": "customer_scholar",
+          "item_id": "item_fountain_pen",
+          "variant_id": "flawed",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n2_visit1",
+          "arrival": 0,
+          "customer_id": "customer_house_agent",
+          "item_id": "item_pocket_watch",
+          "variant_id": "",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit2",
+          "arrival": 90,
+          "customer_id": "customer_scholar",
+          "item_id": "item_inkstone",
+          "variant_id": "flawed",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit3",
+          "arrival": 210,
+          "customer_id": "customer_house_agent",
+          "item_id": "item_clay_teapot",
+          "variant_id": "sound",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit4",
+          "arrival": 360,
+          "customer_id": "customer_citizen",
+          "item_id": "item_silk_panel",
+          "variant_id": "flawed",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n3_visit1",
+          "arrival": 0,
+          "customer_id": "customer_citizen",
+          "item_id": "item_weeping_mirror",
+          "variant_id": "weeping",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit2",
+          "arrival": 90,
+          "customer_id": "customer_scholar",
+          "item_id": "item_fountain_pen",
+          "variant_id": "sound",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit3",
+          "arrival": 210,
+          "customer_id": "customer_scholar",
+          "item_id": "item_inkstone",
+          "variant_id": "sound",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit4",
+          "arrival": 360,
+          "customer_id": "customer_hawker",
+          "item_id": "item_pocket_watch",
+          "variant_id": "flawed",
+          "night_min": 3,
+          "night_max": 3
+        }
+      ],
+      "actions": [
+        {
+          "id": "short_task",
+          "label": "歇一歇",
+          "minutes": 5,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "medium_task",
+          "label": "收拾柜面",
+          "minutes": 10,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "long_task",
+          "label": "在铺里走走",
+          "minutes": 30,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "wait_hour",
+          "label": "等待",
+          "minutes": 60,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        }
+      ],
+      "buyer_ids": [
+        "buyer_recycler",
+        "buyer_collector",
+        "buyer_introduced",
+        "buyer_mirror"
+      ],
+      "event_ids": [
+        "shen_opening",
+        "cash_lesson",
+        "final_stock",
+        "buyer_reply",
+        "rain_news",
+        "patient_buyer",
+        "stock_note"
+      ],
+      "flag_ids": [
+        "shen_met",
+        "contact_requested",
+        "independent",
+        "cash_reviewed",
+        "stock_reviewed",
+        "buyer_introduced",
+        "rumor_heard",
+        "liquidity_hint",
+        "holder_reviewed"
+      ],
+      "ghost_rule_ids": [
+        "weeping_mirror"
+      ],
+      "fee_policy": {
+        "principal": 500,
+        "interest_bps": 100,
+        "overhead": 5,
+        "grace_nights": 1
+      },
+      "mirror_encounters": [
+        {
+          "id": "midnight_old_ticket",
+          "slot_id": "n3_visit4",
+          "mirror_item_id": "item_weeping_mirror",
+          "clue_id": "flaw",
+          "start_minute": 360,
+          "peek_minutes": 5,
+          "pursue_minutes": 5,
+          "invitation": "子时，柜前的人将怀表放下，门上的铜铃却没有响。\n\n红布一角微微鼓起。镜背刻着一行小字：借镜照客，只可一瞥；倒影若回身，莫追。\n\n他按住表盖，不让你看背面的旧刻痕。镜子那边，却像有一只手正替你翻开它。",
+          "peek_text": "镜里的客人没有抬头。他手中的表盖自行翻开，露出摆轮旁的一处暗影。\n\n顺着那位置细看，你发现轴孔已经磨大，摆轮时走时停。这只表需要修理。\n\n倒影忽然从衣襟里抽出一张旧当票。票角的折法，像极了旧掌柜的习惯。镜前的香灰忽然折断——镜里的那个人，正在回头。",
+          "pursue_text": "你看清了票角：那道折痕下，是旧掌柜亲笔写的一个“留”字。\n\n镜中人把当票推向柜外。票没有过来，他脚边的影子却越过了镜缘。你往后退了一步，地上的影子没有跟着动。",
+          "crisis": "你刚躺下，床边便多出一双脚的影子。它停在你身后，手里捏着那张旧当票。\n\n有人贴着你的耳朵问：“掌柜的，这笔还认不认？”\n\n命灯几乎伏倒。镜背的小字忽然想起来了：倒影若回身，莫追。别回头，也别应声。",
+          "death_cause": "掌柜回过头时，身后的影子终于与他重合。命灯熄了，旧当票落在床边，再没有人伸手去接。"
+        }
+      ],
+      "randomize_seed": true,
+      "trade_scenarios": [
+        {
+          "id": "ordinary_item_blue_bowl",
+          "slot_id": "item_blue_bowl",
+          "item_id": "item_blue_bowl",
+          "variant_ids": [
+            "sound",
+            "repaired",
+            "chipped"
+          ],
+          "situations": [
+            "ordinary",
+            "urgent"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "釉色温润，碗沿完整。卖家称它是家中旧藏；仅看外观还无法确定是否修补。",
+          "questions": [
+            {
+              "id": "origin",
+              "prompt": "问：这件东西从哪里来？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "default": "是经手留下的旧物。来路和价钱，您可以分开问。"
+              }
+            },
+            {
+              "id": "condition",
+              "prompt": "问：青花小碗有哪些旧处？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "sound/admit": "碗口碗壁都好，没有接补。",
+                "sound/explain": "一直按旧物在用，这些细处您慢慢看。",
+                "sound/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "repaired/admit": "这碗补过一道缝，我知道。",
+                "repaired/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "repaired/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "chipped/admit": "口沿碰掉一小块，碗身没有补。",
+                "chipped/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "chipped/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "default": "您先看实物，有疑处再问。"
+              }
+            },
+            {
+              "id": "circumstance",
+              "prompt": "问：这笔钱何时要用？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "urgent": "今夜就要结一笔账，若能现在定下，我愿再让一点。",
+                "ordinary": "不急着结账，价钱合适再说。"
+              }
+            },
+            {
+              "id": "challenge_repair",
+              "prompt": "追问：侧光下显出细细的补釉接缝？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "repair"
+              ],
+              "pressure_clue": "repair",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "这碗补过一道缝，我知道。这份折价我认。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            },
+            {
+              "id": "challenge_condition_chipped",
+              "prompt": "追问：口沿有一处小磕？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "condition_chipped"
+              ],
+              "pressure_clue": "condition_chipped",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "碗口旧磕，不是整器修补。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "sound",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "intact"
+              ]
+            },
+            {
+              "id": "repaired",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "repair"
+              ]
+            }
+          ],
+          "benefit_groups": {
+            "repair": "condition_discount",
+            "condition_chipped": "condition_discount"
+          },
+          "concession_question": "circumstance",
+          "concession_amount": 5,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        },
+        {
+          "id": "ordinary_item_brass_holder",
+          "slot_id": "item_brass_holder",
+          "item_id": "item_brass_holder",
+          "variant_ids": [
+            "brass",
+            "plated",
+            "loose"
+          ],
+          "situations": [
+            "ordinary",
+            "urgent"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "一只沉甸甸的烛台。表面颜色均匀，内部材质需要工具检查。",
+          "questions": [
+            {
+              "id": "origin",
+              "prompt": "问：这件东西从哪里来？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "default": "是经手留下的旧物。来路和价钱，您可以分开问。"
+              }
+            },
+            {
+              "id": "condition",
+              "prompt": "问：黄铜烛台有哪些旧处？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "brass/admit": "是黄铜的，底座也牢。",
+                "brass/explain": "一直按旧物在用，这些细处您慢慢看。",
+                "brass/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "plated/admit": "外头是铜色，里头是不是铁，您可以试。",
+                "plated/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "plated/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "loose/admit": "铜料没换过，底座接头有些松。",
+                "loose/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "loose/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "default": "您先看实物，有疑处再问。"
+              }
+            },
+            {
+              "id": "circumstance",
+              "prompt": "问：这笔钱何时要用？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "urgent": "今夜就要结一笔账，若能现在定下，我愿再让一点。",
+                "ordinary": "不急着结账，价钱合适再说。"
+              }
+            },
+            {
+              "id": "challenge_iron_core",
+              "prompt": "追问：底部旧划痕划穿铜皮？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "iron_core"
+              ],
+              "pressure_clue": "iron_core",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "外头是铜色，里头是不是铁，您可以试。这份折价我认。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            },
+            {
+              "id": "challenge_attracts",
+              "prompt": "追问：磁针被底座明显吸住？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "attracts"
+              ],
+              "pressure_clue": "attracts",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "外头是铜色，里头是不是铁，您可以试。这份折价我认。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            },
+            {
+              "id": "challenge_condition_loose",
+              "prompt": "追问：底座接合松动？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "condition_loose"
+              ],
+              "pressure_clue": "condition_loose",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "底座松了，回去得重新接牢。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "brass",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "brass_core"
+              ]
+            },
+            {
+              "id": "plated",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "iron_core"
+              ]
+            }
+          ],
+          "benefit_groups": {
+            "iron_core": "condition_discount",
+            "attracts": "condition_discount",
+            "condition_loose": "condition_discount"
+          },
+          "concession_question": "circumstance",
+          "concession_amount": 5,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        },
+        {
+          "id": "ordinary_item_silver_hairpin",
+          "slot_id": "item_silver_hairpin",
+          "item_id": "item_silver_hairpin",
+          "variant_ids": [
+            "sound",
+            "flawed",
+            "mended"
+          ],
+          "situations": [
+            "ordinary",
+            "urgent"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "簪头刻花，簪脚有细小戳记；亮色未必意味着足银。",
+          "questions": [
+            {
+              "id": "origin",
+              "prompt": "问：这件东西从哪里来？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "default": "是经手留下的旧物。来路和价钱，您可以分开问。"
+              }
+            },
+            {
+              "id": "condition",
+              "prompt": "问：银簪有哪些旧处？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "sound/admit": "从簪首到簪脚是同一副银料。",
+                "sound/explain": "一直按旧物在用，这些细处您慢慢看。",
+                "sound/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "flawed/admit": "表面的银色磨掉一些，底下发黄。",
+                "flawed/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "flawed/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "mended/admit": "簪脚断过一次，后来接焊了。",
+                "mended/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "mended/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "default": "您先看实物，有疑处再问。"
+              }
+            },
+            {
+              "id": "circumstance",
+              "prompt": "问：这笔钱何时要用？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "urgent": "今夜就要结一笔账，若能现在定下，我愿再让一点。",
+                "ordinary": "不急着结账，价钱合适再说。"
+              }
+            },
+            {
+              "id": "challenge_flaw",
+              "prompt": "追问：簪脚磨损露出黄底？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "flaw"
+              ],
+              "pressure_clue": "flaw",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "表面的银色磨掉一些，底下发黄。这份折价我认。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            },
+            {
+              "id": "challenge_condition_mended",
+              "prompt": "追问：簪身焊口有细小接痕？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "condition_mended"
+              ],
+              "pressure_clue": "condition_mended",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "是旧焊口，不能按未修过的算。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            }
+          ],
+          "benefit_groups": {
+            "flaw": "condition_discount",
+            "condition_mended": "condition_discount"
+          },
+          "concession_question": "circumstance",
+          "concession_amount": 5,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        },
+        {
+          "id": "ordinary_item_pocket_watch",
+          "slot_id": "item_pocket_watch",
+          "item_id": "item_pocket_watch",
+          "variant_ids": [
+            "sound",
+            "flawed",
+            "worn"
+          ],
+          "situations": [
+            "ordinary",
+            "urgent"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "表壳光亮，表针正在移动；短暂走动无法证明机芯完好。",
+          "questions": [
+            {
+              "id": "origin",
+              "prompt": "问：这件东西从哪里来？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "default": "是经手留下的旧物。来路和价钱，您可以分开问。"
+              }
+            },
+            {
+              "id": "condition",
+              "prompt": "问：怀表有哪些旧处？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "sound/admit": "上弦便走，表壳也没大毛病。",
+                "sound/explain": "一直按旧物在用，这些细处您慢慢看。",
+                "sound/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "flawed/admit": "这表有时走、有时停，机芯得看。",
+                "flawed/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "flawed/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "worn/admit": "表壳磨旧了，走时还正常。",
+                "worn/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "worn/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "default": "您先看实物，有疑处再问。"
+              }
+            },
+            {
+              "id": "circumstance",
+              "prompt": "问：这笔钱何时要用？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "urgent": "今夜就要结一笔账，若能现在定下，我愿再让一点。",
+                "ordinary": "不急着结账，价钱合适再说。"
+              }
+            },
+            {
+              "id": "challenge_flaw",
+              "prompt": "追问：摆轮时走时停？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "flaw"
+              ],
+              "pressure_clue": "flaw",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "这表有时走、有时停，机芯得看。这份折价我认。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            },
+            {
+              "id": "challenge_condition_worn",
+              "prompt": "追问：表壳磨薄？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "condition_worn"
+              ],
+              "pressure_clue": "condition_worn",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "表壳旧了，机芯仍能走。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "sound",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "sound"
+              ]
+            },
+            {
+              "id": "flawed",
+              "label": "检查细节",
+              "path": "",
+              "requires_clues": [
+                "flaw"
+              ]
+            }
+          ],
+          "benefit_groups": {
+            "flaw": "condition_discount",
+            "condition_worn": "condition_discount"
+          },
+          "concession_question": "circumstance",
+          "concession_amount": 5,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        },
+        {
+          "id": "ordinary_item_inkstone",
+          "slot_id": "item_inkstone",
+          "item_id": "item_inkstone",
+          "variant_ids": [
+            "sound",
+            "flawed",
+            "chipped"
+          ],
+          "situations": [
+            "ordinary",
+            "urgent"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "砚面有细密石纹，卖家声称是旧坑石料。",
+          "questions": [
+            {
+              "id": "origin",
+              "prompt": "问：这件东西从哪里来？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "default": "是经手留下的旧物。来路和价钱，您可以分开问。"
+              }
+            },
+            {
+              "id": "condition",
+              "prompt": "问：端式砚台有哪些旧处？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "sound/admit": "天然石料，边角都在。",
+                "sound/explain": "一直按旧物在用，这些细处您慢慢看。",
+                "sound/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "flawed/admit": "表面颜色浓些，是不是染的您得看。",
+                "flawed/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "flawed/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "chipped/admit": "边上磕过一角，里外还是同一种石头。",
+                "chipped/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "chipped/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "default": "您先看实物，有疑处再问。"
+              }
+            },
+            {
+              "id": "circumstance",
+              "prompt": "问：这笔钱何时要用？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "urgent": "今夜就要结一笔账，若能现在定下，我愿再让一点。",
+                "ordinary": "不急着结账，价钱合适再说。"
+              }
+            },
+            {
+              "id": "challenge_flaw",
+              "prompt": "追问：所谓石眼为后填色点？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "flaw"
+              ],
+              "pressure_clue": "flaw",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "表面颜色浓些，是不是染的您得看。这份折价我认。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            },
+            {
+              "id": "challenge_condition_chipped",
+              "prompt": "追问：砚边磕去一角？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "condition_chipped"
+              ],
+              "pressure_clue": "condition_chipped",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "缺角是搬动时磕的。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            }
+          ],
+          "benefit_groups": {
+            "flaw": "condition_discount",
+            "condition_chipped": "condition_discount"
+          },
+          "concession_question": "circumstance",
+          "concession_amount": 5,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        },
+        {
+          "id": "ordinary_item_clay_teapot",
+          "slot_id": "item_clay_teapot",
+          "item_id": "item_clay_teapot",
+          "variant_ids": [
+            "sound",
+            "flawed",
+            "replaced_lid"
+          ],
+          "situations": [
+            "ordinary",
+            "urgent"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "小壶盖口贴合，腹部包浆深，需查看是否有暗裂。",
+          "questions": [
+            {
+              "id": "origin",
+              "prompt": "问：这件东西从哪里来？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "default": "是经手留下的旧物。来路和价钱，您可以分开问。"
+              }
+            },
+            {
+              "id": "condition",
+              "prompt": "问：紫砂小壶有哪些旧处？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "sound/admit": "壶身与盖是一副，没裂补过。",
+                "sound/explain": "一直按旧物在用，这些细处您慢慢看。",
+                "sound/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "flawed/admit": "壶把根边修过，胶线藏在茶垢底下。",
+                "flawed/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "flawed/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "replaced_lid/admit": "壶盖是后来配的，壶身没有裂。",
+                "replaced_lid/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "replaced_lid/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "default": "您先看实物，有疑处再问。"
+              }
+            },
+            {
+              "id": "circumstance",
+              "prompt": "问：这笔钱何时要用？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "urgent": "今夜就要结一笔账，若能现在定下，我愿再让一点。",
+                "ordinary": "不急着结账，价钱合适再说。"
+              }
+            },
+            {
+              "id": "challenge_flaw",
+              "prompt": "追问：壶把根部有胶线？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "flaw"
+              ],
+              "pressure_clue": "flaw",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "壶把根边修过，胶线藏在茶垢底下。这份折价我认。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            },
+            {
+              "id": "challenge_condition_replaced_lid",
+              "prompt": "追问：壶盖砂粒与壶身稍异？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "condition_replaced_lid"
+              ],
+              "pressure_clue": "condition_replaced_lid",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "盖子后来配过，壶身是原来的。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            }
+          ],
+          "benefit_groups": {
+            "flaw": "condition_discount",
+            "condition_replaced_lid": "condition_discount"
+          },
+          "concession_question": "circumstance",
+          "concession_amount": 5,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        },
+        {
+          "id": "ordinary_item_silk_panel",
+          "slot_id": "item_silk_panel",
+          "item_id": "item_silk_panel",
+          "variant_ids": [
+            "sound",
+            "flawed",
+            "faded"
+          ],
+          "situations": [
+            "ordinary",
+            "urgent"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "花鸟纹绣片卷在布包里，表面颜色鲜亮。",
+          "questions": [
+            {
+              "id": "origin",
+              "prompt": "问：这件东西从哪里来？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "default": "是经手留下的旧物。来路和价钱，您可以分开问。"
+              }
+            },
+            {
+              "id": "condition",
+              "prompt": "问：花鸟绣片有哪些旧处？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "sound/admit": "经纬还完整，边上也没酥。",
+                "sound/explain": "一直按旧物在用，这些细处您慢慢看。",
+                "sound/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "flawed/admit": "存放时受过潮，边角的线已经脆了。",
+                "flawed/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "flawed/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "faded/admit": "挂久了颜色淡，经纬还完整。",
+                "faded/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "faded/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "default": "您先看实物，有疑处再问。"
+              }
+            },
+            {
+              "id": "circumstance",
+              "prompt": "问：这笔钱何时要用？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "urgent": "今夜就要结一笔账，若能现在定下，我愿再让一点。",
+                "ordinary": "不急着结账，价钱合适再说。"
+              }
+            },
+            {
+              "id": "challenge_flaw",
+              "prompt": "追问：边角水渍深入纤维？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "flaw"
+              ],
+              "pressure_clue": "flaw",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "存放时受过潮，边角的线已经脆了。这份折价我认。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            },
+            {
+              "id": "challenge_condition_faded",
+              "prompt": "追问：正面颜色褪淡？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "condition_faded"
+              ],
+              "pressure_clue": "condition_faded",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "日头晒淡了颜色，底子还完整。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            }
+          ],
+          "benefit_groups": {
+            "flaw": "condition_discount",
+            "condition_faded": "condition_discount"
+          },
+          "concession_question": "circumstance",
+          "concession_amount": 5,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        },
+        {
+          "id": "ordinary_item_fountain_pen",
+          "slot_id": "item_fountain_pen",
+          "item_id": "item_fountain_pen",
+          "variant_ids": [
+            "sound",
+            "flawed",
+            "replacement_nib"
+          ],
+          "situations": [
+            "ordinary",
+            "urgent"
+          ],
+          "reactions": [
+            "admit",
+            "explain",
+            "evade"
+          ],
+          "introduction": "笔杆花纹鲜明，笔帽齐全，笔尖需要仔细检查。",
+          "questions": [
+            {
+              "id": "origin",
+              "prompt": "问：这件东西从哪里来？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "default": "是经手留下的旧物。来路和价钱，您可以分开问。"
+              }
+            },
+            {
+              "id": "condition",
+              "prompt": "问：赛璐珞钢笔有哪些旧处？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "sound/admit": "笔尖原配，尖缝和出墨都好。",
+                "sound/explain": "一直按旧物在用，这些细处您慢慢看。",
+                "sound/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "flawed/admit": "尖上有一道细裂，出墨也不畅。",
+                "flawed/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "flawed/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "replacement_nib/admit": "笔尖换过，笔杆还是原来的。",
+                "replacement_nib/explain": "一直按旧物在用，难免留下些痕迹，细处您慢慢看。",
+                "replacement_nib/evade": "就照拿来时的样子谈吧。有什么不妥，您拿实物问我。",
+                "default": "您先看实物，有疑处再问。"
+              }
+            },
+            {
+              "id": "circumstance",
+              "prompt": "问：这笔钱何时要用？",
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0,
+              "answers": {
+                "urgent": "今夜就要结一笔账，若能现在定下，我愿再让一点。",
+                "ordinary": "不急着结账，价钱合适再说。"
+              }
+            },
+            {
+              "id": "challenge_flaw",
+              "prompt": "追问：笔尖歪斜并有细裂？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "flaw"
+              ],
+              "pressure_clue": "flaw",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "尖上有一道细裂，出墨也不畅。这份折价我认。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            },
+            {
+              "id": "challenge_condition_replacement_nib",
+              "prompt": "追问：笔尖标记与笔杆牌记不同？",
+              "minutes": 5,
+              "requires_questions": [
+                "condition"
+              ],
+              "requires_clues": [
+                "condition_replacement_nib"
+              ],
+              "pressure_clue": "condition_replacement_nib",
+              "patience_cost": 0,
+              "answers": {
+                "admit": "尖是后配的，原尖早就坏了。",
+                "explain": "东西经手久了，有这些痕迹不奇怪。既然您看到了，价钱可以再议。",
+                "evade": "来路我说过了。您若在意这处，那就照眼前的东西谈价。"
+              }
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "",
+              "requires_clues": []
+            }
+          ],
+          "benefit_groups": {
+            "flaw": "condition_discount",
+            "condition_replacement_nib": "condition_discount"
+          },
+          "concession_question": "circumstance",
+          "concession_amount": 5,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 60
+        }
+      ],
+      "private_room": true,
+      "variety": {
+        "customer_ids": [
+          "customer_citizen",
+          "customer_hawker",
+          "customer_scholar",
+          "customer_house_agent",
+          "customer_seamstress",
+          "customer_watchmaker",
+          "customer_teahouse",
+          "customer_bookkeeper"
+        ],
+        "fixed_slots": [
+          "n3_visit1"
+        ],
+        "constrained_slots": [
+          "n3_visit4"
+        ],
+        "terms_ids": [
+          "short_redeem",
+          "short_default"
+        ],
+        "surnames": [
+          "陈",
+          "林",
+          "许",
+          "周",
+          "吴",
+          "陆",
+          "沈",
+          "方",
+          "顾",
+          "曹",
+          "蒋",
+          "朱",
+          "钱",
+          "何",
+          "严",
+          "罗"
+        ],
+        "profession_wait": true
+      }
+    }
+  ]
+}

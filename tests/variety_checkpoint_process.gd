@@ -11,7 +11,7 @@ func _initialize() -> void:
 	helper.catalog = JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
 	helper.run_def = helper.catalog.get_definition("runs", helper.catalog.default_run_id)
 	var saver := SaveManager.new("user://tests/variety_cross_process.json")
-	var s := RunSession.new(helper.run_def, 10, saver, helper.catalog)
+	var s := RunSession.new(helper.run_def, helper.catalog.content_version, saver, helper.catalog)
 	var mode: String = OS.get_cmdline_user_args()[0]
 	if mode == "write":
 		s._day.state.run_seed = 42

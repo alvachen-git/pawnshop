@@ -1,22 +1,22 @@
 {
-  "content_version": 10,
+  "content_version": 11,
   "default_run_id": "p0_variety",
   "sources": [
     {
       "kind": "runs",
-      "path": "res://data/runs/p0_variety.json"
+      "path": "res://data/runs/p0_variety_v11.json"
     },
     {
       "kind": "items",
-      "path": "res://data/items/items_v10.json"
+      "path": "res://data/items/items_v11.json"
     },
     {
       "kind": "customers",
-      "path": "res://data/customers/customers_v10.json"
+      "path": "res://data/customers/customers_v11.json"
     },
     {
       "kind": "buyers",
-      "path": "res://data/buyers/buyers_v10.json"
+      "path": "res://data/buyers/buyers_v11.json"
     },
     {
       "kind": "pawn_terms",

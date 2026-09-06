@@ -26,7 +26,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	if run.ghost_rule_ids.is_empty():
 		if (not run.fee_policy.enabled and not state.run_token.is_empty()) or (run.fee_policy.enabled and (state.run_token.length() != 32 or not state.run_token.is_valid_hex_number())) or not data.risk_pending.is_empty() or not data.risk_history.is_empty() or state.phase == &"dead": return "本运行未启用鬼货。"
 		for summary in state.summaries:
-			if summary.outcome != "placeholder_peaceful": return "旧运行日结结果无效。"
+			if summary.outcome != ("peaceful" if run.private_room else "placeholder_peaceful"): return "旧运行日结结果无效。"
 		return ""
 	if catalog == null or state.run_token.length() != 32 or not state.run_token.is_valid_hex_number(): return "鬼货运行标识无效。"
 	var manager := RiskManager.new(catalog)

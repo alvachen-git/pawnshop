@@ -56,6 +56,8 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		"offer", "pawn", "pressure":
 			if visit.trade.rounds_left <= 0 or visit.trade.patience <= 0: return "本次议价已经结束。"
 			if command in ["offer", "pawn"]:
+				var modes: Array = customer.transaction_modes if visit.transaction_modes.is_empty() else visit.transaction_modes
+				if ("sell" if command == "offer" else "pawn") not in modes: return "客人只愿按约定的方式交货。"
 				if command == "pawn" and ("pawn" not in customer.transaction_modes or not catalog.has_definition("pawn_terms", VarietyService.terms_for(visit, customer))): return "此顾客不接受活当。"
 				if amount <= 0 or amount > 1000000: return "报价必须是正整数。"
 				if not economy.can_pay(day.state, amount, ("loan/" if command == "pawn" else "purchase/") + visit_id): return "现金不足或交易已处理，未提交报价。"
@@ -130,7 +132,8 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 			var before := visit.trade.asking_price
 			var clue := item.find_clue(detail)
 			var valid := trades.pressure(visit.trade, customer, clue)
-			message = String(visit.voice.get("bargain" if valid else "false_pressure", clue.bargain_response))
+			message = clue.bargain_response
+			if message.is_empty(): message = String(visit.voice.get("bargain" if valid else "false_pressure", ""))
 			if message.is_empty(): message = "他仔细看了那处：“这毛病确实在，价钱可以再谈。”" if valid else "他摇摇头：“这只能说明东西的来路和样子，算不上毛病。”"
 			message += "\n要价 %d → %d 银元。" % [before, visit.trade.asking_price]
 			if not valid: message += " 他显得不耐烦了。"

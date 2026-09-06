@@ -13,6 +13,8 @@ var closed_at: int = -1
 var night_opening_cash: int = 0
 var action_count: int = 0
 var run_token := ""
+var sample_plan: Array[Dictionary] = []
+var buyer_appointment: Dictionary = {}
 var ordinary_selections: Array[Dictionary] = []
 var provenance_history: Array[Dictionary] = []
 var risk_history: Array[Dictionary] = []
@@ -59,6 +61,8 @@ func to_read_model() -> Dictionary:
 		"run_definition_id": String(run_definition_id),
 		"run_token": run_token,
 		"ordinary_selections": ordinary_selections.duplicate(true),
+		"sample_plan": sample_plan.duplicate(true),
+		"buyer_appointment": buyer_appointment.duplicate(true),
 		"provenance_history": provenance_history.duplicate(true),
 		"risk_history": risk_history.duplicate(true),
 		"risk_pending": risk_pending,

@@ -34,7 +34,7 @@ func _init(run_definition: RunDefinition, version: int, save_manager: SaveManage
 		_counter = CounterService.new(catalog)
 		_commerce = CommerceService.new(catalog)
 		_events = EventDirector.new(catalog)
-		if not definition.ghost_rule_ids.is_empty(): _risk = RiskManager.new(catalog)
+		if definition.private_room or not definition.ghost_rule_ids.is_empty(): _risk = RiskManager.new(catalog)
 		_mirror = MirrorEncounterService.new(catalog)
 		_save.catalog = catalog
 		_counter.customers.prepare_night(_day.state, definition, catalog)
@@ -115,7 +115,7 @@ func _switch_content(run: RunDefinition, version: int, catalog: ContentCatalog) 
 	_counter = CounterService.new(catalog)
 	_commerce = CommerceService.new(catalog)
 	_events = EventDirector.new(catalog)
-	_risk = RiskManager.new(catalog) if not run.ghost_rule_ids.is_empty() else null
+	_risk = RiskManager.new(catalog) if run.private_room or not run.ghost_rule_ids.is_empty() else null
 	_mirror = MirrorEncounterService.new(catalog)
 	_save.catalog = catalog
 

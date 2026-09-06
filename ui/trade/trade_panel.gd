@@ -89,6 +89,7 @@ func render(model: Dictionary) -> void:
 		_rounds_value.text = "%d 轮" % visual.rounds_left
 		_body.text = "%s · %s\n最迟留到 %s\n报价 %d分钟 · 施压 %d分钟\n活当：%s" % [visual.item_name, visual.attitude, visual.deadline, visual.quote_minutes, visual.pressure_minutes, visual.pawn_terms]
 		if not visual.get("patience_rule", "").is_empty(): _body.text += "\n" + visual.patience_rule
+		if not String(visual.get("visit_constraint", "")).is_empty(): _body.text += "\n" + String(visual.visit_constraint)
 		_body.text += "\n线索未必是毛病，牵强压价可能惹恼客人。"
 		if not String(visual.get("bargaining_cue", "")).is_empty(): _body.text += "\n" + String(visual.bargaining_cue)
 	_style_bargaining(model)

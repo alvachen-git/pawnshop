@@ -11,6 +11,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 	var value: Dictionary = row[field]
 	match kind:
 		"runs":
+			if value.has("profession_wait") and not value.profession_wait is bool: CounterDomainValidator._error(issues, at, "来客等待规则必须为布尔值。")
 			CounterSchema._fields(value, {"customer_ids": "strings", "fixed_slots": "strings", "constrained_slots": "strings", "terms_ids": "strings", "surnames": "strings"}, path, at, issues)
 			for key in ["customer_ids", "terms_ids", "surnames"]:
 				if value.get(key) is Array and value[key].is_empty(): CounterDomainValidator._error(issues, at, "随机抽选池不能为空。")

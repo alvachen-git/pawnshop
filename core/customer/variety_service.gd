@@ -53,10 +53,14 @@ static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -
 				"situation": "ordinary" if fixed or constrained else pick(["ordinary", "urgent"], seed_value, id + "/situation"),
 				"reaction": pick(["admit", "explain", "evade"], seed_value, id + "/reaction"),
 				"terms_id": customer.pawn_terms_id if fixed else pick(run.variety.terms_ids, seed_value, id + "/terms")})
-	return result
+	return OrdinarySamplePlan.apply(result, run, catalog, seed_value) if OrdinarySamplePlan.enabled(run) else result
 
 static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog, delay: int) -> void:
-	for row in plan(run, catalog, state.run_seed):
+	var rows := plan(run, catalog, state.run_seed)
+	if OrdinarySamplePlan.enabled(run):
+		state.sample_plan.assign(rows)
+		state.buyer_appointment = OrdinarySamplePlan.appointment(rows, catalog, state.run_seed)
+	for row in rows:
 		if row.night != state.current_night_index: continue
 		if not state.ordinary_selections.any(func(old: Dictionary) -> bool: return old.visit_id == row.visit_id): state.ordinary_selections.append(row.duplicate(true))
 		var customer := catalog.get_definition("customers", row.customer_id) as CustomerDefinition
@@ -85,10 +89,13 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 			visit.scenario_id = scenario.id
 			visit.situation_id = row.situation
 			visit.reaction_id = row.reaction
-			# Urgency changes the circumstance concession; each profession retains
-			# its configured wait duration (including the watchmaker's 80 minutes).
+			if row.situation == "urgent" and not run.variety.get("profession_wait", false): visit.expires_at = visit.arrival + mini(customer.terms.wait_minutes, scenario.urgent_wait_minutes)
 			var selection := {"visit_id": visit.visit_id, "scenario_id": scenario.id, "variant_id": row.variant_id, "situation_id": row.situation, "reaction_id": row.reaction}
 			if selection not in state.scenario_selections: state.scenario_selections.append(selection)
+		if row.has("wait_minutes"): visit.expires_at = visit.arrival + int(row.wait_minutes)
+		visit.transaction_modes.assign(row.get("transaction_modes", customer.transaction_modes))
+		if row.get("sample_role") == "pawn": visit.voice["introduction"] = "这件旧物舍不得卖。我只办活当，三夜后带票来赎。"
+		if row.get("sample_role") == "urgent": visit.voice["introduction"] = "车子不等人。我只留三十分钟，掌柜挑要紧的看。"
 		state.visits.append(visit)
 	state.visits.sort_custom(func(a: CustomerVisit, b: CustomerVisit) -> bool: return a.arrival < b.arrival)
 

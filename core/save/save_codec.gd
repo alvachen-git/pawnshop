@@ -1,14 +1,14 @@
 class_name SaveCodec
 extends RefCounted
 
-const VERSION := 10
-const ROOM_VERSION := 10
+const VERSION := 11
+const ROOM_VERSION := 11
 const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt", "shop_resolution", "private_room", "sleep_resolution"]
 var error_message := ""
 
 func encode(state: RunState, content_version: int) -> Dictionary:
 	var data := state.to_read_model()
-	data.save_version = ROOM_VERSION if state.room_enabled else VERSION
+	data.save_version = VERSION if content_version >= 11 else (10 if content_version == 10 else 9)
 	data.content_version = content_version
 	return data
 
@@ -20,10 +20,10 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		if not data.has(key) or not RunSchema.integer(data[key]) or abs(data[key]) > 2147483647:
 			return null
 	var legacy := int(data.save_version) == (8 if definition.private_room else 7)
-	if (int(data.save_version) not in [VERSION, 9] and not legacy) or int(data.content_version) != content_version:
+	if (int(data.save_version) not in [VERSION, 10, 9] and not legacy) or int(data.content_version) != content_version:
 		error_message = "存档/内容版本不兼容；旧文件已保留。"
 		return null
-	if not definition.variety.is_empty() and int(data.save_version) != VERSION: return null
+	if not definition.variety.is_empty() and int(data.save_version) != content_version: return null
 	if legacy:
 		data = data.duplicate(true)
 		if not data.get("summaries") is Array or not data.get("pawn_tickets") is Array: return null
