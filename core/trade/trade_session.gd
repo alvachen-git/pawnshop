@@ -1,6 +1,7 @@
 class_name TradeSession
 extends RefCounted
 
+var belittle_used := false
 var opening_price: int
 var asking_price: int
 var reserve_price: int

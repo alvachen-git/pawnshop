@@ -1,6 +1,9 @@
 class_name ClueDefinition
 extends RefCounted
 
+var bargain_line := ""
+var bargain_response := ""
+
 var _id: String
 var id: String:
 	get: return _id

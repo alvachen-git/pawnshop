@@ -21,10 +21,7 @@ func _run() -> void:
 	await _capture("03_evidence")
 	await _click("记录判断：有修补/瑕疵")
 	await _click("交易")
-	var pressure_label := ""
-	for entry in _session.counter_model().trade.buttons:
-		if entry.detail == "repair": pressure_label = entry.label
-	await _click(pressure_label)
+	await _click_trade_intent("pressure", "repair")
 	_check(_session.counter_model().trade.asking_price == 32, "证据施压降低要价")
 	await _capture("04_negotiation")
 	var price := _find_spin(_main)

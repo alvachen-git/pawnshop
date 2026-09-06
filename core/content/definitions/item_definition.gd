@@ -82,7 +82,10 @@ static func from_dto(dto: ItemDTO) -> ItemDefinition:
 	for action in dto.appraisal_actions:
 		definition._appraisal_actions.append(AppraisalActionDefinition.new(action.id, action.label, int(action.minutes), action.required_tool, action.requires_clues, action.reveals))
 	for clue in dto.clues:
-		definition._clues.append(ClueDefinition.new(clue.id, clue.text, int(clue.min_value), int(clue.max_value), int(clue.leverage), clue.judgement))
+		var mapped := ClueDefinition.new(clue.id, clue.text, int(clue.min_value), int(clue.max_value), int(clue.leverage), clue.judgement)
+		mapped.bargain_line = clue.get("bargain_line", "")
+		mapped.bargain_response = clue.get("bargain_response", "")
+		definition._clues.append(mapped)
 	definition._valuation_rules = dto.valuation_rules.duplicate(true)
 	definition._sell_channels = dto.sell_channels.duplicate(true)
 	definition._buyer_tags = dto.buyer_tags.duplicate(true)

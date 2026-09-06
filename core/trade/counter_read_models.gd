@@ -66,9 +66,16 @@ static func build(day: DayController, service: CounterService, message: String) 
 	model.trade.body = "%s · 要价 %d\n剩余议价轮次 %d · %s\n报价 %d分钟 / 施压 %d分钟，各消耗一轮。\n收购前请自行判断证据与承受价。" % [item.display_name, visit.trade.asking_price, visit.trade.rounds_left, "显得不耐烦" if visit.trade.patience < customer.patience else "尚愿意交谈", customer.terms.quote_minutes, customer.terms.pressure_minutes]
 	for clue_id in visit.item.revealed_clue_ids:
 		var clue := item.find_clue(clue_id)
-		var button := _button(day, service, visit, "pressure", clue_id, "据此压价：" + clue.text.left(16) + "…")
-		if button.enabled: button.reason = clue.text
+		var used: bool = clue_id in visit.trade.used_clue_ids or (scenario != null and TradeScenarioService.used(visit, scenario, clue_id))
+		var label := clue.bargain_line if not clue.bargain_line.is_empty() else "拿这条线索试探价格"
+		label += " · 已谈过" if used else " · %d分钟 · 议价一轮" % customer.terms.pressure_minutes
+		var button := _button(day, service, visit, "pressure", clue_id, label)
+		button.evidence = clue.text
 		model.trade.buttons.append(button)
+	if not customer.belittle.is_empty():
+		var label := "“这东西没你说的那么值钱，再让些。”"
+		label += " · 已试探" if visit.trade.belittle_used else " · %d分钟 · 议价一轮" % int(customer.belittle.minutes)
+		model.trade.buttons.append(_button(day, service, visit, "belittle", "", label))
 	if scenario != null and scenario.concession_amount > 0 and scenario.concession_question in visit.asked_question_ids:
 		model.trade.buttons.append(_button(day, service, visit, "concession", "", "请他为赶路再让%d银元 · %d分钟 · 议价一轮" % [scenario.concession_amount, scenario.concession_minutes]))
 		model.trade.body += "\n处境与品相分开谈；不赶路的客人可能反感催价。"

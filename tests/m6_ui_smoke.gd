@@ -43,10 +43,7 @@ func _run() -> void:
 	_check(_session.risk_model().body.contains("正在回头"), "追看前警告已显示")
 	await _click("收回视线")
 	await _click("交易")
-	var pressure_label := ""
-	for row in _session.counter_model().trade.buttons:
-		if row.command == "pressure" and row.detail == "flaw": pressure_label = row.label
-	await _click(pressure_label)
+	await _click_trade_intent("pressure", "flaw")
 	_find_trade(_main)._price.value = 20
 	await _click("正式报价并收购")
 	_check(_session.read_state().inventory_instances.size() == 2, "铜镜证据帮助真实议价收表")

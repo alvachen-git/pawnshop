@@ -43,6 +43,12 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		"judge":
 			if detail not in ["unknown", "sound", "damaged", "fake"]: return "判断类型无效。"
 			return ""
+		"belittle":
+			if customer.belittle.is_empty(): return "这位客人不接受这样的试探。"
+			if visit.trade.belittle_used: return "已试探过，不能再说一遍。"
+			if not detail.is_empty() or amount != 0: return "试探不接受报价或证据。"
+			if visit.trade.rounds_left <= 0 or visit.trade.patience <= 0: return "本次议价已经结束。"
+			cost = int(customer.belittle.minutes)
 		"offer", "pawn", "pressure":
 			if visit.trade.rounds_left <= 0 or visit.trade.patience <= 0: return "本次议价已经结束。"
 			if command in ["offer", "pawn"]:
@@ -66,7 +72,7 @@ func execute(day: DayController, command: String, visit_id: String, detail := ""
 	var visit := customers.active(day.state)
 	var start := day.state.game_minutes
 	var result := _execute(day, command, visit_id, detail, amount)
-	if not visit.scenario_id.is_empty(): TradeScenarioService.record(day, visit, command, detail, amount, start, result)
+	if not visit.scenario_id.is_empty() or not (catalog.get_definition("customers", visit.customer_id) as CustomerDefinition).belittle.is_empty(): TradeScenarioService.record(day, visit, command, detail, amount, start, result)
 	return result
 
 func _execute(day: DayController, command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
@@ -86,6 +92,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"concession": cost = scenario.concession_minutes
 		"offer", "pawn": cost = customer.terms.quote_minutes
 		"pressure": cost = customer.terms.pressure_minutes
+		"belittle": cost = int(customer.belittle.minutes)
 		"reject": cost = customer.terms.reject_minutes
 	day.spend_action(cost)
 	customers.update(day.state)
@@ -109,9 +116,15 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"reject":
 			customers.finish(day.state, visit, "rejected")
 			message = "拒绝收货，送客消耗 %d 分钟。" % cost
+		"belittle": message = BelittleService.apply(visit, customer)
 		"pressure":
-			var valid := trades.pressure(visit.trade, customer, item.find_clue(detail))
-			message = "对方认可了瑕疵，降低要价。" if valid else "这条证据不能证明瑕疵，对方不满；已消耗轮次和耐心。"
+			var before := visit.trade.asking_price
+			var clue := item.find_clue(detail)
+			var valid := trades.pressure(visit.trade, customer, clue)
+			message = clue.bargain_response
+			if message.is_empty(): message = "他仔细看了那处：“这毛病确实在，价钱可以再谈。”" if valid else "他摇摇头：“这只能说明东西的来路和样子，算不上毛病。”"
+			message += "\n要价 %d → %d 银元。" % [before, visit.trade.asking_price]
+			if not valid: message += " 他显得不耐烦了。"
 		"offer", "pawn":
 			var terms := catalog.get_definition("pawn_terms", customer.pawn_terms_id) as PawnTermsDefinition
 			var threshold := maxi(1, roundi(visit.trade.reserve_price * terms.loan_ratio)) if command == "pawn" else -1

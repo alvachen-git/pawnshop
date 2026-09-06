@@ -133,6 +133,7 @@ func _click_button(button: Button) -> void:
 		if ancestor is ScrollContainer: ancestor.ensure_control_visible(button)
 		ancestor = ancestor.get_parent()
 	await _frames()
+
 	# Dispatch real viewport mouse input, not a synthetic pressed signal.
 	var viewport := button.get_viewport()
 	var point := button.get_global_rect().get_center()
@@ -149,6 +150,15 @@ func _click_button(button: Button) -> void:
 		event.position = point
 		viewport.push_input(event, true)
 	await _frames()
+
+func _click_trade_intent(command: String, detail: String) -> void:
+	for panel in _main.find_children("*", "", true, false):
+		if not panel is TradePanel: continue
+		for button in panel._buttons.get_children():
+			if button is Button and button.get_meta("trade_command", "") == command and button.get_meta("trade_detail", "") == detail:
+				await _click_button(button)
+				return
+	_check(false, "缺少交易操作：" + command + "/" + detail)
 
 func _find_button(node: Node, label: String) -> Button:
 	if node is Button and node.text == label and node.is_visible_in_tree():

@@ -103,6 +103,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	if not error_message.is_empty(): return null
 	error_message = TradeScenarioSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
+	error_message = TradeScenarioSaveCodec.restore(data, state, definition, catalog, true)
+	if not error_message.is_empty(): return null
 	error_message = EventSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
 	error_message = MirrorSaveCodec.restore(data, state, definition, catalog)

@@ -2,9 +2,18 @@ class_name TradeScenarioSaveCodec
 extends RefCounted
 
 # Replay commands through the same counter rules; testimony cannot become physical evidence.
-static func restore(data: Dictionary, state: RunState, run: RunDefinition, catalog: ContentCatalog) -> String:
+static func restore(data: Dictionary, state: RunState, run: RunDefinition, catalog: ContentCatalog, ordinary := false) -> String:
 	if not data.get("scenario_history") is Array or not data.get("scenario_selections") is Array: return "缺少交易情境记录。"
-	if run.trade_scenarios.is_empty():
+	var history_key := "bargaining_history" if ordinary else "scenario_history"
+	var history: Variant = data.get(history_key, [])
+	if not history is Array: return "议价行动记录无效。"
+	if ordinary and history.is_empty(): return ""
+	var recorded_visits: Array = []
+	if ordinary:
+		for row in history:
+			if not row is Dictionary or not CounterSaveCodec._text_fields(row, ["visit_id"]): return "议价来访记录无效。"
+			if row.visit_id not in recorded_visits: recorded_visits.append(row.visit_id)
+	if not ordinary and run.trade_scenarios.is_empty():
 		return "" if data.scenario_history.is_empty() and data.scenario_selections.is_empty() else "本运行没有交易情境。"
 	if catalog == null: return "交易情境校验需要内容目录。"
 	var selections: Array = []
@@ -23,7 +32,10 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			visit.arrival += delay
 			visit.expires_at += delay
 			all_visits[visit.visit_id] = visit
-			if visit.scenario_id.is_empty() or night > state.summaries.size(): continue
+			if night > state.summaries.size(): continue
+			if ordinary:
+				if not visit.scenario_id.is_empty() or visit.visit_id not in recorded_visits: continue
+			elif visit.scenario_id.is_empty(): continue
 			var replay := RunState.create(run)
 			replay.run_seed = state.run_seed
 			replay.current_night_index = night
@@ -32,11 +44,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			replay.visits.append(visit)
 			replay_days[visit.visit_id] = DayController.new(run, replay)
 	if selections != data.scenario_selections: return "交易情境与本局种子不一致。"
-	state.scenario_selections.assign(selections)
+	if not ordinary: state.scenario_selections.assign(selections)
 	var service := CounterService.new(catalog)
 	var last_end := -1
-	for raw in data.scenario_history:
-		if not raw is Dictionary or not CounterSaveCodec._text_fields(raw, ["scenario_id", "visit_id", "variant_id", "situation_id", "reaction_id", "command"]) or not CounterSaveCodec._integers(raw, ["night", "start", "minute", "amount"]): return "交易情境行动结构无效。"
+	for raw in history:
+		if not raw is Dictionary or not CounterSaveCodec._text_fields(raw, (["visit_id", "variant_id", "command"] if ordinary else ["scenario_id", "visit_id", "variant_id", "situation_id", "reaction_id", "command"])) or not CounterSaveCodec._integers(raw, ["night", "start", "minute", "amount"]): return "交易情境行动结构无效。"
 		if not raw.get("detail") is String or not raw.get("ok") is bool or not raw.get("concession_used") is bool: return "交易情境结果结构无效。"
 		for key in ["clues", "questions", "used_clues"]:
 			if not CounterSaveCodec._string_array(raw.get(key)): return "交易情境证据或问答重复。"
@@ -50,16 +62,30 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		for other_id in endings:
 			var other: CustomerVisit = all_visits[other_id]
 			if other_id != visit.visit_id and endings[other_id].night == raw.night and other.arrival <= visit.arrival and endings[other_id].minute > raw.start: return "行动时这位客人尚未上柜。"
+		# Mirror evidence has a separate validated history, outside counter commands.
+		for source in data.get("mirror_history", []):
+			if not source is Dictionary: return "铜镜证据记录无效。"
+			if source.get("visit_id") != raw.visit_id or source.get("action") != "peek": continue
+			if not CounterSaveCodec._integers(source, ["minute"]): return "铜镜证据时刻无效。"
+			if source.minute > raw.start: continue
+			var encounter := MirrorEncounterService.find_definition(run, source.get("encounter_id", ""))
+			if encounter == null: return "铜镜证据来源无效。"
+			if encounter.clue_id not in visit.item.revealed_clue_ids: visit.item.revealed_clue_ids.append(encounter.clue_id)
 		day.state.game_minutes = int(raw.start)
 		service.customers.update(day.state)
-		var prior_count := day.state.scenario_history.size()
+		var replay_history: Array = day.state.get(history_key)
+		var prior_count := replay_history.size()
 		service.execute(day, raw.command, raw.visit_id, raw.detail, int(raw.amount))
-		if day.state.scenario_history.size() != prior_count + 1: return "交易情境行动不满足条件或重复使用优惠。"
+		if replay_history.size() != prior_count + 1: return "交易情境行动不满足条件或重复使用优惠。"
 		var normalized: Dictionary = raw.duplicate(true)
 		for key in ["night", "start", "minute", "amount"]: normalized[key] = int(normalized[key])
-		if normalized != day.state.scenario_history.back(): return "交易情境记录与真实行动、证据来源不符。"
+		if raw.command == "belittle":
+			if not raw.get("belittle_result") is Dictionary or not raw.belittle_result.get("used") is bool or not CounterSaveCodec._integers(raw.belittle_result, ["asking", "rounds", "patience"]): return "试探结果结构无效。"
+			for key in ["asking", "rounds", "patience"]: normalized.belittle_result[key] = int(normalized.belittle_result[key])
+		if normalized != replay_history.back(): return "交易情境记录与真实行动、证据来源不符。"
 		if endings[raw.visit_id].minute < raw.minute: return "交易情境行动晚于离店。"
-		state.scenario_history.append(normalized)
+		var restored_history: Array = state.get(history_key)
+		restored_history.append(normalized)
 	for id in replay_days:
 		var day: DayController = replay_days[id]
 		var visit: CustomerVisit = all_visits[id]

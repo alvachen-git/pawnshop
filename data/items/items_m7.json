@@ -38,7 +38,9 @@
           "min_value": 10,
           "max_value": 70,
           "leverage": 0,
-          "judgement": "unknown"
+          "judgement": "unknown",
+          "bargain_line": "寻常民窑的器型，价钱得往下谈。",
+          "bargain_response": "他指了指碗：“本来就是家用旧器，我也没按官窑喊价。”"
         },
         {
           "id": "mark",
@@ -46,7 +48,9 @@
           "min_value": 18,
           "max_value": 65,
           "leverage": 0,
-          "judgement": "unknown"
+          "judgement": "unknown",
+          "bargain_line": "这底足磨损，价钱得让些。",
+          "bargain_response": "他摇头：“年头留下的磨痕，又不是磕坏了。”"
         },
         {
           "id": "intact",
@@ -54,7 +58,9 @@
           "min_value": 55,
           "max_value": 65,
           "leverage": 0,
-          "judgement": "sound"
+          "judgement": "sound",
+          "bargain_line": "釉面虽整，品相也只算寻常，再让些。",
+          "bargain_response": "他把碗转向灯下：“既没见毛病，总不能凭这话扣钱。”"
         },
         {
           "id": "repair",
@@ -62,7 +68,9 @@
           "min_value": 18,
           "max_value": 25,
           "leverage": 40,
-          "judgement": "damaged"
+          "judgement": "damaged",
+          "bargain_line": "这道补釉接缝在，不能按完器收。",
+          "bargain_response": "他望着接缝，收回了护碗的手：“这处确实修过，再让些。”"
         }
       ],
       "appraisal_actions": [
