@@ -54,7 +54,7 @@ if ($LASTEXITCODE -ne 0) { throw 'Cannot record workspace status.' }
 function Get-ProductionFingerprint {
     $snapshot = [ordered]@{}
     foreach ($folder in @('core','ui','scenes','data','assets')) {
-        Get-ChildItem "$root/$folder" -Recurse -File | Where-Object { $_.Name -match '\.(gd|tscn|json|svg|ttf)$' -or $_.Name -eq 'NotoSansSC.ttf.import' } | Sort-Object FullName | ForEach-Object { $snapshot[$_.FullName.Substring($root.Length+1)] = (Get-FileHash -LiteralPath $_.FullName).Hash }
+        Get-ChildItem "$root/$folder" -Recurse -File | Where-Object { $_.Name -match '\.(gd|tscn|json|svg|png|ttf)$' -or $_.Name -eq 'NotoSansSC.ttf.import' } | Sort-Object FullName | ForEach-Object { $snapshot[$_.FullName.Substring($root.Length+1)] = (Get-FileHash -LiteralPath $_.FullName).Hash }
     }
     foreach ($file in @('project.godot','export_presets.cfg')) { $snapshot[$file] = (Get-FileHash "$root/$file").Hash }
     return ($snapshot | ConvertTo-Json -Compress)
@@ -73,8 +73,9 @@ $files = [Collections.Generic.List[string]]::new()
 foreach ($folder in @('core','ui')) {
     Get-ChildItem "$root/$folder" -Recurse -File | Where-Object { $_.Name -match '\.gd(\.uid)?$' } | ForEach-Object { $files.Add($_.FullName.Substring($root.Length+1).Replace('\','/')) }
 }
-foreach ($file in @('project.godot','export_presets.cfg','scenes/main.gd','scenes/main.gd.uid','scenes/main.tscn','assets/fonts/NotoSansSC.ttf','assets/fonts/NotoSansSC.ttf.import')) { $files.Add($file) }
+foreach ($file in @('project.godot','export_presets.cfg','scenes/main.gd','scenes/main.gd.uid','scenes/main.tscn','scenes/start.tscn','assets/fonts/NotoSansSC.ttf','assets/fonts/NotoSansSC.ttf.import')) { $files.Add($file) }
 $visuals = @(Get-ChildItem "$root/assets/art02" -Recurse -File -Filter '*.svg' | ForEach-Object { $_.FullName.Substring($root.Length+1).Replace('\','/') })
+$visuals += @(Get-ChildItem "$root/assets/main_menu" -File -Filter '*.png' | ForEach-Object { $_.FullName.Substring($root.Length+1).Replace('\','/') })
 foreach ($file in $visuals) { $files.Add($file); if (Test-Path "$root/$file.import") { $files.Add("$file.import") } }
 foreach ($path in $jsonFiles) {
     if ($path -notmatch '^res://data/[a-zA-Z0-9_/.-]+\.json$' -or $path.Contains('..')) { throw "Unsafe content path: $path" }

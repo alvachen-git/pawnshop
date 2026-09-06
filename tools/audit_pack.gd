@@ -66,6 +66,7 @@ func _initialize() -> void:
 	var cache := FileAccess.get_file_as_string("res://.godot/global_script_class_cache.cfg")
 	check(not "res://tests/" in cache and not "Tests" in cache, "exported class cache contains no test classes")
 	check(ResourceLoader.exists("res://scenes/main.tscn"), "main scene is packed")
+	check(ResourceLoader.exists("res://scenes/start.tscn"), "title startup scene is packed")
 	var report := {"passed": failures == 0, "files": files, "json_files": actual_json,
 		"dynamic_images_checked": specification.visual_files.size(),
 		"font_glyphs_checked": str(specification.font_characters).length(),

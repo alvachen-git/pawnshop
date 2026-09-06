@@ -1,0 +1,13 @@
+# ImageGen prompts
+
+## Corrected refinement
+
+Edit this exact selected Chinese game main menu. Preserve the reference's full composition: left two-line brush title 鬼市 / 当铺 above the vertical stack of 3 buttons, dark weathered wall, rain-wet Shanghai pawnshop doorway at center-right, small old red lantern top right, warm light through half-open wooden door, wet stone alley. Keep the camera, title, proportions and all scene elements. Target 1920x1080 16:9. ONLY refine the three buttons to feel more physically atmospheric and depict first-button hover. Keep button bounding boxes and text identical to reference: left margin about 4.5%, width 30%, y about 55%,68%,80% with appropriate gaps. Exact text: 开启新游戏 / 读取游戏 / 离开游戏. Make them restrained old lacquered WOODEN SIGN plaques with thin tarnished bronze inset rules, subtle chipped dark brown/red lacquer exposing old wood grain, modest beveled edge, hand-polished corners, a tiny barely visible square old pawnshop seal at left inside each button. Still rectangular, minimal and early Republican era, no new paper panel, NO paper tickets, no dramatic scrollwork. Primary top plaque old dark cinnabar lacquer #8D2A24, ivory readable Song type. Lower plaques soot brown with ivory text, enough contrast. Hover top plaque rises very slightly, its seal takes on a faded cinnabar imprint, lettering has a nearly invisible thin offset darker red ink shadow by 1-2px. Make the first plaque feel that something inside it has stirred, no glow effect, no blood, no neon, no ghost face. Keep menu typography and title size exactly as reference. Scene warm lamp slightly dimmed only. Large clear hit targets. This is one polished revised full-screen UI design, not a sprite sheet or annotated presentation. Semi-realistic hand-painted 1930s Shanghai, aged print grain, 95% ordinary 5% subtly wrong.
+
+## Background layer
+
+Remove only the three lower-left buttons, their frames, seals, text and cast shadows from the corrected reference; reconstruct matching uninterrupted dark plaster. Preserve title, composition, storefront, doorway lamp, red lantern and wet alley. Early Republican Shanghai, aged print grain, 95% mundane/5% wrongness. Request 1920x1080. Actual returned background is 1672x941.
+
+## Button layer
+
+One isolated empty horizontal dark lacquered wood plaque matching the lower buttons in the corrected reference: thin worn bronze inset rules, chipped soot-brown lacquer, subtle square pawnshop seal at left, no text. Approx 5.3:1 visible asset. Requested transparency did not produce alpha; final request replaced checkerboard with near-black #090806. Actual returned asset is 1846x852, visible plaque bounds x23/y229/w1800/h337. CSS uses this measured crop and semantic tint modulation.

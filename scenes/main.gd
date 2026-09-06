@@ -1,12 +1,52 @@
 extends Node
 
+@export var start_at_title := false
+var title_menu: TitleMenuView
+
 @onready var _bootstrap: Bootstrap = $Bootstrap
 @onready var _counter_screen: CounterScreen = $CounterScreen
 
 
 func _ready() -> void:
+	if start_at_title:
+		_counter_screen.hide()
+		_counter_screen.process_mode = Node.PROCESS_MODE_DISABLED
 	_bootstrap.content_ready.connect(_counter_screen.show_content_ready)
 	_bootstrap.content_failed.connect(_counter_screen.show_content_error)
 	_bootstrap.initialize()
 	if _bootstrap.session != null:
 		_counter_screen.bind_session(_bootstrap.session)
+	if start_at_title:
+		title_menu = TitleMenuView.new()
+		title_menu.name = "TitleMenu"
+		add_child(title_menu)
+		title_menu.new_requested.connect(_start_new_game)
+		title_menu.load_requested.connect(_load_game)
+		title_menu.exit_requested.connect(_exit_game)
+		title_menu.configure(_bootstrap.session != null, _bootstrap.session != null and _bootstrap.session.has_save())
+
+
+func _start_new_game() -> void:
+	if _bootstrap.session == null: return
+	_bootstrap.session.new_run()
+	_enter_game()
+
+
+func _load_game() -> void:
+	if _bootstrap.session == null: return
+	var result := _bootstrap.session.load_checkpoint()
+	if result.ok: _enter_game()
+	else: title_menu.show_error(result.message)
+
+
+func _enter_game() -> void:
+	_counter_screen.process_mode = Node.PROCESS_MODE_INHERIT
+	_counter_screen.show()
+	if is_instance_valid(title_menu):
+		title_menu.hide()
+		title_menu.queue_free()
+	_counter_screen.get_node("%MenuButton").grab_focus()
+
+
+func _exit_game() -> void:
+	get_tree().quit()
