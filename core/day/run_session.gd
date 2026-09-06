@@ -38,6 +38,7 @@ func _init(run_definition: RunDefinition, version: int, save_manager: SaveManage
 		_mirror = MirrorEncounterService.new(catalog)
 		_save.catalog = catalog
 		_counter.customers.prepare_night(_day.state, definition, catalog)
+		MarketService.sync(_day.state, definition)
 		_events.poll(_day.state, definition)
 
 func read_state() -> Dictionary:
@@ -60,6 +61,7 @@ func execute(command: String) -> ActionResult:
 		var error := _commerce.pawns.disposal_reason(_day.state, _commerce.catalog, _pawn_choices)
 		if not error.is_empty():
 			message = error
+			MarketService.sync(_day.state, definition)
 			changed.emit()
 			return ActionResult.new(false, error)
 	# Only these commands create checkpoints. Snapshot before mutation for rollback.
@@ -82,6 +84,7 @@ func execute(command: String) -> ActionResult:
 			_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 		_counter.customers.update(_day.state)
 	if result.ok and _events != null: _events.poll(_day.state, definition)
+	MarketService.sync(_day.state, definition)
 	if result.ok and checkpoint:
 		if not _save.save_state(_day.state, definition, content_version):
 			_day.state = previous
@@ -90,6 +93,7 @@ func execute(command: String) -> ActionResult:
 			result.message = "这一夜的账，记下了。"
 	if result.ok and command == "resolve_night": _pawn_choices.clear()
 	message = result.message
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return result
 
@@ -105,6 +109,7 @@ func load_checkpoint() -> ActionResult:
 		if _counter != null and restored.phase == &"pre_open":
 			_counter.customers.prepare_night(restored, definition, _counter.catalog)
 	message = result.message
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return result
 
@@ -132,6 +137,7 @@ func new_run() -> void:
 		_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 	if _events != null: _events.poll(_day.state, definition)
 	message = "暮色又落到了铺门前。柜上的账册，翻开了第一页。"
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 
 func _copy_state(source: RunState) -> RunState:
@@ -166,6 +172,7 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	_emit_receipt(ledger_size)
 	return result
@@ -196,16 +203,33 @@ func commerce_command(command: String, target: String, detail := "") -> ActionRe
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	_emit_receipt(ledger_size)
 	return result
 
 func _emit_receipt(previous_size: int) -> void:
+	if not definition.market.is_empty() and _day.state.ledger_entries.size() > previous_size and _day.state.ledger_entries[previous_size].kind == "sale":
+		transaction_completed.emit(TradeReceiptModel.batch(_day, _counter.catalog, previous_size))
+		return
 	# A rejected quote can return ok=true. A new ledger posting, rather than
 	# ActionResult.ok or localized message matching, proves money changed hands.
 	if _counter == null or _day.state.ledger_entries.size() != previous_size + 1: return
 	var receipt := TradeReceiptModel.build(_day, _counter.catalog, _day.state.ledger_entries.back())
 	if not receipt.is_empty(): transaction_completed.emit(receipt)
+
+func sell_batch(buyer_id: String, item_ids: Array) -> ActionResult:
+	var previous := _day.state.ledger_entries.size()
+	var result := _commerce.sell_batch(_day, buyer_id, item_ids)
+	if result.ok:
+		_counter.customers.update(_day.state)
+		if _risk != null: _risk.capture_close(_day.state)
+		if _events != null: _events.poll(_day.state, definition)
+		MarketService.sync(_day.state, definition)
+	message = result.message
+	changed.emit()
+	_emit_receipt(previous)
+	return result
 
 func event_model() -> Dictionary:
 	return _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}
@@ -219,11 +243,13 @@ func event_command(event_id: String, choice_id: String) -> ActionResult:
 		if result.ok and _counter != null: _counter.customers.update(_day.state)
 	if _risk != null: _risk.capture_close(_day.state)
 	message = result.message
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return result
 
 func _event_blocked() -> ActionResult:
 	message = "请先到「铺中记事」处理眼前的事情。"
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return ActionResult.new(false, message)
 
@@ -270,11 +296,13 @@ func risk_command(command: String, id: String) -> ActionResult:
 			_events.poll(_day.state, definition)
 	_risk_error = "" if result.ok else result.message
 	message = result.message
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return result
 
 func _risk_blocked() -> ActionResult:
 	message = "铺门上了封条，柜前再无人等候。" if _day.state.phase == &"bankrupt" else ("灯已冷了，铺中再没有人应声。" if _day.state.phase == &"dead" else "请先在「鬼货与绝当录」应对镜中来客。")
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return ActionResult.new(false, message)
 
@@ -287,11 +315,13 @@ func mirror_command(id: String, command: String) -> ActionResult:
 	_risk_error = "" if result.ok else result.message
 	if _events != null and not mirror_pending(): _events.poll(_day.state, definition)
 	message = result.message
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return result
 
 func _mirror_blocked() -> ActionResult:
 	message = "镜里的旧当票还在眼前。请先收回视线，或再看一眼。"
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return ActionResult.new(false, message)
 
@@ -300,6 +330,7 @@ func economy_model() -> Dictionary:
 
 func _return_blocked() -> ActionResult:
 	message = "持票的老客正在柜前等候，请先验票办理。"
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return ActionResult.new(false, message)
 
@@ -320,5 +351,6 @@ func choose_pawn_disposal(id: String, choice: String) -> ActionResult:
 	if ticket == null or ticket not in _commerce.pawns.maturities(_day.state): return ActionResult.new(false, "当票尚未到期或已经结清。")
 	_pawn_choices[id] = choice
 	message = "选好后可改动；逐张核妥，再一并合账。"
+	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return ActionResult.new(true, message)

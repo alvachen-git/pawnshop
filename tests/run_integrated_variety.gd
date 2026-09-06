@@ -9,7 +9,7 @@ func check(ok: bool, label: String) -> void:
 		failures += 1
 		push_error("FAIL " + label)
 func run() -> void:
-	var result := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var result := JsonContentProvider.new("res://data/legacy/content_v11.json").load_catalog()
 	check(result.is_success(), "v11 three night catalog")
 	if not result.is_success(): quit(1); return
 	var helper := VarietyTests.new()

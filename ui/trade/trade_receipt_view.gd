@@ -61,7 +61,12 @@ func _ready() -> void:
 	_note = _label(info, "", 17)
 	_amount = _label(column, "", 37)
 	_cash = _label(column, "", 18)
-	_detail = _label(column, "", 16)
+	var detail_scroll := ScrollContainer.new()
+	detail_scroll.name = "ReceiptDetails"
+	detail_scroll.custom_minimum_size.y = 120
+	detail_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	column.add_child(detail_scroll)
+	_detail = _label(detail_scroll, "", 16)
 	column.add_child(HSeparator.new())
 	var actions := HBoxContainer.new()
 	actions.add_theme_constant_override("separation", 14)
@@ -103,6 +108,8 @@ func present(receipt: Dictionary) -> void:
 	_note.text = receipt.note
 	_detail.text = receipt.detail
 	_detail.visible = not receipt.detail.is_empty()
+	_detail.get_parent().visible = _detail.visible
+	(_detail.get_parent() as ScrollContainer).scroll_vertical = 0
 	_amount.text = "%s  %d 银元" % ["实付" if receipt.amount < 0 else "实收", absi(receipt.amount)]
 	_cash.text = "现银  %d → %d 银元" % [receipt.before, receipt.after]
 	_picture.texture = CounterVisualCatalog.front(receipt.item_asset, receipt.images)

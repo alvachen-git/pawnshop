@@ -38,6 +38,8 @@ var inventory_instances: Array[ItemInstance] = []
 var pawn_rules_start_night := 1
 var pawn_returns: Array[Dictionary] = []
 var pawn_tickets: Array[PawnTicket] = []
+var market_history: Array[Dictionary] = []
+var sale_batches: Array[Dictionary] = []
 var sale_records: Array[Dictionary] = []
 var ledger_entries: Array[Dictionary] = []
 var visit_history: Array[Dictionary] = []
@@ -95,5 +97,7 @@ func to_read_model() -> Dictionary:
 		"pawn_returns": pawn_returns.duplicate(true),
 		"pawn_tickets": pawn_tickets.map(func(ticket: PawnTicket) -> Dictionary: return ticket.to_data()),
 		"sale_records": sale_records.duplicate(true),
+		"market_history": market_history.duplicate(true),
+		"sale_batches": sale_batches.duplicate(true),
 		"visit_history": visit_history.duplicate(true),
 	}

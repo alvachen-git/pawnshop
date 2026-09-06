@@ -1,6 +1,31 @@
 class_name TradeReceiptModel
 extends RefCounted
 
+static func batch(day: DayController, catalog: ContentCatalog, first: int) -> Dictionary:
+	var entry: Dictionary = day.state.ledger_entries[first]
+	var receipt := build(day, catalog, entry)
+	var trip: Dictionary = day.state.sale_batches.back()
+	var buyer := catalog.get_definition("buyers", trip.buyer_id) as BuyerDefinition
+	var total := 0
+	var cost := 0
+	var lines: PackedStringArray = []
+	for index in range(first, day.state.ledger_entries.size()):
+		var row: Dictionary = day.state.ledger_entries[index]
+		var item := InventoryManager.new().find(day.state, row.item_instance_id)
+		var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
+		var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+		total += row.amount
+		cost += item.acquisition_price
+		lines.append("%s · 收%d / 成本%d / 盈亏%+d\n基础报价%d · 来源溢价%d" % [definition.display_name, row.amount, item.acquisition_price, row.realized_profit, base, row.amount - base])
+	receipt.item = "%s · 交货%d件" % [buyer.display_name, trip.item_ids.size()]
+	receipt.item_asset = ""
+	receipt.images = []
+	receipt.amount = total
+	receipt.after = day.state.cash
+	receipt.note = "往返20分钟，货款已收妥。"
+	receipt.detail = "总成本%d · 已实现盈亏%+d 银元\n未扣来源调查费与每日息费。\n\n%s" % [cost, total - cost, "\n\n".join(lines)]
+	return receipt
+
 # Only committed, player-visible facts. No hidden variant, true value or margin
 # forecast is exposed by buying an item. This receipt is not a save checkpoint.
 static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary) -> Dictionary:

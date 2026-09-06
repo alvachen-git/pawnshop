@@ -14,7 +14,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 		if item.ownership_state == "owned":
 			for id in day.definition.buyer_ids:
 				var buyer := service.catalog.get_definition("buyers", id) as BuyerDefinition
-				buyers[id] = "%s–%s · 每夜最多收%d件" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end), buyer.capacity_per_night]
+				buyers[id] = "%s–%s · %s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end), "不限量" if buyer.capacity_per_night == 0 else "每夜最多收%d件" % buyer.capacity_per_night]
 				if id == "buyer_appointment": buyers[id] = OrdinarySamplePlan.notice(day.state)
 				if service.sale_reason(day, item, buyer).is_empty() and not item.provenance.is_empty():
 					var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))

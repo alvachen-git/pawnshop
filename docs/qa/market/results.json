@@ -1,0 +1,698 @@
+[
+  {
+    "name": "accounts-1280x720",
+    "passed": true,
+    "summary": [
+      "M3 UI SMOKE: 169 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\accounts-1280x720.log"
+  },
+  {
+    "name": "accounts-1600x900",
+    "passed": true,
+    "summary": [
+      "M3 UI SMOKE: 169 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\accounts-1600x900.log"
+  },
+  {
+    "name": "art03_extension_ui_smoke",
+    "passed": true,
+    "summary": [
+      "ART03 EXTENSION UI: 61 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\art03_extension_ui_smoke.log"
+  },
+  {
+    "name": "bargaining-1280x720",
+    "passed": true,
+    "summary": [
+      "BARGAINING UI TESTS: 33 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\bargaining-1280x720.log"
+  },
+  {
+    "name": "bargaining-1600x900",
+    "passed": true,
+    "summary": [
+      "BARGAINING UI TESTS: 33 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\bargaining-1600x900.log"
+  },
+  {
+    "name": "bargaining-core",
+    "passed": true,
+    "summary": [
+      "BARGAINING TESTS: 182 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\bargaining-core.log"
+  },
+  {
+    "name": "bargaining-process-read-ordinary",
+    "passed": true,
+    "summary": [
+      "BARGAINING PROCESS TESTS: 5 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\bargaining-process-read-ordinary.log"
+  },
+  {
+    "name": "bargaining-process-read-scenario",
+    "passed": true,
+    "summary": [
+      "BARGAINING PROCESS TESTS: 5 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\bargaining-process-read-scenario.log"
+  },
+  {
+    "name": "bargaining-process-sleep-ordinary",
+    "passed": true,
+    "summary": [
+      "BARGAINING PROCESS TESTS: 6 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\bargaining-process-sleep-ordinary.log"
+  },
+  {
+    "name": "bargaining-process-sleep-scenario",
+    "passed": true,
+    "summary": [
+      "BARGAINING PROCESS TESTS: 6 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\bargaining-process-sleep-scenario.log"
+  },
+  {
+    "name": "bargaining-process-write-ordinary",
+    "passed": true,
+    "summary": [
+      "BARGAINING PROCESS TESTS: 9 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\bargaining-process-write-ordinary.log"
+  },
+  {
+    "name": "bargaining-process-write-scenario",
+    "passed": true,
+    "summary": [
+      "BARGAINING PROCESS TESTS: 9 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\bargaining-process-write-scenario.log"
+  },
+  {
+    "name": "bargaining-variety-core",
+    "passed": true,
+    "summary": [
+      "BARGAINING VARIETY TESTS: 69 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\bargaining-variety-core.log"
+  },
+  {
+    "name": "core",
+    "passed": true,
+    "summary": [
+      "M0–M7 TESTS PASSED · 1799 assertions"
+    ],
+    "log": ".godot\\full-market-validation-01\\core.log"
+  },
+  {
+    "name": "debt-production-1280x720",
+    "passed": true,
+    "summary": [
+      "M6 UI SMOKE: 376 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\debt-production-1280x720.log"
+  },
+  {
+    "name": "debt-production-1600x900",
+    "passed": true,
+    "summary": [
+      "M6 UI SMOKE: 376 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\debt-production-1600x900.log"
+  },
+  {
+    "name": "environment",
+    "passed": true,
+    "summary": [
+      "M8A ENV PASS: C:/Users/alvachen/Documents/ChatGPT/pawnbroker/.artifacts/market-work/project/.godot/full-market-validation-01/appdata/Godot/app_userdata/鬼市当铺"
+    ],
+    "log": ".godot\\full-market-validation-01\\environment.log"
+  },
+  {
+    "name": "font",
+    "passed": true,
+    "summary": [
+      "M8A FONT TESTS PASSED: bundled glyphs; no system fallback; applied weight=400"
+    ],
+    "log": ".godot\\full-market-validation-01\\font.log"
+  },
+  {
+    "name": "four-1280x720",
+    "passed": true,
+    "summary": [
+      "FOUR UI TESTS: 172 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\four-1280x720.log"
+  },
+  {
+    "name": "four-1600x900",
+    "passed": true,
+    "summary": [
+      "FOUR UI TESTS: 172 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\four-1600x900.log"
+  },
+  {
+    "name": "four-night-core",
+    "passed": true,
+    "summary": [
+      "FOUR NIGHT TESTS: 42532 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\four-night-core.log"
+  },
+  {
+    "name": "four-process-finish",
+    "passed": true,
+    "summary": [
+      "FOUR PROCESS finish: 5 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\four-process-finish.log"
+  },
+  {
+    "name": "four-process-fourth",
+    "passed": true,
+    "summary": [
+      "FOUR PROCESS fourth: 21 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\four-process-fourth.log"
+  },
+  {
+    "name": "four-process-read",
+    "passed": true,
+    "summary": [
+      "FOUR PROCESS read: 7 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\four-process-read.log"
+  },
+  {
+    "name": "four-process-room",
+    "passed": true,
+    "summary": [
+      "FOUR PROCESS room: 10 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\four-process-room.log"
+  },
+  {
+    "name": "four-process-sleep",
+    "passed": true,
+    "summary": [
+      "FOUR PROCESS sleep: 4 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\four-process-sleep.log"
+  },
+  {
+    "name": "four-process-write",
+    "passed": true,
+    "summary": [
+      "FOUR PROCESS write: 53 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\four-process-write.log"
+  },
+  {
+    "name": "integrated-variety",
+    "passed": true,
+    "summary": [
+      "INTEGRATED VARIETY TESTS: 16976 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\integrated-variety.log"
+  },
+  {
+    "name": "m2_ui_smoke",
+    "passed": true,
+    "summary": [
+      "M2 UI SMOKE: 93 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\m2_ui_smoke.log"
+  },
+  {
+    "name": "m3_ui_smoke",
+    "passed": true,
+    "summary": [
+      "M3 UI SMOKE: 122 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\m3_ui_smoke.log"
+  },
+  {
+    "name": "m4_ui_smoke",
+    "passed": true,
+    "summary": [
+      "M4 UI SMOKE: 159 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\m4_ui_smoke.log"
+  },
+  {
+    "name": "m5-process-archive",
+    "passed": true,
+    "summary": [
+      "M5 PROCESS archive PASS=true"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m5-process-archive.log"
+  },
+  {
+    "name": "m5-process-death",
+    "passed": true,
+    "summary": [
+      "M5 PROCESS death PASS=true"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m5-process-death.log"
+  },
+  {
+    "name": "m5-process-restart",
+    "passed": true,
+    "summary": [
+      "M5 PROCESS restart PASS=true"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m5-process-restart.log"
+  },
+  {
+    "name": "m5-process-warning",
+    "passed": true,
+    "summary": [
+      "M5 PROCESS warning PASS=true"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m5-process-warning.log"
+  },
+  {
+    "name": "m5_ui_smoke",
+    "passed": true,
+    "summary": [
+      "M5 UI SMOKE: 276 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\m5_ui_smoke.log"
+  },
+  {
+    "name": "m6-process-read_bankrupt",
+    "passed": true,
+    "summary": [
+      "M6 CROSS PROCESS read_bankrupt: 1 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m6-process-read_bankrupt.log"
+  },
+  {
+    "name": "m6-process-read_death",
+    "passed": true,
+    "summary": [
+      "M6 CROSS PROCESS read_death: 1 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m6-process-read_death.log"
+  },
+  {
+    "name": "m6-process-resume_bankrupt",
+    "passed": true,
+    "summary": [
+      "M6 CROSS PROCESS resume_bankrupt: 5 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m6-process-resume_bankrupt.log"
+  },
+  {
+    "name": "m6-process-resume_death",
+    "passed": true,
+    "summary": [
+      "M6 CROSS PROCESS resume_death: 2 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m6-process-resume_death.log"
+  },
+  {
+    "name": "m6-process-write_debt",
+    "passed": true,
+    "summary": [
+      "M6 CROSS PROCESS write_debt: 4 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m6-process-write_debt.log"
+  },
+  {
+    "name": "m6-process-write_mirror",
+    "passed": true,
+    "summary": [
+      "M6 CROSS PROCESS write_mirror: 37 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m6-process-write_mirror.log"
+  },
+  {
+    "name": "m6-production-1280x720",
+    "passed": true,
+    "summary": [
+      "M6 UI SMOKE: 365 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\m6-production-1280x720.log"
+  },
+  {
+    "name": "m6-production-1600x900",
+    "passed": true,
+    "summary": [
+      "M6 UI SMOKE: 365 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\m6-production-1600x900.log"
+  },
+  {
+    "name": "m7-1280x720",
+    "passed": true,
+    "summary": [
+      "M7 UI SMOKE: 795 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\m7-1280x720.log"
+  },
+  {
+    "name": "m7-1600x900",
+    "passed": true,
+    "summary": [
+      "M7 UI SMOKE: 795 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\m7-1600x900.log"
+  },
+  {
+    "name": "m7-process-read",
+    "passed": true,
+    "summary": [
+      "M7 CROSS PROCESS read: 3 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m7-process-read.log"
+  },
+  {
+    "name": "m7-process-resume",
+    "passed": true,
+    "summary": [
+      "M7 CROSS PROCESS resume: 10 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m7-process-resume.log"
+  },
+  {
+    "name": "m7-process-write",
+    "passed": true,
+    "summary": [
+      "M7 CROSS PROCESS write: 6 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\m7-process-write.log"
+  },
+  {
+    "name": "market-1280x720",
+    "passed": true,
+    "summary": [
+      "MARKET UI TESTS: 84 assertions, 0 failures"
+    ],
+    "log": ".godot\\market-ui-final-normal.log"
+  },
+  {
+    "name": "market-1600x900",
+    "passed": true,
+    "summary": [
+      "MARKET UI TESTS: 84 assertions, 0 failures"
+    ],
+    "log": ".godot\\market-ui-final-wide.log"
+  },
+  {
+    "name": "market-core",
+    "passed": true,
+    "summary": [
+      "MARKET TESTS: 5931 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\market-core.log"
+  },
+  {
+    "name": "market-process-next",
+    "passed": true,
+    "summary": [
+      "MARKET PROCESS next: 7 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\market-process-next.log"
+  },
+  {
+    "name": "market-process-read",
+    "passed": true,
+    "summary": [
+      "MARKET PROCESS read: 4 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\market-process-read.log"
+  },
+  {
+    "name": "market-process-write",
+    "passed": true,
+    "summary": [
+      "MARKET PROCESS write: 9 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\market-process-write.log"
+  },
+  {
+    "name": "pawn-1280x720",
+    "passed": true,
+    "summary": [
+      "PAWN UI SMOKE: 96 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\pawn-1280x720.log"
+  },
+  {
+    "name": "pawn-1600x900",
+    "passed": true,
+    "summary": [
+      "PAWN UI SMOKE: 96 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\pawn-1600x900.log"
+  },
+  {
+    "name": "pawn-core",
+    "passed": true,
+    "summary": [
+      "PAWN TESTS: 107 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\pawn-core.log"
+  },
+  {
+    "name": "pawn-process-read",
+    "passed": true,
+    "summary": [
+      "PAWN PROCESS read: 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\pawn-process-read.log"
+  },
+  {
+    "name": "pawn-process-settle",
+    "passed": true,
+    "summary": [
+      "PAWN PROCESS settle: 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\pawn-process-settle.log"
+  },
+  {
+    "name": "pawn-process-write",
+    "passed": true,
+    "summary": [
+      "PAWN PROCESS write: 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\pawn-process-write.log"
+  },
+  {
+    "name": "receipt-1280x720",
+    "passed": true,
+    "summary": [
+      "RECEIPT UI TESTS: 73 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\receipt-1280x720.log"
+  },
+  {
+    "name": "receipt-1600x900",
+    "passed": true,
+    "summary": [
+      "RECEIPT UI TESTS: 73 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\receipt-1600x900.log"
+  },
+  {
+    "name": "room-1280x720",
+    "passed": true,
+    "summary": [
+      "ROOM UI TESTS: 266 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\room-1280x720.log"
+  },
+  {
+    "name": "room-1600x900",
+    "passed": true,
+    "summary": [
+      "ROOM UI TESTS: 266 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\room-1600x900.log"
+  },
+  {
+    "name": "room-core",
+    "passed": true,
+    "summary": [
+      "ROOM TESTS: 701 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\room-core.log"
+  },
+  {
+    "name": "room-process-death",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS death: 2 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-death.log"
+  },
+  {
+    "name": "room-process-pursuit_sleep",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS pursuit_sleep: 2 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-pursuit_sleep.log"
+  },
+  {
+    "name": "room-process-read_death",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS read_death: 3 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-read_death.log"
+  },
+  {
+    "name": "room-process-read_shop",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS read_shop: 4 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-read_shop.log"
+  },
+  {
+    "name": "room-process-read_summary",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS read_summary: 2 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-read_summary.log"
+  },
+  {
+    "name": "room-process-sleep",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS sleep: 2 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-sleep.log"
+  },
+  {
+    "name": "room-process-summary",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS summary: 2 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-summary.log"
+  },
+  {
+    "name": "room-process-write_pursuit",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS write_pursuit: 43 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-write_pursuit.log"
+  },
+  {
+    "name": "room-process-write_room",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS write_room: 6 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-write_room.log"
+  },
+  {
+    "name": "room-process-write_shop",
+    "passed": true,
+    "summary": [
+      "ROOM PROCESS write_shop: 26 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\room-process-write_shop.log"
+  },
+  {
+    "name": "scene_navigation_ui_smoke",
+    "passed": true,
+    "summary": [
+      "SCENE NAVIGATION UI SMOKE: 73 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\scene_navigation_ui_smoke.log"
+  },
+  {
+    "name": "title-menu-1280x720",
+    "passed": true,
+    "summary": [
+      "TITLE MENU UI TESTS: 52 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\title-menu-1280x720.log"
+  },
+  {
+    "name": "title-menu-1600x900",
+    "passed": true,
+    "summary": [
+      "TITLE MENU UI TESTS: 52 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\title-menu-1600x900.log"
+  },
+  {
+    "name": "ui_smoke",
+    "passed": true,
+    "summary": [
+      "UI SMOKE: 70 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\ui_smoke.log"
+  },
+  {
+    "name": "v7-copy-compatibility",
+    "passed": true,
+    "summary": [
+      "M8A COPY PASS: true; source SHA256=ecb9a4fb7e7bf9d29ebff9543fe032d994335345003f951f2d7e2624fe3d7c4e"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\v7-copy-compatibility.log"
+  },
+  {
+    "name": "variety-1280x720",
+    "passed": true,
+    "summary": [
+      "VARIETY UI TESTS: 105 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\variety-1280x720.log"
+  },
+  {
+    "name": "variety-1600x900",
+    "passed": true,
+    "summary": [
+      "VARIETY UI TESTS: 105 assertions, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\variety-1600x900.log"
+  },
+  {
+    "name": "variety-core",
+    "passed": true,
+    "summary": [
+      "VARIETY TESTS: 17079 passes, 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-01\\variety-core.log"
+  },
+  {
+    "name": "variety-process-read",
+    "passed": true,
+    "summary": [
+      "VARIETY PROCESS read: 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\variety-process-read.log"
+  },
+  {
+    "name": "variety-process-settle",
+    "passed": true,
+    "summary": [
+      "VARIETY PROCESS settle: 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\variety-process-settle.log"
+  },
+  {
+    "name": "variety-process-write",
+    "passed": true,
+    "summary": [
+      "VARIETY PROCESS write: 0 failures"
+    ],
+    "log": ".godot\\full-market-validation-02-process\\variety-process-write.log"
+  }
+]

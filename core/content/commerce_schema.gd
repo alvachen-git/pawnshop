@@ -5,7 +5,7 @@ static func validate(kind: String, record: Dictionary, path: String, at: String)
 	var issues: Array = []
 	match kind:
 		"buyers":
-			CounterSchema._fields(record, {"id": "text", "display_name": "text", "channel": "text", "categories": "strings", "value_multiplier": "ratio_positive", "night_min": "positive", "night_max": "positive", "window_start": "nonnegative", "window_end": "positive", "action_minutes": "positive", "capacity_per_night": "positive"}, path, at, issues)
+			CounterSchema._fields(record, {"id": "text", "display_name": "text", "channel": "text", "categories": "strings", "value_multiplier": "ratio_positive", "night_min": "positive", "night_max": "positive", "window_start": "nonnegative", "window_end": "positive", "action_minutes": "positive", "capacity_per_night": "nonnegative"}, path, at, issues)
 		"pawn_terms":
 			CounterSchema._fields({"transfer_ratio": record.get("transfer_ratio", 0.8)}, {"transfer_ratio": "unit_positive"}, path, at, issues)
 			CounterSchema._fields(record, {"id": "text", "display_name": "text", "loan_ratio": "unit_positive", "term_nights": "positive", "redemption_fee_ratio": "ratio_positive", "return_mode": "text", "window_start": "nonnegative", "window_end": "positive", "redeem_minutes": "positive", "extension_nights": "positive", "extension_fee_ratio": "ratio_positive", "extend_minutes": "positive"}, path, at, issues)

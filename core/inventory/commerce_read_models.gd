@@ -24,7 +24,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 			var label := "%s → %s" % [definition.display_name, buyer.display_name]
 			if reason.is_empty(): label += "：%d · %d分钟" % [service.quote(item, buyer), buyer.action_minutes]
 			else: label += "：不可用"
-			inventory.body += "%s（%s，每夜%d件）：%s\n" % [buyer.display_name, window, buyer.capacity_per_night, "可成交" if reason.is_empty() else reason]
+			inventory.body += "%s（%s，%s）：%s\n" % [buyer.display_name, window, "不限量" if buyer.capacity_per_night == 0 else "每夜%d件" % buyer.capacity_per_night, "可成交" if reason.is_empty() else reason]
 			inventory.buttons.append(_button("sell", item.instance_id, buyer_id, label, reason))
 	var ledger := {"body": "现银 %d · 本夜已实现盈亏 %+d\n收购支出/活当本金不是已实现亏损。\n" % [day.state.cash, financial.realized_profit], "buttons": []}
 	if day.definition.fee_policy.enabled:
@@ -50,6 +50,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 	ledger.body += "\n" + message
 	var model := {"inventory": inventory, "ledger": ledger}
 	CommerceVisualReadModels.enrich(model, day, service, message)
+	if not day.definition.market.is_empty(): model.inventory.sales = BatchSaleReadModel.build(day, service)
 	return model
 
 static func _button(command: String, target: String, detail: String, label: String, reason: String) -> Dictionary:

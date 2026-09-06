@@ -50,6 +50,13 @@ func load_state(definition: RunDefinition, content_version: int) -> RunState:
 				return old_state
 		error_message = "旧v10局未通过对应资金配置的完整历史校验；原文件已保留。" + _codec.error_message
 		return null
+	if parser.data is Dictionary and content_version >= 12 and parser.data.get("content_version") == 11:
+		var result := JsonContentProvider.new("res://data/legacy/content_v11.json" if parser.data.get("run_definition_id") == "p0_variety" else "res://data/four_night_manifest.json").load_catalog()
+		if not result.is_success():
+			error_message = "旧v11内容不可用；原文件已保留。"
+			return null
+		loaded_catalog = result.catalog
+		loaded_definition = loaded_catalog.get_definition("runs", loaded_catalog.default_run_id)
 	var state := _codec.decode(parser.data, loaded_definition, loaded_catalog.content_version if loaded_catalog != null else content_version, loaded_catalog)
 	error_message = _codec.error_message
 	return state
