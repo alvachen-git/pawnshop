@@ -5,6 +5,7 @@ extends RefCounted
 func validate_catalog(catalog: ContentCatalog) -> Array:
 	var issues: Array = []
 	issues.append_array(CounterDomainValidator.validate(catalog))
+	issues.append_array(VarietySchema.domain(catalog))
 	issues.append_array(CommerceDomainValidator.validate(catalog))
 	issues.append_array(EventDomainValidator.validate(catalog))
 	issues.append_array(GhostSchema.domain(catalog))

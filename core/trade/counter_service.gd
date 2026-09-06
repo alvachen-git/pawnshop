@@ -21,6 +21,10 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)
 	var cost := 0
 	match command:
+		"verify_source":
+			var error := ProvenanceService.check_reason(day, visit, item)
+			if not error.is_empty(): return error
+			cost = int(item.provenance.check_minutes)
 		"appraise":
 			if not appraisal.can_perform(visit.item, item, detail, day.definition.tools): return "动作已做过、工具缺失或前置证据不足。"
 			cost = item.find_action(detail).minutes
@@ -37,7 +41,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		"concession":
 			if scenario == null or scenario.concession_amount <= 0: return "眼下没有这桩让价可谈。"
 			if visit.concession_used: return "这份让价已经谈过。"
-			if scenario.concession_question not in visit.asked_question_ids: return "先问清客人何时动身。"
+			if scenario.concession_question not in visit.asked_question_ids: return "先问清客人何时要用这笔钱。"
 			if visit.trade.rounds_left <= 0 or visit.trade.patience <= 0: return "客人已经不肯再谈价。"
 			cost = scenario.concession_minutes
 		"judge":
@@ -52,7 +56,9 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		"offer", "pawn", "pressure":
 			if visit.trade.rounds_left <= 0 or visit.trade.patience <= 0: return "本次议价已经结束。"
 			if command in ["offer", "pawn"]:
-				if command == "pawn" and ("pawn" not in customer.transaction_modes or not catalog.has_definition("pawn_terms", customer.pawn_terms_id)): return "此顾客不接受活当。"
+				var modes: Array = customer.transaction_modes if visit.transaction_modes.is_empty() else visit.transaction_modes
+				if ("sell" if command == "offer" else "pawn") not in modes: return "客人只愿按约定的方式交货。"
+				if command == "pawn" and ("pawn" not in customer.transaction_modes or not catalog.has_definition("pawn_terms", VarietyService.terms_for(visit, customer))): return "此顾客不接受活当。"
 				if amount <= 0 or amount > 1000000: return "报价必须是正整数。"
 				if not economy.can_pay(day.state, amount, ("loan/" if command == "pawn" else "purchase/") + visit_id): return "现金不足或交易已处理，未提交报价。"
 				if inventory.contains(day.state, visit.item.instance_id): return "物品已经入库。"
@@ -87,6 +93,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)
 	var cost := 0
 	match command:
+		"verify_source": cost = int(item.provenance.check_minutes)
 		"appraise": cost = item.find_action(detail).minutes
 		"question": cost = scenario.find_question(detail).minutes if scenario != null else customer.find_question(detail).minutes
 		"concession": cost = scenario.concession_minutes
@@ -100,6 +107,10 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	if visit.status != "active": return ActionResult.new(false, "消耗 %d 分钟，但顾客在完成前已离场；未取得证据或成交。" % cost)
 	var message := ""
 	match command:
+		"verify_source":
+			ProvenanceService.apply(visit.item, "counter")
+			ProvenanceService.record(day, visit.item, "counter", day.state.game_minutes - cost)
+			message = ProvenanceService.result_text(visit.item, item)
 		"appraise": message = appraisal.perform(visit.item, item, detail)
 		"question":
 			visit.asked_question_ids.append(detail)
@@ -122,11 +133,12 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 			var clue := item.find_clue(detail)
 			var valid := trades.pressure(visit.trade, customer, clue)
 			message = clue.bargain_response
+			if message.is_empty(): message = String(visit.voice.get("bargain" if valid else "false_pressure", ""))
 			if message.is_empty(): message = "他仔细看了那处：“这毛病确实在，价钱可以再谈。”" if valid else "他摇摇头：“这只能说明东西的来路和样子，算不上毛病。”"
 			message += "\n要价 %d → %d 银元。" % [before, visit.trade.asking_price]
 			if not valid: message += " 他显得不耐烦了。"
 		"offer", "pawn":
-			var terms := catalog.get_definition("pawn_terms", customer.pawn_terms_id) as PawnTermsDefinition
+			var terms := catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 			var threshold := maxi(1, roundi(visit.trade.reserve_price * terms.loan_ratio)) if command == "pawn" else -1
 			if trades.quote(visit.trade, customer, amount, threshold):
 				if command == "pawn":
@@ -140,7 +152,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 				customers.finish(day.state, visit, "bought")
 				message = "成交：支付 %d，物品已入库。估值不等于现金，尚未出售。" % amount
 			else:
-				message = "对方拒绝了报价，提出新的要价。"
+				message = String(visit.voice.get("refused", "对方拒绝了报价，提出新的要价。"))
 	if visit.status == "active":
 		if visit.trade.patience <= 0:
 			customers.finish(day.state, visit, "patience_exhausted")

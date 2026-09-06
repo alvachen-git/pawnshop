@@ -33,7 +33,7 @@ static func domain(catalog: ContentCatalog) -> Array:
 		for scenario in run.trade_scenarios:
 			if scenario.slot_id in slots: CounterDomainValidator._error(issues, scenario.id, "来访不能绑定多个交易情境。")
 			slots.append(scenario.slot_id)
-			var matched := false
+			var matched := not run.variety.is_empty()
 			for slot in run.customer_slots:
 				if slot.id == scenario.slot_id:
 					matched = slot.item_id == scenario.item_id and slot.variant_id.is_empty() and slot.night_min == slot.night_max

@@ -6,6 +6,7 @@ static func plan(tickets: Array, night: int, catalog: ContentCatalog) -> Array[D
 	var rows: Array[Dictionary] = []
 	if catalog == null: return rows
 	for ticket in tickets:
+		if ticket is Dictionary and not ticket.get("person", {}) is Dictionary: return []
 		if not ticket is Dictionary or not CounterSaveCodec._text_fields(ticket, ["ticket_id", "terms_id", "customer_id", "item_instance_id"]) or not RunSchema.integer(ticket.get("started_night")) or not ticket.get("extensions") is Array: return []
 		var terms := catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
 		if terms == null or terms.return_mode == "absent": continue
@@ -22,6 +23,9 @@ static func plan(tickets: Array, night: int, catalog: ContentCatalog) -> Array[D
 			"customer_id": ticket.customer_id, "item_instance_id": ticket.item_instance_id,
 			"night": night, "command": command, "minutes": terms.extend_minutes if command == "extend" else terms.redeem_minutes,
 			"status": "scheduled", "start": -1, "minute": -1})
+	for row in rows:
+		for ticket in tickets:
+			if ticket.ticket_id == row.ticket_id and not ticket.get("person", {}).is_empty(): row.person = ticket.person.duplicate(true)
 	return rows
 
 static func prepare(state: RunState, catalog: ContentCatalog) -> int:
@@ -44,6 +48,7 @@ static func arrive(state: RunState) -> void:
 		if row.night == state.current_night_index and row.status == "scheduled": row.status = "waiting"
 
 static func delay_for(data: Dictionary, night: int, catalog: ContentCatalog) -> int:
+	if not data.get("pawn_tickets", []) is Array: return 0
 	if night < int(data.get("pawn_rules_start_night", 2147483647)): return 0
 	var delay := 0
 	for row in plan(data.get("pawn_tickets", []), night, catalog): delay += int(row.minutes)
@@ -58,7 +63,8 @@ static func validate(data: Dictionary, state: RunState, run: RunDefinition, cata
 			if expected.size() >= data.pawn_returns.size(): return "当户回访记录不完整。"
 			var row: Variant = data.pawn_returns[expected.size()]
 			if not row is Dictionary or row.size() != planned.size() or not row.get("status") is String: return "当户回访结构无效。"
-			for key in ["id", "ticket_id", "customer_id", "item_instance_id", "night", "command", "minutes"]:
+			for key in planned:
+				if key in ["status", "start", "minute"]: continue
 				if row.get(key) != planned[key]: return "当户、原物或回访顺序不符。"
 			if not CounterSaveCodec._integers(row, ["start", "minute"]): return "回访办理时刻无效。"
 			if night > state.summaries.size():

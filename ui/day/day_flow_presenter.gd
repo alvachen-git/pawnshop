@@ -4,7 +4,7 @@ extends Node
 signal status_updated(text: String)
 signal route_requested(panel_id: StringName)
 
-const PHASE_LABELS := {"pre_open": "开铺前", "open": "营业中", "closed_processing": "已关门 · 店内处理", "night_resolution": "封铺 · 夜间结算", "shop_resolution": "封铺 · 铺内收尾", "private_room": "回房", "sleep_resolution": "就寝", "day_summary": "日结", "run_ended": "三夜已过", "dead": "命灯已灭", "bankrupt": "铺门已封"}
+const PHASE_LABELS := {"pre_open": "开铺前", "open": "营业中", "closed_processing": "已关门 · 店内处理", "night_resolution": "封铺 · 夜间结算", "shop_resolution": "封铺 · 铺内收尾", "private_room": "回房", "sleep_resolution": "就寝", "day_summary": "日结", "run_ended": "经营告一段落", "dead": "命灯已灭", "bankrupt": "铺门已封"}
 var _session: RunSession
 var _view: DayFlowPanel
 var _session_menu: SessionMenuView
@@ -30,8 +30,10 @@ func refresh() -> void:
 	for action in definition.actions:
 		commands.append({"id": action.id, "label": "%s · %d 分钟" % [action.label, action.minutes], "enabled": _session.can_execute(action.id)})
 	commands.append({"id": "wait_until_seal", "label": "等到封铺（消耗全部剩余时间）", "enabled": _session.can_execute("wait_until_seal")})
+	var appointment_hint := ""
+	if not state.buyer_appointment.is_empty(): appointment_hint = "\n" + OrdinarySamplePlan.notice(_session._day.state)
 	var event_hint := "\n有待处理的铺中记事，请先查看。" if not state.pending_event_id.is_empty() else ""
-	_view.render({"description": "%s\n剩余 %d 分钟 · 查看面板不耗时\n点击柜台上的客人与货物进行接待。\n等待/店内行动也会让顾客继续等候。" % [PHASE_LABELS[state.phase], definition.night_minutes - int(state.game_minutes)] + event_hint, "message": _session.message, "commands": commands})
+	_view.render({"description": "%s\n剩余 %d 分钟 · 查看面板不耗时\n点击柜台上的客人与货物进行接待。\n等待/店内行动也会让顾客继续等候。" % [PHASE_LABELS[state.phase], definition.night_minutes - int(state.game_minutes)] + event_hint + appointment_hint, "message": _session.message, "commands": commands})
 	_session_menu.render({"has_save": _session.has_save(), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
 	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(definition.opening_minute, state.game_minutes), state.cash])
 	if state.phase != _last_phase:

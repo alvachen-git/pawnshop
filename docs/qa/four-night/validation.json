@@ -1,0 +1,54 @@
+{
+  "merge_validation": {
+    "source_gate": "four-merge-validation-01",
+    "checks": 75,
+    "all_passed": true,
+    "main_base": "5d22feef9bcfd9e0e2246aadc81a7f256a82fa31",
+    "user_playtest_approved": true,
+    "date": "2026-09-06"
+  },
+  "initial_handoff_record_below": true,
+  "source_gate": "four-regression-04",
+  "checks": 73,
+  "all_passed": true,
+  "final_supplements": {
+    "four_night": "28161 passes, 0 failures",
+    "integrated_variety": "16973 passes, 0 failures"
+  },
+  "original_snapshot_files_checked": 76,
+  "original_changes": [
+    "README.md",
+    "core/customer/variety_service.gd",
+    "core/save/save_codec.gd",
+    "core/save/variety_save_codec.gd",
+    "tests/room_tests.gd",
+    "tests/title_menu_ui_smoke.gd",
+    "tests/variety_tests.gd"
+  ],
+  "viewport_sizes": [
+    "1280x720",
+    "1600x900"
+  ],
+  "cross_process": [
+    "night2",
+    "night4_pre_open",
+    "night4_private_room",
+    "night4_sleep_resolution",
+    "run_ended"
+  ],
+  "not_performed": [
+    "Human playtest for decision quality",
+    "Package export",
+    "Push or merge"
+  ],
+  "original_changes_note": "Concurrent input changes observed at final comparison; implementation uses fixed snapshot and did not write original source.",
+  "timing_audit_regression": {
+    "run_all": "M0–M7 TESTS PASSED · 1799 assertions",
+    "run_room": "ROOM TESTS: 701 assertions, 0 failures",
+    "run_pawn": "PAWN TESTS: 107 passes, 0 failures",
+    "run_bargaining": "BARGAINING TESTS: 182 assertions, 0 failures",
+    "run_variety": "VARIETY TESTS: 16958 passes, 0 failures",
+    "run_integrated_variety": "INTEGRATED VARIETY TESTS: 16973 passes, 0 failures",
+    "run_four_night": "FOUR NIGHT TESTS: 28161 passes, 0 failures"
+  }
+}

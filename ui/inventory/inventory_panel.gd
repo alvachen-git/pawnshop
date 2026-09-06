@@ -78,6 +78,7 @@ func _draw() -> void:
 			_expanded[row.id] = open
 			detail.visible = open
 		)
+		if not row.get("provenance", "").is_empty(): AccountPaper.label(detail, row.provenance, 15)
 		var evidence := AccountPaper.label(detail, "已见物证\n" + ("尚无鉴定记录。" if row.clues.is_empty() else "\n".join(row.clues)), 15)
 		if row.state == "owned":
 			AccountPaper.rule(detail)
@@ -99,3 +100,14 @@ func _draw() -> void:
 		detail.move_child(evidence, detail.get_child_count() - 1)
 	if count == 0: AccountPaper.label(_sheet, "柜中暂无货物。收购或活当后，货签会记在这里。" if _filter == 0 else "尚无出柜记录。", 17)
 	_body.text = visual.message
+
+func _emit_intent(command: String, target: String, detail: String) -> void:
+	if command == "inquire":
+		for entry in _model.buttons:
+			if entry.command == command and entry.target_id == target:
+				ProvenanceConfirmation.show_for(self, _confirmed_inquiry, target, entry.label)
+				return
+	else: super._emit_intent(command, target, detail)
+
+func _confirmed_inquiry(command: String, target: String, detail: String) -> void:
+	super._emit_intent(command, target, detail)

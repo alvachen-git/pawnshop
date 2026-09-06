@@ -3,7 +3,7 @@ extends M7Tests
 
 func run(expect: Callable) -> void:
 	_expect = expect
-	var loaded := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://data/legacy/content_v9.json").load_catalog()
 	_expect.call(loaded.is_success(), "房间生产内容加载")
 	if not loaded.is_success():
 		for issue in loaded.issues: print(issue.format_message())
@@ -173,7 +173,7 @@ func _rollback_and_corruption() -> void:
 		_expect.call(s.execute(command).ok, "重试成功 " + command)
 		resume(s, "重试 " + command)
 	var payload := SaveCodec.new().encode(s._day.state, catalog.content_version)
-	_expect.call(payload.save_version == 9, "活当回访版使用v9")
+	_expect.call(payload.save_version == 9, "冻结的旧内容继续使用v9存档")
 	for index in payload.room_history.size():
 		var bad: Dictionary = payload.duplicate(true)
 		bad.room_history.remove_at(index)

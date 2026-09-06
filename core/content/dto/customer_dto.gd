@@ -1,6 +1,8 @@
 class_name CustomerDTO
 extends RefCounted
 
+var persona: Dictionary = {}
+
 var id: String
 var name_key: String
 var portrait_asset_id: String
@@ -43,4 +45,5 @@ static func from_source(source: Dictionary) -> CustomerDTO:
 	dto.counter_terms = source.get("counter_terms", {}).duplicate(true)
 	dto.questions = source.get("questions", []).duplicate(true)
 	dto.pawn_terms_id = source.get("pawn_terms_id", "")
+	dto.persona = source.get("persona", {}).duplicate(true)
 	return dto

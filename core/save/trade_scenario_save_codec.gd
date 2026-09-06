@@ -72,6 +72,13 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			if encounter == null: return "铜镜证据来源无效。"
 			if encounter.clue_id not in visit.item.revealed_clue_ids: visit.item.revealed_clue_ids.append(encounter.clue_id)
 		day.state.game_minutes = int(raw.start)
+		# The fixed mirror encounter may supply evidence between counter commands.
+		for source in data.get("mirror_history", []):
+			if not source is Dictionary: return "铜镜证据结构无效。"
+			if source.get("visit_id") == raw.visit_id and source.get("action") == "peek" and RunSchema.integer(source.get("minute")) and source.minute <= raw.start:
+				var encounter := MirrorEncounterService.find_definition(run, source.get("encounter_id", ""))
+				if encounter == null: return "铜镜证据引用无效。"
+				if encounter.clue_id not in visit.item.revealed_clue_ids: visit.item.revealed_clue_ids.append(encounter.clue_id)
 		service.customers.update(day.state)
 		var replay_history: Array = day.state.get(history_key)
 		var prior_count := replay_history.size()
@@ -84,6 +91,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			for key in ["asking", "rounds", "patience"]: normalized.belittle_result[key] = int(normalized.belittle_result[key])
 		if normalized != replay_history.back(): return "交易情境记录与真实行动、证据来源不符。"
 		if endings[raw.visit_id].minute < raw.minute: return "交易情境行动晚于离店。"
+		if raw.command == "verify_source" and raw.ok:
+			if not state.provenance_history.any(func(h: Dictionary) -> bool: return h.item_instance_id == visit.item.instance_id and h.action == "counter" and h.start == raw.start and h.minute == raw.minute and h.result == visit.item.provenance.status): return "来源核验缺少对应物证记录。"
 		var restored_history: Array = state.get(history_key)
 		restored_history.append(normalized)
 	for id in replay_days:

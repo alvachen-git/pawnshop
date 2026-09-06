@@ -15,10 +15,14 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 			for id in day.definition.buyer_ids:
 				var buyer := service.catalog.get_definition("buyers", id) as BuyerDefinition
 				buyers[id] = "%s–%s · 每夜最多收%d件" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end), buyer.capacity_per_night]
+				if id == "buyer_appointment": buyers[id] = OrdinarySamplePlan.notice(day.state)
+				if service.sale_reason(day, item, buyer).is_empty() and not item.provenance.is_empty():
+					var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+					buyers[id] += "\n基础报价 %d · 来源溢价 %d 银元" % [base, ProvenanceService.premium(item, buyer, base)]
 		stock.append({"id": item.instance_id, "name": definition.display_name, "asset": definition.visual_asset_id,
 			"state": item.ownership_state, "stamp": CommerceReadModels.STATES[item.ownership_state],
 			"cost": item.acquisition_price, "cost_label": "放款" if item.acquisition_type == "pawn" else "成本", "estimate": "%d–%d" % [bounds.x, bounds.y],
-			"clues": clues, "buyers": buyers, "night": item.acquired_night, "ghost": not definition.ghost_rule_id.is_empty()})
+			"provenance": ProvenanceService.known_text(item, definition), "clues": clues, "buyers": buyers, "night": item.acquired_night, "ghost": not definition.ghost_rule_id.is_empty()})
 	var tickets: Array = []
 	for index in day.state.pawn_tickets.size():
 		var ticket := day.state.pawn_tickets[index]
@@ -36,7 +40,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 			if not visit.is_empty() and visit.ticket_id == ticket.ticket_id: request = "原当户已持票到店，请到柜台办理。"
 
 		tickets.append({"id": ticket.ticket_id, "number": "%03d" % (index + 1), "item": definition.display_name,
-			"customer": customer.terms.display_name, "principal": ticket.principal, "redemption": ticket.redemption_amount,
+			"customer": VarietyService.name_for(ticket.person, customer), "principal": ticket.principal, "redemption": ticket.redemption_amount,
 			"start": ticket.started_night, "due": ticket.due_night, "state": ticket.status,
 			"stamp": CommerceReadModels.TICKETS[ticket.status], "request": request})
 	var entries: Array = []

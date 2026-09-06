@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "short_redeem",
+      "display_name": "短期返当约",
+      "loan_ratio": 0.5,
+      "transfer_ratio": 0.8,
+      "term_nights": 1,
+      "redemption_fee_ratio": 0.2,
+      "return_mode": "redeem",
+      "window_start": 0,
+      "window_end": 120,
+      "redeem_minutes": 10,
+      "extension_nights": 1,
+      "extension_fee_ratio": 0.1,
+      "extend_minutes": 5
+    },
+    {
+      "id": "short_default",
+      "display_name": "短期候赎约",
+      "loan_ratio": 0.5,
+      "transfer_ratio": 0.8,
+      "term_nights": 1,
+      "redemption_fee_ratio": 0.2,
+      "return_mode": "absent",
+      "window_start": 0,
+      "window_end": 120,
+      "redeem_minutes": 10,
+      "extension_nights": 1,
+      "extension_fee_ratio": 0.1,
+      "extend_minutes": 5
+    },
+    {
+      "id": "sample_three_redeem",
+      "display_name": "短期返当约",
+      "loan_ratio": 0.5,
+      "transfer_ratio": 0.8,
+      "term_nights": 3,
+      "redemption_fee_ratio": 0.1,
+      "return_mode": "redeem",
+      "window_start": 0,
+      "window_end": 120,
+      "redeem_minutes": 10,
+      "extension_nights": 1,
+      "extension_fee_ratio": 0.1,
+      "extend_minutes": 5
+    },
+    {
+      "id": "sample_three_default",
+      "display_name": "短期候赎约",
+      "loan_ratio": 0.5,
+      "transfer_ratio": 0.8,
+      "term_nights": 3,
+      "redemption_fee_ratio": 0.1,
+      "return_mode": "absent",
+      "window_start": 0,
+      "window_end": 120,
+      "redeem_minutes": 10,
+      "extension_nights": 1,
+      "extension_fee_ratio": 0.1,
+      "extend_minutes": 5
+    }
+  ]
+}

@@ -20,11 +20,17 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var terms := catalog.get_definition("pawn_terms", row.terms_id) as PawnTermsDefinition
 		var customer := catalog.get_definition("customers", row.customer_id) as CustomerDefinition
 		if item == null or terms == null or customer == null or item.instance_id in tickets: return "当票引用失效或重复。"
-		if item.acquisition_type != "pawn" or row.source_visit_id != item.source_visit_id or row.ticket_id != "ticket/" + item.source_visit_id or row.principal != item.acquisition_price or row.started_night != item.acquired_night or customer.pawn_terms_id != terms.id or acquisitions[item.source_visit_id].customer_id != customer.id: return "当票与放款交易不一致。"
+		if item.acquisition_type != "pawn" or row.source_visit_id != item.source_visit_id or row.ticket_id != "ticket/" + item.source_visit_id or row.principal != item.acquisition_price or row.started_night != item.acquired_night or (customer.pawn_terms_id != terms.id and run.variety.is_empty()) or acquisitions[item.source_visit_id].customer_id != customer.id: return "当票与放款交易不一致。"
 		if row.redemption_amount != row.principal + ceili(row.principal * terms.redemption_fee_ratio): return "赎金与当约不一致。"
+		if not row.get("person", {}) is Dictionary: return "当户身份结构无效。"
+		if not run.variety.is_empty():
+			var planned := VarietySaveCodec.selection(state, row.source_visit_id)
+			if planned.is_empty() or planned.terms_id != row.terms_id or planned.person != row.get("person", {}): return "当户身份或当约与出票来访不符。"
+		elif not row.get("person", {}).is_empty(): return "旧票混入新身份。"
 		var due := int(row.started_night) + terms.term_nights
 		if row.extensions.size() > 1 or (not row.extensions.is_empty() and terms.return_mode != "extend_once"): return "非法续当记录。"
 		var ticket := PawnTicket.new()
+		ticket.person = row.get("person", {}).duplicate(true)
 		for key in ["ticket_id", "terms_id", "customer_id", "item_instance_id", "source_visit_id", "status"]: ticket.set(key, String(row[key]))
 		for key in ["principal", "started_night", "due_night", "redemption_amount", "closed_night", "closed_minute"]: ticket.set(key, int(row[key]))
 		for extension in row.extensions:
@@ -62,7 +68,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if row.night < item.acquired_night or row.night > completed or row.night < buyer.night_min or row.night > buyer.night_max or not _window(row.minute, buyer.window_start, buyer.window_end, buyer.action_minutes, run): return "销售不在有效买家窗口内。"
 		if row.night == item.acquired_night and row.minute < acquisitions[item.source_visit_id].minute + buyer.action_minutes: return "先出售后收货。"
 		if item.acquisition_type == "pawn" and (not tickets.has(item.instance_id) or tickets[item.instance_id].status != "defaulted" or row.night <= tickets[item.instance_id].closed_night): return "在当物品不可出售。"
-		if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels or row.price != maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier)) or row.cost_basis != item.acquisition_price or row.realized_profit != row.price - row.cost_basis: return "销售报价、偏好或成本不符。"
+		if not OrdinarySamplePlan.buyer_reason(state, buyer.id, definition.category, int(row.night), int(row.minute) - buyer.action_minutes).is_empty(): return "销售不符合本局收货约定。"
+		if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels or row.price != CommerceService.new(catalog).quote(item, buyer) or row.cost_basis != item.acquisition_price or row.realized_profit != row.price - row.cost_basis: return "销售报价、偏好或成本不符。"
 		var quota := "%d/%s" % [int(row.night), buyer.id]
 		buyer_counts[quota] = buyer_counts.get(quota, 0) + 1
 		if buyer_counts[quota] > buyer.capacity_per_night: return "买家收货额度超限。"
@@ -74,6 +81,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	for item in state.inventory_instances:
 		if (item.acquisition_type == "pawn") != tickets.has(item.instance_id) or (item.ownership_state == "sold") != sales.has(item.instance_id): return "缺少对应当票或销售。"
 		if item.acquisition_type == "purchase" and item.ownership_state not in ["owned", "sold"]: return "收购物品权属不符。"
+	for row in state.provenance_history:
+		if row.action != "inquire": continue
+		var item := inventory.find(state, row.item_instance_id)
+		var def := catalog.get_definition("items", item.definition_id) as ItemDefinition
+		_post(expected, "inquiry/" + item.instance_id, item.instance_id, row.night, row.minute, -int(def.provenance.inquiry_fee), "provenance_inquiry", 0)
 	var fee_error := FeeSaveCodec.prepare(data, state, run, expected)
 	if not fee_error.is_empty(): return fee_error
 	var balance := run.initial_cash
@@ -99,6 +111,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		snapshot.current_night_index = summary.night
 		snapshot.ledger_entries = state.ledger_entries
 		snapshot.fee_history = state.fee_history
+		snapshot.ordinary_selections = state.ordinary_selections
 		var change := 0
 		for entry in state.ledger_entries:
 			if entry.night == summary.night: change += entry.amount

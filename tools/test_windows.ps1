@@ -30,12 +30,16 @@ try {
     Run-Test 'room-core' 'run_room.gd'
     Run-Test 'pawn-core' 'run_pawn.gd'
     Run-Test 'bargaining-core' 'run_bargaining.gd'
+    Run-Test 'variety-core' 'run_variety.gd'
+    Run-Test 'integrated-variety' 'run_integrated_variety.gd'
+    Run-Test 'four-night-core' 'run_four_night.gd'
     foreach ($suite in @('ui_smoke','scene_navigation_ui_smoke','m2_ui_smoke','m3_ui_smoke','m4_ui_smoke','m5_ui_smoke','art03_extension_ui_smoke')) {
         Run-Test $suite "$suite.gd" @() $false
     }
     foreach ($wide in @($false,$true)) {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "four-$size" 'four_ui_smoke.gd' $sizeArgs $false
         Run-Test "title-menu-$size" 'title_menu_ui_smoke.gd' $sizeArgs $false
         Run-Test "pawn-$size" 'pawn_ui_smoke.gd' $sizeArgs $false
         Run-Test "room-$size" 'room_ui_smoke.gd' $sizeArgs $false
@@ -45,6 +49,9 @@ try {
         Run-Test "m6-production-$size" 'm6_ui_smoke.gd' (@('production') + $sizeArgs) $false
         Run-Test "accounts-$size" 'art03_ui_smoke.gd' $sizeArgs $false
         Run-Test "debt-production-$size" 'art03_debt_ui_smoke.gd' (@('production') + $sizeArgs) $false
+    }
+    foreach ($mode in @('write','fourth','room','sleep','finish','read')) {
+        Run-Test "four-process-$mode" 'four_checkpoint_process.gd' @($mode)
     }
     foreach ($mode in @('write','settle','read')) {
         Run-Test "pawn-process-$mode" 'pawn_checkpoint_process.gd' @($mode)

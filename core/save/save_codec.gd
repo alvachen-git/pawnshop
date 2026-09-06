@@ -1,14 +1,14 @@
 class_name SaveCodec
 extends RefCounted
 
-const VERSION := 9
-const ROOM_VERSION := 9
+const VERSION := 11
+const ROOM_VERSION := 11
 const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt", "shop_resolution", "private_room", "sleep_resolution"]
 var error_message := ""
 
 func encode(state: RunState, content_version: int) -> Dictionary:
 	var data := state.to_read_model()
-	data.save_version = ROOM_VERSION if state.room_enabled else VERSION
+	data.save_version = VERSION if content_version >= 11 else (10 if content_version == 10 else 9)
 	data.content_version = content_version
 	return data
 
@@ -20,9 +20,10 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		if not data.has(key) or not RunSchema.integer(data[key]) or abs(data[key]) > 2147483647:
 			return null
 	var legacy := int(data.save_version) == (8 if definition.private_room else 7)
-	if (int(data.save_version) != VERSION and not legacy) or int(data.content_version) != content_version:
+	if (int(data.save_version) not in [VERSION, 10, 9] and not legacy) or int(data.content_version) != content_version:
 		error_message = "存档/内容版本不兼容；旧文件已保留。"
 		return null
+	if not definition.variety.is_empty() and int(data.save_version) != content_version: return null
 	if legacy:
 		data = data.duplicate(true)
 		if not data.get("summaries") is Array or not data.get("pawn_tickets") is Array: return null
@@ -91,10 +92,12 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	state.closed_at = closed
 	state.night_opening_cash = int(data.night_opening_cash)
 	state.action_count = int(data.action_count)
+	error_message = VarietySaveCodec.selections(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
 	for entry in data.summaries:
 		# JSON numbers arrive as floats. Normalize every runtime numeric field.
 		state.summaries.append({"night": int(entry.night), "opening_cash": int(entry.opening_cash), "closing_cash": int(entry.closing_cash), "closed_at": int(entry.closed_at), "action_count": int(entry.action_count), "outcome": String(entry.outcome)})
-		for key in FinancialSummary.build(RunState.new()):
+		for key in FinancialSummary.build(state):
 			if not RunSchema.integer(entry.get(key)) or abs(entry[key]) > 2147483647: return null
 			state.summaries.back()[key] = int(entry[key])
 	error_message = CounterSaveCodec.restore(data, state, definition, catalog)
@@ -110,6 +113,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	error_message = MirrorSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
 	error_message = RiskSaveCodec.restore(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
+	error_message = VarietySaveCodec.validate_timing(state, definition, catalog)
 	if not error_message.is_empty(): return null
 	if definition.private_room:
 		error_message = RoomSaveCodec.restore(data, state, definition, catalog)

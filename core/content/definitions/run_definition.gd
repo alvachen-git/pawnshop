@@ -1,6 +1,10 @@
 class_name RunDefinition
 extends RefCounted
 
+var _variety: Dictionary = {}
+var variety: Dictionary:
+	get: return _variety.duplicate(true)
+
 var _ghost_rule_ids: Array = []
 var ghost_rule_ids: Array:
 	get: return _ghost_rule_ids.duplicate()
@@ -61,6 +65,7 @@ var actions: Array[DayActionDefinition]:
 
 static func from_dto(dto: RunDTO) -> RunDefinition:
 	var result := RunDefinition.new()
+	result._variety = dto.variety.duplicate(true)
 	# Copy scalar values; never retain a mutable DTO supplied by the adapter.
 	result._ghost_rule_ids = dto.ghost_rule_ids.duplicate()
 	result._event_ids = dto.event_ids.duplicate()

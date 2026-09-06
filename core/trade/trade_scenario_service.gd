@@ -1,6 +1,11 @@
 class_name TradeScenarioService
 extends RefCounted
 
+static func for_item(run: RunDefinition, item_id: String) -> TradeScenarioDefinition:
+	for scenario in run.trade_scenarios:
+		if scenario.item_id == item_id: return scenario
+	return null
+
 static func for_slot(run: RunDefinition, slot_id: String) -> TradeScenarioDefinition:
 	for scenario in run.trade_scenarios:
 		if scenario.slot_id == slot_id: return scenario
@@ -42,9 +47,9 @@ static func concede(visit: CustomerVisit, scenario: TradeScenarioDefinition) -> 
 	if visit.situation_id == "urgent":
 		visit.trade.reserve_price = maxi(1, visit.trade.reserve_price - scenario.concession_amount)
 		visit.trade.asking_price = maxi(visit.trade.reserve_price, visit.trade.asking_price - scenario.concession_amount)
-		return "他又瞧了一眼船票：“再让%d银元。掌柜，您快定吧。”" % scenario.concession_amount
+		return "他又瞧了一眼铺外：“再让%d银元。掌柜，您快定吧。”" % scenario.concession_amount if not visit.person.is_empty() else "他又瞧了一眼船票：“再让%d银元。掌柜，您快定吧。”" % scenario.concession_amount
 	visit.trade.patience -= 1
-	return "他把表链收拢：“我又不赶路，何必拿这话催我？”"
+	return "客人把东西往回拢了拢：“我并不急用，何必拿这话催我？”" if not visit.person.is_empty() else "他把表链收拢：“我又不赶路，何必拿这话催我？”"
 
 static func record(day: DayController, visit: CustomerVisit, command: String, detail: String, amount: int, start: int, result: ActionResult) -> void:
 	var history: Array = day.state.bargaining_history if visit.scenario_id.is_empty() else day.state.scenario_history

@@ -5,7 +5,7 @@ signal content_ready(catalog: ContentCatalog)
 signal content_failed(issues: Array)
 
 @export_file("*.json") var manifest_path := "res://data/content_manifest.json"
-@export var save_path := "user://p0/autosave_v9.json"
+@export var save_path := "user://p0/autosave_v11.json"
 
 var catalog: ContentCatalog
 var session: RunSession
@@ -21,7 +21,22 @@ func initialize() -> ContentLoadResult:
 			result.issues.append(ContentIssue.new("error", "missing_run", manifest_path, "default_run_id", "缺少默认运行定义。"))
 			content_failed.emit(result.issues)
 			return result
+		if OrdinarySamplePlan.enabled(definition):
+			for argument in OS.get_cmdline_user_args():
+				if argument.begins_with("--seed=") and argument.trim_prefix("--seed=").is_valid_int():
+					definition._seed = int(argument.trim_prefix("--seed=")) & 0x7fffffff
+					definition._randomize_seed = false
 		var saves := SaveManager.new(save_path)
+		if save_path == "user://p0/autosave_v11.json":
+			for old_path in ["user://p0/autosave_v10.json", "user://p0/autosave_v9.json"]:
+				if FileAccess.file_exists(old_path):
+					saves.import_checkpoint_path = old_path
+					break
+			saves.legacy_archive_path = "user://p0/autosave_v7.json"
+		if save_path == "user://p0/autosave_v10.json":
+			saves.import_checkpoint_path = "user://p0/autosave_v9.json" if FileAccess.file_exists("user://p0/autosave_v9.json") else "user://p0/autosave_v8.json"
+			saves.prior_version_path = "user://p0/autosave_v8.json"
+			saves.legacy_archive_path = "user://p0/autosave_v7.json"
 		if save_path == "user://p0/autosave_v9.json":
 			saves.import_checkpoint_path = "user://p0/autosave_v8.json"
 			saves.prior_version_path = "user://p0/autosave_v8.json"
@@ -32,6 +47,7 @@ func initialize() -> ContentLoadResult:
 			saves.legacy_archive_path = "user://p0/autosave.json"
 			saves.prior_version_path = "user://p0/autosave_v6.json"
 		session = RunSession.new(definition, catalog.content_version, saves, catalog)
+		if OrdinarySamplePlan.enabled(definition): print("FOUR NIGHT SEED: ", session.read_state().run_seed)
 		content_ready.emit(catalog)
 	else:
 		content_failed.emit(result.issues)

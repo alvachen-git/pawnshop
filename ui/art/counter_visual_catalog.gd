@@ -6,6 +6,8 @@ const ITEMS := {
 	"asset.item_blue_bowl": "bowl", "asset.item_brass_holder": "holder", "asset.weeping_mirror": "mirror",
 }
 const PORTRAITS := {
+	"asset.customer_seamstress": "seamstress", "asset.customer_watchmaker": "watchmaker",
+	"asset.customer_teahouse": "teahouse", "asset.customer_bookkeeper": "bookkeeper",
 	"asset.customer_citizen": "citizen", "asset.customer_hawker": "hawker",
 	"placeholder.scholar": "scholar", "placeholder.house_agent": "agent",
 }
