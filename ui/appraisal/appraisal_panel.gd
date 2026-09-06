@@ -50,6 +50,7 @@ func render(model: Dictionary) -> void:
 		_body.text = "已见线索\n"
 		if visual.clues.is_empty(): _body.text += "尚未取证。可从下方选择检查。"
 		for clue in visual.clues: _body.text += "• " + clue.text + "\n"
+		if not visual.get("provenance", "").is_empty(): _body.text += "\n" + visual.provenance + "\n"
 		if not visual.message.is_empty() and not _body.text.contains(visual.message):
 			_body.text += "\n" + visual.message
 	var buttons := _buttons.get_children()

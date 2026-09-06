@@ -39,7 +39,7 @@ func load_state(definition: RunDefinition, content_version: int) -> RunState:
 		loaded_definition = loaded_catalog.get_definition("runs", "p0_room")
 	if parser.data is Dictionary and content_version >= 11 and parser.data.get("content_version") == 10 and parser.data.get("run_definition_id") == "p0_variety":
 		# Both historical inputs are validated completely, never inferred from current cash.
-		for manifest in ["res://data/legacy/content_v10.json", "res://data/legacy/content_v10_100_300.json"]:
+		for manifest in ["res://data/legacy/content_v10_released.json", "res://data/legacy/content_v10.json", "res://data/legacy/content_v10_100_300.json"]:
 			var old_result := JsonContentProvider.new(manifest).load_catalog()
 			if not old_result.is_success(): continue
 			var old_run := old_result.catalog.get_definition("runs", "p0_variety") as RunDefinition

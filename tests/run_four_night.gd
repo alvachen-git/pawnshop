@@ -175,13 +175,22 @@ func urgency() -> void:
 		check(result.ok != exhaustive and state.inventory_instances.size() == (0 if exhaustive else 1), "deadline effect excluded/focused trade succeeds")
 
 func legacy() -> void:
-	for manifest in ["res://data/legacy/content_v10.json", "res://data/legacy/content_v10_100_300.json"]:
+	for manifest in ["res://data/legacy/content_v10.json", "res://data/legacy/content_v10_100_300.json", "res://data/legacy/content_v10_released.json"]:
 		var old := JsonContentProvider.new(manifest).load_catalog()
 		check(old.is_success(), "frozen v10 valid")
 		if not old.is_success(): continue
 		var definition: RunDefinition = old.catalog.get_definition("runs", old.catalog.default_run_id)
 		var path := "user://tests/four_old_%d.json" % definition.initial_cash
 		var source := RunSession.new(definition, 10, SaveManager.new(path), old.catalog)
+		if definition.variety.get("profession_wait", false):
+			var helper := VarietyTests.new()
+			helper._expect = check
+			helper.catalog = old.catalog
+			helper.run_def = definition
+			helper._random_contract()
+			helper._watchmaker()
+			for helper_path in helper.paths:
+				if FileAccess.file_exists(helper_path): DirAccess.remove_absolute(ProjectSettings.globalize_path(helper_path))
 		# The original event director handles the old opening events.
 		while not source._day.state.pending_event_id.is_empty():
 			var event: EventDefinition = old.catalog.get_definition("events", source._day.state.pending_event_id)

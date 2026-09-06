@@ -18,6 +18,9 @@ func run(expect: Callable) -> void:
 	_provenance_money()
 	_checkpoint_sources()
 	_pawn_identity()
+	_multiple_owners()
+	_mirror_link()
+	_schema_extensions()
 	_old_content()
 	_batch()
 	for path in paths:
@@ -159,6 +162,7 @@ func _watchmaker() -> void:
 		open(s)
 		var visit := active(s)
 		_expect.call(visit.trade.patience == 1 and visit.trade.rounds_left == 3, "watchmaker 1 patience / 3 rounds")
+		_expect.call(visit.expires_at - visit.arrival == (80 if run_def.variety.get("profession_wait", false) or visit.situation_id != "urgent" else 60), "watchmaker waits configured eighty minutes")
 		if command == "offer": action(s, "offer", "", 1)
 		elif command == "pressure":
 			action(s, "appraise", "observe")
@@ -236,7 +240,12 @@ func _checkpoint_sources() -> void:
 				_expect.call(s.commerce_command("inquire", obj.instance_id).ok, "production paid inquiry")
 				expense = 2
 			var price := s._commerce.quote(obj, catalog.get_definition("buyers", "buyer_recycler"))
-			_expect.call(s.commerce_command("sell", obj.instance_id, "buyer_recycler").ok, "production sale")
+			var buyer_id := "buyer_recycler"
+			if truth == "authentic":
+				wait_to(s, 60)
+				buyer_id = "buyer_collector"
+				price = s._commerce.quote(obj, catalog.get_definition("buyers", buyer_id))
+			_expect.call(s.commerce_command("sell", obj.instance_id, buyer_id).ok, "production sale including provenance premium")
 			if not finish(s): continue
 			resume(s, "source " + truth)
 			var summary: Dictionary = s.read_state().summaries.back()
@@ -310,6 +319,89 @@ func _old_content() -> void:
 	s.new_run()
 	_expect.call(s.content_version == 10 and s.definition.id == "p0_variety" and s.read_state().ordinary_selections.size() == 4, "new game switches to v10")
 
+func _multiple_owners() -> void:
+	var chosen := -1
+	for seed_value in 4096:
+		var plan := VarietyService.plan(run_def, catalog, seed_value)
+		if plan[0].customer_id == plan[1].customer_id and plan[0].terms_id == "short_redeem" and plan[1].terms_id == "short_redeem": chosen = seed_value; break
+	_expect.call(chosen >= 0, "same-template consecutive owner seed")
+	var s := seeded(chosen)
+	open(s)
+	for minute in [0, 90]:
+		wait_to(s, minute)
+		var visit := active(s)
+		var terms: PawnTermsDefinition = catalog.get_definition("pawn_terms", visit.pawn_terms_id)
+		_expect.call(action(s, "pawn", "", maxi(1, roundi(visit.trade.reserve_price * terms.loan_ratio))).ok, "same-template distinct pawn")
+	var people: Array = s.read_state().pawn_tickets.map(func(t: Dictionary) -> Dictionary: return t.person)
+	_expect.call(people.size() == 2 and people[0].name != people[1].name, "same profession distinct names")
+	if not finish(s): return
+	finish_room(s)
+	s.execute("continue_run")
+	resume(s, "multiple owners before arrival")
+	open(s)
+	_expect.call(s._day.state.visits[0].arrival == 20, "two returns shift first customer twenty minutes")
+	for person in people:
+		var owner := PawnReturnService.current(s._day.state)
+		_expect.call(owner.person == person and s.counter_model().customer.contains(person.name), "ticket order and person identity")
+		_expect.call(not s.execute("close_shop").ok and not s.execute("short_task").ok, "cannot abandon owner")
+		_expect.call(s.counter_command("redeem", owner.id).ok, "redeem matching named owner")
+	if finish(s): resume(s, "multiple named owner results")
+	# Retain the existing test-only extension contract using a dedicated catalog.
+	var original_catalog := catalog
+	catalog = JsonContentProvider.new("res://data/legacy/content_v10.json").load_catalog().catalog
+	var term: PawnTermsDefinition = catalog.get_definition("pawn_terms", "short_redeem")
+	term._return_mode = "extend_once"
+	s = seeded(chosen)
+	open(s)
+	var visit := active(s)
+	var person := visit.person.duplicate(true)
+	action(s, "pawn", "", maxi(1, roundi(visit.trade.reserve_price * term.loan_ratio)))
+	if finish(s):
+		finish_room(s); s.execute("continue_run"); open(s)
+		var owner := PawnReturnService.current(s._day.state)
+		_expect.call(owner.person == person and owner.command == "extend", "extension retains person")
+		_expect.call(s.counter_command("extend", owner.id).ok, "existing extension fees and time")
+		if finish(s):
+			resume(s, "extension identity")
+			finish_room(s); s.execute("continue_run"); open(s)
+			owner = PawnReturnService.current(s._day.state)
+			_expect.call(owner.person == person and owner.command == "redeem", "extension followed by original owner redemption")
+			_expect.call(s.counter_command("redeem", owner.id).ok, "extended original owner redeems")
+			if finish(s): resume(s, "extension closed")
+	catalog = original_catalog
+
+func _mirror_link() -> void:
+	for pursue in [false, true]:
+		var s := seeded(42)
+		var mirror := third(s)
+		wait_to(s, 360)
+		var visit := active(s)
+		_expect.call(visit.item.definition_id == "item_pocket_watch" and visit.item.selected_variant_id == "flawed", "fixed damaged watch and random compatible seller")
+		var encounter: String = s._mirror.model(s._day).buttons[0].target_id
+		_expect.call(s.mirror_command(encounter, "peek").ok, "v10 peek provides necessary evidence")
+		_expect.call(s.mirror_command(encounter, "pursue" if pursue else "stop").ok, "v10 mirror choice")
+		_expect.call("flaw" in visit.item.revealed_clue_ids, "mirror clue preserved")
+		_expect.call(action(s, "pressure", "flaw").ok, "mirror evidence bargaining still works")
+		if visit.status == "active": action(s, "offer", "", visit.trade.reserve_price)
+		if pursue:
+			_expect.call(s.commerce_command("sell", mirror, "buyer_mirror").ok, "haunted mirror sale")
+		else:
+			_expect.call(s.risk_command("cover", mirror).ok, "cover retained mirror")
+		if not finish(s): continue
+		resume(s, "new-content mirror relation")
+		_expect.call(s.execute("enter_room").ok and s.execute("sleep").ok, "room following mirror")
+		if pursue: _expect.call(not s.read_state().risk_pending.is_empty(), "selling mirror does not clear personal pursuit")
+		else: _expect.call(s.execute("finish_sleep").ok, "safe night completes")
+
+func _schema_extensions() -> void:
+	for spec in [["items", "items/items_v10.json", "provenance"], ["customers", "customers/customers_v10.json", "persona"], ["runs", "runs/p0_variety.json", "variety"], ["buyers", "buyers/buyers_v10.json", "provenance"]]:
+		var source: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/" + spec[1]))
+		source.records[0][spec[2]] = "invalid"
+		_expect.call(not SourceSchemaValidator.new().validate_collection(spec[0], source, "fixture").is_empty(), "invalid extension shape rejected before mapping")
+	var source: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/items/items_v10.json"))
+	source.records[0].provenance.weights = {"none": 0, "authentic": 0, "mismatch": 0}
+	_expect.call(not SourceSchemaValidator.new().validate_collection("items", source, "fixture").is_empty(), "zero source weight rejected")
+
 func _batch() -> void:
 	# A player-available strategy: inspect, bargain on revealed defects, make one
 	# offer at the lower known estimate, then select an available buyer.
@@ -348,5 +440,13 @@ func _batch() -> void:
 			s.execute("continue_run")
 		_expect.call(s.read_state().phase == "run_ended", "three-night executable route %d" % seed_value)
 		_expect.call(trades > 0, "ordinary transactions executable %d" % seed_value)
-		batch_results.append({"seed": seed_value, "cash": s.read_state().cash, "trades": trades, "minutes": s.read_state().summaries.map(func(r: Dictionary) -> int: return r.closed_at)})
+		var minutes: Array = []
+		for night in range(1, 4):
+			var spent := 0
+			for row in s.read_state().scenario_history:
+				if row.night == night: spent += row.minute - row.start
+			for sale in s.read_state().sale_records:
+				if sale.night == night: spent += (catalog.get_definition("buyers", sale.buyer_id) as BuyerDefinition).action_minutes
+			minutes.append(spent)
+		batch_results.append({"seed": seed_value, "cash": s.read_state().cash, "trades": trades, "transaction_minutes": minutes})
 	print("VARIETY BATCH ", JSON.stringify(batch_results))

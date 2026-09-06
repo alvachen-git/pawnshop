@@ -74,15 +74,6 @@
         "origin": "家里急用钱，你给个公道价。东西一直收在柜里。",
         "redeem": "当票带来了，劳烦验票交还原物。",
         "extend": "先付息费，再替我留一夜可好？"
-      },
-      "belittle": {
-        "reaction": "yielding",
-        "minutes": 5,
-        "ordinary_discount": 3,
-        "urgent_discount": 5,
-        "patience_cost": 2,
-        "cue": "他把价钱又低声念了一遍，抬眼等你开口。",
-        "response": "他犹疑了一下：“掌柜既这么说，我再让些。”"
       }
     },
     {
@@ -151,15 +142,6 @@
         "origin": "我还要赶下一摊，收不收尽快说。",
         "redeem": "当票带来了，劳烦验票交还原物。",
         "extend": "先付息费，再替我留一夜可好？"
-      },
-      "belittle": {
-        "reaction": "firm",
-        "minutes": 5,
-        "ordinary_discount": 3,
-        "urgent_discount": 5,
-        "patience_cost": 2,
-        "cue": "他报完价便站定了，手还稳稳护着货。",
-        "response": "他把货扶正：“您说低了，也得有个缘由。就这个价。”"
       }
     },
     {
@@ -227,15 +209,6 @@
         "origin": "近日收账慢，拿几件案头旧物周转。请别伤了东西。",
         "redeem": "当票带来了，劳烦验票交还原物。",
         "extend": "先付息费，再替我留一夜可好？"
-      },
-      "belittle": {
-        "reaction": "proud",
-        "minutes": 5,
-        "ordinary_discount": 3,
-        "urgent_discount": 5,
-        "patience_cost": 2,
-        "cue": "他把旧物端端正正摆好，听你开口时神色格外认真。",
-        "response": "他脸色一沉，伸手拢住旧物：“掌柜不愿收，也不必这样糟践。”"
       }
     },
     {
@@ -303,15 +276,6 @@
         "origin": "东家清理库房，我带来的东西不急卖，也不接受活当。",
         "redeem": "当票带来了，劳烦验票交还原物。",
         "extend": "先付息费，再替我留一夜可好？"
-      },
-      "belittle": {
-        "reaction": "yielding",
-        "minutes": 5,
-        "ordinary_discount": 3,
-        "urgent_discount": 5,
-        "patience_cost": 2,
-        "cue": "他反复捋着表链，似乎更想把这笔买卖尽快办妥。",
-        "response": "他低头盘算片刻：“也罢，再让一点，您定吧。”"
       }
     },
     {

@@ -89,7 +89,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 			visit.scenario_id = scenario.id
 			visit.situation_id = row.situation
 			visit.reaction_id = row.reaction
-			if row.situation == "urgent": visit.expires_at = visit.arrival + mini(customer.terms.wait_minutes, scenario.urgent_wait_minutes)
+			if row.situation == "urgent" and not run.variety.get("profession_wait", false): visit.expires_at = visit.arrival + mini(customer.terms.wait_minutes, scenario.urgent_wait_minutes)
 			var selection := {"visit_id": visit.visit_id, "scenario_id": scenario.id, "variant_id": row.variant_id, "situation_id": row.situation, "reaction_id": row.reaction}
 			if selection not in state.scenario_selections: state.scenario_selections.append(selection)
 		if row.has("wait_minutes"): visit.expires_at = visit.arrival + int(row.wait_minutes)

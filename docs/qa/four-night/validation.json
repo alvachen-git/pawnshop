@@ -1,9 +1,12 @@
 {
   "merge_validation": {
-    "source_gate": "four-merge-validation-01",
-    "checks": 75,
+    "source_gate": "four-merge-validation-05",
+    "checks": 81,
     "all_passed": true,
-    "main_base": "5d22feef9bcfd9e0e2246aadc81a7f256a82fa31",
+    "main_base": "548ec8ab9af189741bffc4ec73ae599bf9955fed",
+    "four_night_assertions": 42532,
+    "integrated_variety_assertions": 16976,
+    "frozen_variety_assertions": 17079,
     "user_playtest_approved": true,
     "date": "2026-09-06"
   },

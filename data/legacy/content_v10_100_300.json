@@ -8,11 +8,11 @@
     },
     {
       "kind": "items",
-      "path": "res://data/items/items_v10.json"
+      "path": "res://data/legacy/items_v10_snapshot.json"
     },
     {
       "kind": "customers",
-      "path": "res://data/customers/customers_v10.json"
+      "path": "res://data/legacy/customers_v10_snapshot.json"
     },
     {
       "kind": "buyers",
