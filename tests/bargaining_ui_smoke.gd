@@ -4,6 +4,7 @@ func _run() -> void:
 	_capture_prefix = "bargaining_1600" if "wide" in OS.get_cmdline_user_args() else "bargaining_1280"
 	root.size = Vector2i(1600, 900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280, 720)
 	_main = load("res://scenes/main.tscn").instantiate()
+	_main.get_node("Bootstrap").manifest_path = "res://data/legacy/content_v9.json"
 	_main.get_node("Bootstrap").save_path = "user://tests/" + _capture_prefix + ".json"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session

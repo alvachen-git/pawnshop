@@ -1,0 +1,34 @@
+{
+  "content_version": 9,
+  "default_run_id": "p0_room",
+  "sources": [
+    {
+      "kind": "runs",
+      "path": "res://data/runs/p0_room.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/items/items_m7.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/customers/customers_m5.json"
+    },
+    {
+      "kind": "buyers",
+      "path": "res://data/buyers/buyers_m5.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/pawn_terms/terms_m3.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/events/events_m6.json"
+    },
+    {
+      "kind": "ghost_rules",
+      "path": "res://data/ghost_rules/rules_m5.json"
+    }
+  ]
+}

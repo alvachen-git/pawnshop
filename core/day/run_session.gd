@@ -16,8 +16,14 @@ var _risk: RiskManager
 var _mirror: MirrorEncounterService
 var _risk_error := ""
 var _pawn_choices: Dictionary = {}
+var _new_catalog: ContentCatalog
+var _new_definition: RunDefinition
+var _new_version: int
 
 func _init(run_definition: RunDefinition, version: int, save_manager: SaveManager, catalog: ContentCatalog = null) -> void:
+	_new_catalog = catalog
+	_new_definition = run_definition
+	_new_version = version
 	definition = run_definition
 	content_version = version
 	_save = save_manager
@@ -92,6 +98,8 @@ func load_checkpoint() -> ActionResult:
 	var restored := _save.load_state(definition, content_version)
 	var result := ActionResult.new(restored != null, "账册翻回了上次合拢的那一页。" if restored != null else _save.error_message)
 	if restored != null:
+		if _save.loaded_catalog != null and _save.loaded_definition != null:
+			_switch_content(_save.loaded_definition, _save.loaded_catalog.content_version, _save.loaded_catalog)
 		_day.state = restored
 		_pawn_choices.clear()
 		if _counter != null and restored.phase == &"pre_open":
@@ -100,7 +108,19 @@ func load_checkpoint() -> ActionResult:
 	changed.emit()
 	return result
 
+func _switch_content(run: RunDefinition, version: int, catalog: ContentCatalog) -> void:
+	definition = run
+	content_version = version
+	_day = DayController.new(run, _day.state)
+	_counter = CounterService.new(catalog)
+	_commerce = CommerceService.new(catalog)
+	_events = EventDirector.new(catalog)
+	_risk = RiskManager.new(catalog) if not run.ghost_rule_ids.is_empty() else null
+	_mirror = MirrorEncounterService.new(catalog)
+	_save.catalog = catalog
+
 func new_run() -> void:
+	if _new_catalog != null: _switch_content(_new_definition, _new_version, _new_catalog)
 	_pawn_choices.clear()
 	_risk_error = ""
 	var archive := _day.state.death_archive.duplicate(true)
@@ -290,7 +310,7 @@ func pawn_disposal_model() -> Array[Dictionary]:
 		var item := InventoryManager.new().find(_day.state, ticket.item_instance_id)
 		var terms := _commerce.catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
 		rows.append({"id": ticket.ticket_id, "number": "%03d" % (_day.state.pawn_tickets.find(ticket) + 1), "item": (_commerce.catalog.get_definition("items", item.definition_id) as ItemDefinition).display_name,
-			"customer": (_commerce.catalog.get_definition("customers", ticket.customer_id) as CustomerDefinition).terms.display_name,
+			"customer": VarietyService.name_for(ticket.person, _commerce.catalog.get_definition("customers", ticket.customer_id)),
 			"principal": ticket.principal, "quote": _commerce.pawns.transfer_quote(ticket, terms), "choice": _pawn_choices.get(ticket.ticket_id, "")})
 	return rows
 

@@ -6,6 +6,7 @@ func issue(state: RunState, visit: CustomerVisit, terms: PawnTermsDefinition, am
 	ticket.ticket_id = "ticket/" + visit.visit_id
 	ticket.terms_id = terms.id
 	ticket.customer_id = visit.customer_id
+	ticket.person = visit.person.duplicate(true)
 	ticket.item_instance_id = visit.item.instance_id
 	ticket.source_visit_id = visit.visit_id
 	ticket.principal = amount
@@ -33,6 +34,7 @@ func reason(day: DayController, ticket: PawnTicket, terms: PawnTermsDefinition, 
 	if day.state.phase != &"open" or ticket.status != "active": return "当票不在营业可处理状态。"
 	var visit := PawnReturnService.current(day.state)
 	if visit.is_empty() or visit.ticket_id != ticket.ticket_id or visit.customer_id != ticket.customer_id or visit.item_instance_id != ticket.item_instance_id or visit.command != command or ticket.due_night != day.state.current_night_index: return "请先接待柜前持票的原当户。"
+	if not ticket.person.is_empty() and visit.get("person", {}) != ticket.person: return "回访当户身份与当票不符。"
 	if command != request_kind(ticket, terms) or command not in ["redeem", "extend"]: return "没有此类当户请求；不能凭空收取赎金。"
 	var cost := terms.redeem_minutes if command == "redeem" else terms.extend_minutes
 	if not TimeController.new().can_spend(day.state, day.definition, cost): return "时间不足。"

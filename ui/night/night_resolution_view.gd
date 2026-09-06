@@ -89,6 +89,7 @@ func _draw_account(a: Dictionary) -> void:
 	AccountPaper.rule(_account)
 	AccountPaper.label(_account, "现金收支 / 银元", 18)
 	var rows := [["开夜现银", a.opening_cash], ["收购支出", -a.get("purchase_spend", 0)], ["活当放款", -a.get("pawn_disbursed", 0)], ["销售收入", a.get("sales_revenue", 0)], ["转当收入", a.get("pawn_transfer_receipts", 0)], ["赎金及续当收入", a.get("redemption_receipts", 0)], ["实际付息费", -a.get("fees_paid", 0)]]
+	if a.has("provenance_expense"): rows.append(["来源调查费", -a.provenance_expense])
 	for row in rows:
 		var line := HBoxContainer.new()
 		_account.add_child(line)

@@ -6,7 +6,7 @@ var failures := 0
 
 func _initialize() -> void:
 	var mode := OS.get_cmdline_user_args()[0]
-	var catalog := JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	var catalog := JsonContentProvider.new("res://data/legacy/content_v9.json").load_catalog().catalog
 	var definition := catalog.get_definition("runs", catalog.default_run_id) as RunDefinition
 	if mode in ["write_room", "write_pursuit", "write_shop"]: DirAccess.remove_absolute(ProjectSettings.globalize_path(PATH))
 	var s := RunSession.new(definition, catalog.content_version, SaveManager.new(PATH), catalog)

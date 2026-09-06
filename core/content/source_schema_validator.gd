@@ -80,6 +80,9 @@ func validate_collection(kind: String, source: Variant, source_path: String) -> 
 	if not source.has("records") or typeof(source.records) != TYPE_ARRAY:
 		issues.append(_issue("invalid_field", source_path, "records", "必须提供records数组。"))
 		return issues
+	for index in source.records.size():
+		if source.records[index] is Dictionary:
+			issues.append_array(VarietySchema.validate(kind, source.records[index], source_path, "records[%d]" % index))
 	if kind == "ghost_rules":
 		for index in source.records.size():
 			issues.append_array(GhostSchema.validate(source.records[index], source_path, "records[%d]" % index))

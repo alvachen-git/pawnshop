@@ -3,7 +3,7 @@ extends RoomTests
 
 func setup(expect: Callable) -> void:
 	_expect = expect
-	var loaded := JsonContentProvider.new("res://data/content_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://data/legacy/content_v9.json").load_catalog()
 	_expect.call(loaded.is_success(), "议价生产内容有效")
 	catalog = loaded.catalog
 	run_def = catalog.get_definition("runs", catalog.default_run_id)

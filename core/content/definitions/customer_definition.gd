@@ -1,5 +1,9 @@
 class_name CustomerDefinition
 extends RefCounted
+
+var _persona: Dictionary = {}
+var persona: Dictionary:
+	get: return _persona.duplicate(true)
 var _belittle: Dictionary
 var belittle: Dictionary:
 	get: return _belittle.duplicate(true)
@@ -62,6 +66,7 @@ var questions: Array[QuestionDefinition]:
 
 static func from_dto(dto: CustomerDTO) -> CustomerDefinition:
 	var definition := CustomerDefinition.new()
+	definition._persona = dto.persona.duplicate(true)
 	definition._belittle = dto.belittle.duplicate(true)
 	definition._pawn_terms_id = dto.pawn_terms_id
 	definition._id = dto.id
