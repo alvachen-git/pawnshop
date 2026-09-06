@@ -36,6 +36,7 @@ try {
     foreach ($wide in @($false,$true)) {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "title-menu-$size" 'title_menu_ui_smoke.gd' $sizeArgs $false
         Run-Test "pawn-$size" 'pawn_ui_smoke.gd' $sizeArgs $false
         Run-Test "room-$size" 'room_ui_smoke.gd' $sizeArgs $false
         Run-Test "receipt-$size" 'receipt_ui_smoke.gd' $sizeArgs $false

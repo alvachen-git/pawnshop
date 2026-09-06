@@ -1,0 +1,34 @@
+{
+  "checks": [
+    "All three Chinese menu buttons are visible and accessible.",
+    "Each hover has ink echo, plaque movement and a click response.",
+    "Arrow keys, Home, End, Escape and accessible focus work.",
+    "All controls fit at 1280x720, 1024x768 and 1920x1080 with at least 44px height.",
+    "Reduced-motion preference disables movement and ink/light animations."
+  ],
+  "failures": [],
+  "consoleErrors": [],
+  "geometry": [
+    {
+      "label": "开启新游戏",
+      "x": 67.703125,
+      "y": 512.84375,
+      "width": 531.6875,
+      "height": 99.53125
+    },
+    {
+      "label": "读取游戏",
+      "x": 67.703125,
+      "y": 631.265625,
+      "width": 531.6875,
+      "height": 99.53125
+    },
+    {
+      "label": "离开游戏",
+      "x": 67.703125,
+      "y": 749.6875,
+      "width": 531.6875,
+      "height": 99.53125
+    }
+  ]
+}
