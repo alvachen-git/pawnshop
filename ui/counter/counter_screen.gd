@@ -12,6 +12,7 @@ var _room: PrivateRoomView
 var _session: RunSession
 var _room_phase := ""
 var _room_pending := ""
+var _market_notice: Button
 var _receipt: TradeReceiptView
 var _receipt_run := ""
 var _receipt_id := ""
@@ -63,6 +64,17 @@ func _ready() -> void:
 
 func bind_session(session: RunSession) -> void:
 	_session = session
+	_market_notice = Button.new()
+	_market_notice.name = "MarketNotice"
+	_market_notice.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
+	_market_notice.anchor_left = 0.025
+	_market_notice.anchor_right = 0.32
+	_market_notice.anchor_top = 0.837
+	_market_notice.anchor_bottom = 0.895
+	_market_notice.add_theme_font_size_override("font_size", 16)
+	_market_notice.pressed.connect(func() -> void: _flow.show_panel(&"inventory"); %InventoryPanel._select(2))
+	add_child(_market_notice)
+	%InventoryPanel.batch_submitted.connect(session.sell_batch)
 	_room = PrivateRoomView.new()
 	_room.name = "PrivateRoom"
 	add_child(_room)
@@ -132,6 +144,12 @@ func _receipt_closed(destination: String) -> void:
 
 func _sync_room() -> void:
 	var state := _session.read_state()
+	_market_notice.visible = not _session.definition.market.is_empty() and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending()
+	if _market_notice.visible:
+		var current := MarketService.current(_session.definition, int(state.run_seed), int(state.current_night_index), int(state.game_minutes))
+		var demand := MarketService.demand(_session.definition, current)
+		_market_notice.text = "陆掌眼口信 · 收" + demand.name
+		_market_notice.tooltip_text = demand.body + "\n点击查看行情与卖货。"
 	var model := _session.counter_model()
 	var id: String = model.active_id if model.trade.get("pawn_return", false) else ""
 	if id.is_empty(): _return_id = ""

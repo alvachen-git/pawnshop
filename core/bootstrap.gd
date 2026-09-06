@@ -5,7 +5,7 @@ signal content_ready(catalog: ContentCatalog)
 signal content_failed(issues: Array)
 
 @export_file("*.json") var manifest_path := "res://data/content_manifest.json"
-@export var save_path := "user://p0/autosave_v11.json"
+@export var save_path := "user://p0/autosave_v12.json"
 
 var catalog: ContentCatalog
 var session: RunSession
@@ -27,6 +27,12 @@ func initialize() -> ContentLoadResult:
 					definition._seed = int(argument.trim_prefix("--seed=")) & 0x7fffffff
 					definition._randomize_seed = false
 		var saves := SaveManager.new(save_path)
+		if save_path == "user://p0/autosave_v12.json":
+			for old_path in ["user://p0/autosave_v11.json", "user://p0/autosave_v10.json", "user://p0/autosave_v9.json"]:
+				if FileAccess.file_exists(old_path):
+					saves.import_checkpoint_path = old_path
+					break
+			saves.legacy_archive_path = "user://p0/autosave_v7.json"
 		if save_path == "user://p0/autosave_v11.json":
 			for old_path in ["user://p0/autosave_v10.json", "user://p0/autosave_v9.json"]:
 				if FileAccess.file_exists(old_path):

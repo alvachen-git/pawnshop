@@ -1,10 +1,10 @@
 {
-  "content_version": 11,
+  "content_version": 12,
   "default_run_id": "p0_variety",
   "sources": [
     {
       "kind": "runs",
-      "path": "res://data/runs/p0_variety_v11.json"
+      "path": "res://data/runs/p0_market.json"
     },
     {
       "kind": "items",
@@ -16,7 +16,7 @@
     },
     {
       "kind": "buyers",
-      "path": "res://data/buyers/buyers_v11.json"
+      "path": "res://data/buyers/buyers_v12.json"
     },
     {
       "kind": "pawn_terms",
@@ -24,7 +24,7 @@
     },
     {
       "kind": "events",
-      "path": "res://data/events/events_v10.json"
+      "path": "res://data/events/events_v12.json"
     },
     {
       "kind": "ghost_rules",

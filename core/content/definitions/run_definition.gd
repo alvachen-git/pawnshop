@@ -1,6 +1,10 @@
 class_name RunDefinition
 extends RefCounted
 
+var _market: Dictionary = {}
+var market: Dictionary:
+	get: return _market.duplicate(true)
+
 var _variety: Dictionary = {}
 var variety: Dictionary:
 	get: return _variety.duplicate(true)
@@ -65,6 +69,7 @@ var actions: Array[DayActionDefinition]:
 
 static func from_dto(dto: RunDTO) -> RunDefinition:
 	var result := RunDefinition.new()
+	result._market = dto.market.duplicate(true)
 	result._variety = dto.variety.duplicate(true)
 	# Copy scalar values; never retain a mutable DTO supplied by the adapter.
 	result._ghost_rule_ids = dto.ghost_rule_ids.duplicate()

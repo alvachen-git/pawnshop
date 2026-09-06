@@ -94,6 +94,7 @@ func validate_collection(kind: String, source: Variant, source_path: String) -> 
 	if kind == "runs":
 		for index in source.records.size():
 			issues.append_array(RunSchema.validate(source.records[index], source_path, "records[%d]" % index))
+			if source.records[index] is Dictionary: issues.append_array(MarketSchema.validate(source.records[index], source_path, "records[%d]" % index))
 			if source.records[index] is Dictionary:
 				if source.records[index].has("ghost_rule_ids"):
 					CounterSchema._fields(source.records[index], {"ghost_rule_ids": "strings"}, source_path, "records[%d]" % index, issues)

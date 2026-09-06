@@ -72,8 +72,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels or row.price != CommerceService.new(catalog).quote(item, buyer) or row.cost_basis != item.acquisition_price or row.realized_profit != row.price - row.cost_basis: return "销售报价、偏好或成本不符。"
 		var quota := "%d/%s" % [int(row.night), buyer.id]
 		buyer_counts[quota] = buyer_counts.get(quota, 0) + 1
-		if buyer_counts[quota] > buyer.capacity_per_night: return "买家收货额度超限。"
+		if buyer.capacity_per_night > 0 and buyer_counts[quota] > buyer.capacity_per_night: return "买家收货额度超限。"
+		var market_error := MarketSaveCodec.sale_reason(row, state, run, buyer, definition)
+		if not market_error.is_empty(): return market_error
 		var normalized := {"item_instance_id": String(row.item_instance_id), "buyer_id": String(row.buyer_id)}
+		if not run.market.is_empty(): normalized.batch_id = row.batch_id
 		for key in ["night", "minute", "price", "cost_basis", "realized_profit"]: normalized[key] = int(row[key])
 		state.sale_records.append(normalized)
 		sales[item.instance_id] = normalized

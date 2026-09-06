@@ -8,7 +8,7 @@ func check(ok: bool, message: String) -> void:
 func _initialize() -> void:
 	var helper := VarietyTests.new()
 	helper._expect = check
-	helper.catalog = JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	helper.catalog = JsonContentProvider.new("res://data/legacy/content_v10.json").load_catalog().catalog
 	helper.run_def = helper.catalog.get_definition("runs", helper.catalog.default_run_id)
 	var saver := SaveManager.new("user://tests/variety_cross_process.json")
 	var s := RunSession.new(helper.run_def, helper.catalog.content_version, saver, helper.catalog)

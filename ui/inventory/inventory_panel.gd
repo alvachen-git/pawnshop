@@ -2,6 +2,8 @@ class_name InventoryPanel
 extends IntentPanel
 
 signal panel_requested(panel: StringName)
+signal batch_submitted(buyer_id: String, item_ids: Array)
+var _sale_view: BatchSaleView
 var _sheet: VBoxContainer
 var _tabs: HBoxContainer
 var _filter := 0
@@ -13,7 +15,7 @@ func _ready() -> void:
 	_tabs = HBoxContainer.new()
 	_column.add_child(_tabs)
 	_column.move_child(_tabs, 0)
-	for title in ["铺中货物", "出柜记录"]:
+	for title in ["铺中货物", "出柜记录", "卖货"]:
 		var button := Button.new()
 		button.text = title
 		button.toggle_mode = true
@@ -23,10 +25,15 @@ func _ready() -> void:
 	_sheet = VBoxContainer.new()
 	_sheet.add_theme_constant_override("separation", 12)
 	_column.add_child(_sheet)
+	_sale_view = BatchSaleView.new()
+	_sale_view.submitted.connect(func(buyer: String, ids: Array) -> void: batch_submitted.emit(buyer, ids))
+	_column.add_child(_sale_view)
 	_column.move_child(_body, _column.get_child_count() - 1)
 
 func render(model: Dictionary) -> void:
 	_model = model
+	_tabs.get_child(2).visible = model.has("sales")
+	if not model.has("sales") and _filter == 2: _filter = 0
 	if not model.has("visual"):
 		super.render(model)
 		return
@@ -42,6 +49,10 @@ func _draw() -> void:
 	var visual: Dictionary = _model.visual
 	var financial: Dictionary = visual.financial
 	for index in _tabs.get_child_count(): (_tabs.get_child(index) as Button).set_pressed_no_signal(index == _filter)
+	_sale_view.visible = _filter == 2 and _model.has("sales")
+	if _model.has("sales"): _sale_view.render(_model.sales)
+	_body.text = _model.visual.message
+	if _sale_view.visible: return
 	AccountPaper.metrics(_sheet, [["现货 / 件", financial.inventory_count], ["现货占款 / 银元", financial.inventory_cost], ["在当本金 / 银元", financial.pawn_principal]])
 	AccountPaper.label(_sheet, "估值供判断，出售后才成为现银。在当货物须按当票办理。", 14)
 	var count := 0
@@ -84,9 +95,14 @@ func _draw() -> void:
 			AccountPaper.rule(detail)
 			AccountPaper.label(detail, "出货去向", 17)
 			for entry in _model.buttons:
-				if entry.target_id == row.id:
+				if entry.target_id == row.id and not (_model.has("sales") and entry.command == "sell"):
 					AccountPaper.action(detail, entry, _emit_intent)
 					AccountPaper.label(detail, row.buyers.get(entry.detail, ""), 14)
+			if _model.has("sales"):
+				var sell := Button.new()
+				sell.text = "选择买家卖货"
+				sell.pressed.connect(_select.bind(2))
+				detail.add_child(sell)
 		elif row.state == "pledged":
 			var ticket := Button.new()
 			ticket.text = "查看当票"

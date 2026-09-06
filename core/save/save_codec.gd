@@ -1,14 +1,14 @@
 class_name SaveCodec
 extends RefCounted
 
-const VERSION := 11
-const ROOM_VERSION := 11
+const VERSION := 12
+const ROOM_VERSION := 12
 const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt", "shop_resolution", "private_room", "sleep_resolution"]
 var error_message := ""
 
 func encode(state: RunState, content_version: int) -> Dictionary:
 	var data := state.to_read_model()
-	data.save_version = VERSION if content_version >= 11 else (10 if content_version == 10 else 9)
+	data.save_version = content_version if content_version >= 10 else 9
 	data.content_version = content_version
 	return data
 
@@ -20,7 +20,7 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		if not data.has(key) or not RunSchema.integer(data[key]) or abs(data[key]) > 2147483647:
 			return null
 	var legacy := int(data.save_version) == (8 if definition.private_room else 7)
-	if (int(data.save_version) not in [VERSION, 10, 9] and not legacy) or int(data.content_version) != content_version:
+	if (int(data.save_version) not in [VERSION, 11, 10, 9] and not legacy) or int(data.content_version) != content_version:
 		error_message = "存档/内容版本不兼容；旧文件已保留。"
 		return null
 	if not definition.variety.is_empty() and int(data.save_version) != content_version: return null
@@ -100,6 +100,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		for key in FinancialSummary.build(state):
 			if not RunSchema.integer(entry.get(key)) or abs(entry[key]) > 2147483647: return null
 			state.summaries.back()[key] = int(entry[key])
+	error_message = MarketSaveCodec.restore(data, state, definition)
+	if not error_message.is_empty(): return null
 	error_message = CounterSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
 	error_message = PawnReturnService.validate(data, state, definition, catalog)
@@ -113,6 +115,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	error_message = MirrorSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
 	error_message = RiskSaveCodec.restore(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
+	error_message = MarketSaveCodec.validate_timing(state, definition, catalog)
 	if not error_message.is_empty(): return null
 	error_message = VarietySaveCodec.validate_timing(state, definition, catalog)
 	if not error_message.is_empty(): return null

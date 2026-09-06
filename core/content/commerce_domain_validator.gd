@@ -4,7 +4,7 @@ extends RefCounted
 static func validate(catalog: ContentCatalog) -> Array:
 	var issues: Array = []
 	for buyer: BuyerDefinition in catalog.get_all("buyers"):
-		if buyer.categories.is_empty() or not is_finite(buyer.value_multiplier) or buyer.value_multiplier <= 0 or buyer.value_multiplier > 100 or buyer.night_min < 1 or buyer.night_max < buyer.night_min or buyer.window_start < 0 or buyer.window_end <= buyer.window_start or buyer.action_minutes <= 0 or buyer.capacity_per_night < 1:
+		if buyer.categories.is_empty() or not is_finite(buyer.value_multiplier) or buyer.value_multiplier <= 0 or buyer.value_multiplier > 100 or buyer.night_min < 1 or buyer.night_max < buyer.night_min or buyer.window_start < 0 or buyer.window_end <= buyer.window_start or buyer.action_minutes <= 0 or buyer.capacity_per_night < 0:
 			_error(issues, buyer.id, "买家偏好、倍率、窗口或额度无效。")
 	for terms: PawnTermsDefinition in catalog.get_all("pawn_terms"):
 		if not is_finite(terms.loan_ratio) or terms.loan_ratio <= 0 or terms.loan_ratio > 1 or terms.term_nights < 1 or terms.extension_nights < 1 or terms.redeem_minutes < 1 or terms.extend_minutes < 1 or terms.window_start < 0 or terms.window_end <= terms.window_start or terms.return_mode not in ["redeem", "extend_once", "absent"]:
