@@ -131,7 +131,7 @@ func _legacy() -> void:
 	_roundtrip(restored)
 
 func _ghost_transfer() -> void:
-	catalog = JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	catalog = JsonContentProvider.new("res://data/legacy/content_v9.json").load_catalog().catalog
 	definition = catalog.get_definition("runs", catalog.default_run_id)
 	definition._event_ids = []
 	definition._trade_scenarios.clear()
@@ -171,7 +171,7 @@ func _ghost_transfer() -> void:
 func _production_return() -> void:
 	var helper := RoomTests.new()
 	helper._expect = check
-	helper.catalog = JsonContentProvider.new("res://data/content_manifest.json").load_catalog().catalog
+	helper.catalog = JsonContentProvider.new("res://data/legacy/content_v9.json").load_catalog().catalog
 	helper.run_def = helper.catalog.get_definition("runs", helper.catalog.default_run_id)
 	var s := helper.seeded(7)
 	helper.open(s)

@@ -19,12 +19,13 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		else:
 			for question in scenario.questions:
 				if question.id == id: speech.append({"question": question.prompt, "answer": question.answer(visit)})
-	var terms := service.catalog.get_definition("pawn_terms", customer.pawn_terms_id) as PawnTermsDefinition
+	var terms := service.catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 	var visual := {
 		"item_name": item.display_name, "item_description": item.description,
-		"item_asset": item.visual_asset_id, "customer_name": customer.terms.display_name,
+		"provenance": ProvenanceService.known_text(visit.item, item),
+		"item_asset": item.visual_asset_id, "customer_name": VarietyService.name_for(visit.person, customer),
 		"portrait_asset": customer.portrait_asset_id,
-		"introduction": (scenario.introduction if scenario != null else customer.terms.introduction) + ("\n" + String(customer.belittle.cue) if not customer.belittle.is_empty() else ""),
+		"introduction": (customer.terms.introduction if not visit.person.is_empty() else (scenario.introduction if scenario != null else customer.terms.introduction)) + ("\n" + String(customer.belittle.cue) if not customer.belittle.is_empty() else ""),
 		"clues": clues, "speech": speech,
 		"estimate": "%d–%d" % [bounds.x, bounds.y],
 		"judgement": CounterReadModels.JUDGEMENTS[visit.item.judgement],
@@ -32,6 +33,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		"attitude": "显得不耐烦" if visit.trade.patience < customer.patience else "尚愿意交谈",
 		"deadline": TimeController.clock_text(day.definition.opening_minute, visit.expires_at),
 		"quote_minutes": customer.terms.quote_minutes, "pressure_minutes": customer.terms.pressure_minutes,
+		"patience_rule": "耐心 %d · 报价不成扣%d，错误施压扣%d；耗尽便离场" % [visit.trade.patience, customer.terms.failed_quote_cost, customer.terms.false_pressure_cost] if not day.definition.variety.is_empty() else "",
 		"pawn_terms": "期限%d夜 · 息费%.0f%%" % [terms.term_nights, terms.redemption_fee_ratio * 100] if terms != null else "此客不办理活当",
 		"message": "",
 		"bargaining_cue": customer.belittle.get("cue", ""),

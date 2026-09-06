@@ -4,6 +4,9 @@ extends RefCounted
 func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> void:
 	state.visits.clear()
 	var return_delay := PawnReturnService.prepare(state, catalog)
+	if not run.variety.is_empty():
+		VarietyService.prepare(state, run, catalog, return_delay)
+		return
 	var rng := RandomNumberGenerator.new()
 	rng.seed = state.run_seed + state.current_night_index * 104729
 	for slot in run.customer_slots:

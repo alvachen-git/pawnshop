@@ -27,10 +27,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if entry.outcome not in CounterReadModels.OUTCOMES or entry.visit_id in history_ids or not catalog.has_definition("customers", entry.customer_id): return "来访历史引用或结果无效。"
 		var found_slot := false
 		for slot in run.customer_slots:
-			if entry.visit_id == "%s/%d/%s" % [run.id, int(entry.night), slot.id] and slot.customer_id == entry.customer_id: found_slot = true
+			if entry.visit_id == "%s/%d/%s" % [run.id, int(entry.night), slot.id] and (slot.customer_id == entry.customer_id or not run.variety.is_empty()): found_slot = true
 		if not expected_visits.has(entry.visit_id): return "来访不属于该夜编排。"
 		if not found_slot: return "来访ID不属于当前运行配置。"
 		var planned: CustomerVisit = expected_visits[entry.visit_id]
+		if planned.customer_id != entry.customer_id: return "来访人物与抽选结果不符。"
 		if entry.outcome in ["bought", "pawned"] and (entry.minute < planned.arrival or entry.minute >= mini(planned.expires_at, run.night_minutes)): return "成交不在来访窗口内。"
 		history_ids.append(entry.visit_id)
 		if entry.outcome in ["bought", "pawned"]: bought[entry.visit_id] = entry
@@ -46,6 +47,9 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var planned: CustomerVisit = expected_visits[entry.source_visit_id]
 		if entry.definition_id != planned.item.definition_id or entry.selected_variant_id != planned.item.selected_variant_id: return "库存与固定seed预生成物品不一致。"
 		var instance := ItemInstance.new()
+		if not entry.get("provenance", {}) is Dictionary: return "来源字段结构无效。"
+		instance.provenance = entry.get("provenance", {}).duplicate(true)
+		if run.variety.is_empty() and not instance.provenance.is_empty(): return "旧物不能混入新来源。"
 		instance.instance_id = entry.instance_id
 		instance.definition_id = entry.definition_id
 		instance.selected_variant_id = entry.selected_variant_id
@@ -66,6 +70,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		acquired_visits.append(instance.source_visit_id)
 		state.inventory_instances.append(instance)
 	if acquired_visits.size() != bought.size(): return "成交后缺少库存。"
+	var source_error := VarietySaveCodec.restore_sources(data, state, run, catalog, expected_visits, bought)
+	if not source_error.is_empty(): return source_error
 	return CommerceSaveCodec.restore(data, state, run, catalog, bought)
 
 static func _integers(data: Dictionary, keys: Array) -> bool:

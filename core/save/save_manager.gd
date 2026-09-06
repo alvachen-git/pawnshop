@@ -7,6 +7,8 @@ var legacy_archive_path := ""
 var prior_version_path := ""
 var import_checkpoint_path := ""
 var error_message := ""
+var loaded_catalog: ContentCatalog
+var loaded_definition: RunDefinition
 var _codec := SaveCodec.new()
 
 func _init(save_path := "user://p0/autosave_v7.json") -> void:
@@ -17,6 +19,8 @@ func exists() -> bool:
 
 func load_state(definition: RunDefinition, content_version: int) -> RunState:
 	error_message = ""
+	loaded_catalog = catalog
+	loaded_definition = definition
 	var source := path if FileAccess.file_exists(path) or import_checkpoint_path.is_empty() else import_checkpoint_path
 	var file := FileAccess.open(source, FileAccess.READ)
 	if file == null:
@@ -26,7 +30,14 @@ func load_state(definition: RunDefinition, content_version: int) -> RunState:
 	if parser.parse(file.get_as_text()) != OK:
 		error_message = "存档JSON损坏；原文件已保留。"
 		return null
-	var state := _codec.decode(parser.data, definition, content_version, catalog)
+	if parser.data is Dictionary and content_version == 10 and parser.data.get("content_version") == 9 and parser.data.get("run_definition_id") == "p0_room":
+		var result := JsonContentProvider.new("res://data/legacy/content_v9.json").load_catalog()
+		if result.catalog == null:
+			error_message = "旧局内容不可用；原文件已保留。"
+			return null
+		loaded_catalog = result.catalog
+		loaded_definition = loaded_catalog.get_definition("runs", "p0_room")
+	var state := _codec.decode(parser.data, loaded_definition, loaded_catalog.content_version if loaded_catalog != null else content_version, loaded_catalog)
 	error_message = _codec.error_message
 	return state
 
@@ -108,6 +119,7 @@ func read_archive() -> Array[Dictionary]:
 					if existing != row: error_message = "旧绝当录与新账册冲突；原文件已保留。"
 			if not found: archive.append(row)
 	if not prior_version_path.is_empty(): _merge_records(archive, _read_records(prior_version_path, "death_archive", RiskSaveCodec.valid_archive))
+	if not import_checkpoint_path.is_empty() and import_checkpoint_path != prior_version_path: _merge_records(archive, _read_records(import_checkpoint_path, "death_archive", RiskSaveCodec.valid_archive))
 	return archive
 
 func read_bankruptcy_archive() -> Array[Dictionary]:
@@ -115,6 +127,7 @@ func read_bankruptcy_archive() -> Array[Dictionary]:
 	var records := _read_records(path, "bankruptcy_archive", FeeSaveCodec.valid_archive)
 	if not legacy_archive_path.is_empty(): _merge_records(records, _read_records(legacy_archive_path, "bankruptcy_archive", FeeSaveCodec.valid_archive))
 	if not prior_version_path.is_empty(): _merge_records(records, _read_records(prior_version_path, "bankruptcy_archive", FeeSaveCodec.valid_archive))
+	if not import_checkpoint_path.is_empty() and import_checkpoint_path != prior_version_path: _merge_records(records, _read_records(import_checkpoint_path, "bankruptcy_archive", FeeSaveCodec.valid_archive))
 	return records
 
 func _merge_records(records: Array[Dictionary], incoming: Array[Dictionary]) -> void:

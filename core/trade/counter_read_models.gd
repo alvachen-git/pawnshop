@@ -40,12 +40,16 @@ static func build(day: DayController, service: CounterService, message: String) 
 	model.item = item.display_name + "\n" + item.description
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)
 	if scenario != null: model.customer = customer.terms.display_name + "\n" + scenario.introduction
+	if not visit.person.is_empty(): model.customer = VarietyService.name_for(visit.person, customer) + "\n" + customer.terms.introduction
 	var bounds := service.appraisal.valuation(visit.item, item)
 	var evidence_lines: PackedStringArray = []
 	for clue_id in visit.item.revealed_clue_ids: evidence_lines.append("• " + item.find_clue(clue_id).text)
 	model.appraisal.body = "%s\n证据估值：%d–%d（不是买家报价）\n你的判断：%s\n\n%s" % [item.display_name, bounds.x, bounds.y, JUDGEMENTS[visit.item.judgement], "\n".join(evidence_lines) if not evidence_lines.is_empty() else "尚未取得证据。卖家说法不能替代检查。"]
 	for action in item.appraisal_actions:
 		model.appraisal.buttons.append(_button(day, service, visit, "appraise", action.id, "%s · %d分钟" % [action.label, action.minutes]))
+	if not item.provenance.is_empty():
+		model.appraisal.body += "\n" + ProvenanceService.describe(visit.item)
+		model.appraisal.buttons.append(_button(day, service, visit, "verify_source", "", "核对来源凭据与原物 · %d分钟" % int(item.provenance.check_minutes)))
 	for key in JUDGEMENTS:
 		model.appraisal.buttons.append(_button(day, service, visit, "judge", key, "记录判断：" + JUDGEMENTS[key]))
 	if scenario == null:
@@ -77,13 +81,13 @@ static func build(day: DayController, service: CounterService, message: String) 
 		label += " · 已试探" if visit.trade.belittle_used else " · %d分钟 · 议价一轮" % int(customer.belittle.minutes)
 		model.trade.buttons.append(_button(day, service, visit, "belittle", "", label))
 	if scenario != null and scenario.concession_amount > 0 and scenario.concession_question in visit.asked_question_ids:
-		model.trade.buttons.append(_button(day, service, visit, "concession", "", "请他为赶路再让%d银元 · %d分钟 · 议价一轮" % [scenario.concession_amount, scenario.concession_minutes]))
+		model.trade.buttons.append(_button(day, service, visit, "concession", "", "请他为急用再让%d银元 · %d分钟 · 议价一轮" % [scenario.concession_amount, scenario.concession_minutes]))
 		model.trade.body += "\n处境与品相分开谈；不赶路的客人可能反感催价。"
 	model.trade.body += "\n客人最迟留到 %s。" % TimeController.clock_text(day.definition.opening_minute, visit.expires_at)
 	model.trade.buttons.append(_button(day, service, visit, "reject", "", "拒绝收货 · %d分钟" % customer.terms.reject_minutes))
 	model.trade.asking_price = visit.trade.asking_price
 	model.trade.can_offer = service.reason(day, "offer", visit.visit_id, "", 1).is_empty()
-	var terms := service.catalog.get_definition("pawn_terms", customer.pawn_terms_id) as PawnTermsDefinition
+	var terms := service.catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 	if terms != null:
 		model.trade.can_pawn = service.reason(day, "pawn", visit.visit_id, "", 1).is_empty()
 		model.trade.pawn_asking = maxi(1, roundi(visit.trade.asking_price * terms.loan_ratio))

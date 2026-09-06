@@ -84,6 +84,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			for key in ["asking", "rounds", "patience"]: normalized.belittle_result[key] = int(normalized.belittle_result[key])
 		if normalized != replay_history.back(): return "交易情境记录与真实行动、证据来源不符。"
 		if endings[raw.visit_id].minute < raw.minute: return "交易情境行动晚于离店。"
+		if raw.command == "verify_source" and raw.ok:
+			if not state.provenance_history.any(func(h: Dictionary) -> bool: return h.item_instance_id == visit.item.instance_id and h.action == "counter" and h.start == raw.start and h.minute == raw.minute and h.result == visit.item.provenance.status): return "来源核验缺少对应物证记录。"
 		var restored_history: Array = state.get(history_key)
 		restored_history.append(normalized)
 	for id in replay_days:

@@ -9,7 +9,8 @@ func _init(content: ContentCatalog) -> void:
 
 func quote(item: ItemInstance, buyer: BuyerDefinition) -> int:
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
-	return maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+	var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+	return base + ProvenanceService.premium(item, buyer, base)
 
 func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition) -> String:
 	if item == null or buyer == null or buyer.id not in day.definition.buyer_ids: return "物品或买家机会不存在。"
@@ -32,6 +33,10 @@ func execute(day: DayController, command: String, target: String, detail: String
 		var ticket := pawns.find(day.state, target)
 		var terms: PawnTermsDefinition = null if ticket == null else catalog.get_definition("pawn_terms", ticket.terms_id)
 		return pawns.execute(day, ticket, terms, command)
+	if command == "inquire":
+		var target_item := InventoryManager.new().find(day.state, target)
+		var item_def := null if target_item == null else catalog.get_definition("items", target_item.definition_id) as ItemDefinition
+		return ProvenanceService.inquire(day, target_item, item_def)
 	if command != "sell": return ActionResult.new(false, "未知库存/当票操作。")
 	var item := InventoryManager.new().find(day.state, target)
 	var buyer := catalog.get_definition("buyers", detail) as BuyerDefinition

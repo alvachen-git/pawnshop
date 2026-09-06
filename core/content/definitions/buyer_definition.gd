@@ -1,6 +1,10 @@
 class_name BuyerDefinition
 extends RefCounted
 
+var _provenance: Dictionary = {}
+var provenance: Dictionary:
+	get: return _provenance.duplicate(true)
+
 var _required_flags: Array = []
 var required_flags: Array:
 	get: return _required_flags.duplicate()
@@ -40,6 +44,7 @@ var capacity_per_night: int:
 
 static func from_dto(dto: BuyerDTO) -> BuyerDefinition:
 	var result := BuyerDefinition.new()
+	result._provenance = dto.provenance.duplicate(true)
 	result._id = dto.id
 	result._display_name = dto.display_name
 	result._channel = dto.channel

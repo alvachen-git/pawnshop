@@ -1,6 +1,8 @@
 class_name ItemDTO
 extends RefCounted
 
+var provenance: Dictionary = {}
+
 var id: String
 var name_key: String
 var type: String
@@ -45,4 +47,5 @@ static func from_source(source: Dictionary) -> ItemDTO:
 	dto.description = source.get("description", "未配置可玩鉴定资料。")
 	dto.unknown_min = int(source.get("unknown_min", 0))
 	dto.unknown_max = int(source.get("unknown_max", source.base_value))
+	dto.provenance = source.get("provenance", {}).duplicate(true)
 	return dto

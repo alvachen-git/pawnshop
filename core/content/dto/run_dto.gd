@@ -1,6 +1,8 @@
 class_name RunDTO
 extends RefCounted
 
+var variety: Dictionary = {}
+
 var id: String
 var total_nights: int
 var opening_minute: int
@@ -42,4 +44,5 @@ static func from_source(source: Dictionary) -> RunDTO:
 	dto.trade_scenarios = source.get("trade_scenarios", []).duplicate(true)
 	dto.randomize_seed = source.get("randomize_seed", false)
 	dto.private_room = source.get("private_room", false)
+	dto.variety = source.get("variety", {}).duplicate(true)
 	return dto

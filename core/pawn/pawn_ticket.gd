@@ -1,6 +1,7 @@
 class_name PawnTicket
 extends RefCounted
 
+var person: Dictionary = {}
 var ticket_id := ""
 var terms_id := ""
 var customer_id := ""
@@ -16,4 +17,4 @@ var closed_night := 0
 var closed_minute := -1
 
 func to_data() -> Dictionary:
-	return {"ticket_id": ticket_id, "terms_id": terms_id, "customer_id": customer_id, "item_instance_id": item_instance_id, "source_visit_id": source_visit_id, "principal": principal, "started_night": started_night, "due_night": due_night, "redemption_amount": redemption_amount, "status": status, "extensions": extensions.duplicate(true), "closed_night": closed_night, "closed_minute": closed_minute}
+	return {"person": person.duplicate(true), "ticket_id": ticket_id, "terms_id": terms_id, "customer_id": customer_id, "item_instance_id": item_instance_id, "source_visit_id": source_visit_id, "principal": principal, "started_night": started_night, "due_night": due_night, "redemption_amount": redemption_amount, "status": status, "extensions": extensions.duplicate(true), "closed_night": closed_night, "closed_minute": closed_minute}

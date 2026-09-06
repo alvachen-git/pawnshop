@@ -1,6 +1,10 @@
 class_name ItemDefinition
 extends RefCounted
 
+var _provenance: Dictionary = {}
+var provenance: Dictionary:
+	get: return _provenance.duplicate(true)
+
 var _id: String
 var id: String:
 	get: return _id
@@ -65,6 +69,7 @@ var visual_asset_id: String:
 
 static func from_dto(dto: ItemDTO) -> ItemDefinition:
 	var definition := ItemDefinition.new()
+	definition._provenance = dto.provenance.duplicate(true)
 	definition._id = dto.id
 	definition._name_key = dto.name_key
 	definition._item_type = dto.type
