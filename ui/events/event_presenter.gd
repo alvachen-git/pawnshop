@@ -18,7 +18,7 @@ func refresh() -> void:
 	_view.render(model)
 	if model.pending_id != _pending:
 		_pending = model.pending_id
-		if not _pending.is_empty(): route_requested.emit(&"events")
+		if not _pending.is_empty() and model.get("presentation", {}).is_empty(): route_requested.emit(&"events")
 
 func _choose(_command: String, event_id: String, choice_id: String, _amount: int) -> void:
 	_session.event_command(event_id, choice_id)
