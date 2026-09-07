@@ -78,6 +78,14 @@ func _click(label: String) -> void:
 	var receipt := _main.find_child("TradeReceipt", true, false) as TradeReceiptView
 	if receipt != null and receipt.visible and label not in ["收好凭据", "查看库存", "查看当票"]:
 		await _click_button(receipt._primary)
+	# Departure pages are acknowledged before continuing historical flow tests.
+	# customer_departure_ui_smoke checks their content and input explicitly.
+	await _frames()
+	var departure := _main.find_child("CustomerDeparture", true, false) as TradeReceiptView
+	for guard in 50:
+		if departure == null or not departure.visible or label in ["继续接待", "继续当前接待", "知道了"]: break
+		await _click_button(departure._primary)
+		await _frames()
 	var scene_routes := {
 		"营业": &"shop",
 		"库存": &"inventory",

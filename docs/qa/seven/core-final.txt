@@ -1,0 +1,8 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+SEVEN ROUTE early cash=230 sales=0 cost=0 margin=0
+SEVEN ROUTE reject cash=230 sales=0 cost=0 margin=0
+SEVEN ROUTE hold cash=218 sales=72 cost=88 margin=-16
+SEVEN ROUTE sell cash=176 sales=34 cost=88 margin=-54
+SEVEN ROUTE informed cash=245 sales=72 cost=57 margin=15
+SEVEN NIGHT TESTS: 136843 passes, 0 failures

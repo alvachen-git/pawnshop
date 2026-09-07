@@ -1,6 +1,11 @@
 class_name RunDefinition
 extends RefCounted
 
+var _seven_plan_cache: Dictionary = {}
+var _batch_selling := false
+var batch_selling: bool:
+	get: return _batch_selling or not _market.is_empty()
+
 var _market: Dictionary = {}
 var market: Dictionary:
 	get: return _market.duplicate(true)
@@ -69,6 +74,7 @@ var actions: Array[DayActionDefinition]:
 
 static func from_dto(dto: RunDTO) -> RunDefinition:
 	var result := RunDefinition.new()
+	result._batch_selling = dto.batch_selling
 	result._market = dto.market.duplicate(true)
 	result._variety = dto.variety.duplicate(true)
 	# Copy scalar values; never retain a mutable DTO supplied by the adapter.

@@ -13,6 +13,10 @@ var _session: RunSession
 var _room_phase := ""
 var _room_pending := ""
 var _market_notice: Button
+var _departure: TradeReceiptView
+var _departure_queue: Array[Dictionary] = []
+var _departure_return_panel: StringName = &""
+var _departure_presenter: CustomerDeparturePresenter
 var _receipt: TradeReceiptView
 var _receipt_run := ""
 var _receipt_id := ""
@@ -120,6 +124,47 @@ func bind_session(session: RunSession) -> void:
 	add_child(_receipt)
 	_receipt.dismissed.connect(_receipt_closed)
 	session.transaction_completed.connect(_show_receipt)
+	_departure = TradeReceiptView.new()
+	_departure.name = "CustomerDeparture"
+	add_child(_departure)
+	_departure.dismissed.connect(_departure_closed)
+	_departure_presenter = CustomerDeparturePresenter.new()
+	add_child(_departure_presenter)
+	_departure_presenter.departed.connect(func(notice: Dictionary) -> void:
+		_departure_queue.append(notice)
+		_drain_departures.call_deferred()
+	)
+	_departure_presenter.reset.connect(func() -> void: _departure_queue.clear(); _departure.hide())
+	_departure_presenter.bind(session)
+	session.changed.connect(func() -> void: _drain_departures.call_deferred())
+
+func _drain_departures() -> void:
+	if _departure == null: return
+	var state := _session.read_state()
+	if state.phase in ["dead", "bankrupt"]:
+		_departure_queue.clear()
+		_departure.hide()
+		return
+	if _departure.visible or _departure_queue.is_empty() or _receipt.visible: return
+	if not state.risk_pending.is_empty() or not state.pending_event_id.is_empty() or _session.mirror_pending(): return
+	_departure_return_panel = _flow.get_active_panel_id() if %Drawer.visible else &""
+	if _departure_return_panel in [&"trade", &"dialogue", &"appraisal"]:
+		var continuing: String = _departure_queue[0].get("continuing_visit_id", "")
+		if continuing.is_empty() or continuing != _session.counter_model().active_id: _departure_return_panel = &""
+	_close_menu()
+	_counter_view.dismiss_contexts()
+	%Drawer.hide()
+	_departure.present(_departure_queue.pop_front())
+
+func _departure_closed(_destination: String) -> void:
+	if _session.read_state().phase != "open": _flow.show_panel(&"night")
+	elif not _departure_return_panel.is_empty(): _flow.show_panel(_departure_return_panel)
+	else:
+		_close_drawer()
+		var target := _counter_view.get_hotspot(&"customer")
+		if not target.visible: target = _counter_view.get_hotspot(&"shop")
+		target.grab_focus()
+	_drain_departures.call_deferred()
 
 func _show_receipt(receipt: Dictionary) -> void:
 	_receipt_run = _session.read_state().run_token
@@ -131,6 +176,7 @@ func _show_receipt(receipt: Dictionary) -> void:
 	_receipt.present(receipt)
 
 func _receipt_closed(destination: String) -> void:
+	_drain_departures.call_deferred()
 	var state := _session.read_state()
 	if not state.risk_pending.is_empty() or _session.mirror_pending(): _flow.show_panel(&"risk")
 	elif not state.pending_event_id.is_empty(): _flow.show_panel(&"events")
@@ -243,6 +289,10 @@ func _preview_selected(index: int) -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("ui_cancel"):
+		return
+	if _departure != null and _departure.visible:
+		_departure.dismiss()
+		get_viewport().set_input_as_handled()
 		return
 	if _receipt != null and _receipt.visible:
 		_receipt.dismiss()

@@ -78,6 +78,12 @@ func _run() -> void:
 	await _frames()
 	_check(receipt.visible and receipt._item.text == "泣血铜镜", "铜镜收购仍先反馈交易")
 	await _click_button(receipt._primary)
+	# The direct multi-night helper also left known customers at closing.
+	# Acknowledge those notices; their dismissal must restore the risk panel.
+	var departure := _main.find_child("CustomerDeparture", true, false) as TradeReceiptView
+	for guard in 10:
+		if not departure.visible: break
+		await _click_button(departure._primary)
 	_check(not receipt.visible and _session.risk_model().held_ids.size() == 1, "确认铜镜凭据不修改风险持有状态")
 	_check(_main.get_node("CounterScreen/ScreenFlowCoordinator").get_active_panel_id() == &"risk" and _main.get_node("CounterScreen/%Drawer").visible, "铜镜成交反馈后继续显示存放规矩")
 	_session.new_run()

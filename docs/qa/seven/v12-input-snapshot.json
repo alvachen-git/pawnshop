@@ -1,0 +1,293 @@
+{
+  "base": "8d3138b2448279e30ad85bb9fa89167f5bf0f6ff",
+  "files": [
+    {
+      "path": "core/bootstrap.gd",
+      "sha256": "d39bf5699d2f2958b1dfeb84da5f098db997aca200c27f57b465a0afba1edda0"
+    },
+    {
+      "path": "core/content/commerce_domain_validator.gd",
+      "sha256": "ab2b5a1f50219ec5294a66f7588fd9d611ddd53fa84311e6bd4e319329b2b20a"
+    },
+    {
+      "path": "core/content/commerce_schema.gd",
+      "sha256": "35e07947833e6558d83f1989a486cf9ad28e368f772ab03bf8b49a86e73a6929"
+    },
+    {
+      "path": "core/content/definitions/run_definition.gd",
+      "sha256": "314cf8a76e4b44e1e502dedc3ae4edc1b1860006730669539978df507b33b6ef"
+    },
+    {
+      "path": "core/content/domain_validator.gd",
+      "sha256": "16c7df62ca5e9531038fd6c3ea6181fdee606b72f58589bbe41d1b681f39852d"
+    },
+    {
+      "path": "core/content/dto/run_dto.gd",
+      "sha256": "ef37ca8748311c9d5c89873a4e961d05cf46e6543ae33c4a4b0f441175e662fd"
+    },
+    {
+      "path": "core/content/source_schema_validator.gd",
+      "sha256": "032fa5f70489fbb8cc6f8e5e1d843804b123b1ad0522439550a45b63d55b9db3"
+    },
+    {
+      "path": "core/day/run_session.gd",
+      "sha256": "46b964dcd526e9869501c1f96a7f61ae849a6d24a6e89c530299c42ae9aad212"
+    },
+    {
+      "path": "core/inventory/commerce_read_models.gd",
+      "sha256": "32969b0ce6a2fae231f39516c5fcf32e55e7c636a27204f980526e18ccc5693a"
+    },
+    {
+      "path": "core/inventory/commerce_service.gd",
+      "sha256": "b14dbe7f9de6d8cc9eba0d49c44def0e7fbe7e93aeffa5d34146c46cef1df685"
+    },
+    {
+      "path": "core/inventory/commerce_visual_read_models.gd",
+      "sha256": "228b1f9e216fa53dadcd7caf7ded46011d31d4c6efc24fd3af539505c8417251"
+    },
+    {
+      "path": "core/save/commerce_save_codec.gd",
+      "sha256": "5e2f2e445d70bd4ab9bece2d255c846d0a8c45c56f5f1415b82596bcf9bdcb26"
+    },
+    {
+      "path": "core/save/save_codec.gd",
+      "sha256": "9520c5917d0773943d492ea8d9035e1e6e32a407c03f6701b649ca0a3942c283"
+    },
+    {
+      "path": "core/save/save_manager.gd",
+      "sha256": "ff86a035a66f6cab93147690fb18028f8c939604d0ea75fd3b7b53a02abcab28"
+    },
+    {
+      "path": "core/state/run_state.gd",
+      "sha256": "dc34347b77c55e699345be7b1b136aed6eb69f9ddd9bedb1c3305b90d98ed194"
+    },
+    {
+      "path": "core/trade/trade_receipt_model.gd",
+      "sha256": "af0000a7cfdb770608045aa3ebbf67cfe12f24be9d9e90bf3f8c8a0be1e7a81a"
+    },
+    {
+      "path": "data/content_manifest.json",
+      "sha256": "43dfce627f7141f162d889c62cd47cd3e314784cb17ff19819139edfb5482545"
+    },
+    {
+      "path": "tests/run_integrated_variety.gd",
+      "sha256": "3a6b05bd13f24a36bc6392221cefda365f0086c35149d1e0fd7879b6478a6025"
+    },
+    {
+      "path": "tests/variety_checkpoint_process.gd",
+      "sha256": "bcf988f9d25c978ee04a8eb8481db590d34ec486d035bfd807a3af69800fb038"
+    },
+    {
+      "path": "tests/variety_ui_smoke.gd",
+      "sha256": "125cf3c6d02abda342b59e063f5c6bffdc6157b6e86cb60b6873ba3081c96433"
+    },
+    {
+      "path": "tools/test_windows.ps1",
+      "sha256": "8fd93cdd97d0a8e31c50552918b9733bbd404ed87e5880ac3b766ebed8fe25ac"
+    },
+    {
+      "path": "ui/counter/counter_screen.gd",
+      "sha256": "3afb778000cc62fe938a8fbf1aa3d12eefd3ab8784219c32d94a73216f61c47f"
+    },
+    {
+      "path": "ui/inventory/inventory_panel.gd",
+      "sha256": "3e606c0ee96df120ab841de8050ef24926ae6cb4c1bceb9f5e76fa5491e0b141"
+    },
+    {
+      "path": "ui/trade/trade_receipt_view.gd",
+      "sha256": "7609eb21deb0efb6b361fea75380f3538ff016e193afc94c26f66281127dfed1"
+    },
+    {
+      "path": "core/content/market_schema.gd",
+      "sha256": "261f9bb32d3d631c2934815c5117bb46d0479e3b5c5d4623706b1d8ff24ea165"
+    },
+    {
+      "path": "core/content/market_schema.gd.uid",
+      "sha256": "a0c193444a23a0a4d8f90095d740e353c35dcd32ccc54cd9fd4ad96f3e623343"
+    },
+    {
+      "path": "core/inventory/batch_sale_read_model.gd",
+      "sha256": "baa5ccaf8f9aa747f00fa363221e6f193d7ef250e47115b029aef5dca55ff5fd"
+    },
+    {
+      "path": "core/inventory/batch_sale_read_model.gd.uid",
+      "sha256": "3886faa54d2c49f61bb960e1f634c1442beaf9aadc92659d9360c38e15d6d088"
+    },
+    {
+      "path": "core/inventory/market_service.gd",
+      "sha256": "11dd9687bb69a191b463cea986c471bd20b0c4b5aac21157ac8823d2d095cc76"
+    },
+    {
+      "path": "core/inventory/market_service.gd.uid",
+      "sha256": "5e9827c13ba2970e5c697d911735697ca5b7b22e0884330634c48c95138e6666"
+    },
+    {
+      "path": "core/save/market_save_codec.gd",
+      "sha256": "2fbb27631ab004d5466730f0ea2ec6cfc81fac016f93cc8791b24c1ed1c4ccaa"
+    },
+    {
+      "path": "core/save/market_save_codec.gd.uid",
+      "sha256": "1d43e06e38ebaa32e3d4b52baac39d43c49fb134c2ca447424059135e30ed623"
+    },
+    {
+      "path": "data/buyers/buyers_v12.json",
+      "sha256": "3bb386549311dce4ef293a4911eb5a61c6cfc2d300554c0a8ae3895e851e124f"
+    },
+    {
+      "path": "data/events/events_v12.json",
+      "sha256": "b88d9d278186c518b967894e9e5512155e331c571f3b672cdf6f8120dea49821"
+    },
+    {
+      "path": "data/legacy/content_v11.json",
+      "sha256": "85aadbcbd0c08d9bc6adc22823af8de377c27e1804142b310d416f3c44f896b7"
+    },
+    {
+      "path": "data/legacy/v11/buyers_v11.json",
+      "sha256": "e7e6916582eb52aa4160bba2470c694d3b51c89aa3f47979474a92a8e3ec5792"
+    },
+    {
+      "path": "data/legacy/v11/customers_v11.json",
+      "sha256": "4362a881b2585f9c07ad2f288e245b5810c0b542632d006289b2308e3b59d7fc"
+    },
+    {
+      "path": "data/legacy/v11/events_v10.json",
+      "sha256": "3e31b4a053d41b051bd9de7ebca5736312ffd3fd49aa9ee52b492b556e4afb3b"
+    },
+    {
+      "path": "data/legacy/v11/items_v11.json",
+      "sha256": "2346a4b85900a9747b22ce093a9c659a3736759b0fc52d7363f9132d4b0ebcf4"
+    },
+    {
+      "path": "data/legacy/v11/p0_variety_v11.json",
+      "sha256": "b4f93452166884ac67aeb42e69d42db571ace63b44ea2c6e84c27f614fce60d4"
+    },
+    {
+      "path": "data/legacy/v11/rules_m5.json",
+      "sha256": "388c0789ba4dc59c966bb6affe3bf338e4d57130a19adcf32e75a05983a84a6c"
+    },
+    {
+      "path": "data/legacy/v11/terms_m3.json",
+      "sha256": "5374a7465e90fc1d9372a8d2dd4e7d0d77efbbd0495bbe008e3ea5cf44b2f8cd"
+    },
+    {
+      "path": "data/runs/p0_market.json",
+      "sha256": "d6217b70b164eb2e0a61b7db4ec7c880cd48df8b4cc3703aeea5572ce2b6f047"
+    },
+    {
+      "path": "docs/SELLING_MARKET_GUIDE.md",
+      "sha256": "997a27bc8a03bc6f68058a98e014db9831878e929174d4b6775a16c12ad9020d"
+    },
+    {
+      "path": "docs/SELLING_MARKET_VALIDATION.md",
+      "sha256": "02a32a78976c0f86a03aa148e3ca641ae504e17672390dfc35aa83f6f39db20b"
+    },
+    {
+      "path": "docs/qa/market/.gdignore",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "docs/qa/market/market_1280_01_guest_blocked.png",
+      "sha256": "f360ef810eccaafaccf72664e7b5e2cb99335f62ac288ad8b4e76c0265980052"
+    },
+    {
+      "path": "docs/qa/market/market_1280_02_batch_selection.png",
+      "sha256": "b02e1758b5d5a965ea887e05e3a6156d7a67e49357f0866d7a2d3ffcace342f7"
+    },
+    {
+      "path": "docs/qa/market/market_1280_03_batch_receipt.png",
+      "sha256": "d924db088b1be191c9091e3f3db4c89159fd504e4e469b82e08ac60f8f054460"
+    },
+    {
+      "path": "docs/qa/market/market_1280_04_lu_demand.png",
+      "sha256": "abadb54fbadf21034018c6ffc68417c9e055b87955daa58fb10ba4fcbf3bedc5"
+    },
+    {
+      "path": "docs/qa/market/market_1280_05_market_history.png",
+      "sha256": "f35d15ed6a24a9055be546b71f07c07c3665f809261407f539fc087c65759190"
+    },
+    {
+      "path": "docs/qa/market/market_1280_06_lu_quote.png",
+      "sha256": "394ce0ca5cb15558a1f0fc38e109f22053f8371087a9fdb0182ef6d3df681e22"
+    },
+    {
+      "path": "docs/qa/market/market_1280_07_lu_receipt.png",
+      "sha256": "c14e9c6d5194974cef46c5bde02aadf2b27344a9ad41bdae66bdb25afc92c5fa"
+    },
+    {
+      "path": "docs/qa/market/market_1600_01_guest_blocked.png",
+      "sha256": "f30b2a66861517d0eb4cacec80c9b402ef5a51efb319f924785d4056ff998e02"
+    },
+    {
+      "path": "docs/qa/market/market_1600_02_batch_selection.png",
+      "sha256": "3e7c46a102fa15854723d7d407d1f219fe057216b9ce7d54d37ff70846a17653"
+    },
+    {
+      "path": "docs/qa/market/market_1600_03_batch_receipt.png",
+      "sha256": "10bd4a7641463ba6abd59cbe1b9a31b0b6c7d20ce8622ad725e307f2c01c7a1b"
+    },
+    {
+      "path": "docs/qa/market/market_1600_04_lu_demand.png",
+      "sha256": "46856e7fb5c5cbc0f788dbf86e251bb76ce494052175f4628701db0cf365953a"
+    },
+    {
+      "path": "docs/qa/market/market_1600_05_market_history.png",
+      "sha256": "82640555dbc300ea8f7f93f3d1e0cccc96b10d1779cb9c74bd4e48275d9af5d7"
+    },
+    {
+      "path": "docs/qa/market/market_1600_06_lu_quote.png",
+      "sha256": "16748a486167390b0195b7ed26edde47d6ca12f15a04e21e8174fdfd654db40c"
+    },
+    {
+      "path": "docs/qa/market/market_1600_07_lu_receipt.png",
+      "sha256": "daaa328ceb8b2b4368857031b9d490fd15f5457b8a87e9cc09da6c66c63f2c8c"
+    },
+    {
+      "path": "docs/qa/market/market_samples.json",
+      "sha256": "cd1e2ccf3994f6b2b9fad44b722c8d293f2c6365b281858b0e7b16da2c96fa34"
+    },
+    {
+      "path": "docs/qa/market/results.json",
+      "sha256": "5d9ec99c2e329872152105e43d924f2d3c29cbf5bc3bae3f2b94f98c817fc516"
+    },
+    {
+      "path": "tests/market_checkpoint_process.gd",
+      "sha256": "b3ccb3645f5f97234c86b39cdb92850a4e131e1904e3324038754c20962596a5"
+    },
+    {
+      "path": "tests/market_checkpoint_process.gd.uid",
+      "sha256": "92f9ec65b642b1bb509ede229bfe76d63e9ced0e435a8b9c56498cf78982f48e"
+    },
+    {
+      "path": "tests/market_tests.gd",
+      "sha256": "b4113b8bcd7c82848d71f059c75c90ea77bd8d38ae02cbce3735fcbd7d5e092a"
+    },
+    {
+      "path": "tests/market_tests.gd.uid",
+      "sha256": "ca23853eee7db8c53b6abf51198ab2893c1054bcefeb9541f7b6d90e78524cff"
+    },
+    {
+      "path": "tests/market_ui_smoke.gd",
+      "sha256": "7943096431a5ec2270d703290085a9679006a96b4f6f3a58466ee205bc6ac71e"
+    },
+    {
+      "path": "tests/market_ui_smoke.gd.uid",
+      "sha256": "58f90a0900d69efe90dc0b44d6044053294ec76ac083161460a2170e4ee5236c"
+    },
+    {
+      "path": "tests/run_market.gd",
+      "sha256": "8313d6da588fa916c938c15fb3c0b2d8d6e7a6292caf3e99f95a50aaf95cae15"
+    },
+    {
+      "path": "tests/run_market.gd.uid",
+      "sha256": "8ced784bcffbff99ad803a1b4d1f1297e1d67ad1ea4275fe02d714f0bccfc826"
+    },
+    {
+      "path": "ui/inventory/batch_sale_view.gd",
+      "sha256": "377c02c43599ee9f61676df1ea15c88aeffe63f63e21531267b793da3d281ded"
+    },
+    {
+      "path": "ui/inventory/batch_sale_view.gd.uid",
+      "sha256": "0485a15cc1ed67f4207d1ac409f2301183d6969c371fe71739601b9010f8aa4f"
+    }
+  ]
+}

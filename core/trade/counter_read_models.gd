@@ -20,10 +20,17 @@ static func build(day: DayController, service: CounterService, message: String) 
 		if visit.status == "waiting": waiting += 1
 		if visit.status == "scheduled" and (next_arrival < 0 or visit.arrival < next_arrival): next_arrival = visit.arrival
 	model.queue = "等待中 %d 人" % waiting
-	if next_arrival >= 0: model.queue += " · 下一客约 %s" % TimeController.clock_text(day.definition.opening_minute, next_arrival)
+	if next_arrival >= 0 and not SevenNightPlan.enabled(day.definition): model.queue += " · 下一客约 %s" % TimeController.clock_text(day.definition.opening_minute, next_arrival)
 	if not state.visit_history.is_empty():
 		var last: Dictionary = state.visit_history.back()
-		model.queue += "\n最近结果：" + OUTCOMES[last.outcome]
+		var who := ""
+		for ended in state.visits:
+			if ended.visit_id == last.visit_id:
+				var ended_customer := service.catalog.get_definition("customers", ended.customer_id) as CustomerDefinition
+				who = String(ended.person.get("name", ended_customer.terms.display_name))
+				break
+		if int(last.night) == state.current_night_index and not who.is_empty():
+			model.queue += "\n%s · %s：%s" % [TimeController.clock_text(day.definition.opening_minute, int(last.minute)), who, OUTCOMES[last.outcome]]
 	var visit := service.customers.active(state)
 	if visit == null:
 		for feature in ["appraisal", "dialogue", "trade"]: model[feature].body += "\n\n" + message
@@ -60,7 +67,7 @@ static func build(day: DayController, service: CounterService, message: String) 
 	else:
 		model.appraisal.images = TradeScenarioService.known_images(visit, scenario)
 		if model.appraisal.images.any(func(row: Dictionary) -> bool: return not row.path.is_empty()): model.appraisal.body += "\n\n翻看正背面、复看细节不耗时；取证另计时间。"
-		model.dialogue.body = scenario.introduction + "\n\n听来的话先记着，物品还须自己掌眼。无凭据地质疑，客人可能不悦。"
+		model.dialogue.body = String(visit.voice.get("introduction", scenario.introduction)) + "\n\n听来的话先记着，物品还须自己掌眼。无凭据地质疑，客人可能不悦。"
 		for question in scenario.questions:
 			if question.id in visit.asked_question_ids: model.dialogue.body += "\n\n" + question.prompt + "\n" + question.answer(visit)
 			elif TradeScenarioService.prerequisites(visit, question):
