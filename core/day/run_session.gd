@@ -62,15 +62,16 @@ func has_save() -> bool:
 
 func can_execute(command: String) -> bool:
 	if command.begins_with("prep_"): return PreparationService.reason(_day.state, definition, command.trim_prefix("prep_")).is_empty()
-	if command == "open_shop" and SevenNightPlan.enabled(definition) and _day.state.current_night_index >= 4 and not PreparationService.used(_day.state, "finish", _day.state.current_night_index): return false
+	if command == "open_shop" and SevenNightPlan.enabled(definition) and not OpeningPreparation.enabled(definition) and _day.state.current_night_index >= 4 and not PreparationService.used(_day.state, "finish", _day.state.current_night_index): return false
 	if not PawnReturnService.current(_day.state).is_empty(): return false
 	if command == "resolve_night" and _commerce != null and not _commerce.pawns.disposal_reason(_day.state, _commerce.catalog, _pawn_choices).is_empty(): return false
 	return _day.state.risk_pending.is_empty() and _day.state.phase not in [&"dead", &"bankrupt"] and _day.state.pending_event_id.is_empty() and not mirror_pending() and (_day.can_execute(command) or RoomFlow.can_execute(_day.state, command))
 
-func execute(command: String) -> ActionResult:
+func execute(command: String, detail := "") -> ActionResult:
 	if command.begins_with("prep_"):
 		var previous := _copy_state(_day.state)
-		var prepared := PreparationService.perform(_day.state, definition, command.trim_prefix("prep_"))
+		var prepared := OpeningPreparation.perform(_day.state, definition, _counter.catalog, command.trim_prefix("prep_"), detail) if OpeningPreparation.enabled(definition) else PreparationService.perform(_day.state, definition, command.trim_prefix("prep_"))
+		if prepared.ok and OpeningPreparation.enabled(definition): OpeningPreparation.refresh_visits(_day.state, definition, _counter.catalog)
 		if prepared.ok and not _save.save_state(_day.state, definition, content_version):
 			_day.state = previous
 			prepared = ActionResult.new(false, "准备未记下，请重试。" + _save.error_message)
@@ -78,6 +79,10 @@ func execute(command: String) -> ActionResult:
 		changed.emit()
 		return prepared
 	if command == "open_shop" and not can_execute(command): return ActionResult.new(false, "请先结束准备并处理眼前的事情。")
+	if command == "open_shop" and OpeningPreparation.enabled(definition) and _day.state.current_night_index >= 2 and not PreparationService.used(_day.state, "finish", _day.state.current_night_index):
+		# Commit the pre-open checkpoint before advancing to the unsaveable trading phase.
+		var finished := execute("prep_finish")
+		if not finished.ok: return finished
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
@@ -164,6 +169,9 @@ func new_run() -> void:
 	var archive := _day.state.death_archive.duplicate(true)
 	var bankruptcies := _day.state.bankruptcy_archive.duplicate(true)
 	_day.state = RunState.create(definition)
+	if _save.library != null:
+		archive = _save.library.archive("death_archive", String(definition.id))
+		bankruptcies = _save.library.archive("bankruptcy_archive", String(definition.id))
 	_day.state.death_archive.assign(archive)
 	_day.state.bankruptcy_archive.assign(bankruptcies)
 	if _counter != null:
@@ -175,6 +183,7 @@ func new_run() -> void:
 
 func _copy_state(source: RunState) -> RunState:
 	var copy := RunState.new()
+	copy.preparation_version = source.preparation_version
 	for key in source.to_read_model():
 		if key in ["inventory_instances", "pawn_tickets"]: continue
 		copy.set(key, source.get(key).duplicate(true) if source.get(key) is Array or source.get(key) is Dictionary else source.get(key))
@@ -397,3 +406,46 @@ func choose_pawn_disposal(id: String, choice: String) -> ActionResult:
 	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return ActionResult.new(true, message)
+
+# Bell exposes only the action available at the counter, never the future visitor's identity.
+func bell_model() -> Dictionary:
+	var model := {"mode": "", "target_id": "", "enabled": false, "hint": "开铺后才能招呼客人。"}
+	if _counter == null or _day.state.phase != &"open": return model
+	if not _day.state.pending_event_id.is_empty() or not _day.state.risk_pending.is_empty() or mirror_pending():
+		model.hint = "请先处理眼前的事情。"
+		return model
+	if not PawnReturnService.current(_day.state).is_empty():
+		model.hint = "原当户带票来赎，请先办妥当票。"
+		return model
+	var visit := _counter.customers.active(_day.state)
+	if visit != null:
+		var reason := _counter.reason(_day, "reject", visit.visit_id)
+		var customer := _counter.catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
+		model.merge({"mode": "dismiss", "target_id": visit.visit_id, "enabled": reason.is_empty(),
+			"hint": "长按1秒送客 · 耗时%d分钟；松开取消。" % customer.terms.reject_minutes if reason.is_empty() else reason}, true)
+		return model
+	model.mode = "wait"
+	model.enabled = _day.state.visits.any(func(v: CustomerVisit) -> bool: return v.status in ["scheduled", "waiting"] and v.arrival < definition.night_minutes and v.expires_at > _day.state.game_minutes)
+	model.hint = "轻按铃铛，等下一位客人来；时辰会向前走。" if model.enabled else "今夜已无来客，可以收铺了。"
+	return model
+
+func bell_command(mode: String, target_id := "") -> ActionResult:
+	var model := bell_model()
+	if not model.enabled or model.mode != mode or model.target_id != target_id:
+		return ActionResult.new(false, "柜前的情形已经变了。" if model.enabled else model.hint)
+	if mode == "dismiss": return counter_command("reject", target_id)
+	# Advance through normal time boundaries so events and arrivals are never skipped.
+	var start := _day.state.game_minutes
+	while _day.state.phase == &"open" and _counter.customers.active(_day.state) == null:
+		_counter.customers.update(_day.state)
+		if _counter.customers.active(_day.state) != null or not PawnReturnService.current(_day.state).is_empty(): break
+		var spent := _day.spend_action(definition.time_step)
+		if not spent.ok: return spent
+		_counter.customers.update(_day.state)
+		if _risk != null: _risk.capture_close(_day.state)
+		if _events != null: _events.poll(_day.state, definition)
+		if not _day.state.pending_event_id.is_empty() or not _day.state.risk_pending.is_empty() or mirror_pending(): break
+	MarketService.sync(_day.state, definition)
+	message = "铃声落下，门外终于响起脚步。" if _counter.customers.active(_day.state) != null else "你在柜后等着，铺里有了动静。"
+	changed.emit()
+	return ActionResult.new(true, message + "等候%d分钟。" % (_day.state.game_minutes - start))

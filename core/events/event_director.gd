@@ -14,6 +14,8 @@ func eligible(state: RunState, event: EventDefinition) -> bool:
 		if flag in state.narrative_flags: return false
 	var purchases := 0
 	for row in state.ledger_entries:
+		var slot: String = event.presentation.get("purchase_slot_id", "")
+		if not slot.is_empty() and not String(row.item_instance_id).ends_with("/" + slot): continue
 		if row.kind == "acquisition" and (row.night < state.current_night_index or (row.night == state.current_night_index and row.minute <= state.game_minutes)): purchases += 1
 	if purchases < int(event.presentation.get("required_purchases", 0)): return false
 	for id in event.required_items:

@@ -29,6 +29,31 @@ static func build() -> Theme:
 static func paper() -> StyleBoxFlat:
 	return box("d8c7a2", "897557", 2, 2)
 
+static func painted_paper(tint := Color.WHITE) -> StyleBoxTexture:
+	var style := StyleBoxTexture.new()
+	style.texture = preload("res://assets/art04/ui/paper.png")
+	style.modulate_color = tint
+	for side in [SIDE_LEFT, SIDE_TOP, SIDE_RIGHT, SIDE_BOTTOM]:
+		style.set_texture_margin(side, 24)
+		style.set_content_margin(side, 3)
+	return style
+
+static func style_paper_button(button: Button) -> void:
+	button.add_theme_font_override("font", display_font())
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		var tint: Color = {"normal": Color.WHITE, "hover": Color("fff0cc"), "pressed": Color("bdac86"), "disabled": Color("8a8877")}[state]
+		button.add_theme_stylebox_override(state, painted_paper(tint))
+		button.add_theme_color_override("font_color" if state == "normal" else "font_" + state + "_color", Color("302a24"))
+	var focus := box("00000000", "8d2a24", 0, 0)
+	focus.set_border_width_all(3)
+	button.add_theme_stylebox_override("focus", focus)
+
+static func display_font() -> Font:
+	var font := SystemFont.new()
+	font.font_names = PackedStringArray(["Songti SC", "STSong", "SimSun", "Noto Serif CJK SC"])
+	font.fallbacks = [preload("res://assets/fonts/NotoSansSC.ttf")]
+	return font
+
 static func box(fill: String, edge: String, horizontal: int, vertical: int) -> StyleBoxFlat:
 	var style := StyleBoxFlat.new()
 	style.bg_color = Color(fill)

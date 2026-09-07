@@ -21,6 +21,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 				if question.id == id: speech.append({"question": question.prompt, "answer": question.answer(visit)})
 	var terms := service.catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 	var visual := {
+		"customer_id": visit.customer_id,
 		"item_name": item.display_name, "item_description": item.description,
 		"provenance": ProvenanceService.known_text(visit.item, item),
 		"item_asset": item.visual_asset_id, "customer_name": VarietyService.name_for(visit.person, customer),

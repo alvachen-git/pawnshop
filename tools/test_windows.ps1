@@ -41,6 +41,9 @@ try {
     Run-Test 'reception-feedback-core' 'reception_feedback_tests.gd'
     Run-Test 'manual-save-core' 'manual_save_tests.gd'
     Run-Test 'opening-core' 'run_opening.gd'
+    Run-Test 'integrated-seven-core' 'run_integrated_seven.gd'
+    Run-Test 'preparation-core' 'preparation_tests.gd'
+    Run-Test 'bell-core' 'bell_tests.gd'
     foreach ($suite in @('ui_smoke','scene_navigation_ui_smoke','m2_ui_smoke','m3_ui_smoke','m4_ui_smoke','m5_ui_smoke','art03_extension_ui_smoke')) {
         Run-Test $suite "$suite.gd" @() $false
     }
@@ -48,6 +51,10 @@ try {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
         Run-Test "manual-save-$size" 'manual_save_ui_smoke.gd' $sizeArgs $false
+        Run-Test "bell-$size" 'bell_ui_smoke.gd' $sizeArgs $false
+        Run-Test "integrated-seven-$size" 'integrated_ui_smoke.gd' $sizeArgs $false
+        Run-Test "preparation-$size" 'preparation_ui_smoke.gd' $sizeArgs $false
+        Run-Test "preparation-default-$size" 'preparation_ui_smoke.gd' (@('default') + $sizeArgs) $false
         Run-Test "opening-$size" 'opening_ui_smoke.gd' $sizeArgs $false
         Run-Test "variety-$size" 'variety_ui_smoke.gd' $sizeArgs $false
         Run-Test "market-$size" 'market_ui_smoke.gd' $sizeArgs $false
@@ -68,6 +75,12 @@ try {
     }
     foreach ($mode in @('write','read','continue','read_final')) {
         Run-Test "manual-process-$mode" 'manual_save_process.gd' @($mode)
+    }
+    foreach ($mode in @('opening','first','third','risk','survive','sixth','end','read')) {
+        Run-Test "integrated-process-$mode" 'integrated_checkpoint_process.gd' @($mode)
+    }
+    foreach ($mode in @('start','attract','tea','finish','second','target','intel','third','sixth','end','read')) {
+        Run-Test "preparation-process-$mode" 'preparation_checkpoint_process.gd' @($mode)
     }
     foreach ($mode in @('prepare','sixth','room','sleep','seventh','finish','read')) {
         Run-Test "seven-process-$mode" 'seven_checkpoint_process.gd' @($mode)

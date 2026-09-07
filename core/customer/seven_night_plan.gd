@@ -22,9 +22,18 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 	for c in config.contexts: context_by_id[c.id] = c
 	var rows: Array[Dictionary] = []
 	var roles := {}
-	var available: Array = range(18)
+	var anchors := {}
+	for anchor in config.get("story_slots", []):
+		for slot in run.customer_slots:
+			if slot.id == anchor.slot_id: anchors[int(anchor.index)] = slot
+	var available: Array = range(18).filter(func(i: int) -> bool: return not anchors.has(i))
 	for role in ["flaw", "invalid", "urgent", "source", "pawn"]:
 		var slots: Array = available.filter(func(i: int) -> bool: return i >= 12 if role == "pawn" else i > 0)
+		# The authored midnight watch excludes adjacent urgent watch sellers.
+		if not anchors.is_empty() and role == "urgent": slots = slots.filter(func(i: int) -> bool: return i < 12)
+		if OpeningPreparation.enabled(run):
+			# Leave an ordinary position for targeted buying; reserve the third-night pawn too.
+			slots = slots.filter(func(i: int) -> bool: return available.filter(func(j: int) -> bool: return j / 6 == i / 6).size() > (2 if i >= 12 and role != "pawn" else 1))
 		var slot: int = VarietyService.pick(slots, seed_value, "seven/role/" + role)
 		roles[slot] = role
 		available.erase(slot)
@@ -42,14 +51,19 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 			if not times.is_empty(): a = maxi(a, int(times.back()) + 15); b = maxi(b, a + 15)
 			times.append(a)
 			times.append(b)
+		if config.get("fixed_arrivals", {}).has(str(night)): times = config.fixed_arrivals[str(night)].duplicate()
 		for seat in 6:
 			var index := rows.size()
+			if anchors.has(index):
+				rows.append(story_row(run, catalog, anchors[index], night))
+				continue
 			var role: String = roles.get(index, "")
 			var id := "%s/%d/n%d_visit%d" % [run.id, night, night, seat + 1]
 			var candidates: Array = []
 			for c in config.contexts:
 				var customer := catalog.get_definition("customers", c.customer_id) as CustomerDefinition
 				if not rows.is_empty() and rows.back().customer_id == customer.id: continue
+				if anchors.has(index + 1) and anchors[index + 1].customer_id == customer.id: continue
 				var modes: Array = c.transaction_modes.duplicate()
 				if night < 3: modes.erase("pawn")
 				if modes.is_empty(): continue
@@ -57,6 +71,7 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 					var item := catalog.get_definition("items", item_id) as ItemDefinition
 					if roles.get(index + 1, "") in ["pen4", "pen5"] and item_id == "item_fountain_pen": continue
 					if roles.get(index + 1, "") == "invalid" and item_id == "item_blue_bowl": continue
+					if anchors.has(index + 1) and anchors[index + 1].item_id == item_id: continue
 					if item.item_type != "normal" or (not rows.is_empty() and rows.back().item_id == item_id): continue
 					var recent := rows.slice(maxi(0, rows.size() - 6)).any(func(old: Dictionary) -> bool: return old.customer_id == customer.id and old.item_id == item_id and old.context_id == c.id)
 					if recent: continue
@@ -95,7 +110,7 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 			var sources: Array = []
 			for key in ["none", "authentic", "mismatch"]:
 				for weight in int(weights[key]): sources.append(key)
-			row.merge({"visit_id": id, "night": night, "arrival": times[seat], "wait_minutes": int(c.wait_minutes), "situation": c.situation,
+			row.merge({"visit_id": id, "night": night, "arrival": int(times[seat]), "wait_minutes": int(c.wait_minutes), "situation": c.situation,
 				"source": VarietyService.pick(["authentic", "mismatch"] if role == "source" else sources, seed_value, id + "/source"),
 				"reaction": VarietyService.pick(["admit", "explain", "evade"], seed_value, id + "/reaction"),
 				"terms_id": "sample_three_redeem" if role == "pawn" else VarietyService.pick(config.terms_ids, seed_value, id + "/terms")})
@@ -112,3 +127,13 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 				break
 			rows.append(row)
 	return rows
+
+# Story positions use authored identities and truth; ordinary positions keep seeded variety.
+static func story_row(run: RunDefinition, catalog: ContentCatalog, slot: VisitSlotDefinition, night: int) -> Dictionary:
+	var customer := catalog.get_definition("customers", slot.customer_id) as CustomerDefinition
+	var id := "%s/%d/%s" % [run.id, night, slot.id]
+	return {"visit_id": id, "night": night, "arrival": slot.arrival, "customer_id": customer.id,
+		"item_id": slot.item_id, "variant_id": slot.variant_id, "context_id": "", "source": "none" if not (catalog.get_definition("items", slot.item_id) as ItemDefinition).provenance.is_empty() else "",
+		"situation": "ordinary", "reaction": "admit", "terms_id": customer.pawn_terms_id,
+		"wait_minutes": customer.terms.wait_minutes, "transaction_modes": ["sell"],
+		"person": {"id": "person/" + id, "name": customer.terms.display_name, "portrait": customer.portrait_asset_id}}

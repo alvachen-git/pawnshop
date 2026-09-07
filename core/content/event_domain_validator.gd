@@ -29,6 +29,7 @@ static func validate(catalog: ContentCatalog) -> Array:
 			if event == null:
 				_error(issues, run.id, "事件引用失效：" + id)
 				continue
+			if event.presentation.has("purchase_slot_id") and not run.customer_slots.any(func(slot: VisitSlotDefinition) -> bool: return slot.id == event.presentation.purchase_slot_id): _error(issues, id, "成交剧情引用的来访不存在。")
 			var room_event := event.phase in ["private_room", "sleep_resolution"]
 			if room_event and (not run.private_room or event.window_start != run.night_minutes): _error(issues, id, "房间事件须在封铺后。")
 			if event.night_min > run.total_nights or event.window_end > run.night_minutes + (run.time_step if room_event else 0) or event.window_start % run.time_step != 0 or event.window_end % run.time_step != 0: _error(issues, id, "事件窗口超出运行或不匹配步长。")

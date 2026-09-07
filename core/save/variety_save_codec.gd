@@ -15,7 +15,7 @@ static func selections(data: Dictionary, state: RunState, run: RunDefinition, ca
 	if run.variety.is_empty():
 		return "旧局不能混入新来客记录。" if not data.get("ordinary_selections", []).is_empty() or not data.get("provenance_history", []).is_empty() else ""
 	if not data.get("ordinary_selections") is Array or not data.get("provenance_history") is Array: return "缺少随机来客或来源记录。"
-	var expected := VarietyService.plan(run, catalog, state.run_seed).filter(func(row: Dictionary) -> bool: return row.night <= state.current_night_index)
+	var expected := (OpeningPreparation.plan(state, run, catalog) if OpeningPreparation.enabled(run) else VarietyService.plan(run, catalog, state.run_seed)).filter(func(row: Dictionary) -> bool: return row.night <= state.current_night_index)
 	var normalized: Array = []
 	for row in data.ordinary_selections:
 		if not row is Dictionary or not CounterSaveCodec._integers(row, ["night", "arrival"]): return "随机来客结构无效。"

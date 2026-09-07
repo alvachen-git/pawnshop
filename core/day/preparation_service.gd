@@ -11,6 +11,7 @@ static func count(state: RunState) -> int:
 	return state.preparation_history.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index and row.action != "finish").size()
 
 static func reason(state: RunState, run: RunDefinition, action: String) -> String:
+	if OpeningPreparation.enabled(run): return OpeningPreparation.reason(state, action)
 	if not SevenNightPlan.enabled(run) or state.current_night_index < 4: return "第四夜起可在开铺前准备。"
 	if state.phase != &"pre_open" or used(state, "finish", state.current_night_index): return "今夜准备已结束。"
 	if not state.pending_event_id.is_empty() or not state.risk_pending.is_empty(): return "请先处理眼前的事情。"
@@ -37,6 +38,7 @@ static func requirements_known(state: RunState) -> bool:
 	return used(state, "investigate") or state.current_night_index > 6 or (state.current_night_index == 6 and state.game_minutes >= 60)
 
 static func notice(state: RunState, catalog: ContentCatalog) -> String:
+	if state.preparation_version == 1: return OpeningPreparation.notice(state, catalog)
 	if state.current_night_index < 4: return ""
 	var lines: PackedStringArray = ["茶馆捎来的口信：外埠有人托收旧文房用品，第六夜来收。细目还须打听。" if not requirements_known(state) else "外埠文房收货人第六夜来收货，收货单已问清。"]
 	if requirements_known(state): lines.append(DETAILS)
@@ -55,7 +57,7 @@ static func notice(state: RunState, catalog: ContentCatalog) -> String:
 	return "\n\n".join(lines)
 
 static func buyer_reason(state: RunState, buyer_id: String) -> String:
-	if buyer_id != BUYER: return ""
+	if buyer_id != BUYER or state.preparation_version == 1: return ""
 	return "尚未取得介绍，请在开铺前联系收货人。" if not used(state, "contact") else ""
 
 static func item_reason(item: ItemInstance, buyer_id: String) -> String:
@@ -65,6 +67,7 @@ static func item_reason(item: ItemInstance, buyer_id: String) -> String:
 	return ""
 
 static func restore(data: Dictionary, state: RunState, run: RunDefinition, catalog: ContentCatalog) -> String:
+	if OpeningPreparation.enabled(run): return OpeningPreparation.restore(data, state, run, catalog)
 	if not data.get("seven_plan", []) is Array or not data.get("preparation_history", []) is Array: return "七夜编排或准备记录结构无效。"
 	if not SevenNightPlan.enabled(run):
 		return "旧局混入七夜记录。" if not data.get("seven_plan", []).is_empty() or not data.get("preparation_history", []).is_empty() else ""

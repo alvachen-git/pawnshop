@@ -48,7 +48,7 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 			detail = "第%d夜到期 · 约定赎金 %d 银元\n在当物品不可出售。" % [ticket.due_night, ticket.redemption_amount]
 	if SevenNightPlan.enabled(day.definition) and entry.kind in ["acquisition", "pawn_loan"]:
 		var row := VarietySaveCodec.selection(day.state, item.source_visit_id)
-		if not row.is_empty(): note += "\n" + String(SevenNightPlan.context(day.definition, row.context_id).voice.completed)
+		if not row.is_empty() and not row.context_id.is_empty(): note += "\n" + String(SevenNightPlan.context(day.definition, row.context_id).voice.completed)
 	var images: Array = []
 	for scenario in day.definition.trade_scenarios:
 		if item.source_visit_id.ends_with("/" + scenario.slot_id) or (not day.definition.variety.is_empty() and scenario.item_id == item.definition_id):

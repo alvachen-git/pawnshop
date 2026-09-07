@@ -56,6 +56,8 @@ func render(model: Dictionary) -> void:
 	AccountPaper.rule(debt)
 	AccountPaper.label(debt, "当夜已计息费 %d 银元\n本夜实际付息费 %d 银元\n经营净收益 %+d 银元" % [v.financial.interest_expense + v.financial.shop_expense, v.financial.fees_paid, v.financial.operating_profit], 16)
 	AccountPaper.label(debt, "息费在夜末入账。实际付款可能包含以前的短款。", 14)
+	if v.financial.has("preparation_expense"):
+		AccountPaper.label(debt, "本夜准备支出 %d 大洋\n准备支出已从经营净收益扣除。" % v.financial.preparation_expense, 16)
 	if v.financial.has("provenance_expense"):
 		AccountPaper.label(debt, "本夜来源调查费 %d 银元\n调查费列为经营费用，已从经营净收益扣除。" % v.financial.provenance_expense, 16)
 	if not v.archive.is_empty(): AccountPaper.label(_pages[1], v.archive, 15)

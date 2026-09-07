@@ -17,15 +17,41 @@ const DETAILS := {
 	"mirror": {"blood": ["mirror_blood", "镜缘细看"], "inscription": ["mirror_inscription", "镜背刻痕"]},
 }
 
-static func portrait(asset: String) -> Texture2D:
+static func portrait(asset: String, customer_id := "") -> Texture2D:
+	if customer_id == "intro_neighbor" and ResourceLoader.exists("res://assets/art04/customers/neighbor.png"):
+		return load("res://assets/art04/customers/neighbor.png") as Texture2D
+	if asset == "asset.customer_citizen" and ResourceLoader.exists("res://assets/art04/customers/citizen.png"):
+		return load("res://assets/art04/customers/citizen.png") as Texture2D
 	if not PORTRAITS.has(asset): return null
 	return load(ROOT + "customers/" + PORTRAITS[asset] + ".svg") as Texture2D
 
+static func portrait_material(texture: Texture2D) -> ShaderMaterial:
+	if texture == null or not texture.resource_path.begins_with("res://assets/art04/"): return null
+	var material := ShaderMaterial.new()
+	material.shader = preload("res://ui/art/counter_cutout.gdshader")
+	material.set_shader_parameter("chroma_key", texture.resource_path.get_file() in ["citizen.png", "neighbor.png"])
+	return material
+
+static func _painted_front(asset: String) -> String:
+	var paths := {"asset.item_blue_bowl": "bowl_front", "placeholder.silver_hairpin": "hairpin_front"}
+	if not paths.has(asset): return ""
+	var path := "res://assets/art04/items/" + String(paths[asset]) + ".png"
+	return path if ResourceLoader.exists(path) else ""
+
 static func front(asset: String, source_images: Array = []) -> Texture2D:
 	for row in source_images:
-		if row.id == "front" and not row.path.is_empty(): return load(row.path) as Texture2D
+		if row.id == "front" and not row.path.is_empty():
+			return load(_front_path(asset, row.path)) as Texture2D
+	var painted := _painted_front(asset)
+	if not painted.is_empty(): return load(painted) as Texture2D
 	if not ITEMS.has(asset): return null
 	return load(ROOT + "items/" + ITEMS[asset] + "_front.svg") as Texture2D
+
+static func _front_path(asset: String, configured: String) -> String:
+	# Upgrade only the shipped opening placeholder. Artist-authored paths still win.
+	var painted := _painted_front(asset)
+	if configured == "res://assets/opening/hairpin.svg" and asset == "placeholder.silver_hairpin" and not painted.is_empty(): return painted
+	return configured
 
 static func images(visual: Dictionary, source_images: Array = []) -> Array:
 	var result: Array = []
@@ -36,18 +62,21 @@ static func images(visual: Dictionary, source_images: Array = []) -> Array:
 	if not source_images.is_empty():
 		for source in source_images:
 			var row: Dictionary = source.duplicate(true)
+			if row.id == "front" and not row.path.is_empty(): row.path = _front_path(visual.get("item_asset", ""), row.path)
 			if row.path.is_empty() and not family.is_empty():
 				if row.id in ["front", "back"]:
-					row.path = ROOT + "items/" + family + "_" + row.id + ".svg"
+					row.path = _painted_front(visual.get("item_asset", "")) if row.id == "front" else ""
+					if row.path.is_empty(): row.path = ROOT + "items/" + family + "_" + row.id + ".svg"
 				else:
 					for clue in visual.get("clues", []):
 						if DETAILS[family].has(clue.id):
 							row.path = ROOT + "items/" + DETAILS[family][clue.id][0] + ".svg"
+			if row.path.is_empty() and row.id == "front": row.path = _painted_front(visual.get("item_asset", ""))
 			result.append(row)
 		return result
 	if not family.is_empty():
 		for side in ["front", "back"]:
-			result.append({"id": side, "label": "正面" if side == "front" else "背面", "path": ROOT + "items/" + family + "_" + side + ".svg"})
+			result.append({"id": side, "label": "正面" if side == "front" else "背面", "path": _painted_front(visual.get("item_asset", "")) if side == "front" and not _painted_front(visual.get("item_asset", "")).is_empty() else ROOT + "items/" + family + "_" + side + ".svg"})
 		# Only already-revealed clues select detail assets. Front/back are identical
 		# across hidden variants, so browsing free views cannot reveal a defect early.
 		for clue in visual.get("clues", []):

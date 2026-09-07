@@ -11,7 +11,7 @@ static func evidence(history: Variant, entry: Dictionary, item: ItemDefinition, 
 			var definition := MirrorEncounterService.find_definition(run, row.get("encounter_id", ""))
 			if definition == null or not CounterSaveCodec._string_array(row.get("prior_actions")): return null
 			if row.prior_actions != entry.completed_action_ids.slice(0, row.prior_actions.size()): return null
-			external.append({"at": row.prior_actions.size(), "clue": definition.clue_id})
+			if not definition.clue_id.is_empty(): external.append({"at": row.prior_actions.size(), "clue": definition.clue_id})
 	if external.size() > 1: return null
 	var attainable: Array = []
 	for index in entry.completed_action_ids.size() + 1:
@@ -35,6 +35,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var sample := RunState.create(run)
 		sample.current_night_index = night
 		sample.run_seed = state.run_seed
+		sample.preparation_history = state.preparation_history.duplicate(true)
 		CustomerManager.new().prepare_night(sample, run, catalog)
 		for visit in sample.visits: visits[visit.visit_id] = visit
 	var manager := RiskManager.new(catalog)
