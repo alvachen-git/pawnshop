@@ -15,6 +15,18 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 			CounterSchema._fields(value, {"customer_ids": "strings", "fixed_slots": "strings", "constrained_slots": "strings", "terms_ids": "strings", "surnames": "strings"}, path, at, issues)
 			for key in ["customer_ids", "terms_ids", "surnames"]:
 				if value.get(key) is Array and value[key].is_empty(): CounterDomainValidator._error(issues, at, "随机抽选池不能为空。")
+			if value.has("seven_version"):
+				if value.seven_version != 1 or not value.get("contexts") is Array or value.contexts.size() != 16:
+					CounterDomainValidator._error(issues, at, "七夜版需要16种明确来访处境。")
+				else:
+					var ids: Array = []
+					for c in value.contexts:
+						CounterSchema._fields(c, {"id": "text", "customer_id": "text", "wait_minutes": "positive", "situation": "text", "transaction_modes": "strings"}, path, at, issues)
+						if not c is Dictionary: continue
+						CounterSchema._fields(c.get("voice"), {"introduction": "text", "circumstance": "text", "completed": "text", "rejected": "text", "refused": "text", "bargain_context": "text", "timed_out": "text"}, path, at, issues)
+						if not issues.is_empty(): continue
+						if c.id in ids or c.customer_id not in value.customer_ids or c.situation not in ["ordinary", "urgent"] or c.transaction_modes.is_empty() or c.wait_minutes > 140 or int(c.wait_minutes) % 5 != 0: CounterDomainValidator._error(issues, at, "处境人物、期限或标识无效。")
+						ids.append(c.id)
 		"customers":
 			CounterSchema._fields(value, {"names": "strings", "origin": "text", "redeem": "text", "extend": "text"}, path, at, issues)
 			if value.get("names") is Array and value.names.is_empty(): CounterDomainValidator._error(issues, at, "姓名池不能为空。")
@@ -31,6 +43,18 @@ static func domain(catalog: ContentCatalog) -> Array:
 	var issues: Array = []
 	for run: RunDefinition in catalog.get_all("runs"):
 		if run.variety.is_empty(): continue
+		if SevenNightPlan.enabled(run):
+			if run.total_nights != 7 or run.customer_slots.size() != 42 or not run.batch_selling or not run.market.is_empty(): CounterDomainValidator._error(issues, run.id, "七夜运行配置不一致。")
+			for id in run.variety.customer_ids:
+				if run.variety.contexts.filter(func(c: Dictionary) -> bool: return c.customer_id == id).size() != 2: CounterDomainValidator._error(issues, run.id, "每类人物须有两种处境。")
+			for c in run.variety.contexts:
+				var person := catalog.get_definition("customers", c.customer_id) as CustomerDefinition
+				if person == null: continue
+				for mode in c.transaction_modes:
+					if mode not in person.transaction_modes: CounterDomainValidator._error(issues, run.id, "处境不能扩展人物交易方式。")
+			for id in run.buyer_ids:
+				var buyer := catalog.get_definition("buyers", id) as BuyerDefinition
+				if buyer != null and (buyer.action_minutes != 20 or buyer.capacity_per_night != 0): CounterDomainValidator._error(issues, run.id, "七夜出货须为20分钟且不限件数。")
 		var ordinary: Array = []
 		for id in run.variety.customer_ids:
 			var customer := catalog.get_definition("customers", id) as CustomerDefinition

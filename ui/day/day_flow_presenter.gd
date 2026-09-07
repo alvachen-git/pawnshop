@@ -30,10 +30,24 @@ func refresh() -> void:
 	for action in definition.actions:
 		commands.append({"id": action.id, "label": "%s · %d 分钟" % [action.label, action.minutes], "enabled": _session.can_execute(action.id)})
 	commands.append({"id": "wait_until_seal", "label": "等到封铺（消耗全部剩余时间）", "enabled": _session.can_execute("wait_until_seal")})
+	if SevenNightPlan.enabled(definition):
+		for entry in commands:
+			if state.phase == "pre_open" and entry.id != "open_shop": entry.visible = false
+		commands.append({"id": "read_seven_notes", "label": "查看已知消息 · 不耗次数", "enabled": true, "visible": state.current_night_index >= 4})
+		for entry in [{"id": "prep_investigate", "label": "调查收货消息 · 准备1次"}, {"id": "prep_contact", "label": "联系收货人 · 准备1次"}, {"id": "prep_visitors", "label": "打听今晚来客 · 准备1次"}, {"id": "prep_finish", "label": "结束准备"}]:
+			entry.enabled = _session.can_execute(entry.id)
+			entry.visible = state.current_night_index >= 4 and state.phase == "pre_open"
+			commands.append(entry)
 	var appointment_hint := ""
 	if not state.buyer_appointment.is_empty(): appointment_hint = "\n" + OrdinarySamplePlan.notice(_session._day.state)
+	if SevenNightPlan.enabled(definition):
+		appointment_hint += "\n" + _session.seven_notice()
+		if state.current_night_index >= 4 and state.phase == "pre_open": appointment_hint = "\n今夜准备剩余%d次，开铺后不可返回。\n收货传闻与来客口信记在铺中记事里。" % (2 - PreparationService.count(_session._day.state))
 	var event_hint := "\n有待处理的铺中记事，请先查看。" if not state.pending_event_id.is_empty() else ""
-	_view.render({"description": "%s\n剩余 %d 分钟 · 查看面板不耗时\n点击柜台上的客人与货物进行接待。\n等待/店内行动也会让顾客继续等候。" % [PHASE_LABELS[state.phase], definition.night_minutes - int(state.game_minutes)] + event_hint + appointment_hint, "message": _session.message, "commands": commands})
+	var description := "%s\n剩余 %d 分钟 · 查看面板不耗时\n点击柜台上的客人与货物进行接待。\n等待/店内行动也会让顾客继续等候。" % [PHASE_LABELS[state.phase], definition.night_minutes - int(state.game_minutes)] + event_hint + appointment_hint
+	if SevenNightPlan.enabled(definition) and state.phase == "pre_open" and state.current_night_index >= 4:
+		description = "开铺前\n今夜准备剩余%d次，开铺后不可返回。\n收货与来客消息可免费复看。" % (2 - PreparationService.count(_session._day.state))
+	_view.render({"description": description, "message": _session.message, "commands": commands})
 	_session_menu.render({"has_save": _session.has_save(), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
 	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(definition.opening_minute, state.game_minutes), state.cash])
 	if state.phase != _last_phase:
@@ -41,6 +55,9 @@ func refresh() -> void:
 		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")
 
 func _on_command(command: String) -> void:
+	if command == "read_seven_notes":
+		route_requested.emit(&"events")
+		return
 	_session.execute(command)
 
 func _on_load() -> void:

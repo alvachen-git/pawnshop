@@ -33,7 +33,9 @@ func _ready() -> void:
 func render(model: Dictionary) -> void:
 	_description.text = model.description
 	_message.text = model.message
-	if _buttons.is_empty():
+	if _buttons.keys() != model.commands.map(func(entry: Dictionary) -> String: return entry.id):
+		for child in _commands.get_children(): _commands.remove_child(child); child.queue_free()
+		_buttons.clear()
 		for entry in model.commands:
 			var button := Button.new()
 			button.text = entry.label
@@ -42,4 +44,5 @@ func render(model: Dictionary) -> void:
 			_buttons[entry.id] = button
 	for entry in model.commands:
 		_buttons[entry.id].disabled = not entry.enabled
+		_buttons[entry.id].visible = entry.get("visible", true)
 		_buttons[entry.id].tooltip_text = "" if entry.enabled else "当前阶段不可用或剩余时间不足。"

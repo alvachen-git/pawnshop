@@ -13,7 +13,7 @@ func quote(item: ItemInstance, buyer: BuyerDefinition) -> int:
 	return base + ProvenanceService.premium(item, buyer, base)
 
 func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition) -> String:
-	if not day.definition.market.is_empty():
+	if day.definition.batch_selling:
 		var error := trip_reason(day, buyer)
 		return error if not error.is_empty() else item_reason(day, item, buyer)
 	if item == null or buyer == null or buyer.id not in day.definition.buyer_ids: return "物品或买家机会不存在。"
@@ -43,7 +43,7 @@ func execute(day: DayController, command: String, target: String, detail: String
 		var item_def := null if target_item == null else catalog.get_definition("items", target_item.definition_id) as ItemDefinition
 		return ProvenanceService.inquire(day, target_item, item_def)
 	if command != "sell": return ActionResult.new(false, "未知库存/当票操作。")
-	if not day.definition.market.is_empty(): return sell_batch(day, detail, [target])
+	if day.definition.batch_selling: return sell_batch(day, detail, [target])
 	var item := InventoryManager.new().find(day.state, target)
 	var buyer := catalog.get_definition("buyers", detail) as BuyerDefinition
 	var error := sale_reason(day, item, buyer)
@@ -59,6 +59,8 @@ func execute(day: DayController, command: String, target: String, detail: String
 
 func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition) -> String:
 	if item == null or buyer == null: return "物品或买家不存在。"
+	var appointment_error := PreparationService.item_reason(item, buyer.id)
+	if not appointment_error.is_empty(): return appointment_error
 	if item.ownership_state != "owned": return "只有铺中自有现货可以出售。"
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
@@ -67,6 +69,8 @@ func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 
 func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
 	if buyer == null or buyer.id not in day.definition.buyer_ids: return "买家不存在。"
+	var introduction := PreparationService.buyer_reason(day.state, buyer.id)
+	if not introduction.is_empty(): return introduction
 	for flag in buyer.required_flags:
 		if flag not in day.state.narrative_flags: return "尚未取得买家介绍；请查看铺中记事。"
 	if day.state.phase != &"open": return "开铺营业后才能交货。"
@@ -79,7 +83,7 @@ func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
 	return ""
 
 func sell_batch(day: DayController, buyer_id: String, item_ids: Array) -> ActionResult:
-	if day.definition.market.is_empty(): return ActionResult.new(false, "这局沿用逐件交货。")
+	if not day.definition.batch_selling: return ActionResult.new(false, "这局沿用逐件交货。")
 	var buyer := catalog.get_definition("buyers", buyer_id) as BuyerDefinition
 	var error := trip_reason(day, buyer)
 	if not error.is_empty(): return ActionResult.new(false, error)
@@ -110,5 +114,5 @@ func sell_batch(day: DayController, buyer_id: String, item_ids: Array) -> Action
 		item.ownership_state = "sold"
 		row.merge({"buyer_id": buyer_id, "night": day.state.current_night_index, "minute": day.state.game_minutes, "batch_id": batch_id})
 		day.state.sale_records.append(row)
-	day.state.sale_batches.append({"id": batch_id, "buyer_id": buyer_id, "item_ids": item_ids.duplicate(), "night": day.state.current_night_index, "start": start, "minute": day.state.game_minutes, "market_id": market.id})
+	day.state.sale_batches.append({"id": batch_id, "buyer_id": buyer_id, "item_ids": item_ids.duplicate(), "night": day.state.current_night_index, "start": start, "minute": day.state.game_minutes, "market_id": market.get("id", "fixed")})
 	return ActionResult.new(true, "交货%d件，收银%d；成本%d，交易毛利%+d。往返20分钟。" % [rows.size(), income, cost, income - cost])

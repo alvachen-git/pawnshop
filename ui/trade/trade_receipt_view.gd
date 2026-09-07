@@ -2,6 +2,7 @@ class_name TradeReceiptView
 extends Control
 
 signal dismissed(destination: String)
+var _caption: Label
 var _title: Label
 var _item: Label
 var _amount: Label
@@ -39,8 +40,8 @@ func _ready() -> void:
 	_paper.add_child(column)
 	var top := HBoxContainer.new()
 	column.add_child(top)
-	var caption := _label(top, "当 铺 · 成 交 凭 据", 16)
-	caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_caption = _label(top, "当 铺 · 成 交 凭 据", 16)
+	_caption.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_clock = _label(top, "", 14)
 	column.add_child(HSeparator.new())
 	_title = _label(column, "", 32)
@@ -102,6 +103,12 @@ func _label(parent: Node, text: String, font_size: int) -> Label:
 	return label
 
 func present(receipt: Dictionary) -> void:
+	var departure: bool = receipt.get("kind", "") == "departure"
+	_caption.text = "当 铺 · 接 待 结 果" if departure else "当 铺 · 成 交 凭 据"
+	_amount.visible = not departure
+	_cash.visible = not departure
+	_primary.text = receipt.get("primary_label", "收好凭据")
+	_title.add_theme_color_override("font_color", Color("82442e") if departure else Color("425440"))
 	_title.text = receipt.title
 	_item.text = receipt.item
 	_clock.text = receipt.clock

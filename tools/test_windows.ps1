@@ -35,6 +35,9 @@ try {
     Run-Test 'bargaining-variety-core' 'bargaining_variety_tests.gd'
     Run-Test 'integrated-variety' 'run_integrated_variety.gd'
     Run-Test 'four-night-core' 'run_four_night.gd'
+    Run-Test 'seven-night-core' 'run_seven_night.gd'
+    Run-Test 'seven-edges' 'seven_edge_tests.gd'
+    Run-Test 'departure-core' 'customer_departure_tests.gd'
     foreach ($suite in @('ui_smoke','scene_navigation_ui_smoke','m2_ui_smoke','m3_ui_smoke','m4_ui_smoke','m5_ui_smoke','art03_extension_ui_smoke')) {
         Run-Test $suite "$suite.gd" @() $false
     }
@@ -43,16 +46,22 @@ try {
         $sizeArgs = @(if ($wide) { 'wide' })
         Run-Test "variety-$size" 'variety_ui_smoke.gd' $sizeArgs $false
         Run-Test "market-$size" 'market_ui_smoke.gd' $sizeArgs $false
+        Run-Test "seven-$size" 'seven_ui_smoke.gd' (@('--seed=42') + $sizeArgs) $false
         Run-Test "four-$size" 'four_ui_smoke.gd' $sizeArgs $false
         Run-Test "title-menu-$size" 'title_menu_ui_smoke.gd' $sizeArgs $false
         Run-Test "pawn-$size" 'pawn_ui_smoke.gd' $sizeArgs $false
         Run-Test "room-$size" 'room_ui_smoke.gd' $sizeArgs $false
+        Run-Test "departure-$size" 'customer_departure_ui_smoke.gd' $sizeArgs $false
+        Run-Test "waiting-departure-$size" 'waiting_departure_ui_smoke.gd' $sizeArgs $false
         Run-Test "receipt-$size" 'receipt_ui_smoke.gd' $sizeArgs $false
         Run-Test "bargaining-$size" 'bargaining_ui_smoke.gd' $sizeArgs $false
         Run-Test "m7-$size" 'm7_ui_smoke.gd' $sizeArgs $false
         Run-Test "m6-production-$size" 'm6_ui_smoke.gd' (@('production') + $sizeArgs) $false
         Run-Test "accounts-$size" 'art03_ui_smoke.gd' $sizeArgs $false
         Run-Test "debt-production-$size" 'art03_debt_ui_smoke.gd' (@('production') + $sizeArgs) $false
+    }
+    foreach ($mode in @('prepare','sixth','room','sleep','seventh','finish','read')) {
+        Run-Test "seven-process-$mode" 'seven_checkpoint_process.gd' @($mode)
     }
     foreach ($mode in @('write','next','read')) {
         Run-Test "market-process-$mode" 'market_checkpoint_process.gd' @($mode)

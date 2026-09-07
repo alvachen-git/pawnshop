@@ -30,6 +30,9 @@ func load_state(definition: RunDefinition, content_version: int) -> RunState:
 	if parser.parse(file.get_as_text()) != OK:
 		error_message = "存档JSON损坏；原文件已保留。"
 		return null
+	if SevenNightPlan.enabled(definition) and (not parser.data is Dictionary or parser.data.get("run_definition_id") != definition.id or parser.data.get("content_version") != content_version):
+		error_message = "七夜局使用独立存档；其他局进度不迁入，原文件已保留。"
+		return null
 	if parser.data is Dictionary and content_version >= 10 and parser.data.get("content_version") == 9 and parser.data.get("run_definition_id") == "p0_room":
 		var result := JsonContentProvider.new("res://data/legacy/content_v9.json").load_catalog()
 		if result.catalog == null:

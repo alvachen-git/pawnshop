@@ -21,6 +21,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 			var buyer := service.catalog.get_definition("buyers", buyer_id) as BuyerDefinition
 			var reason := service.sale_reason(day, item, buyer)
 			var window := "%s–%s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end)]
+			if buyer.id == PreparationService.BUYER and not PreparationService.requirements_known(day.state): window = "第六夜，时段待打听"
 			var label := "%s → %s" % [definition.display_name, buyer.display_name]
 			if reason.is_empty(): label += "：%d · %d分钟" % [service.quote(item, buyer), buyer.action_minutes]
 			else: label += "：不可用"
@@ -50,7 +51,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 	ledger.body += "\n" + message
 	var model := {"inventory": inventory, "ledger": ledger}
 	CommerceVisualReadModels.enrich(model, day, service, message)
-	if not day.definition.market.is_empty(): model.inventory.sales = BatchSaleReadModel.build(day, service)
+	if day.definition.batch_selling: model.inventory.sales = BatchSaleReadModel.build(day, service)
 	return model
 
 static func _button(command: String, target: String, detail: String, label: String, reason: String) -> Dictionary:

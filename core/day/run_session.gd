@@ -44,15 +44,32 @@ func _init(run_definition: RunDefinition, version: int, save_manager: SaveManage
 func read_state() -> Dictionary:
 	return _day.state.to_read_model()
 
+func seven_notice() -> String:
+	if not SevenNightPlan.enabled(definition): return ""
+	var introductions := {1: "借据压在柜上：本金500银元，日息按剩余本金1%向上取整，另付铺费5银元。第21夜首期200银元可整笔延期；已付首期则第49夜还余款300，延期则届时还本金500及延期费100。日常短款只宽限至次夜夜末。\n旧掌柜留话：先看货，再听人说；现银交出去，便压在货里了。", 2: "杂货商常收旧物，瓷器收藏客19:00–22:00来收。出门交货往返20分钟，店里的客人可不会替你停住钟。", 3: "今夜起可办活当：期限3夜，赎金为本金加10%固定息费，息费向上取整。在当旧物须替原主保管。", 7: "七夜的账即将合拢。未卖的货、未到期的票与借据都照实留着，本金今夜不催收。"}
+	return String(introductions.get(_day.state.current_night_index, "")) + PreparationService.notice(_day.state, _counter.catalog)
+
 func has_save() -> bool:
 	return _save.exists()
 
 func can_execute(command: String) -> bool:
+	if command.begins_with("prep_"): return PreparationService.reason(_day.state, definition, command.trim_prefix("prep_")).is_empty()
+	if command == "open_shop" and SevenNightPlan.enabled(definition) and _day.state.current_night_index >= 4 and not PreparationService.used(_day.state, "finish", _day.state.current_night_index): return false
 	if not PawnReturnService.current(_day.state).is_empty(): return false
 	if command == "resolve_night" and _commerce != null and not _commerce.pawns.disposal_reason(_day.state, _commerce.catalog, _pawn_choices).is_empty(): return false
 	return _day.state.risk_pending.is_empty() and _day.state.phase not in [&"dead", &"bankrupt"] and _day.state.pending_event_id.is_empty() and not mirror_pending() and (_day.can_execute(command) or RoomFlow.can_execute(_day.state, command))
 
 func execute(command: String) -> ActionResult:
+	if command.begins_with("prep_"):
+		var previous := _copy_state(_day.state)
+		var prepared := PreparationService.perform(_day.state, definition, command.trim_prefix("prep_"))
+		if prepared.ok and not _save.save_state(_day.state, definition, content_version):
+			_day.state = previous
+			prepared = ActionResult.new(false, "准备未记下，请重试。" + _save.error_message)
+		message = prepared.message
+		changed.emit()
+		return prepared
+	if command == "open_shop" and not can_execute(command): return ActionResult.new(false, "请先结束准备并处理眼前的事情。")
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
@@ -72,6 +89,7 @@ func execute(command: String) -> ActionResult:
 	if command == "resolve_night" and not mirror_pending() and _day.can_execute(command) and _commerce != null:
 		_commerce.pawns.resolve_maturities(_day.state, definition.night_minutes, _commerce.catalog, _pawn_choices)
 	if command == "resolve_night" and _day.can_execute(command): FeeService.settle(_day.state, definition)
+	var prior_visitor: CustomerVisit = _counter.customers.active(_day.state) if _counter != null else null
 	var result := RoomFlow.execute(_day.state, _risk, command) if command in ["enter_room", "sleep", "finish_sleep"] else _day.execute(command)
 	if result.ok and _risk != null:
 		_risk.capture_close(_day.state)
@@ -83,6 +101,7 @@ func execute(command: String) -> ActionResult:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
 			_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 		_counter.customers.update(_day.state)
+	if result.ok and prior_visitor != null and prior_visitor.status == "timed_out" and prior_visitor.voice.has("timed_out"): result.message += "\n" + String(prior_visitor.voice.timed_out)
 	if result.ok and _events != null: _events.poll(_day.state, definition)
 	MarketService.sync(_day.state, definition)
 	if result.ok and checkpoint:
@@ -209,7 +228,7 @@ func commerce_command(command: String, target: String, detail := "") -> ActionRe
 	return result
 
 func _emit_receipt(previous_size: int) -> void:
-	if not definition.market.is_empty() and _day.state.ledger_entries.size() > previous_size and _day.state.ledger_entries[previous_size].kind == "sale":
+	if definition.batch_selling and _day.state.ledger_entries.size() > previous_size and _day.state.ledger_entries[previous_size].kind == "sale":
 		transaction_completed.emit(TradeReceiptModel.batch(_day, _counter.catalog, previous_size))
 		return
 	# A rejected quote can return ok=true. A new ledger posting, rather than
@@ -232,7 +251,9 @@ func sell_batch(buyer_id: String, item_ids: Array) -> ActionResult:
 	return result
 
 func event_model() -> Dictionary:
-	return _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}
+	var model: Dictionary = _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}
+	if SevenNightPlan.enabled(definition): model.body += "\n\n" + seven_notice()
+	return model
 
 func event_command(event_id: String, choice_id: String) -> ActionResult:
 	if mirror_pending(): return _mirror_blocked()

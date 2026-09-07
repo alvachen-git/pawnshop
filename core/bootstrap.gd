@@ -21,7 +21,7 @@ func initialize() -> ContentLoadResult:
 			result.issues.append(ContentIssue.new("error", "missing_run", manifest_path, "default_run_id", "缺少默认运行定义。"))
 			content_failed.emit(result.issues)
 			return result
-		if OrdinarySamplePlan.enabled(definition):
+		if OrdinarySamplePlan.enabled(definition) or SevenNightPlan.enabled(definition):
 			for argument in OS.get_cmdline_user_args():
 				if argument.begins_with("--seed=") and argument.trim_prefix("--seed=").is_valid_int():
 					definition._seed = int(argument.trim_prefix("--seed=")) & 0x7fffffff
@@ -53,7 +53,8 @@ func initialize() -> ContentLoadResult:
 			saves.legacy_archive_path = "user://p0/autosave.json"
 			saves.prior_version_path = "user://p0/autosave_v6.json"
 		session = RunSession.new(definition, catalog.content_version, saves, catalog)
-		if OrdinarySamplePlan.enabled(definition): print("FOUR NIGHT SEED: ", session.read_state().run_seed)
+		if OrdinarySamplePlan.enabled(definition) or SevenNightPlan.enabled(definition): print("RUN SEED: ", session.read_state().run_seed)
+		if SevenNightPlan.enabled(definition) and "--log-plan" in OS.get_cmdline_user_args(): print("SEVEN VISIT PLAN: ", JSON.stringify(session.read_state().seven_plan))
 		content_ready.emit(catalog)
 	else:
 		content_failed.emit(result.issues)

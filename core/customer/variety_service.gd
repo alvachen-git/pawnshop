@@ -10,6 +10,7 @@ static func pick(values: Array, seed_value: int, key: String) -> Variant:
 	return values[rng(seed_value, key).randi_range(0, values.size() - 1)]
 
 static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -> Array[Dictionary]:
+	if SevenNightPlan.enabled(run): return SevenNightPlan.plan(run, catalog, seed_value)
 	var result: Array[Dictionary] = []
 	if run.variety.is_empty(): return result
 	var names: Array = []
@@ -56,7 +57,8 @@ static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -
 	return OrdinarySamplePlan.apply(result, run, catalog, seed_value) if OrdinarySamplePlan.enabled(run) else result
 
 static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog, delay: int) -> void:
-	var rows := plan(run, catalog, state.run_seed)
+	var rows: Array[Dictionary] = state.seven_plan if SevenNightPlan.enabled(run) and not state.seven_plan.is_empty() else plan(run, catalog, state.run_seed)
+	if SevenNightPlan.enabled(run): state.seven_plan.assign(rows)
 	if OrdinarySamplePlan.enabled(run):
 		state.sample_plan.assign(rows)
 		state.buyer_appointment = OrdinarySamplePlan.appointment(rows, catalog, state.run_seed)
@@ -69,7 +71,8 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		visit.visit_id = row.visit_id
 		visit.customer_id = row.customer_id
 		visit.person = row.person.duplicate(true)
-		visit.voice = customer.persona
+		visit.voice = customer.persona.duplicate(true)
+		if SevenNightPlan.enabled(run): visit.voice.merge(SevenNightPlan.context(run, row.context_id).voice, true)
 		if not item.provenance.is_empty(): visit.voice["source_claim"] = item.provenance.claim
 		visit.pawn_terms_id = row.terms_id
 		visit.arrival = int(row.arrival) + delay
@@ -96,6 +99,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		visit.transaction_modes.assign(row.get("transaction_modes", customer.transaction_modes))
 		if row.get("sample_role") == "pawn": visit.voice["introduction"] = "这件旧物舍不得卖。我只办活当，三夜后带票来赎。"
 		if row.get("sample_role") == "urgent": visit.voice["introduction"] = "车子不等人。我只留三十分钟，掌柜挑要紧的看。"
+		if row.get("seven_role") == "pawn": visit.voice["introduction"] += "\n只办活当，三夜后我带票来赎。"
 		state.visits.append(visit)
 	state.visits.sort_custom(func(a: CustomerVisit, b: CustomerVisit) -> bool: return a.arrival < b.arrival)
 

@@ -104,7 +104,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	day.spend_action(cost)
 	customers.update(day.state)
 	# An action taking us to the customer's deadline or sealing time has no late effect.
-	if visit.status != "active": return ActionResult.new(false, "消耗 %d 分钟，但顾客在完成前已离场；未取得证据或成交。" % cost)
+	if visit.status != "active": return ActionResult.new(false, "消耗 %d 分钟，但顾客在完成前已离场；未取得证据或成交。" % cost + ("\n" + String(visit.voice.timed_out) if visit.voice.has("timed_out") else ""))
 	var message := ""
 	match command:
 		"verify_source":
@@ -126,7 +126,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"concession": message = TradeScenarioService.concede(visit, scenario)
 		"reject":
 			customers.finish(day.state, visit, "rejected")
-			message = "拒绝收货，送客消耗 %d 分钟。" % cost
+			message = (String(visit.voice.rejected) + "\n" if visit.voice.has("rejected") else "") + "拒绝收货，送客消耗 %d 分钟。" % cost
 		"belittle": message = BelittleService.apply(visit, customer)
 		"pressure":
 			var before := visit.trade.asking_price
@@ -135,6 +135,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 			message = clue.bargain_response
 			if message.is_empty(): message = String(visit.voice.get("bargain" if valid else "false_pressure", ""))
 			if message.is_empty(): message = "他仔细看了那处：“这毛病确实在，价钱可以再谈。”" if valid else "他摇摇头：“这只能说明东西的来路和样子，算不上毛病。”"
+			if visit.voice.has("bargain_context"): message = String(visit.voice.bargain_context) + "\n" + message
 			message += "\n要价 %d → %d 银元。" % [before, visit.trade.asking_price]
 			if not valid: message += " 他显得不耐烦了。"
 		"offer", "pawn":
@@ -145,12 +146,12 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 					PawnController.new().issue(day.state, visit, terms, amount)
 					customers.finish(day.state, visit, "pawned")
 					customers.update(day.state)
-					return ActionResult.new(true, "活当放款 %d；当票已生成，在当物品不可出售。" % amount)
+					return ActionResult.new(true, (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "活当放款 %d；当票已生成，在当物品不可出售。" % amount)
 				# All guards have passed. These synchronous, non-failing writes emit no signals mid-commit.
 				economy.pay_acquisition(day.state, amount, visit.item.instance_id, "purchase/" + visit_id)
 				inventory.acquire(day.state, visit.item, visit_id, amount)
 				customers.finish(day.state, visit, "bought")
-				message = "成交：支付 %d，物品已入库。估值不等于现金，尚未出售。" % amount
+				message = (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "成交：支付 %d，物品已入库。估值不等于现金，尚未出售。" % amount
 			else:
 				message = String(visit.voice.get("refused", "对方拒绝了报价，提出新的要价。"))
 	if visit.status == "active":

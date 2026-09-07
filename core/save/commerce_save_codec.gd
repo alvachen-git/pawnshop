@@ -73,10 +73,12 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var quota := "%d/%s" % [int(row.night), buyer.id]
 		buyer_counts[quota] = buyer_counts.get(quota, 0) + 1
 		if buyer.capacity_per_night > 0 and buyer_counts[quota] > buyer.capacity_per_night: return "买家收货额度超限。"
+		if buyer.id == PreparationService.BUYER:
+			if not PreparationService.buyer_reason(state, buyer.id).is_empty() or not PreparationService.item_reason(item, buyer.id).is_empty(): return "预约销售缺少介绍或货物不符。"
 		var market_error := MarketSaveCodec.sale_reason(row, state, run, buyer, definition)
 		if not market_error.is_empty(): return market_error
 		var normalized := {"item_instance_id": String(row.item_instance_id), "buyer_id": String(row.buyer_id)}
-		if not run.market.is_empty(): normalized.batch_id = row.batch_id
+		if run.batch_selling: normalized.batch_id = row.batch_id
 		for key in ["night", "minute", "price", "cost_basis", "realized_profit"]: normalized[key] = int(row[key])
 		state.sale_records.append(normalized)
 		sales[item.instance_id] = normalized
