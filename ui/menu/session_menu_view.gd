@@ -1,10 +1,15 @@
 class_name SessionMenuView
 extends PanelContainer
 
+signal save_requested
+signal leave_requested(destination: String)
 signal new_requested
 signal load_requested
 signal panel_requested(panel_id: StringName)
 
+var _save_button: Button
+var _leave_buttons: Array[Button] = []
+var _manual_storage := false
 var _confirmation: ConfirmationDialog
 var _pending_intent := ""
 var _error_dialog: AcceptDialog
@@ -12,7 +17,21 @@ var _error_dialog: AcceptDialog
 
 func _ready() -> void:
 	%NewRunButton.pressed.connect(_confirm.bind("new"))
-	%LoadRunButton.pressed.connect(_confirm.bind("load"))
+	%LoadRunButton.pressed.connect(func() -> void:
+		if _manual_storage: hide(); load_requested.emit()
+		else: _confirm("load")
+	)
+	_save_button = Button.new()
+	_save_button.text = "保存游戏"
+	_save_button.pressed.connect(func() -> void: hide(); save_requested.emit())
+	%LoadRunButton.get_parent().add_child(_save_button)
+	%LoadRunButton.get_parent().move_child(_save_button, %LoadRunButton.get_index())
+	for destination in ["title", "quit"]:
+		var button := Button.new()
+		button.text = "返回主菜单" if destination == "title" else "退出游戏"
+		button.pressed.connect(func() -> void: hide(); leave_requested.emit(destination))
+		%LoadRunButton.get_parent().add_child(button)
+		_leave_buttons.append(button)
 	%EventButton.pressed.connect(_route.bind(&"events"))
 	%RiskButton.pressed.connect(_route.bind(&"risk"))
 	%NightButton.pressed.connect(_route.bind(&"night"))
@@ -26,6 +45,11 @@ func _ready() -> void:
 
 
 func render(model: Dictionary) -> void:
+	_manual_storage = model.get("manual_storage", false)
+	_save_button.visible = _manual_storage
+	_save_button.disabled = not model.get("save_reason", "").is_empty()
+	_save_button.tooltip_text = model.get("save_reason", "")
+	for button in _leave_buttons: button.visible = _manual_storage
 	%EventButton.visible = not model.get("in_room", false)
 	%NightButton.visible = not model.get("in_room", false)
 	%LoadRunButton.text = "读取存档" if model.get("room_flow", false) else "读取夜末存档"

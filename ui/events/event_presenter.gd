@@ -11,6 +11,7 @@ func bind(session: RunSession, view: EventPanel) -> void:
 	_view = view
 	_view.intent.connect(_choose)
 	_session.changed.connect(refresh)
+	_session.restored.connect(func() -> void: _pending = "")
 	refresh()
 
 func refresh() -> void:

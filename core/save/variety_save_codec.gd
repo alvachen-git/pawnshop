@@ -63,7 +63,7 @@ static func restore_sources(data: Dictionary, state: RunState, run: RunDefinitio
 		var def := catalog.get_definition("items", item.definition_id) as ItemDefinition
 		if def.provenance.is_empty(): return "此物没有来源调查内容。"
 		var stamp := int(row.night) * (run.night_minutes + 1) + int(row.start)
-		if row.night < 1 or row.night > state.summaries.size() or row.start < 0 or row.minute > state.summaries[int(row.night)-1].closed_at or row.minute >= run.night_minutes or int(row.start) % run.time_step != 0 or stamp < last_stamp: return "来源调查时刻无效。"
+		if row.night < 1 or row.night > SaveTimeline.trading_nights(state) or row.start < 0 or row.minute > SaveTimeline.closing(state, int(row.night)) or row.minute >= run.night_minutes or int(row.start) % run.time_step != 0 or stamp < last_stamp: return "来源调查时刻无效。"
 		if row.action == "counter":
 			var visit: CustomerVisit = visits[visit_id]
 			if item.provenance.status != "unchecked" or row.minute != row.start + int(def.provenance.check_minutes) or row.start < visit.arrival or row.minute >= visit.expires_at or selection(state, visit_id).night != row.night: return "来源核验不在实际接待时段。"

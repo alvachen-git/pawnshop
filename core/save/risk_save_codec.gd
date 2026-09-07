@@ -38,7 +38,9 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var night := int(row.night)
 		var minute := int(row.minute)
 		var stamp := night * (run.night_minutes + 1) + minute
-		if night < 1 or night > state.summaries.size() or minute < 0 or minute > run.night_minutes or minute % run.time_step != 0 or stamp < last_stamp: return "鬼货处理时刻无效。"
+		if night == state.current_night_index and minute > state.game_minutes: return "鬼货处理晚于保存时刻。"
+		if SaveTimeline.unsettled(state) and night == state.current_night_index and row.action in ["retreat", "defy"]: return "未结算时不能已有夜间应对。"
+		if night < 1 or night > SaveTimeline.trading_nights(state) or minute < 0 or minute > run.night_minutes or minute % run.time_step != 0 or stamp < last_stamp: return "鬼货处理时刻无效。"
 		last_stamp = stamp
 		var item := InventoryManager.new().find(state, row.item_id)
 		var pursuit := MirrorEncounterService.pursuit(state, night)
@@ -46,7 +48,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if item == null or manager.rule_for(item) == null or (not manager.held_at(state, item, night, minute) and not (personal and row.action in ["retreat", "defy"])): return "鬼货处理没有对应持有物。"
 		var key := "%d/%s" % [night, row.item_id]
 		var cloth := manager.covered(state, row.item_id)
-		var closing: int = state.summaries[night - 1].closed_at
+		var closing: int = SaveTimeline.closing(state, night)
 		match row.action:
 			"close":
 				if closes.has(key) or minute != closing or not row.get("covered") is bool or row.covered != cloth: return "关门鬼货快照不一致。"
@@ -70,14 +72,16 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		copy.night = night
 		copy.minute = minute
 		state.risk_history.append(copy)
-	for night in range(1, state.summaries.size() + 1):
+	for night in range(1, SaveTimeline.trading_nights(state) + 1):
 		for item in manager.ghosts(state):
-			if manager.held_at(state, item, night, state.summaries[night - 1].closed_at) and not closes.has("%d/%s" % [night, item.instance_id]): return "缺少关门鬼货检查。"
+			if manager.held_at(state, item, night, SaveTimeline.closing(state, night)) and not closes.has("%d/%s" % [night, item.instance_id]): return "缺少关门鬼货检查。"
+		if night > state.summaries.size(): continue
 		if run.private_room: continue # RoomSaveCodec replays both risk stages and their outcomes.
 		var outcome := manager.night_outcome(state, night)
 		if responses.has(night): outcome = "mirror_death" if responses[night] == "defy" else "mirror_survived"
 		if state.summaries[night - 1].outcome != outcome: return "鬼货结果与处理历史不符。"
 		if outcome in ["mirror_death", "mirror_pending"] and (night != state.current_night_index or state.phase != (&"dead" if outcome == "mirror_death" else &"day_summary")): return "未解决的鬼货结果不能推进。"
+	if SaveTimeline.unsettled(state) and not data.risk_pending.is_empty(): return "尚未结算不能带有夜间危机。"
 	var expected := ""
 	if run.private_room: expected = data.risk_pending
 	elif not state.summaries.is_empty() and state.summaries.back().outcome == "mirror_pending":

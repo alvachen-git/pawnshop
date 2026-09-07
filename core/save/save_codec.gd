@@ -12,7 +12,7 @@ func encode(state: RunState, content_version: int) -> Dictionary:
 	data.content_version = content_version
 	return data
 
-func decode(data: Variant, definition: RunDefinition, content_version: int, catalog: ContentCatalog = null) -> RunState:
+func decode(data: Variant, definition: RunDefinition, content_version: int, catalog: ContentCatalog = null, extended := false) -> RunState:
 	error_message = "存档结构损坏或状态不一致。"
 	if not data is Dictionary:
 		return null
@@ -36,7 +36,7 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	if data.get("run_definition_id") != definition.id:
 		error_message = "存档运行配置不存在或不匹配。"
 		return null
-	if data.get("phase") not in CHECKPOINTS or not data.get("summaries") is Array:
+	if data.get("phase") not in (CHECKPOINTS + SaveTimeline.UNSETTLED if extended else CHECKPOINTS) or not data.get("summaries") is Array:
 		return null
 	if data.pawn_rules_start_night > data.summaries.size() + 1: return null
 	if not data.get("room_history", []) is Array: return null
@@ -49,7 +49,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		return null
 	if data.action_count < 0 or data.action_count > definition.night_minutes / definition.time_step:
 		return null
-	var settled: bool = data.phase != "pre_open"
+	var partial: bool = extended and data.phase in SaveTimeline.UNSETTLED
+	var settled: bool = data.phase != "pre_open" and not partial
 	if data.summaries.size() != (night if settled else night - 1):
 		return null
 	if settled:
@@ -57,6 +58,9 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 			return null
 		if data.phase == "run_ended" and night != definition.total_nights:
 			return null
+	elif partial:
+		if elapsed < 0 or elapsed > definition.night_minutes or elapsed % definition.time_step != 0 or closed < 0 or closed > elapsed or closed % definition.time_step != 0: return null
+		if (data.phase == "night_resolution") != (elapsed == definition.night_minutes): return null
 	elif elapsed != 0 or closed != -1 or data.action_count != 0:
 		return null
 	var previous_cash := definition.initial_cash
@@ -72,13 +76,13 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		if entry.closed_at > definition.night_minutes or int(entry.closed_at) % definition.time_step != 0 or entry.action_count < 1 or entry.action_count > definition.night_minutes / definition.time_step:
 			return null
 		previous_cash = int(entry.closing_cash)
-	if data.cash != previous_cash:
+	if (data.night_opening_cash if partial else data.cash) != previous_cash:
 		return null
 	if settled:
 		var last: Dictionary = data.summaries.back()
 		if last.opening_cash != data.night_opening_cash or last.closed_at != closed or last.action_count != data.action_count:
 			return null
-	elif data.night_opening_cash != data.cash:
+	elif not partial and data.night_opening_cash != data.cash:
 		return null
 	var state := RunState.new()
 	state.run_definition_id = definition.id

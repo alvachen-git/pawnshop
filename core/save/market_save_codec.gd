@@ -20,7 +20,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition) -> St
 	var sold: Array = []
 	for row in data.sale_batches:
 		if not row is Dictionary or row.size() != 7 or not CounterSaveCodec._text_fields(row, ["id", "buyer_id", "market_id"]) or not CounterSaveCodec._integers(row, ["night", "start", "minute"]) or not CounterSaveCodec._string_array(row.get("item_ids")): return "出货批次结构无效。"
-		if row.id != "batch/%d" % (state.sale_batches.size() + 1) or row.item_ids.is_empty() or row.night < 1 or row.night > state.summaries.size() or row.start < 0 or int(row.start) % run.time_step != 0 or row.minute != row.start + 20 or row.minute >= run.night_minutes or row.minute > state.summaries[int(row.night) - 1].closed_at: return "出货批次时刻、货单或顺序无效。"
+		if row.id != "batch/%d" % (state.sale_batches.size() + 1) or row.item_ids.is_empty() or row.night < 1 or row.night > SaveTimeline.trading_nights(state) or row.start < 0 or int(row.start) % run.time_step != 0 or row.minute != row.start + 20 or row.minute >= run.night_minutes or row.minute > SaveTimeline.closing(state, int(row.night)): return "出货批次时刻、货单或顺序无效。"
 		var stamp := int(row.night) * (run.night_minutes + 1)
 		if stamp + int(row.start) < last_end: return "多趟出货耗时重叠。"
 		last_end = stamp + int(row.minute)

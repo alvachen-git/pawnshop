@@ -2,6 +2,7 @@ extends Node
 
 @export var start_at_title := false
 var title_menu: TitleMenuView
+var storage: SaveLibraryView
 
 @onready var _bootstrap: Bootstrap = $Bootstrap
 @onready var _counter_screen: CounterScreen = $CounterScreen
@@ -16,7 +17,17 @@ func _ready() -> void:
 	_bootstrap.initialize()
 	if _bootstrap.session != null:
 		_counter_screen.bind_session(_bootstrap.session)
+	if _bootstrap.session != null and _bootstrap.session._save.library != null:
+		storage = SaveLibraryView.new()
+		add_child(storage)
+		storage.bind(_bootstrap.session)
+		storage.loaded.connect(_enter_game)
+		storage.leave_confirmed.connect(_leave)
+		get_tree().auto_accept_quit = false
 	if start_at_title:
+		_show_title()
+
+func _show_title() -> void:
 		title_menu = TitleMenuView.new()
 		title_menu.name = "TitleMenu"
 		add_child(title_menu)
@@ -33,6 +44,9 @@ func _start_new_game() -> void:
 
 
 func _load_game() -> void:
+	if storage != null:
+		storage.open("load")
+		return
 	if _bootstrap.session == null: return
 	var result := _bootstrap.session.load_checkpoint()
 	if result.ok: _enter_game()
@@ -49,4 +63,15 @@ func _enter_game() -> void:
 
 
 func _exit_game() -> void:
-	get_tree().quit()
+	if storage != null and not is_instance_valid(title_menu): storage.request_leave("quit")
+	else: get_tree().quit()
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST: _exit_game()
+
+func _leave(destination: String) -> void:
+	if destination == "quit": get_tree().quit(); return
+	storage.close()
+	_counter_screen.hide()
+	_counter_screen.process_mode = Node.PROCESS_MODE_DISABLED
+	_show_title()

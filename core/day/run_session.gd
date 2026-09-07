@@ -1,6 +1,9 @@
 class_name RunSession
 extends RefCounted
 
+signal restored
+signal storage_requested(mode: String)
+signal leave_requested(destination: String)
 signal changed
 signal transaction_completed(receipt: Dictionary)
 
@@ -123,6 +126,11 @@ func execute(command: String) -> ActionResult:
 	return result
 
 func load_checkpoint() -> ActionResult:
+	if _save.library != null:
+		var state := _save.load_state(definition, content_version)
+		if state == null: return ActionResult.new(false, _save.error_message)
+		var ok := _save.library.adopt({"state": state, "run": _save.loaded_definition, "catalog": _save.loaded_catalog}, self)
+		return ActionResult.new(ok, message if ok else _save.library.error_message)
 	_risk_error = ""
 	var restored := _save.load_state(definition, content_version)
 	var result := ActionResult.new(restored != null, "账册翻回了上次合拢的那一页。" if restored != null else _save.error_message)

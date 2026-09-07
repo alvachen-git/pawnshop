@@ -1,0 +1,107 @@
+[
+  {
+    "name": "manual-core",
+    "passed": true,
+    "summary": [
+      "MANUAL SAVE TESTS: 1163 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "manual-process-write",
+    "passed": true,
+    "summary": [
+      "MANUAL PROCESS TESTS write: 41 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "manual-process-read",
+    "passed": true,
+    "summary": [
+      "MANUAL PROCESS TESTS read: 23 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "manual-process-continue",
+    "passed": true,
+    "summary": [
+      "MANUAL PROCESS TESTS continue: 62 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "manual-process-read_final",
+    "passed": true,
+    "summary": [
+      "MANUAL PROCESS TESTS read_final: 4 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "manual-ui-small",
+    "passed": true,
+    "summary": [
+      "MANUAL SAVE UI TESTS: 82 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "manual-ui-wide",
+    "passed": true,
+    "summary": [
+      "MANUAL SAVE UI TESTS: 82 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "opening-core",
+    "passed": true,
+    "summary": [
+      "OPENING TESTS: 100 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "opening-ui-small",
+    "passed": true,
+    "summary": [
+      "OPENING UI: 94 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "opening-ui-wide",
+    "passed": true,
+    "summary": [
+      "OPENING UI: 94 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "room-final",
+    "passed": true,
+    "summary": [
+      "ROOM TESTS: 701 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "title_menu-ui-small",
+    "passed": true,
+    "summary": [
+      "TITLE MENU UI TESTS: 52 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "title_menu-ui-wide",
+    "passed": true,
+    "summary": [
+      "TITLE MENU UI TESTS: 52 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "room-ui-small",
+    "passed": true,
+    "summary": [
+      "ROOM UI TESTS: 279 assertions, 0 failures\r"
+    ]
+  },
+  {
+    "name": "room-ui-wide",
+    "passed": true,
+    "summary": [
+      "ROOM UI TESTS: 279 assertions, 0 failures\r"
+    ]
+  }
+]
