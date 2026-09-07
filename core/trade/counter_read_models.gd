@@ -4,7 +4,7 @@ extends RefCounted
 const JUDGEMENTS := {"unknown": "暂不判断", "sound": "完好真品", "damaged": "有修补/瑕疵", "fake": "仿制/材质不符"}
 const OUTCOMES := {"bought": "成交", "pawned": "活当放款", "rejected": "拒收", "timed_out": "等候超时离场", "shop_closed": "关铺失去机会", "patience_exhausted": "耐心耗尽", "rounds_exhausted": "议价结束"}
 
-static func build(day: DayController, service: CounterService, message: String) -> Dictionary:
+static func build(day: DayController, service: CounterService, message: String, message_visit_id := "") -> Dictionary:
 	var blank := {"body": "暂无正在接待的顾客。\n请在营业页开铺或等待来客。", "buttons": [], "visit_id": ""}
 	var model := {"active_id": "", "customer": "顾客席 · 暂无顾客", "item": "柜台暂空", "queue": "", "context_actions": {"customer": [], "item": []}, "appraisal": blank.duplicate(true), "dialogue": blank.duplicate(true), "trade": blank.duplicate(true), "inventory": {"body": "库存为空。"}, "ledger": {"body": "暂无收购流水。"}}
 	model.trade.can_offer = false
@@ -32,6 +32,9 @@ static func build(day: DayController, service: CounterService, message: String) 
 		if int(last.night) == state.current_night_index and not who.is_empty():
 			model.queue += "\n%s · %s：%s" % [TimeController.clock_text(day.definition.opening_minute, int(last.minute)), who, OUTCOMES[last.outcome]]
 	var visit := service.customers.active(state)
+	# A completed action may have moved the queue to another customer already.
+	# Keep its result in the departure/receipt flow, not in the new reception.
+	if not message_visit_id.is_empty() and (visit == null or visit.visit_id != message_visit_id): message = ""
 	if visit == null:
 		for feature in ["appraisal", "dialogue", "trade"]: model[feature].body += "\n\n" + message
 		return model

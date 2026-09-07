@@ -6,7 +6,12 @@ signal transaction_completed(receipt: Dictionary)
 
 var definition: RunDefinition
 var content_version: int
-var message := "开铺前准备。查看面板不耗时；开铺后可接待顾客。"
+# Transient feedback ownership; never serialized into the player's save.
+var _message_visit_id := ""
+var message := "开铺前准备。查看面板不耗时；开铺后可接待顾客。":
+	set(value):
+		message = value
+		_message_visit_id = ""
 var _day: DayController
 var _save: SaveManager
 var _counter: CounterService
@@ -112,6 +117,7 @@ func execute(command: String) -> ActionResult:
 			result.message = "这一夜的账，记下了。"
 	if result.ok and command == "resolve_night": _pawn_choices.clear()
 	message = result.message
+	if prior_visitor != null and prior_visitor.status == "timed_out": _message_visit_id = prior_visitor.visit_id
 	MarketService.sync(_day.state, definition)
 	changed.emit()
 	return result
@@ -191,13 +197,14 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
+	_message_visit_id = visit_id
 	MarketService.sync(_day.state, definition)
 	changed.emit()
 	_emit_receipt(ledger_size)
 	return result
 
 func counter_model() -> Dictionary:
-	var model := CounterReadModels.build(_day, _counter, message)
+	var model := CounterReadModels.build(_day, _counter, message, _message_visit_id)
 	PawnReturnReadModels.enrich(model, _day, _commerce)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
 	if not _day.state.pending_event_id.is_empty() or mirror_pending() or _day.state.phase in [&"dead", &"bankrupt"]:

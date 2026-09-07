@@ -38,6 +38,7 @@ try {
     Run-Test 'seven-night-core' 'run_seven_night.gd'
     Run-Test 'seven-edges' 'seven_edge_tests.gd'
     Run-Test 'departure-core' 'customer_departure_tests.gd'
+    Run-Test 'reception-feedback-core' 'reception_feedback_tests.gd'
     foreach ($suite in @('ui_smoke','scene_navigation_ui_smoke','m2_ui_smoke','m3_ui_smoke','m4_ui_smoke','m5_ui_smoke','art03_extension_ui_smoke')) {
         Run-Test $suite "$suite.gd" @() $false
     }
@@ -52,6 +53,7 @@ try {
         Run-Test "pawn-$size" 'pawn_ui_smoke.gd' $sizeArgs $false
         Run-Test "room-$size" 'room_ui_smoke.gd' $sizeArgs $false
         Run-Test "departure-$size" 'customer_departure_ui_smoke.gd' $sizeArgs $false
+        Run-Test "reception-feedback-$size" 'reception_feedback_ui_smoke.gd' $sizeArgs $false
         Run-Test "waiting-departure-$size" 'waiting_departure_ui_smoke.gd' $sizeArgs $false
         Run-Test "receipt-$size" 'receipt_ui_smoke.gd' $sizeArgs $false
         Run-Test "bargaining-$size" 'bargaining_ui_smoke.gd' $sizeArgs $false
