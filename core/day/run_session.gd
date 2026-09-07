@@ -266,10 +266,17 @@ func event_command(event_id: String, choice_id: String) -> ActionResult:
 	if mirror_pending(): return _mirror_blocked()
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	var result := ActionResult.new(false, "没有事件内容。")
+	var previous := _copy_state(_day.state)
+	var checkpoint := false
 	if _events != null:
+		var event := _events.catalog.get_definition("events", event_id) as EventDefinition
+		checkpoint = event != null and event.presentation.get("checkpoint", false) and String(_day.state.phase) in SaveCodec.CHECKPOINTS
 		result = _events.choose(_day, event_id, choice_id)
 		if result.ok and _counter != null: _counter.customers.update(_day.state)
 	if _risk != null: _risk.capture_close(_day.state)
+	if result.ok and checkpoint and not _save.save_state(_day.state, definition, content_version):
+		_day.state = previous
+		result = ActionResult.new(false, "未推进；请重试。" + _save.error_message)
 	message = result.message
 	MarketService.sync(_day.state, definition)
 	changed.emit()

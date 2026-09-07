@@ -45,7 +45,7 @@ func _enter_game() -> void:
 	if is_instance_valid(title_menu):
 		title_menu.hide()
 		title_menu.queue_free()
-	_counter_screen.get_node("%MenuButton").grab_focus()
+	_counter_screen.focus_active_screen()
 
 
 func _exit_game() -> void:

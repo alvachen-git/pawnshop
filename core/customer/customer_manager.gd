@@ -39,6 +39,9 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 		visit.trade.reserve_price = maxi(1, int(round(visit.trade.opening_price * customer.terms.reserve_ratio)))
 		visit.trade.rounds_left = customer.max_quote_rounds
 		visit.trade.patience = customer.patience
+		# A visit may reserve extra attempts without changing quote acceptance.
+		visit.trade.rounds_left = maxi(visit.trade.rounds_left, int(slot.tutorial.get("min_quote_rounds", 0)))
+		visit.trade.patience = maxi(visit.trade.patience, int(slot.tutorial.get("min_patience", 0)))
 		var scenario := TradeScenarioService.for_slot(run, slot.id)
 		if scenario != null:
 			TradeScenarioService.prepare(visit, scenario, state.run_seed)

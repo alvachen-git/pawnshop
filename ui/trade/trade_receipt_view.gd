@@ -16,6 +16,10 @@ var _secondary: Button
 var _paper: PanelContainer
 var _destination := ""
 var _tween: Tween
+var _needs_stamp := false
+var _stamp: Label
+var _stamp_sound: AudioStreamPlayer
+var _can_inspect := false
 
 func _ready() -> void:
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
@@ -92,6 +96,17 @@ func _ready() -> void:
 		button.focus_previous = button.get_path_to(other)
 		for side in ["left", "right", "top", "bottom"]: button.set("focus_neighbor_" + side, button.get_path_to(other))
 	hide()
+	_stamp = Label.new()
+	_stamp.text = "收讫"
+	_stamp.size_flags_horizontal = Control.SIZE_SHRINK_END
+	_stamp.add_theme_font_size_override("font_size", 36)
+	_stamp.add_theme_color_override("font_color", Color("9f3029"))
+	_stamp.add_theme_stylebox_override("normal", CounterTheme.box("00000000", "9f3029", 10, 6))
+	column.add_child(_stamp)
+	column.move_child(_stamp, column.get_child_count() - 2)
+	_stamp.hide()
+	_stamp_sound = AudioStreamPlayer.new()
+	add_child(_stamp_sound)
 
 func _label(parent: Node, text: String, font_size: int) -> Label:
 	var label := Label.new()
@@ -104,10 +119,13 @@ func _label(parent: Node, text: String, font_size: int) -> Label:
 
 func present(receipt: Dictionary) -> void:
 	var departure: bool = receipt.get("kind", "") == "departure"
+	_needs_stamp = receipt.get("stamp", false)
+	(_detail.get_parent() as ScrollContainer).custom_minimum_size.y = 70 if _needs_stamp else 120
+	_stamp.hide()
 	_caption.text = "当 铺 · 接 待 结 果" if departure else "当 铺 · 成 交 凭 据"
 	_amount.visible = not departure
 	_cash.visible = not departure
-	_primary.text = receipt.get("primary_label", "收好凭据")
+	_primary.text = tr("opening.stamp") if _needs_stamp else receipt.get("primary_label", "收好凭据")
 	_title.add_theme_color_override("font_color", Color("82442e") if departure else Color("425440"))
 	_title.text = receipt.title
 	_item.text = receipt.item
@@ -124,6 +142,8 @@ func present(receipt: Dictionary) -> void:
 	_destination = receipt.destination
 	_secondary.text = "查看当票" if receipt.destination == "ledger" else "查看库存"
 	_secondary.visible = receipt.can_inspect
+	_can_inspect = receipt.can_inspect
+	if _needs_stamp: _secondary.hide()
 	# Keep keyboard focus inside this information page, including when details
 	# are unavailable because a story/risk event needs attention next.
 	_primary.focus_next = _primary.get_path_to(_secondary if _secondary.visible else _primary)
@@ -138,5 +158,15 @@ func present(receipt: Dictionary) -> void:
 
 func dismiss(destination: String = "") -> void:
 	if not visible: return
+	if _needs_stamp:
+		_needs_stamp = false
+		_stamp.show()
+		_primary.text = "收好凭据"
+		_secondary.visible = _can_inspect
+		_note.text = "妇人收起钱：“" + tr("opening.stamp_done") + "”"
+		_stamp_sound.stream = load("res://assets/opening/stamp.wav")
+		_stamp_sound.volume_db = -10
+		_stamp_sound.play()
+		return
 	hide()
 	dismissed.emit(destination)

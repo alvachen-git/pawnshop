@@ -24,6 +24,10 @@ static func validate(kind: String, record: Dictionary, path: String, at: String)
 						if slot.has(key): _fields(slot, {key: "positive"}, path, at, issues)
 		_fields({"tools": record.get("tools", [])}, {"tools": "strings"}, path, at, issues)
 		_rows(record.get("customer_slots", []), {"id": "text", "arrival": "nonnegative", "customer_id": "text", "item_id": "string", "variant_id": "string"}, path, at + ".customer_slots", issues)
+		if record.get("customer_slots", []) is Array:
+			for slot in record.get("customer_slots", []):
+				if slot is Dictionary and slot.has("tutorial"):
+					_fields(slot.tutorial, {"min_quote_rounds": "positive", "min_patience": "positive"}, path, at + ".tutorial", issues)
 	if kind == "items" and record.get("clues") is Array:
 		for clue in record.clues:
 			if clue is Dictionary:

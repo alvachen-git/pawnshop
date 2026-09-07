@@ -20,9 +20,11 @@ var excluded_flags: Array
 var required_items: Array
 var conflicts_with: Array
 var choices: Array
+var presentation: Dictionary = {}
 
 static func from_source(source: Dictionary) -> EventDTO:
 	var dto := EventDTO.new()
+	dto.presentation = source.get("presentation", {}).duplicate(true)
 	dto.id = source.id
 	dto.title = source.title
 	dto.speaker = source.speaker

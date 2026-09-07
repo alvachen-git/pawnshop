@@ -22,6 +22,7 @@ var _receipt_run := ""
 var _receipt_id := ""
 var _receipt_followup := ""
 var _return_id := ""
+var _narrative: NarrativeScene
 const PANEL_TITLES := {"day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "鬼货与绝当录", "night": "夜间结算"}
 
 
@@ -137,6 +138,19 @@ func bind_session(session: RunSession) -> void:
 	_departure_presenter.reset.connect(func() -> void: _departure_queue.clear(); _departure.hide())
 	_departure_presenter.bind(session)
 	session.changed.connect(func() -> void: _drain_departures.call_deferred())
+	_narrative = NarrativeScene.new()
+	_narrative.name = "NarrativeScene"
+	add_child(_narrative)
+	move_child(_narrative, _receipt.get_index())
+	_narrative.bind(session)
+	_narrative.visibility_changed.connect(func() -> void:
+		if not _narrative.visible and _session.read_state().phase == "open": _close_drawer()
+	)
+
+func focus_active_screen() -> void:
+	if _narrative != null and _narrative.visible and _narrative._choices.get_child_count() > 0:
+		_narrative._choices.get_child(0).grab_focus()
+	else: %MenuButton.grab_focus()
 
 func _drain_departures() -> void:
 	if _departure == null: return
@@ -167,6 +181,9 @@ func _departure_closed(_destination: String) -> void:
 	_drain_departures.call_deferred()
 
 func _show_receipt(receipt: Dictionary) -> void:
+	for slot in _session.definition.customer_slots:
+		if not slot.tutorial.is_empty() and receipt.id == "purchase/%s/%d/%s" % [_session.definition.id, _session.read_state().current_night_index, slot.id]:
+			receipt.stamp = true
 	_receipt_run = _session.read_state().run_token
 	_receipt_id = receipt.id
 	_receipt_followup = receipt.followup
@@ -179,7 +196,9 @@ func _receipt_closed(destination: String) -> void:
 	_drain_departures.call_deferred()
 	var state := _session.read_state()
 	if not state.risk_pending.is_empty() or _session.mirror_pending(): _flow.show_panel(&"risk")
-	elif not state.pending_event_id.is_empty(): _flow.show_panel(&"events")
+	elif not state.pending_event_id.is_empty():
+		if _session.event_model().presentation.is_empty(): _flow.show_panel(&"events")
+		else: _close_drawer()
 	elif not destination.is_empty():
 		_flow.show_panel(StringName(destination))
 		if destination == "ledger": %LedgerPanel.select_page(2)

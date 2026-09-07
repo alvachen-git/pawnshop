@@ -1,18 +1,20 @@
 class_name EventDefinition
 extends RefCounted
 
+var presentation: Dictionary = {}
+
 var _id: String
 var id: String:
 	get: return _id
 var _title: String
 var title: String:
-	get: return _title
+	get: return TranslationServer.translate(_title)
 var _speaker: String
 var speaker: String:
-	get: return _speaker
+	get: return TranslationServer.translate(_speaker)
 var _body: String
 var body: String:
-	get: return _body
+	get: return TranslationServer.translate(_body)
 var _kind: String
 var kind: String:
 	get: return _kind
@@ -61,6 +63,7 @@ var choices: Array[EventChoiceDefinition]:
 
 static func from_dto(dto: EventDTO) -> EventDefinition:
 	var value := EventDefinition.new()
+	value.presentation = dto.presentation.duplicate(true)
 	value._id = dto.id
 	value._title = dto.title
 	value._speaker = dto.speaker

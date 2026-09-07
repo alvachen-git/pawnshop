@@ -9,6 +9,8 @@ var _body: Label
 var _heading: Label
 var _confirm: ConfirmationDialog
 var _model: Dictionary = {}
+var _photo: Button
+var _letter: AcceptDialog
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -29,7 +31,9 @@ func _ready() -> void:
 	_lamp = _hotspot("RoomLamp", "命灯", Rect2(0.16, 0.47, 0.10, 0.12))
 	_lamp.pressed.connect(func() -> void: _body.text = _model.lamp)
 	_desk = _hotspot("RoomDesk", "书桌 · 旧信", Rect2(0.065, 0.63, 0.25, 0.17))
-	_desk.pressed.connect(func() -> void: _body.text = "信纸压在砚台下面，折痕已经发白。\n\n「到了上海，先安顿住处。夜里潮，旧衣别急着扔。钱总能慢慢挣。」\n\n信尾没有再写别的话。")
+	_desk.pressed.connect(_read_letter)
+	_photo = _hotspot("RoomPhoto", "姚曼卿的照片", Rect2(0.05, 0.82, 0.25, 0.075))
+	_photo.pressed.connect(func() -> void: _body.text = tr("opening.room.photo"))
 	_bed = _hotspot("RoomBed", "床 · 就寝", Rect2(0.405, 0.62, 0.35, 0.28))
 	_bed.pressed.connect(_bed_pressed)
 
@@ -74,7 +78,27 @@ func render(model: Dictionary) -> void:
 	_bed.disabled = not model.can_sleep and not model.can_finish
 	_lamp.disabled = model.pending or model.dead
 	_desk.disabled = model.pending or model.dead
+	_photo.visible = model.get("photo_placed", false)
+	_photo.disabled = model.pending or model.dead
+	if not visible and _letter != null: _letter.hide()
 	queue_redraw()
+
+func _read_letter() -> void:
+	if not _model.get("gu_letter", false):
+		_body.text = "信纸压在砚台下面，折痕已经发白。\n\n「到了上海，先安顿住处。夜里潮，旧衣别急着扔。钱总能慢慢挣。」\n\n信尾没有再写别的话。"
+		return
+	if _letter == null:
+		_letter = AcceptDialog.new()
+		_letter.title = "顾敬堂的信"
+		_letter.ok_button_text = "放回抽屉"
+		var text := RichTextLabel.new()
+		text.custom_minimum_size = Vector2(530, 400)
+		text.add_theme_font_size_override("normal_font_size", 20)
+		text.add_theme_color_override("default_color", Color("302a24"))
+		text.text = tr("opening.letter.permanent")
+		_letter.add_child(text)
+		add_child(_letter)
+	_letter.popup_centered(Vector2i(570, 490))
 
 func _bed_pressed() -> void:
 	if _model.can_sleep:

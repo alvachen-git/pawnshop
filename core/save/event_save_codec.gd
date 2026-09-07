@@ -22,7 +22,14 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			var closed: int = state.summaries[int(row.night) - 1].closed_at
 			if row.phase == "open" and row.minute > closed: return "营业事件发生在关门后。"
 			if row.phase == "closed_processing" and row.offered_minute < closed: return "关门事件发生在营业时。"
-		var rank: int = {"pre_open": 0, "open": 1, "closed_processing": 2}[row.phase]
+		var rank: int = {"pre_open": 0, "open": 1, "closed_processing": 2, "private_room": 3, "sleep_resolution": 4}[row.phase]
+		if row.phase in ["private_room", "sleep_resolution"]:
+			if row.minute != run.night_minutes or not run.private_room: return "房间事件时刻无效。"
+			var action := "enter_room" if row.phase == "private_room" else "sleep"
+			var occurred := false
+			for step in data.get("room_history", []):
+				if step is Dictionary and step.get("night") == row.night and step.get("action") == action: occurred = true
+			if not occurred: return "房间事件缺少阶段记录。"
 		var offered_stamp := _stamp(int(row.night), int(row.offered_minute), rank, run)
 		if offered_stamp < last_stamp: return "事件历史时间倒序。"
 		last_stamp = _stamp(int(row.night), int(row.minute), rank, run)
@@ -30,6 +37,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		replay.phase = StringName(row.phase)
 		replay.game_minutes = int(row.offered_minute)
 		replay.inventory_instances = _inventory_at(state, int(row.night), int(row.offered_minute))
+		replay.ledger_entries = state.ledger_entries.duplicate(true)
+		if not choice.available(replay.narrative_flags): return "事件选择前置条件不成立。"
 		if director.select_next(replay, run) != event.id: return "事件调度与条件、优先级、权重或次数不一致。"
 		for flag in choice.grant_flags:
 			if flag not in replay.narrative_flags: replay.narrative_flags.append(flag)
@@ -42,7 +51,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var check := RunState.create(run)
 		check.current_night_index = night + 1
 		for row in state.event_history:
-			if row.night <= night + 1: check.event_history.append(row)
+			if row.night <= night + 1:
+				check.event_history.append(row)
+				var prior := catalog.get_definition("events", row.event_id) as EventDefinition
+				for flag in prior.find_choice(row.choice_id).grant_flags:
+					if flag not in check.narrative_flags: check.narrative_flags.append(flag)
 		for id in run.event_ids:
 			var event := catalog.get_definition("events", id) as EventDefinition
 			if event.kind == "anchor" and director.eligible(check, event): return "已结算夜缺少必需锚点。"
@@ -63,7 +76,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	return ""
 
 static func _stamp(night: int, minute: int, phase: int, run: RunDefinition) -> int:
-	return (night * (run.night_minutes + 1) + minute) * 3 + phase
+	return (night * (run.night_minutes + 1) + minute) * 5 + phase
 
 static func _inventory_at(state: RunState, night: int, minute: int) -> Array[ItemInstance]:
 	var items: Array[ItemInstance] = []

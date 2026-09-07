@@ -97,6 +97,7 @@ static func from_dto(dto: RunDTO) -> RunDefinition:
 	result._buyer_ids = dto.buyer_ids.duplicate()
 	for slot in dto.customer_slots:
 		result._customer_slots.append(VisitSlotDefinition.new(slot.id, int(slot.arrival), slot.customer_id, slot.item_id, slot.variant_id, int(slot.get("night_min", 1)), int(slot.get("night_max", 2147483647))))
+		result._customer_slots.back().tutorial = slot.get("tutorial", {}).duplicate(true)
 	for action in dto.actions:
 		result._actions.append(DayActionDefinition.new(action.id, action.label, int(action.minutes), action.phases))
 	return result

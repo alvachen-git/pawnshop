@@ -29,3 +29,4 @@ environment/defaults/default_clear_color=Color(0.023, 0.018, 0.016, 1)
 [internationalization]
 
 locale/fallback="zh_CN"
+locale/translations=PackedStringArray("res://data/opening/zh_CN.translation")

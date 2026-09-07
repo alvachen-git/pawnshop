@@ -1,6 +1,8 @@
 class_name VisitSlotDefinition
 extends RefCounted
 
+var tutorial: Dictionary = {}
+
 var _night_min := 1
 var night_min: int:
 	get: return _night_min
