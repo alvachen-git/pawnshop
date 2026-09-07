@@ -16,10 +16,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var event := catalog.get_definition("events", row.event_id) as EventDefinition
 		var choice := event.find_choice(row.choice_id)
 		if choice == null or row.phase != event.phase or row.night < 1 or row.night > state.current_night_index or row.offered_minute < 0 or int(row.offered_minute) % run.time_step != 0 or row.minute != row.offered_minute + choice.minutes or row.minute >= event.window_end: return "事件选择、夜次或耗时无效。"
-		if row.night > state.summaries.size() and (row.phase != "pre_open" or row.minute != 0): return "未结算夜不应保存夜内事件。"
+		if row.night > SaveTimeline.trading_nights(state) and (row.phase != "pre_open" or row.minute != 0): return "未结算夜不应保存夜内事件。"
+		if row.night == state.current_night_index and row.minute > state.game_minutes: return "事件晚于保存时刻。"
 		if row.phase == "pre_open" and row.minute != 0: return "开铺前事件时刻无效。"
-		if row.night <= state.summaries.size():
-			var closed: int = state.summaries[int(row.night) - 1].closed_at
+		if row.night <= SaveTimeline.trading_nights(state):
+			var closed: int = SaveTimeline.closing(state, int(row.night))
 			if row.phase == "open" and row.minute > closed: return "营业事件发生在关门后。"
 			if row.phase == "closed_processing" and row.offered_minute < closed: return "关门事件发生在营业时。"
 		var rank: int = {"pre_open": 0, "open": 1, "closed_processing": 2, "private_room": 3, "sleep_resolution": 4}[row.phase]
@@ -47,7 +48,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	state.narrative_flags = replay.narrative_flags.duplicate()
 	state.event_history = replay.event_history.duplicate(true)
 	# Before opening, all guaranteed anchors must have been handled.
-	for night in state.summaries.size():
+	for night in SaveTimeline.trading_nights(state):
 		var check := RunState.create(run)
 		check.current_night_index = night + 1
 		for row in state.event_history:

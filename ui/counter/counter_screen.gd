@@ -69,6 +69,7 @@ func _ready() -> void:
 
 func bind_session(session: RunSession) -> void:
 	_session = session
+	session.restored.connect(_reset_reception)
 	_market_notice = Button.new()
 	_market_notice.name = "MarketNotice"
 	_market_notice.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
@@ -142,6 +143,10 @@ func bind_session(session: RunSession) -> void:
 	_narrative.name = "NarrativeScene"
 	add_child(_narrative)
 	move_child(_narrative, _receipt.get_index())
+	# The existing menu must remain usable over an opening scene, below receipts.
+	move_child(_session_menu, _receipt.get_index() - 1)
+	_session_menu.z_index = 16
+	_narrative.menu_requested.connect(_toggle_menu)
 	_narrative.bind(session)
 	_narrative.visibility_changed.connect(func() -> void:
 		if not _narrative.visible and _session.read_state().phase == "open": _close_drawer()
@@ -339,3 +344,15 @@ func show_content_error(issues: Array) -> void:
 	if not issues.is_empty():
 		summary = issues[0].format_message()
 	_status_view.show_content_error(summary)
+
+func _reset_reception() -> void:
+	_room_phase = ""
+	_room_pending = ""
+	_departure_queue.clear()
+	_receipt.hide()
+	_departure.hide()
+	_return_id = ""
+	_receipt_id = ""
+	_close_menu()
+	_close_drawer()
+	_counter_view.dismiss_contexts()

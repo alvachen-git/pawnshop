@@ -15,6 +15,7 @@ func bind(session: RunSession, view: RiskPanel) -> void:
 	_view = view
 	_view.intent.connect(_choose)
 	_session.changed.connect(refresh)
+	_session.restored.connect(func() -> void: _pending = ""; _phase = ""; _attention = ""; _intrusion = false; _held.clear())
 	refresh()
 
 func refresh() -> void:

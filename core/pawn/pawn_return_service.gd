@@ -67,10 +67,10 @@ static func validate(data: Dictionary, state: RunState, run: RunDefinition, cata
 				if key in ["status", "start", "minute"]: continue
 				if row.get(key) != planned[key]: return "当户、原物或回访顺序不符。"
 			if not CounterSaveCodec._integers(row, ["start", "minute"]): return "回访办理时刻无效。"
-			if night > state.summaries.size():
+			if night > SaveTimeline.trading_nights(state):
 				if row.status != "scheduled" or row.start != -1 or row.minute != -1: return "开铺前回访状态无效。"
 			else:
-				if row.status != "completed" or row.start < earliest or row.minute != row.start + row.minutes or int(row.start) % run.time_step != 0 or row.minute > state.summaries[night - 1].closed_at: return "到店当户尚未办结或耗时重叠。"
+				if row.status != "completed" or row.start < earliest or row.minute != row.start + row.minutes or int(row.start) % run.time_step != 0 or row.minute > SaveTimeline.closing(state, night): return "到店当户尚未办结或耗时重叠。"
 				var ticket := PawnController.new().find(state, row.ticket_id)
 				if ticket == null: return "回访当票不存在。"
 				if row.command == "redeem":

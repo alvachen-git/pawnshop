@@ -39,12 +39,16 @@ try {
     Run-Test 'seven-edges' 'seven_edge_tests.gd'
     Run-Test 'departure-core' 'customer_departure_tests.gd'
     Run-Test 'reception-feedback-core' 'reception_feedback_tests.gd'
+    Run-Test 'manual-save-core' 'manual_save_tests.gd'
+    Run-Test 'opening-core' 'run_opening.gd'
     foreach ($suite in @('ui_smoke','scene_navigation_ui_smoke','m2_ui_smoke','m3_ui_smoke','m4_ui_smoke','m5_ui_smoke','art03_extension_ui_smoke')) {
         Run-Test $suite "$suite.gd" @() $false
     }
     foreach ($wide in @($false,$true)) {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "manual-save-$size" 'manual_save_ui_smoke.gd' $sizeArgs $false
+        Run-Test "opening-$size" 'opening_ui_smoke.gd' $sizeArgs $false
         Run-Test "variety-$size" 'variety_ui_smoke.gd' $sizeArgs $false
         Run-Test "market-$size" 'market_ui_smoke.gd' $sizeArgs $false
         Run-Test "seven-$size" 'seven_ui_smoke.gd' (@('--seed=42') + $sizeArgs) $false
@@ -61,6 +65,9 @@ try {
         Run-Test "m6-production-$size" 'm6_ui_smoke.gd' (@('production') + $sizeArgs) $false
         Run-Test "accounts-$size" 'art03_ui_smoke.gd' $sizeArgs $false
         Run-Test "debt-production-$size" 'art03_debt_ui_smoke.gd' (@('production') + $sizeArgs) $false
+    }
+    foreach ($mode in @('write','read','continue','read_final')) {
+        Run-Test "manual-process-$mode" 'manual_save_process.gd' @($mode)
     }
     foreach ($mode in @('prepare','sixth','room','sleep','seventh','finish','read')) {
         Run-Test "seven-process-$mode" 'seven_checkpoint_process.gd' @($mode)

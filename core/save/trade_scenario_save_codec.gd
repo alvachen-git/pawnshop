@@ -32,7 +32,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			visit.arrival += delay
 			visit.expires_at += delay
 			all_visits[visit.visit_id] = visit
-			if night > state.summaries.size(): continue
+			if night > SaveTimeline.trading_nights(state): continue
 			if ordinary:
 				if not visit.scenario_id.is_empty() or visit.visit_id not in recorded_visits: continue
 			elif visit.scenario_id.is_empty(): continue
@@ -55,7 +55,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if not replay_days.has(raw.visit_id): return "交易情境行动不属于已结束的来访。"
 		var day: DayController = replay_days[raw.visit_id]
 		var visit: CustomerVisit = all_visits[raw.visit_id]
-		if raw.night != day.state.current_night_index or raw.start < visit.arrival or int(raw.start) % run.time_step != 0 or raw.start >= mini(visit.expires_at, state.summaries[int(raw.night) - 1].closed_at): return "交易情境行动起始时刻无效。"
+		if raw.night != day.state.current_night_index or raw.start < visit.arrival or int(raw.start) % run.time_step != 0 or raw.start >= mini(visit.expires_at, SaveTimeline.closing(state, int(raw.night))): return "交易情境行动起始时刻无效。"
 		var stamp := int(raw.night) * (run.night_minutes + 1) + int(raw.start)
 		if stamp < last_end or raw.minute < raw.start or raw.minute > run.night_minutes: return "交易情境行动耗时重叠或无效。"
 		last_end = int(raw.night) * (run.night_minutes + 1) + int(raw.minute)

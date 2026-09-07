@@ -31,7 +31,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	var visits: Dictionary = {}
 	var endings: Dictionary = {}
 	for ending in state.visit_history: endings[ending.visit_id] = ending
-	for night in range(1, state.summaries.size() + 1):
+	for night in range(1, SaveTimeline.trading_nights(state) + 1):
 		var sample := RunState.create(run)
 		sample.current_night_index = night
 		sample.run_seed = state.run_seed
@@ -44,7 +44,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var definition := MirrorEncounterService.find_definition(run, row.encounter_id)
 		var night := int(row.night)
 		var minute := int(row.minute)
-		if definition == null or night < 1 or night > state.summaries.size() or minute % run.time_step != 0 or not visits.has(row.visit_id): return "铜镜遭遇引用或时间无效。"
+		if definition == null or night < 1 or night > SaveTimeline.trading_nights(state) or minute % run.time_step != 0 or not visits.has(row.visit_id): return "铜镜遭遇引用或时间无效。"
 		if row.visit_id != "%s/%d/%s" % [run.id, night, definition.slot_id]: return "铜镜遭遇来客不符。"
 		var visit: CustomerVisit = visits[row.visit_id]
 		var previous := MirrorEncounterService.stage(state, row.visit_id)
@@ -52,7 +52,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var cost := definition.peek_minutes if row.action.begins_with("peek") else (definition.pursue_minutes if row.action.begins_with("pursue") else 0)
 		var start := minute - cost
 		var stamp := night * (run.night_minutes + 1) + start
-		var closing: int = state.summaries[night - 1].closed_at
+		var closing: int = SaveTimeline.closing(state, night)
 		if stamp < last_end or start < maxi(definition.start_minute, visit.arrival) or start >= mini(visit.expires_at, closing) or minute > run.night_minutes: return "铜镜遭遇不在有效营业窗口。"
 		last_end = stamp + cost
 		var ending: Dictionary = endings[row.visit_id]

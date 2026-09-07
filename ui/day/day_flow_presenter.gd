@@ -17,7 +17,10 @@ func bind(session: RunSession, view: DayFlowPanel, session_menu: SessionMenuView
 	_view.command_requested.connect(_on_command)
 	_session_menu.new_requested.connect(_session.new_run)
 	_session_menu.load_requested.connect(_on_load)
+	_session_menu.save_requested.connect(func() -> void: _session.storage_requested.emit("save"))
+	_session_menu.leave_requested.connect(func(destination: String) -> void: _session.leave_requested.emit(destination))
 	_session.changed.connect(refresh)
+	_session.restored.connect(func() -> void: _last_phase = "")
 	refresh()
 
 func refresh() -> void:
@@ -48,7 +51,7 @@ func refresh() -> void:
 	if SevenNightPlan.enabled(definition) and state.phase == "pre_open" and state.current_night_index >= 4:
 		description = "开铺前\n今夜准备剩余%d次，开铺后不可返回。\n收货与来客消息可免费复看。" % (2 - PreparationService.count(_session._day.state))
 	_view.render({"description": description, "message": _session.message, "commands": commands})
-	_session_menu.render({"has_save": _session.has_save(), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
+	_session_menu.render({"has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
 	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(definition.opening_minute, state.game_minutes), state.cash])
 	if state.phase != _last_phase:
 		_last_phase = state.phase
@@ -61,5 +64,8 @@ func _on_command(command: String) -> void:
 	_session.execute(command)
 
 func _on_load() -> void:
+	if _session._save.library != null:
+		_session.storage_requested.emit("load")
+		return
 	var result := _session.load_checkpoint()
 	if _session.definition.private_room and not result.ok: _session_menu.show_load_error(result.message)

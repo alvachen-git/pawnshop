@@ -1,13 +1,15 @@
 class_name NarrativeScene
 extends Control
 
+signal menu_requested
+
 var _session: RunSession
 var _title: Label
 var _speaker: Label
 var _text: RichTextLabel
 var _choices: VBoxContainer
 var _skip: Button
-var _save_exit: Button
+var _menu_button: Button
 var _scene := ""
 var _signature := ""
 var _model: Dictionary = {}
@@ -48,12 +50,12 @@ func _ready() -> void:
 	_skip.pressed.connect(_skip_prologue)
 	add_child(_skip)
 	_place(_skip, Rect2(0.055, 0.86, 0.36, 0.06))
-	_save_exit = Button.new()
-	_save_exit.text = tr("opening.save_exit")
-	_save_exit.add_theme_font_size_override("font_size", 14)
-	_save_exit.pressed.connect(_exit_at_checkpoint)
-	add_child(_save_exit)
-	_place(_save_exit, Rect2(0.77, 0.935, 0.18, 0.045))
+	_menu_button = Button.new()
+	_menu_button.text = "菜单"
+	_menu_button.add_theme_font_size_override("font_size", 14)
+	_menu_button.pressed.connect(func() -> void: menu_requested.emit())
+	add_child(_menu_button)
+	_place(_menu_button, Rect2(0.77, 0.935, 0.18, 0.045))
 	hide()
 
 func _process(_delta: float) -> void:
@@ -89,7 +91,6 @@ func refresh() -> void:
 		meta.save(_session._save.path + ".meta")
 	var meta := ConfigFile.new()
 	_skip.visible = _model.presentation.get("repeat_skip", false) and meta.load(_session._save.path + ".meta") == OK and meta.get_value("opening", "seen", false)
-	_save_exit.visible = state.phase in SaveCodec.CHECKPOINTS
 	if signature == _signature: return
 	_signature = signature
 	_title.text = _model.title
@@ -111,7 +112,7 @@ func refresh() -> void:
 	var focusable: Array[Control] = []
 	for button in _choices.get_children(): focusable.append(button)
 	if _skip.visible: focusable.append(_skip)
-	if _save_exit.visible: focusable.append(_save_exit)
+	focusable.append(_menu_button)
 	for index in focusable.size():
 		var button := focusable[index]
 		button.focus_next = button.get_path_to(focusable[(index + 1) % focusable.size()])
@@ -135,10 +136,6 @@ func _skip_prologue() -> void:
 		if not result.ok:
 			_text.text += "\n\n" + result.message
 			break
-
-func _exit_at_checkpoint() -> void:
-	if _session._save.save_state(_session._day.state, _session.definition, _session.content_version): get_tree().quit()
-	else: _text.text += "\n\n" + _session._save.error_message
 
 func _label(parent: Node, font_size: int, color: String) -> Label:
 	var label := Label.new()

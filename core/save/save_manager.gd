@@ -1,6 +1,7 @@
 class_name SaveManager
 extends RefCounted
 
+var library: SaveLibrary
 var path: String
 var catalog: ContentCatalog
 var legacy_archive_path := ""
@@ -15,9 +16,23 @@ func _init(save_path := "user://p0/autosave_v7.json") -> void:
 	path = save_path
 
 func exists() -> bool:
+	if library != null:
+		var data := library._read()
+		return not data.is_empty() and (not data.entries.is_empty() or library.LEGACY.values().any(func(p: String) -> bool: return FileAccess.file_exists(p)))
 	return FileAccess.file_exists(path) or (not import_checkpoint_path.is_empty() and FileAccess.file_exists(import_checkpoint_path))
 
 func load_state(definition: RunDefinition, content_version: int) -> RunState:
+	if library != null:
+		var result := library.read_entry("auto/" + String(definition.id))
+		if not result.is_empty():
+			loaded_catalog = result.catalog
+			loaded_definition = result.run
+			return result.state
+		var active_library := library
+		library = null
+		var legacy := load_state(definition, content_version)
+		library = active_library
+		return legacy
 	error_message = ""
 	loaded_catalog = catalog
 	loaded_definition = definition
@@ -65,6 +80,10 @@ func load_state(definition: RunDefinition, content_version: int) -> RunState:
 	return state
 
 func save_state(state: RunState, definition: RunDefinition, content_version: int) -> bool:
+	if library != null:
+		var saved := library.write_entry("auto/" + String(definition.id), state, definition, content_version, catalog)
+		error_message = library.error_message
+		return saved
 	error_message = ""
 	var archive := read_archive()
 	if not error_message.is_empty(): return false
@@ -129,6 +148,10 @@ func save_state(state: RunState, definition: RunDefinition, content_version: int
 	return true
 
 func read_archive() -> Array[Dictionary]:
+	if library != null and catalog != null:
+		var records: Array[Dictionary] = []
+		records.assign(library.archive("death_archive", String(catalog.default_run_id)))
+		return records
 	error_message = ""
 	var archive := _read_records(path, "death_archive", RiskSaveCodec.valid_archive)
 	if not error_message.is_empty(): return archive
@@ -146,6 +169,10 @@ func read_archive() -> Array[Dictionary]:
 	return archive
 
 func read_bankruptcy_archive() -> Array[Dictionary]:
+	if library != null and catalog != null:
+		var records: Array[Dictionary] = []
+		records.assign(library.archive("bankruptcy_archive", String(catalog.default_run_id)))
+		return records
 	# Do not erase a legacy-archive read error during initialization.
 	var records := _read_records(path, "bankruptcy_archive", FeeSaveCodec.valid_archive)
 	if not legacy_archive_path.is_empty(): _merge_records(records, _read_records(legacy_archive_path, "bankruptcy_archive", FeeSaveCodec.valid_archive))

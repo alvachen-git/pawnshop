@@ -52,6 +52,8 @@ func initialize() -> ContentLoadResult:
 		if save_path == "user://p0/autosave_v7.json":
 			saves.legacy_archive_path = "user://p0/autosave.json"
 			saves.prior_version_path = "user://p0/autosave_v6.json"
+		saves.library = SaveLibrary.new() if not save_path.begins_with("user://tests/") else null
+		saves.catalog = catalog
 		session = RunSession.new(definition, catalog.content_version, saves, catalog)
 		if OrdinarySamplePlan.enabled(definition) or SevenNightPlan.enabled(definition): print("RUN SEED: ", session.read_state().run_seed)
 		if SevenNightPlan.enabled(definition) and "--log-plan" in OS.get_cmdline_user_args(): print("SEVEN VISIT PLAN: ", JSON.stringify(session.read_state().seven_plan))

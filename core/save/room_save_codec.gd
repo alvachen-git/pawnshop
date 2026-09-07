@@ -39,7 +39,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			if not result.ok: return "房间阶段被跳过或重复提交。"
 			cursor += 1
 		if sample.summaries.back().outcome != state.summaries[night - 1].outcome: return "房间风险结果与历史不符。"
-		if night < state.summaries.size() or state.phase == &"pre_open":
+		if night < state.summaries.size() or state.phase == &"pre_open" or SaveTimeline.unsettled(state):
 			if sample.phase != &"day_summary": return "未完成就寝不能进入下一夜。"
 		else:
 			var expected_phase := state.phase

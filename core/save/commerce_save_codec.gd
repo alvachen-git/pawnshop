@@ -5,7 +5,8 @@ extends RefCounted
 static func restore(data: Dictionary, state: RunState, run: RunDefinition, catalog: ContentCatalog, acquisitions: Dictionary) -> String:
 	if not data.get("pawn_tickets") is Array or not data.get("sale_records") is Array: return "缺少M3当票/销售记录。"
 	if catalog == null and (not data.pawn_tickets.is_empty() or not data.sale_records.is_empty()): return "恢复当票需要内容目录。"
-	var completed := state.summaries.size()
+	var completed := SaveTimeline.trading_nights(state)
+	var settled := state.summaries.size()
 	var expected: Dictionary = {}
 	var tickets: Dictionary = {}
 	var sales: Dictionary = {}
@@ -44,15 +45,15 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if ticket.due_night != due: return "当票期限无法对账。"
 		match ticket.status:
 			"active":
-				if due <= completed or ticket.closed_night != 0 or ticket.closed_minute != -1 or item.ownership_state != "pledged": return "在当状态与期限不符。"
+				if due <= settled or ticket.closed_night != 0 or ticket.closed_minute != -1 or item.ownership_state != "pledged": return "在当状态与期限不符。"
 			"defaulted":
 				if due >= state.pawn_rules_start_night and terms.return_mode != "absent": return "已回访当户不能绝当。"
-				if due > completed or ticket.closed_night != due or ticket.closed_minute != run.night_minutes or item.ownership_state not in ["owned", "sold"]: return "绝当状态或时刻不符。"
+				if due > settled or ticket.closed_night != due or ticket.closed_minute != run.night_minutes or item.ownership_state not in ["owned", "sold"]: return "绝当状态或时刻不符。"
 			"redeemed":
 				if due > completed or ticket.closed_night != due or item.ownership_state != "redeemed" or terms.return_mode == "absent" or (terms.return_mode == "extend_once" and ticket.extensions.is_empty()) or not _return_time(ticket.closed_minute, ticket.closed_night, terms, terms.redeem_minutes, run, state): return "赎回没有有效当户请求。"
 				_post(expected, "redeem/" + ticket.ticket_id, item.instance_id, due, ticket.closed_minute, ticket.redemption_amount, "redemption", ticket.redemption_amount - ticket.principal)
 			"transferred":
-				if due < state.pawn_rules_start_night or due > completed or ticket.closed_night != due or ticket.closed_minute != run.night_minutes or item.ownership_state != "transferred" or terms.return_mode != "absent": return "转当状态、期限或权属不符。"
+				if due < state.pawn_rules_start_night or due > settled or ticket.closed_night != due or ticket.closed_minute != run.night_minutes or item.ownership_state != "transferred" or terms.return_mode != "absent": return "转当状态、期限或权属不符。"
 				var price := PawnController.new().transfer_quote(ticket, terms)
 				_post(expected, "transfer/" + ticket.ticket_id, item.instance_id, due, run.night_minutes, price, "pawn_transfer", price - ticket.principal)
 			_: return "未知当票状态。"
@@ -102,7 +103,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		for key in posting:
 			if row.get(key) != posting[key]: return "流水与交易记录不一致。"
 		var stamp := int(row.night) * (run.night_minutes + 1) + int(row.minute)
-		if row.kind not in ["daily_fees", "pawn_transfer"] and row.minute > state.summaries[int(row.night) - 1].closed_at: return "关门后不能完成外部交易。"
+		if row.kind not in ["daily_fees", "pawn_transfer"] and row.minute > SaveTimeline.closing(state, int(row.night)): return "关门后不能完成外部交易。"
 		if stamp < last_time: return "流水时间倒序。"
 		last_time = stamp
 		balance += int(row.amount)
