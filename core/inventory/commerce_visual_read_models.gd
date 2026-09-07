@@ -47,6 +47,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	var entries: Array = []
 	for entry in day.state.ledger_entries:
 		var subject := "铺面息费"
+		if entry.kind == "preparation": subject = "招揽客人" if entry.transaction_id.ends_with("/attract") else "备茶候客"
 		var item := InventoryManager.new().find(day.state, entry.item_instance_id)
 		if item != null: subject = (service.catalog.get_definition("items", item.definition_id) as ItemDefinition).display_name
 		entries.append({"night": entry.night, "clock": TimeController.clock_text(day.definition.opening_minute, entry.minute),

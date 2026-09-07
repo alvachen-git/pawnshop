@@ -61,4 +61,6 @@ godot --path . --script res://tests/art03_extension_ui_smoke.gd
 
 最终截图与日志见 `artifacts/art03/final/`，视觉对照与验收见根目录 `design-qa.md`。上一批 ART02 验收记录保留在 `artifacts/art02/design-qa.md`。
 
+Godot 4.6.1 / macOS 验证结果：库存与票据流程在1280×720、1600×900各163项、0失败；债务与夜间流程各409项、0失败；续当58项、0失败；当前M0–M7核心1798项通过。最终运行日志无脚本错误，`git diff --check`通过。
+
 后续正式制作可替换纸张九宫格、印章字形、授权字体和未覆盖的物品缩略图；本批不把正式资产任务标记完成。

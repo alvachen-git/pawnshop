@@ -9,7 +9,7 @@ var slot_id: String:
 var mirror_item_id: String:
 	get: return _data.mirror_item_id
 var clue_id: String:
-	get: return _data.clue_id
+	get: return _data.get("clue_id", "")
 var start_minute: int:
 	get: return int(_data.start_minute)
 var peek_minutes: int:

@@ -1,7 +1,7 @@
 class_name SaveCodec
 extends RefCounted
 
-const VERSION := 13
+const VERSION := 15
 const ROOM_VERSION := 12
 const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt", "shop_resolution", "private_room", "sleep_resolution"]
 var error_message := ""
@@ -20,7 +20,7 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		if not data.has(key) or not RunSchema.integer(data[key]) or abs(data[key]) > 2147483647:
 			return null
 	var legacy := int(data.save_version) == (8 if definition.private_room else 7)
-	if (int(data.save_version) not in [VERSION, 12, 11, 10, 9] and not legacy) or int(data.content_version) != content_version:
+	if (int(data.save_version) not in [VERSION, 14, 13, 12, 11, 10, 9] and not legacy) or int(data.content_version) != content_version:
 		error_message = "存档/内容版本不兼容；旧文件已保留。"
 		return null
 	if not definition.variety.is_empty() and int(data.save_version) != content_version: return null
@@ -76,16 +76,17 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		if entry.closed_at > definition.night_minutes or int(entry.closed_at) % definition.time_step != 0 or entry.action_count < 1 or entry.action_count > definition.night_minutes / definition.time_step:
 			return null
 		previous_cash = int(entry.closing_cash)
-	if (data.night_opening_cash if partial else data.cash) != previous_cash:
+	if (data.night_opening_cash if partial or (OpeningPreparation.enabled(definition) and data.phase == "pre_open") else data.cash) != previous_cash:
 		return null
 	if settled:
 		var last: Dictionary = data.summaries.back()
 		if last.opening_cash != data.night_opening_cash or last.closed_at != closed or last.action_count != data.action_count:
 			return null
-	elif not partial and data.night_opening_cash != data.cash:
+	elif not partial and not OpeningPreparation.enabled(definition) and data.night_opening_cash != data.cash:
 		return null
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.preparation_version = int(definition.variety.get("preparation_version", 0))
 	state.pawn_rules_start_night = int(data.pawn_rules_start_night)
 	state.room_enabled = definition.private_room
 	state.current_night_index = night

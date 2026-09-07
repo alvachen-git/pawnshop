@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "buyer_recycler",
+      "display_name": "杂货回收商",
+      "channel": "regular",
+      "categories": [
+        "porcelain",
+        "metal",
+        "jewelry",
+        "watches",
+        "stationery",
+        "textile"
+      ],
+      "value_multiplier": 0.6,
+      "night_min": 1,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "action_minutes": 20,
+      "capacity_per_night": 0
+    },
+    {
+      "id": "buyer_collector",
+      "display_name": "瓷器收藏客",
+      "channel": "regular",
+      "categories": [
+        "porcelain"
+      ],
+      "value_multiplier": 1.2,
+      "night_min": 1,
+      "night_max": 7,
+      "window_start": 60,
+      "window_end": 240,
+      "action_minutes": 20,
+      "capacity_per_night": 0,
+      "provenance": {
+        "premium_bps": 1500
+      }
+    },
+    {
+      "id": "buyer_pen_appointment",
+      "display_name": "外埠文房收货人",
+      "channel": "regular",
+      "categories": [
+        "stationery"
+      ],
+      "value_multiplier": 1.25,
+      "night_min": 6,
+      "night_max": 6,
+      "window_start": 60,
+      "window_end": 180,
+      "action_minutes": 20,
+      "capacity_per_night": 0,
+      "required_flags": [],
+      "provenance": {
+        "premium_bps": 1500
+      }
+    },
+    {
+      "id": "buyer_mirror",
+      "display_name": "夜半收镜客",
+      "channel": "regular",
+      "categories": [
+        "ghost"
+      ],
+      "value_multiplier": 1.5,
+      "night_min": 3,
+      "night_max": 4,
+      "window_start": 360,
+      "window_end": 480,
+      "action_minutes": 20,
+      "capacity_per_night": 0
+    },
+    {
+      "id": "buyer_silversmith",
+      "display_name": "街口银楼",
+      "channel": "regular",
+      "categories": [
+        "jewelry"
+      ],
+      "value_multiplier": 1.0,
+      "night_min": 1,
+      "night_max": 3,
+      "window_start": 0,
+      "window_end": 540,
+      "action_minutes": 20,
+      "capacity_per_night": 0
+    }
+  ]
+}

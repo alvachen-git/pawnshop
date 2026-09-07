@@ -12,3 +12,4 @@ func bind(session: RunSession, view: CounterView) -> void:
 
 func refresh() -> void:
 	_view.render(_session.counter_model())
+	_view.bell.render(_session.bell_model())

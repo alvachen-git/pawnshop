@@ -57,7 +57,7 @@ func choose(day: DayController, id: String, command: String) -> ActionResult:
 	risk.capture_close(day.state)
 	if visit.status != "active": return ActionResult.new(false, "你抬头时，柜前的人已经走了。镜里只剩下一片昏黄。")
 	if command == "peek":
-		if definition.clue_id not in visit.item.revealed_clue_ids: visit.item.revealed_clue_ids.append(definition.clue_id)
+		if not definition.clue_id.is_empty() and definition.clue_id not in visit.item.revealed_clue_ids: visit.item.revealed_clue_ids.append(definition.clue_id)
 		return ActionResult.new(true, definition.text("peek_text"))
 	if command == "pursue": return ActionResult.new(true, definition.text("pursue_text"))
 	return ActionResult.new(true, "你收回视线，柜前的人把怀表往前推了推。镜面还露在外头。" if command == "stop" else "你没有去碰那面镜子，继续招呼柜前的客人。")

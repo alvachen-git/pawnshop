@@ -28,6 +28,8 @@ const PANEL_TITLES := {"day": "营业", "appraisal": "鉴定", "dialogue": "对�
 
 func _ready() -> void:
 	theme = CounterTheme.build()
+	CounterTheme.style_paper_button(%MenuButton)
+	%ShopStatusView.add_theme_stylebox_override("panel", CounterTheme.painted_paper())
 	_counter_view.shop_requested.connect(_route_from_counter.bind(&"day", &"shop"))
 	_counter_view.customer_action_requested.connect(_route_from_customer)
 	_counter_view.item_action_requested.connect(_route_from_item)
@@ -69,12 +71,14 @@ func _ready() -> void:
 
 func bind_session(session: RunSession) -> void:
 	_session = session
+	_counter_view.bell_requested.connect(session.bell_command)
+	_counter_view.bell.blocked = _bell_blocked
 	session.restored.connect(_reset_reception)
 	_market_notice = Button.new()
 	_market_notice.name = "MarketNotice"
 	_market_notice.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
 	_market_notice.anchor_left = 0.025
-	_market_notice.anchor_right = 0.32
+	_market_notice.anchor_right = 0.265
 	_market_notice.anchor_top = 0.837
 	_market_notice.anchor_bottom = 0.895
 	_market_notice.add_theme_font_size_override("font_size", 16)
@@ -356,3 +360,14 @@ func _reset_reception() -> void:
 	_close_menu()
 	_close_drawer()
 	_counter_view.dismiss_contexts()
+
+func _bell_blocked() -> bool:
+	if not is_visible_in_tree() or process_mode == Node.PROCESS_MODE_DISABLED: return true
+	if %Drawer.visible or _session_menu.visible: return true
+	for overlay in [_receipt, _departure, _narrative]:
+		if overlay != null and overlay.visible: return true
+	var main := get_parent()
+	if "storage" in main and main.storage != null:
+		var storage: SaveLibraryView = main.storage
+		if storage.overlay.visible or storage.confirm.visible or storage.leave_dialog.visible: return true
+	return false

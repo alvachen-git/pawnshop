@@ -1,6 +1,7 @@
 class_name CounterView
 extends Control
 
+signal bell_requested(mode: String, target_id: String)
 signal shop_requested
 signal customer_action_requested(panel_id: StringName)
 signal item_action_requested(panel_id: StringName)
@@ -21,9 +22,18 @@ var _dialogue_action: Button
 var _trade_action: Button
 var _appraisal_action: Button
 var _active_id := ""
+var _quick_actions: Array[Button] = []
+var bell
 
 
 func _ready() -> void:
+	%CounterMessage.hide()
+	bell = preload("res://ui/counter/counter_bell.gd").new()
+	bell.name = "CounterBell"
+	bell.z_index = 5
+	add_child(bell)
+	_bounds(bell, 0.225, 0.76, 0.285, 0.915)
+	bell.rung.connect(bell_requested.emit)
 	var backdrop := _make_hotspot("CounterBackdrop", 0.0, 0.0, 1.0, 1.0, "")
 	backdrop.focus_mode = Control.FOCUS_NONE
 	backdrop.mouse_default_cursor_shape = Control.CURSOR_ARROW
@@ -38,7 +48,7 @@ func _ready() -> void:
 	_portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_portrait.z_index = 2
 	add_child(_portrait)
-	_bounds(_portrait, 0.365, 0.13, 0.565, 0.58)
+	_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
 
 	_item_image = TextureRect.new()
 	_item_image.name = "CounterItemImage"
@@ -48,20 +58,20 @@ func _ready() -> void:
 	_item_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_item_image.z_index = 2
 	add_child(_item_image)
-	_bounds(_item_image, 0.30, 0.72, 0.465, 0.94)
+	_bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
 
-	var shop_hotspot := _make_hotspot("ShopSignHotspot", 0.02, 0.015, 0.24, 0.145, "查看营业安排 · 不耗时")
+	var shop_hotspot := _make_hotspot("ShopSignHotspot", 0.012, 0.012, 0.167, 0.095, "查看营业安排 · 不耗时")
 	shop_hotspot.pressed.connect(shop_requested.emit)
-	_customer_hotspot = _make_hotspot("CustomerHotspot", 0.365, 0.13, 0.57, 0.585, "与当前客人交谈或交易 · 不耗时")
+	_customer_hotspot = _make_hotspot("CustomerHotspot", 0.325, 0.025, 0.665, 0.57, "与当前客人交谈或交易 · 不耗时")
 	_customer_hotspot.pressed.connect(_toggle_customer_context)
-	_item_hotspot = _make_hotspot("ItemHotspot", 0.295, 0.70, 0.47, 0.95, "选择柜台货物 · 不耗时")
+	_item_hotspot = _make_hotspot("ItemHotspot", 0.425, 0.615, 0.595, 0.815, "选择柜台货物 · 不耗时")
 	_item_hotspot.pressed.connect(_toggle_item_context)
-	var inventory_hotspot := _make_hotspot("InventoryHotspot", 0.02, 0.14, 0.225, 0.62, "查看库存柜 · 不耗时")
+	var inventory_hotspot := _make_hotspot("InventoryHotspot", 0.02, 0.24, 0.165, 0.62, "查看库存柜 · 不耗时")
 	inventory_hotspot.pressed.connect(inventory_requested.emit)
-	var ledger_hotspot := _make_hotspot("LedgerHotspot", 0.775, 0.845, 0.92, 0.975, "翻看账本 · 不耗时")
+	var ledger_hotspot := _make_hotspot("LedgerHotspot", 0.77, 0.68, 0.905, 0.97, "翻看账本 · 不耗时")
 	ledger_hotspot.pressed.connect(ledger_requested.emit)
 
-	_customer_context = _make_context("CustomerContext", 0.50, 0.555, 0.72, 0.64)
+	_customer_context = _make_context("CustomerContext", 0.40, 0.555, 0.64, 0.645)
 	var customer_row := HBoxContainer.new()
 	customer_row.add_theme_constant_override("separation", 6)
 	_customer_context.add_child(customer_row)
@@ -70,7 +80,7 @@ func _ready() -> void:
 	customer_row.add_child(_dialogue_action)
 	customer_row.add_child(_trade_action)
 
-	_item_context = _make_context("ItemContext", 0.475, 0.70, 0.59, 0.79)
+	_item_context = _make_context("ItemContext", 0.595, 0.70, 0.70, 0.79)
 	_appraisal_action = _make_context_button("AppraisalContextButton", "鉴定", &"appraisal", false)
 	_item_context.add_child(_appraisal_action)
 
@@ -79,20 +89,75 @@ func _ready() -> void:
 	_speech_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_speech_panel.z_index = 3
 	add_child(_speech_panel)
-	_bounds(_speech_panel, 0.275, 0.245, 0.395, 0.54)
+	_bounds(_speech_panel, 0.17, 0.07, 0.355, 0.27)
+	_speech_panel.add_theme_stylebox_override("panel", CounterTheme.painted_paper())
 	var margin := MarginContainer.new()
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	for side in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 10)
+		margin.add_theme_constant_override("margin_" + side, 16)
 	_speech_panel.add_child(margin)
 	_speech = Label.new()
 	_speech.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_speech.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_speech.max_lines_visible = 5
+	_speech.max_lines_visible = 4
 	_speech.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	_speech.add_theme_font_size_override("font_size", 16)
+	_speech.add_theme_font_size_override("font_size", 19)
 	margin.add_child(_speech)
+	_build_painted_controls()
+	move_child(bell, get_child_count() - 1)
 
+
+
+func _build_painted_controls() -> void:
+	var actions := HBoxContainer.new()
+	actions.name = "CounterActions"
+	actions.z_index = 5
+	actions.add_theme_constant_override("separation", 24)
+	add_child(actions)
+	_bounds(actions, 0.29, 0.858, 0.70, 0.945)
+	for entry in [["AskButton", "询问", &"dialogue"], ["InspectButton", "鉴定", &"appraisal"], ["OfferButton", "报价", &"trade"]]:
+		var button := Button.new()
+		button.name = entry[0]
+		button.text = entry[1]
+		button.set_meta("action_id", entry[2])
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.add_theme_font_size_override("font_size", 24)
+		CounterTheme.style_paper_button(button)
+		if entry[2] == &"appraisal": button.pressed.connect(_on_item_action.bind(entry[2]))
+		else: button.pressed.connect(_on_customer_action.bind(entry[2]))
+		actions.add_child(button)
+		_quick_actions.append(button)
+	for entry in [["InventoryButton", "库存", 0.80], ["LedgerButton", "账本", 0.87]]:
+		var button := Button.new()
+		button.name = entry[0]
+		button.text = entry[1]
+		button.z_index = 5
+		button.add_theme_font_size_override("font_size", 19)
+		button.tooltip_text = "查看" + entry[1] + " · 不耗时"
+		CounterTheme.style_paper_button(button)
+		add_child(button)
+		_bounds(button, 0.925, entry[2], 0.992, entry[2] + 0.064)
+		if entry[0] == "InventoryButton": button.pressed.connect(inventory_requested.emit)
+		else: button.pressed.connect(ledger_requested.emit)
+	$CustomerPanel.add_theme_stylebox_override("panel", CounterTheme.painted_paper())
+	$CustomerPanel.z_index = 3
+	for label in [%ShopTitle, %CustomerText, %ItemText, _speech]:
+		label.add_theme_font_override("font", CounterTheme.display_font())
+	for node in [$CustomerPanel, $CustomerPanel/CustomerMargin, %CustomerText]:
+		node.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func _sync_quick_actions(customer_actions: Array, item_actions: Array, pawn_return: bool) -> void:
+	for button in _quick_actions:
+		var id: StringName = button.get_meta("action_id")
+		var entries: Array = item_actions if id == &"appraisal" else customer_actions
+		button.disabled = true
+		button.tooltip_text = "柜台暂空"
+		for entry in entries:
+			if StringName(entry.get("id", "")) == id:
+				button.disabled = not bool(entry.get("enabled", true))
+				button.tooltip_text = String(entry.get("reason", ""))
+				if button.tooltip_text.is_empty(): button.tooltip_text = "打开" + {&"dialogue": "对话", &"appraisal": "鉴定", &"trade": "交易"}[id] + " · 查看不耗时"
+		if id == &"trade": button.text = "验票" if pawn_return else "报价"
 
 func _make_hotspot(name_value: String, left: float, top: float, right: float, bottom: float, tooltip: String) -> Button:
 	var button := Button.new()
@@ -156,7 +221,8 @@ func _bounds(control: Control, left: float, top: float, right: float, bottom: fl
 func render(model: Dictionary) -> void:
 	%CustomerText.text = model.customer
 	%ItemText.text = model.item
-	%CounterMessage.text = model.queue
+	%CounterMessage.text = ""
+	%CounterMessage.hide()
 	var visual: Dictionary = model.get("visual", {})
 	var current_active_id := String(model.get("active_id", ""))
 	if current_active_id != _active_id:
@@ -171,12 +237,14 @@ func render(model: Dictionary) -> void:
 	_apply_action(_dialogue_action, customer_actions, &"dialogue")
 	_apply_action(_trade_action, customer_actions, &"trade")
 	_apply_action(_appraisal_action, item_actions, &"appraisal")
+	_sync_quick_actions(customer_actions, item_actions, visual.get("pawn_return", false))
 	if not _customer_hotspot.visible:
 		_customer_context.hide()
 	if not _item_hotspot.visible:
 		_item_context.hide()
 
-	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""))
+	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""), visual.get("customer_id", ""))
+	_portrait.material = CounterVisualCatalog.portrait_material(_portrait.texture)
 	_portrait.visible = active and _portrait.texture != null
 	_item_image.texture = CounterVisualCatalog.front(visual.get("item_asset", ""), model.appraisal.get("images", []))
 	_item_image.visible = active and _item_image.texture != null
@@ -188,7 +256,7 @@ func render(model: Dictionary) -> void:
 		if not visual.speech.is_empty():
 			_speech.text = visual.speech.back().answer
 		_speech.tooltip_text = _speech.text
-		%ItemText.text = "%s\n证据估值 %s\n已见线索 %d 条" % [visual.item_name, visual.estimate, visual.clues.size()]
+		%ItemText.text = "%s\n已知估值 %s 银元\n已见线索 %d 条" % [visual.item_name, visual.estimate, visual.clues.size()]
 	$Room.has_customer = active and _portrait.texture == null
 	$Room.has_item = active and _item_image.texture == null
 	$Room.queue_redraw()
@@ -268,7 +336,8 @@ func get_hotspot(kind: StringName) -> Button:
 
 
 func set_counter_message(message: String) -> void:
-	%CounterMessage.text = message
+	%CounterMessage.text = ""
+	%CounterMessage.hide()
 
 
 func set_atmosphere(mode: int, preview: bool, intrusion: bool, haunting: bool, dead: bool) -> void:
@@ -276,7 +345,8 @@ func set_atmosphere(mode: int, preview: bool, intrusion: bool, haunting: bool, d
 	$Room.smoke_wrong = intrusion or (preview and mode == 1)
 	$Room.lamp_wrong = haunting or (preview and mode == 2)
 	$Room.lamp_dead = dead
-	_portrait.modulate = Color.WHITE if mode == 0 else Color("c0cccb")
+	_portrait.modulate = [Color.WHITE, Color("9aaba9"), Color("b3c9ce")][mode]
+	_item_image.modulate = [Color.WHITE, Color("b0b9b5"), Color("c1d2d7")][mode]
 	$Room.queue_redraw()
 	%AtmosphereLabel.text = ["灯火初上", "夜深了", "禁时 · 鬼市"][mode]
 	if preview:

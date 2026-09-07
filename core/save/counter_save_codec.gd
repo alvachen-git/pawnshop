@@ -12,6 +12,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			var fixture := RunState.create(run)
 			fixture.current_night_index = index + 1
 			fixture.run_seed = state.run_seed
+			fixture.preparation_history = state.preparation_history.duplicate(true)
 			CustomerManager.new().prepare_night(fixture, run, catalog)
 			var delay := PawnReturnService.delay_for(data, index + 1, catalog)
 			for expected in fixture.visits:
@@ -29,6 +30,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		for slot in run.customer_slots:
 			if entry.visit_id == "%s/%d/%s" % [run.id, int(entry.night), slot.id] and (slot.customer_id == entry.customer_id or not run.variety.is_empty()): found_slot = true
 		if not expected_visits.has(entry.visit_id): return "来访不属于该夜编排。"
+		if OpeningPreparation.enabled(run) and expected_visits.has(entry.visit_id) and entry.visit_id.ends_with("/prep_extra"): found_slot = true
 		if not found_slot: return "来访ID不属于当前运行配置。"
 		var planned: CustomerVisit = expected_visits[entry.visit_id]
 		if planned.customer_id != entry.customer_id: return "来访人物与抽选结果不符。"

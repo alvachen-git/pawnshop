@@ -13,7 +13,7 @@ static func validate(row: Dictionary, path: String, at: String) -> Array:
 		CounterDomainValidator._error(issues, at, "铜镜遭遇须为数组。")
 		return issues
 	for encounter in row.get("mirror_encounters", []):
-		CounterSchema._fields(encounter, {"id": "text", "slot_id": "text", "mirror_item_id": "text", "clue_id": "text", "start_minute": "positive", "peek_minutes": "positive", "pursue_minutes": "positive", "invitation": "text", "peek_text": "text", "pursue_text": "text", "crisis": "text", "death_cause": "text"}, path, at + ".mirror_encounters", issues)
+		CounterSchema._fields(encounter, {"id": "text", "slot_id": "text", "mirror_item_id": "text", "clue_id": "string", "start_minute": "positive", "peek_minutes": "positive", "pursue_minutes": "positive", "invitation": "text", "peek_text": "text", "pursue_text": "text", "crisis": "text", "death_cause": "text"}, path, at + ".mirror_encounters", issues)
 	return issues
 
 static func domain(catalog: ContentCatalog) -> Array:
@@ -33,7 +33,7 @@ static func domain(catalog: ContentCatalog) -> Array:
 				if slot.id != encounter.slot_id: continue
 				slot_found = true
 				var item := catalog.get_definition("items", slot.item_id) as ItemDefinition
-				if item == null or item.find_variant(slot.variant_id) == null or encounter.clue_id not in item.find_variant(slot.variant_id).clue_ids:
+				if item == null or item.find_variant(slot.variant_id) == null or (not encounter.clue_id.is_empty() and encounter.clue_id not in item.find_variant(slot.variant_id).clue_ids):
 					CounterDomainValidator._error(issues, run.id, "遭遇须绑定固定物品变体及真实证据。")
 			if not slot_found: CounterDomainValidator._error(issues, run.id, "遭遇来访槽不存在。")
 			for cost in [encounter.peek_minutes, encounter.pursue_minutes, encounter.start_minute]:

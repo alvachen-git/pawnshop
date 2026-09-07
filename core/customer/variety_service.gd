@@ -59,6 +59,7 @@ static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -
 static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog, delay: int) -> void:
 	var rows: Array[Dictionary] = state.seven_plan if SevenNightPlan.enabled(run) and not state.seven_plan.is_empty() else plan(run, catalog, state.run_seed)
 	if SevenNightPlan.enabled(run): state.seven_plan.assign(rows)
+	if OpeningPreparation.enabled(run): rows = OpeningPreparation.plan(state, run, catalog)
 	if OrdinarySamplePlan.enabled(run):
 		state.sample_plan.assign(rows)
 		state.buyer_appointment = OrdinarySamplePlan.appointment(rows, catalog, state.run_seed)
@@ -72,7 +73,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		visit.customer_id = row.customer_id
 		visit.person = row.person.duplicate(true)
 		visit.voice = customer.persona.duplicate(true)
-		if SevenNightPlan.enabled(run): visit.voice.merge(SevenNightPlan.context(run, row.context_id).voice, true)
+		if SevenNightPlan.enabled(run) and not row.context_id.is_empty(): visit.voice.merge(SevenNightPlan.context(run, row.context_id).voice, true)
 		if not item.provenance.is_empty(): visit.voice["source_claim"] = item.provenance.claim
 		visit.pawn_terms_id = row.terms_id
 		visit.arrival = int(row.arrival) + delay
@@ -87,6 +88,11 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		visit.trade.reserve_price = maxi(1, roundi(visit.trade.opening_price * customer.terms.reserve_ratio))
 		visit.trade.rounds_left = customer.max_quote_rounds
 		visit.trade.patience = customer.patience
+		for slot in run.customer_slots:
+			if row.visit_id == "%s/%d/%s" % [run.id, state.current_night_index, slot.id]:
+				visit.trade.rounds_left = maxi(visit.trade.rounds_left, int(slot.tutorial.get("min_quote_rounds", 0)))
+				visit.trade.patience = maxi(visit.trade.patience, int(slot.tutorial.get("min_patience", 0)))
+				break
 		var scenario := TradeScenarioService.for_item(run, item.id)
 		if scenario != null:
 			visit.scenario_id = scenario.id

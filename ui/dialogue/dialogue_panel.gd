@@ -37,7 +37,8 @@ func _ready() -> void:
 func render(model: Dictionary) -> void:
 	super.render(model)
 	var visual: Dictionary = model.get("visual", {})
-	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""))
+	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""), visual.get("customer_id", ""))
+	_portrait.material = CounterVisualCatalog.portrait_material(_portrait.texture)
 	_portrait.visible = _portrait.texture != null
 	_identity.text = "" if visual.is_empty() else "%s\n%s · 留到 %s" % [visual.customer_name, visual.attitude, visual.deadline]
 	if _last_visit != _visit_id:

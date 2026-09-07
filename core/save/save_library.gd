@@ -4,9 +4,9 @@ extends RefCounted
 # Slots and append-only endings share one atomic publication boundary.
 const FORMAT := 1
 const DEFAULT_PATH := "user://save_library/library_v1.json"
-const MANIFESTS := ["res://data/content_manifest.json", "res://data/four_night_manifest.json", "res://data/seven_night_manifest.json", "res://data/opening_manifest.json", "res://data/legacy/content_v9.json", "res://data/legacy/content_v10_released.json", "res://data/legacy/content_v10.json", "res://data/legacy/content_v10_100_300.json", "res://data/legacy/content_v11.json"]
-const LEGACY := {"p0_variety": "user://p0/autosave_v12.json", "ordinary_four": "user://ordinary_four/autosave_v11.json", "ordinary_seven": "user://ordinary_seven/autosave_v13.json", "opening_v01": "user://p0/opening_v01.json", "old_v11": "user://p0/autosave_v11.json", "old_v10": "user://p0/autosave_v10.json", "old_v9": "user://p0/autosave_v9.json"}
-const NAMES := {"p0_variety": "三夜原型", "p0_room": "三夜原型（旧版）", "ordinary_four": "四夜经营", "ordinary_seven": "七夜经营", "opening_v01": "开场剧情"}
+const MANIFESTS := ["res://data/preparation_manifest.json", "res://data/integrated_manifest.json", "res://data/content_manifest.json", "res://data/four_night_manifest.json", "res://data/seven_night_manifest.json", "res://data/opening_manifest.json", "res://data/legacy/content_v9.json", "res://data/legacy/content_v10_released.json", "res://data/legacy/content_v10.json", "res://data/legacy/content_v10_100_300.json", "res://data/legacy/content_v11.json"]
+const LEGACY := {"prepared_seven": "user://prepared_seven/autosave_v15.json", "integrated_seven": "user://integrated_seven/autosave_v14.json", "p0_variety": "user://p0/autosave_v12.json", "ordinary_four": "user://ordinary_four/autosave_v11.json", "ordinary_seven": "user://ordinary_seven/autosave_v13.json", "opening_v01": "user://p0/opening_v01.json", "old_v11": "user://p0/autosave_v11.json", "old_v10": "user://p0/autosave_v10.json", "old_v9": "user://p0/autosave_v9.json"}
+const NAMES := {"prepared_seven": "鬼市当铺 · 七夜", "integrated_seven": "鬼市当铺 · 七夜", "p0_variety": "三夜原型", "p0_room": "三夜原型（旧版）", "ordinary_four": "四夜经营", "ordinary_seven": "七夜经营", "opening_v01": "开场剧情"}
 var path := DEFAULT_PATH
 var error_message := ""
 var busy := false
@@ -194,9 +194,6 @@ func adopt(decoded: Dictionary, session: RunSession) -> bool:
 		target.assign(records)
 	session._switch_content(decoded.run, decoded.catalog.content_version, decoded.catalog)
 	session._day.state = state
-	session._new_catalog = decoded.catalog
-	session._new_definition = decoded.run
-	session._new_version = decoded.catalog.content_version
 	session._pawn_choices.clear()
 	session._risk_error = ""
 	if state.phase == &"pre_open": session._counter.customers.prepare_night(state, decoded.run, decoded.catalog)

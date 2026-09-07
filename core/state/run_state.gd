@@ -15,6 +15,7 @@ var action_count: int = 0
 var run_token := ""
 var seven_plan: Array[Dictionary] = []
 var preparation_history: Array[Dictionary] = []
+var preparation_version := 0
 var sample_plan: Array[Dictionary] = []
 var buyer_appointment: Dictionary = {}
 var ordinary_selections: Array[Dictionary] = []
@@ -52,6 +53,7 @@ var visits: Array[CustomerVisit] = []
 static func create(definition: RunDefinition) -> RunState:
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.preparation_version = int(definition.variety.get("preparation_version", 0))
 	state.room_enabled = definition.private_room
 	if not definition.ghost_rule_ids.is_empty() or definition.fee_policy.enabled: state.run_token = Crypto.new().generate_random_bytes(16).hex_encode()
 	state.run_seed = (int(Crypto.new().generate_random_bytes(4).hex_encode().hex_to_int()) & 0x7fffffff) if definition.randomize_seed else definition.seed

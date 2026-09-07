@@ -92,6 +92,9 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var item := inventory.find(state, row.item_instance_id)
 		var def := catalog.get_definition("items", item.definition_id) as ItemDefinition
 		_post(expected, "inquiry/" + item.instance_id, item.instance_id, row.night, row.minute, -int(def.provenance.inquiry_fee), "provenance_inquiry", 0)
+	if OpeningPreparation.enabled(run):
+		for row in state.preparation_history:
+			if row.cost > 0: _post(expected, OpeningPreparation.posting_id(row), "preparation", int(row.night), 0, -int(row.cost), "preparation", 0)
 	var fee_error := FeeSaveCodec.prepare(data, state, run, expected)
 	if not fee_error.is_empty(): return fee_error
 	var balance := run.initial_cash
@@ -103,7 +106,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		for key in posting:
 			if row.get(key) != posting[key]: return "流水与交易记录不一致。"
 		var stamp := int(row.night) * (run.night_minutes + 1) + int(row.minute)
-		if row.kind not in ["daily_fees", "pawn_transfer"] and row.minute > SaveTimeline.closing(state, int(row.night)): return "关门后不能完成外部交易。"
+		if row.kind not in ["daily_fees", "pawn_transfer", "preparation"] and row.minute > SaveTimeline.closing(state, int(row.night)): return "关门后不能完成外部交易。"
 		if stamp < last_time: return "流水时间倒序。"
 		last_time = stamp
 		balance += int(row.amount)
@@ -115,6 +118,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	for summary in state.summaries:
 		var snapshot := RunState.new()
 		snapshot.current_night_index = summary.night
+		snapshot.preparation_version = state.preparation_version
 		snapshot.ledger_entries = state.ledger_entries
 		snapshot.fee_history = state.fee_history
 		snapshot.ordinary_selections = state.ordinary_selections

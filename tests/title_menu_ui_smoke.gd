@@ -65,12 +65,11 @@ func _run() -> void:
 	_check(not FileAccess.file_exists(save_path), "新游戏按钮不提前覆盖存档")
 	await _capture("new-game")
 	var token: String = session.read_state().run_token
-	var helper := RoomTests.new()
-	helper._expect = _check
+	var helper = preload("res://tests/integrated_test_driver.gd").new()
+	helper.check = _check
 	helper.catalog = session._counter.catalog
-	helper.run_def = session.definition
 	helper.open(session)
-	helper.seal(session)
+	helper.finish(session, "covered")
 	_check(FileAccess.file_exists(save_path), "实际夜末生成独立测试存档：" + session._save.error_message)
 	if not FileAccess.file_exists(save_path): quit(1); return
 	var bytes := FileAccess.get_file_as_bytes(save_path)
