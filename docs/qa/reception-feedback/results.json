@@ -1,0 +1,42 @@
+[
+  {
+    "test": "bargaining-core",
+    "assertions": 182,
+    "failures": 0
+  },
+  {
+    "test": "bargaining_ui_smoke",
+    "assertions": 36,
+    "failures": 0
+  },
+  {
+    "test": "core",
+    "assertions": 113,
+    "failures": 0
+  },
+  {
+    "test": "receipt_ui_smoke",
+    "assertions": 75,
+    "failures": 0
+  },
+  {
+    "test": "seven_ui_smoke",
+    "assertions": 322,
+    "failures": 0
+  },
+  {
+    "test": "ui1280",
+    "assertions": 67,
+    "failures": 0
+  },
+  {
+    "test": "ui1600",
+    "assertions": 67,
+    "failures": 0
+  },
+  {
+    "test": "waiting_departure_ui_smoke",
+    "assertions": 58,
+    "failures": 0
+  }
+]
