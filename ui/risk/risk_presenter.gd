@@ -35,4 +35,4 @@ func refresh() -> void:
 		route_requested.emit(&"risk")
 
 func _choose(command: String, id: String, _detail: String, _amount: int) -> void:
-	_session.risk_command(command, id)
+	_session.risk_command(command, id, _detail)

@@ -50,8 +50,24 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var visit: CustomerVisit = visits[row.visit_id]
 		var previous := MirrorEncounterService.stage(state, row.visit_id)
 		if row.action not in (["peek", "peek_expired", "decline"] if previous.is_empty() else (["pursue", "pursue_expired", "stop"] if previous == "peek" else [])): return "铜镜遭遇选择重复或顺序无效。"
+		if not definition.allow_pursuit and row.action in ["pursue", "pursue_expired", "stop"]: return "普通窥镜不能追看。"
+		if definition.once_per_night and row.action.begins_with("peek"):
+			for prior in state.mirror_history:
+				if prior.night == night and String(prior.action).begins_with("peek"): return "一夜不能重复窥镜。"
 		var cost := definition.peek_minutes if row.action.begins_with("peek") else (definition.pursue_minutes if row.action.begins_with("pursue") else 0)
 		var start := minute - cost
+		var flags: Array = []
+		for event_row in state.event_history:
+			if event_row.night < night or (event_row.night == night and event_row.minute <= start):
+				var event := catalog.get_definition("events", event_row.event_id) as EventDefinition
+				flags.append_array(event.find_choice(event_row.choice_id).grant_flags)
+		if not CounterDomainValidator._contains_all(flags, definition.required_flags): return "窥镜缺少已知的使用说明。"
+		if definition.once_per_night and cost > 0:
+			for action_row in data.get("scenario_history", []) + data.get("bargaining_history", []):
+				if not action_row is Dictionary or not CounterSaveCodec._integers(action_row, ["night", "start", "minute"]): return "交易时间记录无效。"
+				if action_row.night == night and action_row.minute > start and action_row.start < minute: return "窥镜与交易耗时重叠。"
+			for event_row in state.event_history:
+				if event_row.night == night and event_row.minute > start and event_row.offered_minute < minute: return "窥镜与查访耗时重叠。"
 		var stamp := night * (run.night_minutes + 1) + start
 		var closing: int = SaveTimeline.closing(state, night)
 		if stamp < last_end or start < maxi(definition.start_minute, visit.arrival) or start >= mini(visit.expires_at, closing) or minute > run.night_minutes: return "铜镜遭遇不在有效营业窗口。"
@@ -71,7 +87,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			if treatment.get("action") in ["cover", "uncover", "retreat"] and (treatment.night < night or (treatment.night == night and treatment.minute <= start)): cloth = treatment.action != "uncover"
 			if cost > 0 and treatment.night == night and treatment.get("action") in ["cover", "uncover"]:
 				var rule := manager.rule_for(mirror)
-				var treatment_cost := rule.cover_minutes if treatment.action == "cover" else rule.uncover_minutes
+				var treatment_cost := RiskManager.recorded_minutes(run, rule, treatment)
+				if treatment_cost < 0: return "红布动作记录无效。"
 				if treatment.minute > start and treatment.minute - treatment_cost < minute: return "窥镜与覆镜耗时重叠。"
 		if cost > 0 and cloth: return "红布未揭，无法窥镜。"
 		var item := catalog.get_definition("items", visit.item.definition_id) as ItemDefinition

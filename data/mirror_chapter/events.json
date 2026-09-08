@@ -1,0 +1,288 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "wm_notes",
+      "title": "翻查顾先生的用镜短记",
+      "speaker": "铺中旧档",
+      "body": "循镜背旧记号查工具册。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 3,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [
+        "item_weeping_mirror"
+      ],
+      "conflicts_with": [],
+      "presentation": {
+        "scene": "counter",
+        "manual": true
+      },
+      "choices": [
+        {
+          "id": "read",
+          "label": "翻查顾先生的用镜短记",
+          "result": "册里夹着一张短记：“一夜只显一回，借镜五分钟，照见舍物时不肯说的话。莫据此定货色，须再问。关门前覆红，倒影回身莫追。”\n\n镜背还刻着一截典物号，能查旧当存根。",
+          "minutes": 5,
+          "grant_flags": [
+            "wm_notes"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wm_ticket",
+      "title": "按典物号查旧当存根",
+      "speaker": "铺中旧档",
+      "body": "翻检旧当册。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 4,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "wm_notes"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "presentation": {
+        "scene": "counter",
+        "manual": true
+      },
+      "choices": [
+        {
+          "id": "read",
+          "label": "按典物号查旧当存根",
+          "result": "铜镜一面，妆奁旧物。附记：当户住柳巷，丈夫出外经商，幼子病急，当款取药。\n\n票角写着“留”。顾先生另记：“到期暂勿出卖。她问了三遍，药铺今夜几时关门。”",
+          "minutes": 10,
+          "grant_flags": [
+            "wm_ticket"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wm_life",
+      "title": "托街坊核实柳巷旧事",
+      "speaker": "铺中旧档",
+      "body": "请熟悉柳巷的街坊带回消息。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 4,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "wm_ticket"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "presentation": {
+        "scene": "counter",
+        "manual": true
+      },
+      "choices": [
+        {
+          "id": "read",
+          "label": "托街坊核实柳巷旧事",
+          "result": "街坊认得当票上的住处：“她起先替人浆洗缝补，后来实在撑不住，才去了风月场。镜子是她娘给的嫁妆，一直舍不得动。”\n\n“孩子没救回来。她后来也自尽了。”旧当册里的死讯记在取当款之后。没有写她丈夫回来过。",
+          "minutes": 15,
+          "grant_flags": [
+            "wm_life"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wm_identity",
+      "title": "对照货郎旧账与柳巷住户",
+      "speaker": "铺中旧档",
+      "body": "用家庭旧址核对旧交易，再向联络人求证。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 6,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "wm_life"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "presentation": {
+        "scene": "counter",
+        "manual": true
+      },
+      "choices": [
+        {
+          "id": "read",
+          "label": "对照货郎旧账与柳巷住户",
+          "result": "货郎早年的收货单写着同一处柳巷住址，家属记载与旧当存根吻合。西平码头的联络人认出单上签押：“就是那位常带怀表的货郎，如今还在这儿收货。”\n\n两边的记录对上了。他就是她等的丈夫。眼下只能确认身份，尚不知道当年为何不回去。",
+          "minutes": 15,
+          "grant_flags": [
+            "wm_identity"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wm_concealed",
+      "title": "核对顾先生的两册记录",
+      "speaker": "铺中旧档",
+      "body": "沿相同日期对照收货账与铜镜资料。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 6,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "wm_identity"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "presentation": {
+        "scene": "counter",
+        "manual": true
+      },
+      "choices": [
+        {
+          "id": "read",
+          "label": "核对顾先生的两册记录",
+          "result": "铜镜资料上写着“已认得其人，无从追查”。另一册却记着西平码头收货地址，而且后来仍有同此人的生意。\n\n顾先生知道去哪里找他。这两册话对不上，但还不能仅凭这一点知道他为何隐瞒。",
+          "minutes": 10,
+          "grant_flags": [
+            "wm_concealed"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wm_motive",
+      "title": "查那一日夹页里的旁记",
+      "speaker": "铺中旧档",
+      "body": "查看日期相同的用镜旁记。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "wm_concealed"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "presentation": {
+        "scene": "counter",
+        "manual": true
+      },
+      "choices": [
+        {
+          "id": "read",
+          "label": "查那一日夹页里的旁记",
+          "result": "夹页列着几笔借镜问话后压下的收购价。末尾一行墨很重：\n\n“人是寻得着的。只是这一问若问明白了，镜还照不照？留。”\n\n顾先生怕失去这份用处，扣下了可以找到丈夫的线索。西平码头的地址仍在，你已经知道下一步可去问谁。",
+          "minutes": 10,
+          "grant_flags": [
+            "wm_motive"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "wm_choice",
+      "title": "决定这份旧档如何收起",
+      "speaker": "铺中旧档",
+      "body": "身份与顾先生的隐瞒已经查明。西平码头的地址在册中；当年的离家经过，还未核实。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "wm_motive"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "presentation": {
+        "scene": "counter",
+        "manual": true
+      },
+      "choices": [
+        {
+          "id": "seek",
+          "label": "把地址另抄下来，继续查",
+          "result": "你抄下西平码头的地址。丈夫为何离开、为何不归，还须找到人再核实。镜子里的等待尚未结束。",
+          "minutes": 0,
+          "grant_flags": [
+            "wm_seek"
+          ]
+        },
+        {
+          "id": "seal",
+          "label": "记下先封存铜镜",
+          "result": "你在旧档旁记下“暂不借镜”。镜子仍占着柜中一格；红布须按原规盖好，这笔旧事尚未办结。",
+          "minutes": 0,
+          "grant_flags": [
+            "wm_seal"
+          ],
+          "required_items": [
+            "item_weeping_mirror"
+          ]
+        },
+        {
+          "id": "use",
+          "label": "留下用镜短记，暂不追查",
+          "result": "你把地址压回册底，将用镜短记留在手边。顾先生当年留下的这份便利，如今也到了你手里。",
+          "minutes": 0,
+          "grant_flags": [
+            "wm_use"
+          ],
+          "required_items": [
+            "item_weeping_mirror"
+          ]
+        }
+      ]
+    }
+  ]
+}

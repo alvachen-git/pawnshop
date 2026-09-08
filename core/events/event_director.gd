@@ -41,7 +41,7 @@ func select_next(state: RunState, run: RunDefinition) -> String:
 	var candidates: Array[EventDefinition] = []
 	for id in run.event_ids:
 		var event := catalog.get_definition("events", id) as EventDefinition
-		if eligible(state, event) and _can_finish_any(state, event): candidates.append(event)
+		if not event.presentation.get("manual", false) and eligible(state, event) and _can_finish_any(state, event): candidates.append(event)
 	if candidates.is_empty(): return ""
 	candidates.sort_custom(func(a: EventDefinition, b: EventDefinition) -> bool:
 		if RANK[a.kind] != RANK[b.kind]: return RANK[a.kind] < RANK[b.kind]
@@ -62,6 +62,16 @@ func select_next(state: RunState, run: RunDefinition) -> String:
 		if roll <= 0: return event.id
 	return ""
 
+func investigate(day: DayController, event_id: String, choice_id: String) -> ActionResult:
+	if event_id not in day.definition.event_ids or not day.state.pending_event_id.is_empty(): return ActionResult.new(false, "请先处理眼前的事情。")
+	var event := catalog.get_definition("events", event_id) as EventDefinition
+	if event == null or not event.presentation.get("manual", false) or not eligible(day.state, event): return ActionResult.new(false, "还没有可查的凭据，或这份资料已经记下。")
+	var choice := event.find_choice(choice_id)
+	if choice == null or not choice.available(day.state.narrative_flags, day.state.inventory_instances) or day.state.game_minutes + choice.minutes >= event.window_end: return ActionResult.new(false, "眼下不能完成这项查访。")
+	day.state.pending_event_id = event_id
+	day.state.pending_event_minute = day.state.game_minutes
+	return choose(day, event_id, choice_id)
+
 func poll(state: RunState, run: RunDefinition) -> void:
 	if not state.pending_event_id.is_empty(): return
 	state.pending_event_id = select_next(state, run)
@@ -69,14 +79,14 @@ func poll(state: RunState, run: RunDefinition) -> void:
 
 func _can_finish_any(state: RunState, event: EventDefinition) -> bool:
 	for choice in event.choices:
-		if choice.available(state.narrative_flags) and state.game_minutes + choice.minutes < event.window_end: return true
+		if choice.available(state.narrative_flags, state.inventory_instances) and state.game_minutes + choice.minutes < event.window_end: return true
 	return false
 
 func choose(day: DayController, event_id: String, choice_id: String) -> ActionResult:
 	if event_id.is_empty() or event_id != day.state.pending_event_id: return ActionResult.new(false, "这件事已经处理，或当前没有此事件。")
 	var event := catalog.get_definition("events", event_id) as EventDefinition
 	var choice := event.find_choice(choice_id)
-	if choice == null or not eligible(day.state, event) or not choice.available(day.state.narrative_flags): return ActionResult.new(false, "事件或选择已不可用。")
+	if choice == null or not eligible(day.state, event) or not choice.available(day.state.narrative_flags, day.state.inventory_instances): return ActionResult.new(false, "事件或选择已不可用。")
 	if day.state.game_minutes + choice.minutes >= event.window_end: return ActionResult.new(false, "剩余时间不足以完成此选择。")
 	if choice.minutes > 0:
 		var result := day.spend_action(choice.minutes)
@@ -96,7 +106,7 @@ func model(day: DayController, message: String) -> Dictionary:
 		var event := catalog.get_definition("events", day.state.pending_event_id) as EventDefinition
 		body = "%s · %s\n\n%s\n\n" % [event.title, event.speaker, event.body]
 		for choice in event.choices:
-			if not choice.available(day.state.narrative_flags): continue
+			if not choice.available(day.state.narrative_flags, day.state.inventory_instances): continue
 			var reason := "" if day.state.game_minutes + choice.minutes < event.window_end else "时间不足"
 			buttons.append({"command": "choose", "target_id": event.id, "detail": choice.id, "label": choice.label + (" · %d分钟" % choice.minutes if choice.minutes > 0 else ""), "enabled": reason.is_empty(), "reason": reason})
 	var history := "往事\n"

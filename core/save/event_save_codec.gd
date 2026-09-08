@@ -39,8 +39,14 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		replay.game_minutes = int(row.offered_minute)
 		replay.inventory_instances = _inventory_at(state, int(row.night), int(row.offered_minute))
 		replay.ledger_entries = state.ledger_entries.duplicate(true)
-		if not choice.available(replay.narrative_flags): return "事件选择前置条件不成立。"
-		if director.select_next(replay, run) != event.id: return "事件调度与条件、优先级、权重或次数不一致。"
+		if not choice.available(replay.narrative_flags, replay.inventory_instances): return "事件选择前置条件不成立。"
+		if event.presentation.get("manual", false):
+			for action_row in data.get("scenario_history", []) + data.get("bargaining_history", []):
+				if not action_row is Dictionary or not CounterSaveCodec._integers(action_row, ["night", "start", "minute"]): return "调查关联的交易时间无效。"
+				if action_row.night == row.night and action_row.minute > row.offered_minute and action_row.start < row.minute: return "调查与交易耗时重叠。"
+			if not director.eligible(replay, event) or not director.select_next(replay, run).is_empty(): return "调查前置条件或处理顺序不成立。"
+		else:
+			if director.select_next(replay, run) != event.id: return "事件调度与条件、优先级、权重或次数不一致。"
 		for flag in choice.grant_flags:
 			if flag not in replay.narrative_flags: replay.narrative_flags.append(flag)
 		replay.event_history.append({"event_id": event.id, "choice_id": choice.id, "night": int(row.night), "phase": event.phase, "offered_minute": int(row.offered_minute), "minute": int(row.minute)})
@@ -59,7 +65,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 					if flag not in check.narrative_flags: check.narrative_flags.append(flag)
 		for id in run.event_ids:
 			var event := catalog.get_definition("events", id) as EventDefinition
-			if event.kind == "anchor" and director.eligible(check, event): return "已结算夜缺少必需锚点。"
+			if event.kind == "anchor" and not event.presentation.get("manual", false) and director.eligible(check, event): return "已结算夜缺少必需锚点。"
 	var pending := director.select_next(state, run)
 	if data.pending_event_id != pending or int(data.pending_event_minute) != (state.game_minutes if not pending.is_empty() else -1): return "待处理事件与检查点不一致。"
 	state.pending_event_id = pending

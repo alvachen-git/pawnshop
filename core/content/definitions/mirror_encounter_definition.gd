@@ -2,6 +2,12 @@ class_name MirrorEncounterDefinition
 extends RefCounted
 
 var _data: Dictionary
+var once_per_night: bool:
+	get: return _data.get("once_per_night", false)
+var allow_pursuit: bool:
+	get: return _data.get("allow_pursuit", true)
+var required_flags: Array:
+	get: return _data.get("required_flags", []).duplicate()
 var id: String:
 	get: return _data.id
 var slot_id: String:

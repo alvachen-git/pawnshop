@@ -30,9 +30,10 @@ func _run() -> void:
 	_check(view._item_image.texture.resource_path.ends_with("hairpin_front.png"), "正式首客显示银簪")
 	await _clean_capture("01_opening")
 	var before := _session.read_state()
-	for entry in [["AskButton", &"dialogue"], ["InspectButton", &"appraisal"], ["OfferButton", &"trade"]]:
-		await _click_button(view.get_node("CounterActions/" + entry[0]))
-		_check(screen.get_node("%ScreenFlowCoordinator").get_active_panel_id() == entry[1], "常驻入口打开正确功能：" + entry[0])
+	_check(not view.has_node("CounterActions"), "桌面不再重复展示三个动作")
+	for entry in [["对话", &"dialogue"], ["鉴定", &"appraisal"], ["交易", &"trade"]]:
+		await _click(entry[0])
+		_check(screen.get_node("%ScreenFlowCoordinator").get_active_panel_id() == entry[1], "原情境入口打开正确功能：" + entry[0])
 		_check(screen.get_node("%Drawer").visible, "真实鼠标打开抽屉")
 		await _click("收起 · Esc")
 	_check(before == _session.read_state(), "查看对话、鉴定、报价不耗时或泄露线索")
@@ -50,7 +51,7 @@ func _run() -> void:
 	await _click("菜单")
 	await _click_button(screen.get_node("%PreviewSelector"))
 	_check(screen.atmosphere_presenter.preview_mode == -1, "回到随游戏的真实氛围")
-	await _click_button(view.get_node("CounterActions/OfferButton"))
+	await _click("交易")
 	_find_trade(_main)._price.value = _session.counter_model().trade.asking_price
 	await _click("正式报价并收购")
 	await receipts()
@@ -58,7 +59,7 @@ func _run() -> void:
 	screen._close_drawer()
 	await _frames()
 	_check(not view._portrait.visible and not view._item_image.visible, "成交移除人物与银簪")
-	for button in view._quick_actions: _check(button.disabled, "空柜台禁用交易入口")
+	_check(not view.get_hotspot(&"customer").visible and not view.get_hotspot(&"item").visible, "空柜台没有顾客或物品的情境入口")
 	await _clean_capture("05_empty")
 	for name in ["InventoryButton", "LedgerButton"]:
 		await _click_button(view.get_node(name))

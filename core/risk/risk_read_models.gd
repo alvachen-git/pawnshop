@@ -25,8 +25,8 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 			var reason := manager.reason(day, item.instance_id, command)
 			if not state.pending_event_id.is_empty(): reason = "请先处理铺中记事。"
 			if state.phase not in [&"open", &"closed_processing"]: continue
-			var cost := rule.cover_minutes if command == "cover" else rule.uncover_minutes
-			var label := ("盖好红布" if command == "cover" else "揭开红布") + " · %d分钟" % cost
+			var cost := RiskManager.action_minutes(day.definition, rule, command)
+			var label := ("盖好红布" if command == "cover" else "揭开红布") + (" · %d分钟" % cost if cost > 0 else "")
 			buttons.append({"command": command, "target_id": item.instance_id, "detail": "", "label": label, "enabled": reason.is_empty(), "reason": reason})
 	if held.is_empty(): body += "\n柜门掩着，暂时没有什么动静。\n"
 	body += "\n财神香：%s\n命灯：%s\n" % ["香灰向镜面倒伏，窗缝里却没有风。" if intrusion else "香烟直上。", "已经熄灭。" if state.phase == &"dead" else ("向镜面倾斜，火苗贴着镜面发颤。" if not state.risk_pending.is_empty() else ("灯芯偏斜，你挪到哪边，它便跟到哪边。" if haunting else "火苗安稳。"))]

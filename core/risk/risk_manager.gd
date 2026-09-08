@@ -47,6 +47,18 @@ func capture_close(state: RunState) -> void:
 			row.covered = covered(state, item.instance_id)
 			state.risk_history.append(row)
 
+static func action_minutes(run: RunDefinition, rule: GhostRuleDefinition, command: String) -> int:
+	if run.variety.get("free_cloth", false): return 0
+	return rule.cover_minutes if command == "cover" else rule.uncover_minutes
+
+# Old rows retain their original cost. New instant rows carry an explicit marker,
+# allowing an existing chapter save to continue without reinterpreting its history.
+static func recorded_minutes(run: RunDefinition, rule: GhostRuleDefinition, row: Dictionary) -> int:
+	if row.has("instant"):
+		if not row.instant is bool or row.instant != true or not run.variety.get("free_cloth", false): return -1
+		return 0
+	return rule.cover_minutes if row.action == "cover" else rule.uncover_minutes
+
 func reason(day: DayController, id: String, command: String) -> String:
 	if command not in ["cover", "uncover"]: return "未知处理方式。"
 	if day.state.phase not in [&"open", &"closed_processing"]: return "只可在营业或关门处理时动手。"
@@ -54,7 +66,7 @@ func reason(day: DayController, id: String, command: String) -> String:
 	if item == null or rule_for(item) == null or item.ownership_state not in ["owned", "pledged"]: return "该鬼货不在铺中。"
 	if covered(day.state, id) == (command == "cover"): return "物品已经处于该存放状态。"
 	var rule := rule_for(item)
-	var cost := rule.cover_minutes if command == "cover" else rule.uncover_minutes
+	var cost := action_minutes(day.definition, rule, command)
 	if day.state.game_minutes + cost > day.definition.night_minutes: return "剩余时间不足：需要%d分钟。" % cost
 	return ""
 
@@ -62,9 +74,13 @@ func handle(day: DayController, id: String, command: String) -> ActionResult:
 	var unavailable := reason(day, id, command)
 	if not unavailable.is_empty(): return ActionResult.new(false, unavailable)
 	var rule := rule_for(InventoryManager.new().find(day.state, id))
-	var result := day.spend_action(rule.cover_minutes if command == "cover" else rule.uncover_minutes)
-	if not result.ok: return result
-	day.state.risk_history.append(_row(day.state, id, command))
+	var cost := action_minutes(day.definition, rule, command)
+	if cost > 0:
+		var result := day.spend_action(cost)
+		if not result.ok: return result
+	var row := _row(day.state, id, command)
+	if cost == 0: row.instant = true
+	day.state.risk_history.append(row)
 	capture_close(day.state)
 	return ActionResult.new(true, "红布已经盖好。" if command == "cover" else "红布已揭开，镜缘又出现血泪。封铺前务必重新遮盖。")
 
@@ -74,12 +90,13 @@ func night_outcome(state: RunState, night: int) -> String:
 
 func storage_outcome(state: RunState, night: int) -> String:
 	var result := "peaceful"
-	for row in state.risk_history:
+	for index in state.risk_history.size():
+		var row: Dictionary = state.risk_history[index]
 		if row.night != night or row.action != "close": continue
 		# A later uncover also breaks storage, even if it was covered at closing.
 		var safe: bool = row.covered
 		var cloth: bool = row.covered
-		for later in state.risk_history:
+		for later in state.risk_history.slice(index + 1):
 			if later.night == night and later.item_id == row.item_id and later.action in ["cover", "uncover"] and later.minute >= row.minute:
 				cloth = later.action == "cover"
 				if later.action == "uncover": safe = false

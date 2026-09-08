@@ -14,6 +14,11 @@ static func validate(row: Dictionary, path: String, at: String) -> Array:
 		return issues
 	for encounter in row.get("mirror_encounters", []):
 		CounterSchema._fields(encounter, {"id": "text", "slot_id": "text", "mirror_item_id": "text", "clue_id": "string", "start_minute": "positive", "peek_minutes": "positive", "pursue_minutes": "positive", "invitation": "text", "peek_text": "text", "pursue_text": "text", "crisis": "text", "death_cause": "text"}, path, at + ".mirror_encounters", issues)
+		if encounter is Dictionary:
+			for key in ["once_per_night", "allow_pursuit"]:
+				if encounter.has(key) and not encounter[key] is bool: CounterDomainValidator._error(issues, at, "窥镜开关须为布尔值。")
+			if encounter.has("required_flags"): CounterSchema._fields(encounter, {"required_flags": "strings"}, path, at, issues)
+			if encounter.has("covered_invitation"): CounterSchema._fields(encounter, {"covered_invitation": "text"}, path, at, issues)
 	return issues
 
 static func domain(catalog: ContentCatalog) -> Array:
@@ -26,6 +31,8 @@ static func domain(catalog: ContentCatalog) -> Array:
 		for encounter in run.mirror_encounters:
 			if encounter.id in ids: CounterDomainValidator._error(issues, run.id, "铜镜遭遇ID重复。")
 			ids.append(encounter.id)
+			for flag in encounter.required_flags:
+				if flag not in run.flag_ids: CounterDomainValidator._error(issues, run.id, "窥镜前置标记未声明。")
 			var mirror := catalog.get_definition("items", encounter.mirror_item_id) as ItemDefinition
 			if mirror == null or mirror.ghost_rule_id not in run.ghost_rule_ids: CounterDomainValidator._error(issues, run.id, "遭遇铜镜未启用。")
 			var slot_found := false

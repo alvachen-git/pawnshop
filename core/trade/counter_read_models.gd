@@ -73,7 +73,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		model.dialogue.body = String(visit.voice.get("introduction", scenario.introduction)) + "\n\n听来的话先记着，物品还须自己掌眼。无凭据地质疑，客人可能不悦。"
 		for question in scenario.questions:
 			if question.id in visit.asked_question_ids: model.dialogue.body += "\n\n" + question.prompt + "\n" + question.answer(visit)
-			elif TradeScenarioService.prerequisites(visit, question):
+			elif TradeScenarioService.question_available(day, visit, question):
 				var suffix := ""
 				if not question.pressure_clue.is_empty() and not TradeScenarioService.used(visit, scenario, question.pressure_clue): suffix = " · 议价一轮"
 				model.dialogue.buttons.append(_button(day, service, visit, "question", question.id, "%s · %d分钟%s" % [question.prompt, question.minutes, suffix]))
@@ -90,7 +90,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		var label := "“这东西没你说的那么值钱，再让些。”"
 		label += " · 已试探" if visit.trade.belittle_used else " · %d分钟 · 议价一轮" % int(customer.belittle.minutes)
 		model.trade.buttons.append(_button(day, service, visit, "belittle", "", label))
-	if scenario != null and scenario.concession_amount > 0 and scenario.concession_question in visit.asked_question_ids:
+	if scenario != null and scenario.concession_amount > 0 and (scenario.concession_question in visit.asked_question_ids or ("mirror_verify" in visit.asked_question_ids and scenario.find_question("mirror_verify") != null)):
 		model.trade.buttons.append(_button(day, service, visit, "concession", "", "请他为急用再让%d银元 · %d分钟 · 议价一轮" % [scenario.concession_amount, scenario.concession_minutes]))
 		model.trade.body += "\n处境与品相分开谈；不赶路的客人可能反感催价。"
 	model.trade.body += "\n客人最迟留到 %s。" % TimeController.clock_text(day.definition.opening_minute, visit.expires_at)

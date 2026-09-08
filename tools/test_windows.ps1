@@ -27,6 +27,9 @@ try {
     Run-Test 'environment' 'm8a_environment.gd'
     Run-Test 'font' 'm8a_font.gd'
     Run-Test 'core' 'run_all.gd'
+    Run-Test 'free-cloth' 'free_cloth_tests.gd'
+    Run-Test 'mirror-chapter-core' 'run_mirror_chapter.gd'
+    Run-Test 'mirror-chapter-process' 'mirror_chapter_checkpoint.gd'
     Run-Test 'room-core' 'run_room.gd'
     Run-Test 'pawn-core' 'run_pawn.gd'
     Run-Test 'variety-core' 'run_variety.gd'
@@ -51,6 +54,7 @@ try {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
         Run-Test "manual-save-$size" 'manual_save_ui_smoke.gd' $sizeArgs $false
+        Run-Test "mirror-chapter-$size" 'mirror_chapter_ui_smoke.gd' $sizeArgs $false
         Run-Test "bell-$size" 'bell_ui_smoke.gd' $sizeArgs $false
         Run-Test "integrated-seven-$size" 'integrated_ui_smoke.gd' $sizeArgs $false
         Run-Test "preparation-$size" 'preparation_ui_smoke.gd' $sizeArgs $false

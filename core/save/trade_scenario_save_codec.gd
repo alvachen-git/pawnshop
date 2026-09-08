@@ -72,6 +72,10 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			var encounter := MirrorEncounterService.find_definition(run, source.get("encounter_id", ""))
 			if encounter == null: return "铜镜证据来源无效。"
 			if not encounter.clue_id.is_empty() and encounter.clue_id not in visit.item.revealed_clue_ids: visit.item.revealed_clue_ids.append(encounter.clue_id)
+		day.state.mirror_history.clear()
+		for source in data.get("mirror_history", []):
+			if source is Dictionary and source.get("visit_id") == raw.visit_id and source.get("action") == "peek" and RunSchema.integer(source.get("minute")) and source.minute <= raw.start:
+				day.state.mirror_history.append(source.duplicate(true))
 		day.state.game_minutes = int(raw.start)
 		# The fixed mirror encounter may supply evidence between counter commands.
 		for source in data.get("mirror_history", []):

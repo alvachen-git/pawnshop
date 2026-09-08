@@ -29,6 +29,9 @@ static func prepare(visit: CustomerVisit, scenario: TradeScenarioDefinition, see
 static func prerequisites(visit: CustomerVisit, question: TradeQuestionDefinition) -> bool:
 	return CounterDomainValidator._contains_all(visit.asked_question_ids, question.requires_questions) and CounterDomainValidator._contains_all(visit.item.revealed_clue_ids, question.requires_clues)
 
+static func question_available(day: DayController, visit: CustomerVisit, question: TradeQuestionDefinition) -> bool:
+	return prerequisites(visit, question) and (not question.requires_mirror or MirrorEncounterService.witnessed(day.state, visit.visit_id))
+
 static func used(visit: CustomerVisit, scenario: TradeScenarioDefinition, clue_id: String) -> bool:
 	for previous in visit.trade.used_clue_ids:
 		if scenario.group(previous) == scenario.group(clue_id): return true

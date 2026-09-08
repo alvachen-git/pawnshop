@@ -1,10 +1,13 @@
 class_name EventChoiceDefinition
 extends RefCounted
 
+var required_items: Array = []
 var required_flags: Array = []
 var excluded_flags: Array = []
 
-func available(flags: Array) -> bool:
+func available(flags: Array, items: Array = []) -> bool:
+	for id in required_items:
+		if not items.any(func(item: ItemInstance) -> bool: return item.definition_id == id and item.ownership_state in ["owned", "pledged"]): return false
 	if not CounterDomainValidator._contains_all(flags, required_flags): return false
 	for flag in excluded_flags:
 		if flag in flags: return false
@@ -28,6 +31,7 @@ var grant_flags: Array:
 
 static func from_source(source: Dictionary) -> EventChoiceDefinition:
 	var value := EventChoiceDefinition.new()
+	value.required_items = source.get("required_items", []).duplicate()
 	value.required_flags = source.get("required_flags", []).duplicate()
 	value.excluded_flags = source.get("excluded_flags", []).duplicate()
 	value._id = source.id

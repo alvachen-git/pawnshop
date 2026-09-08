@@ -93,7 +93,8 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 				visit.trade.rounds_left = maxi(visit.trade.rounds_left, int(slot.tutorial.get("min_quote_rounds", 0)))
 				visit.trade.patience = maxi(visit.trade.patience, int(slot.tutorial.get("min_patience", 0)))
 				break
-		var scenario := TradeScenarioService.for_item(run, item.id)
+		var scenario := TradeScenarioService.for_slot(run, String(row.visit_id).get_slice("/", 2))
+		if scenario == null: scenario = TradeScenarioService.for_item(run, item.id)
 		if scenario != null:
 			visit.scenario_id = scenario.id
 			visit.situation_id = row.situation

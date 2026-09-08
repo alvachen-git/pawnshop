@@ -2,6 +2,8 @@ class_name TradeQuestionDefinition
 extends RefCounted
 
 var _data: Dictionary
+var requires_mirror: bool:
+	get: return _data.get("requires_mirror", false)
 var id: String:
 	get: return _data.id
 var prompt: String:
