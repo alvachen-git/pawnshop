@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "mirror_husband",
+      "name_key": "customer.customer_hawker.name",
+      "portrait_asset_id": "asset.customer_hawker",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 5,
+      "max_quote_rounds": 5,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_brass_holder",
+        "item_fountain_pen",
+        "item_pocket_watch"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "夜市货郎",
+        "introduction": "这表随我走了不少地方。如今用不着了，掌柜开个价。",
+        "wait_minutes": 90,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.7,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "material",
+          "prompt": "问：是什么材质？",
+          "answer": "按整铜的价卖。是真是假，你自己掌眼。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_default",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "“西平码头、北街，哪儿有生意就去哪儿。”他说完便低头拢起表链。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？",
+        "introduction": "这表随我走了不少地方。如今用不着了，掌柜开个价。",
+        "condition": "外头看着还齐整，里面您自个儿掌眼。",
+        "evidence": "您说，我听着。",
+        "circumstance": "不赶车，您先说价。"
+      }
+    },
+    {
+      "id": "mirror_medicine",
+      "name_key": "customer.customer_hawker.name",
+      "portrait_asset_id": "asset.customer_hawker",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 5,
+      "max_quote_rounds": 5,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_brass_holder",
+        "item_fountain_pen",
+        "item_pocket_watch"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "提布包的客人",
+        "introduction": "家里闲下的旧物，换些现钱。您先看看。",
+        "wait_minutes": 90,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.7,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "material",
+          "prompt": "问：是什么材质？",
+          "answer": "按整铜的价卖。是真是假，你自己掌眼。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_default",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "我还要赶下一摊，收不收尽快说。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？",
+        "introduction": "家里闲下的旧物，换些现钱。您先看看。",
+        "condition": "外头看着还齐整，里面您自个儿掌眼。",
+        "evidence": "您说，我听着。",
+        "circumstance": "客人迟疑一下，取出盖了药铺印的取药单：“今夜关门前得付。我娘还等着这帖药。”"
+      }
+    },
+    {
+      "id": "mirror_moving",
+      "name_key": "customer.customer_hawker.name",
+      "portrait_asset_id": "asset.customer_hawker",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 5,
+      "max_quote_rounds": 5,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_brass_holder",
+        "item_fountain_pen",
+        "item_pocket_watch",
+        "item_clay_teapot"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "搬家的客人",
+        "introduction": "屋里拾掇出这件旧物，价不合我便带回去。",
+        "wait_minutes": 90,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.7,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "material",
+          "prompt": "问：是什么材质？",
+          "answer": "按整铜的价卖。是真是假，你自己掌眼。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_default",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "我还要赶下一摊，收不收尽快说。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？",
+        "introduction": "屋里拾掇出这件旧物，价不合我便带回去。",
+        "condition": "外头看着还齐整，里面您自个儿掌眼。",
+        "evidence": "您说，我听着。",
+        "circumstance": "“搬到隔壁巷子罢了，又不出城。价不合，我明日再来。”"
+      }
+    }
+  ]
+}

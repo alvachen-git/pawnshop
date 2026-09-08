@@ -37,7 +37,10 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 		var slot: int = VarietyService.pick(slots, seed_value, "seven/role/" + role)
 		roles[slot] = role
 		available.erase(slot)
-	roles[18 + VarietyService.rng(seed_value, "seven/pen4").randi_range(0, 5)] = "pen4"
+	var pen4_slots: Array = range(18, 24).filter(func(i: int) -> bool: return not anchors.has(i))
+	var pen4: int = 18 + VarietyService.rng(seed_value, "seven/pen4").randi_range(0, 5)
+	if anchors.has(pen4): pen4 = VarietyService.pick(pen4_slots, seed_value, "seven/pen4/reserved")
+	roles[pen4] = "pen4"
 	roles[24 + VarietyService.rng(seed_value, "seven/pen5").randi_range(1 if roles.get(23, "") == "pen4" else 0, 5)] = "pen5"
 	var swapped := VarietyService.rng(seed_value, "seven/pen_variant").randi_range(0, 1) == 1
 	var names: Array = []
@@ -134,6 +137,6 @@ static func story_row(run: RunDefinition, catalog: ContentCatalog, slot: VisitSl
 	var id := "%s/%d/%s" % [run.id, night, slot.id]
 	return {"visit_id": id, "night": night, "arrival": slot.arrival, "customer_id": customer.id,
 		"item_id": slot.item_id, "variant_id": slot.variant_id, "context_id": "", "source": "none" if not (catalog.get_definition("items", slot.item_id) as ItemDefinition).provenance.is_empty() else "",
-		"situation": "ordinary", "reaction": "admit", "terms_id": customer.pawn_terms_id,
+		"situation": slot.tutorial.get("story_situation", "ordinary"), "reaction": "admit", "terms_id": customer.pawn_terms_id,
 		"wait_minutes": customer.terms.wait_minutes, "transaction_modes": ["sell"],
 		"person": {"id": "person/" + id, "name": customer.terms.display_name, "portrait": customer.portrait_asset_id}}

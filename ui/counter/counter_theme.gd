@@ -13,10 +13,10 @@ static func build() -> Theme:
 	result.set_color("font_color", "Label", Color("302a24"))
 	result.set_stylebox("panel", "PanelContainer", paper())
 	for state in ["normal", "hover", "pressed", "disabled"]:
-		var background := {"normal": "493c30", "hover": "65513b", "pressed": "302b25", "disabled": "c4b595"}
-		result.set_stylebox(state, "Button", box(background[state], "8a785b", 12, 10))
-		result.set_color("font_" + state + "_color" if state != "normal" else "font_color", "Button", Color("f0dfb9") if state != "disabled" else Color("655c4d"))
-	var focus := box("00000000", "b78345", 0, 0)
+		result.set_stylebox(state, "Button", paper_button_style(state))
+		result.set_color("font_" + state + "_color" if state != "normal" else "font_color", "Button", Color("302a24") if state != "disabled" else Color("706657"))
+	result.set_color("font_focus_color", "Button", Color("302a24"))
+	var focus := box("00000000", "8d2a24", 0, 0)
 	focus.set_border_width_all(3)
 	result.set_stylebox("focus", "Button", focus)
 	result.set_stylebox("normal", "LineEdit", box("f1e2bf", "74634e", 8, 8))
@@ -38,8 +38,18 @@ static func painted_paper(tint := Color.WHITE) -> StyleBoxTexture:
 		style.set_content_margin(side, 3)
 	return style
 
+static func paper_button_style(state: String) -> StyleBoxTexture:
+	var tint: Color = {"normal": Color.WHITE, "hover": Color("fff0cc"), "pressed": Color("bdac86"), "disabled": Color("b7b09b")}[state]
+	var style := painted_paper(tint)
+	# Keep the existing control padding and minimum height when replacing its skin.
+	for side in [SIDE_LEFT, SIDE_RIGHT, SIDE_TOP, SIDE_BOTTOM]:
+		style.set_texture_margin(side, 12)
+		style.set_content_margin(side, 12 if side in [SIDE_LEFT, SIDE_RIGHT] else 10)
+	return style
+
 static func style_paper_button(button: Button) -> void:
 	button.add_theme_font_override("font", display_font())
+	button.add_theme_color_override("font_focus_color", Color("302a24"))
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		var tint: Color = {"normal": Color.WHITE, "hover": Color("fff0cc"), "pressed": Color("bdac86"), "disabled": Color("8a8877")}[state]
 		button.add_theme_stylebox_override(state, painted_paper(tint))

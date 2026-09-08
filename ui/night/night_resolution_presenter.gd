@@ -25,6 +25,7 @@ func refresh() -> void:
 		body += "柜里的动静，还得留心。" if risk_enabled else "未到期的当票，仍按票上的日子办理。"
 		if state.phase == "run_ended": body += "\n\n天色将明。账册合上，铺门外又响起了车铃。"
 		if state.phase == "dead": body += "\n\n灯盏已经冷透。《绝当录》上，多了一笔。"
+	if state.phase in ["day_summary", "run_ended"]: body += MirrorChapterService.summary(_session._day.state, _session.definition)
 	if _session.definition.fee_policy.enabled:
 		body += "\n\n" + _session.economy_model().description
 		if not state.summaries.is_empty() and state.phase in ["day_summary", "run_ended", "bankrupt"]:

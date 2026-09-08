@@ -9,13 +9,13 @@ static func validate(row: Variant, path: String, at: String) -> Array:
 	if row.has("presentation"):
 		CounterSchema._fields(row.presentation, {"scene": "text"}, path, at + ".presentation", issues)
 		if row.presentation is Dictionary:
-			for key in ["hotspots", "checkpoint", "repeat_skip"]:
+			for key in ["hotspots", "checkpoint", "repeat_skip", "manual"]:
 				if row.presentation.has(key) and not row.presentation[key] is bool: issues.append(ContentIssue.new("error", "invalid_field", path, at, key + "须为布尔值。"))
 			if row.presentation.has("purchase_slot_id"): CounterSchema._fields(row.presentation, {"purchase_slot_id": "text"}, path, at, issues)
 			if row.presentation.has("required_purchases"): CounterSchema._fields(row.presentation, {"required_purchases": "positive"}, path, at, issues)
 	if row.get("choices") is Array:
 		for choice in row.choices:
 			if choice is Dictionary:
-				for key in ["required_flags", "excluded_flags"]:
+				for key in ["required_flags", "excluded_flags", "required_items"]:
 					if choice.has(key): CounterSchema._fields(choice, {key: "strings"}, path, at, issues)
 	return issues

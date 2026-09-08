@@ -16,6 +16,7 @@ static func validate(row: Dictionary, path: String, at: String) -> Array:
 		if scenario.get("questions") is Array:
 			for q in scenario.questions:
 				if not q is Dictionary: continue
+				if q.has("requires_mirror") and not q.requires_mirror is bool: CounterDomainValidator._error(issues, at, "窥镜追问条件须为布尔值。")
 				if not q.get("answers") is Dictionary or q.answers.is_empty(): CounterDomainValidator._error(issues, at, "问答缺少回答映射。")
 				else:
 					for key in q.answers:
@@ -36,7 +37,7 @@ static func domain(catalog: ContentCatalog) -> Array:
 			var matched := not run.variety.is_empty()
 			for slot in run.customer_slots:
 				if slot.id == scenario.slot_id:
-					matched = slot.item_id == scenario.item_id and slot.variant_id.is_empty() and slot.night_min == slot.night_max
+					matched = slot.item_id == scenario.item_id and (slot.variant_id.is_empty() or (SevenNightPlan.enabled(run) and slot.variant_id in scenario.variant_ids)) and slot.night_min == slot.night_max
 			if not matched: CounterDomainValidator._error(issues, scenario.id, "情境须绑定单夜、同物品、无固定变体的来访。")
 			var item := catalog.get_definition("items", scenario.item_id) as ItemDefinition
 			if item == null:

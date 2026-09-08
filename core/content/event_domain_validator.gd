@@ -20,6 +20,8 @@ static func validate(catalog: ContentCatalog) -> Array:
 		var choices: Array = []
 		for choice in event.choices:
 			if choice.id.is_empty() or choice.id in choices or choice.minutes < 0 or (event.phase in ["pre_open", "private_room", "sleep_resolution"] and choice.minutes != 0) or (event.phase != "pre_open" and choice.minutes == 0 and event.presentation.is_empty()): _error(issues, event.id, "选项ID重复或耗时不符合阶段。")
+			for id in choice.required_items:
+				if not catalog.has_definition("items", id): _error(issues, event.id, "选项物品条件引用失效。")
 			choices.append(choice.id)
 	for run: RunDefinition in catalog.get_all("runs"):
 		if run.time_step < 1: continue

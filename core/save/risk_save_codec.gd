@@ -55,7 +55,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 				closes[key] = true
 			"cover", "uncover":
 				var rule := manager.rule_for(item)
-				var cost := rule.cover_minutes if row.action == "cover" else rule.uncover_minutes
+				var cost := RiskManager.recorded_minutes(run, rule, row)
+				if cost < 0: return "红布动作的即时记录无效。"
 				if cloth == (row.action == "cover") or minute < cost or (minute > closing and not closes.has(key)): return "鬼货处理顺序无效。"
 				if not manager.held_at(state, item, night, minute - cost): return "鬼货处理早于入库。"
 				for previous in state.risk_history:

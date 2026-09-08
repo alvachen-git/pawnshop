@@ -32,7 +32,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 			if scenario != null:
 				var question := scenario.find_question(detail)
 				if question == null or detail in visit.asked_question_ids: return "这话已经问过，或不适合眼前这件东西。"
-				if not TradeScenarioService.prerequisites(visit, question): return "尚未听到相关说法，或没有对应的实物证据。"
+				if not TradeScenarioService.question_available(day, visit, question): return "尚未听到相关说法，或没有对应的实物证据。"
 				if not question.pressure_clue.is_empty() and not TradeScenarioService.used(visit, scenario, question.pressure_clue) and (visit.trade.rounds_left <= 0 or visit.trade.patience <= 0): return "客人已经不肯再谈价。"
 				cost = question.minutes
 			else:
@@ -41,7 +41,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		"concession":
 			if scenario == null or scenario.concession_amount <= 0: return "眼下没有这桩让价可谈。"
 			if visit.concession_used: return "这份让价已经谈过。"
-			if scenario.concession_question not in visit.asked_question_ids: return "先问清客人何时要用这笔钱。"
+			if scenario.concession_question not in visit.asked_question_ids and not ("mirror_verify" in visit.asked_question_ids and scenario.find_question("mirror_verify") != null): return "先问清客人何时要用这笔钱。"
 			if visit.trade.rounds_left <= 0 or visit.trade.patience <= 0: return "客人已经不肯再谈价。"
 			cost = scenario.concession_minutes
 		"judge":

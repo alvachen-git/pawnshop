@@ -22,7 +22,6 @@ var _dialogue_action: Button
 var _trade_action: Button
 var _appraisal_action: Button
 var _active_id := ""
-var _quick_actions: Array[Button] = []
 var bell
 
 
@@ -32,7 +31,7 @@ func _ready() -> void:
 	bell.name = "CounterBell"
 	bell.z_index = 5
 	add_child(bell)
-	_bounds(bell, 0.225, 0.76, 0.285, 0.915)
+	_bounds(bell, 0.70, 0.555, 0.765, 0.725)
 	bell.rung.connect(bell_requested.emit)
 	var backdrop := _make_hotspot("CounterBackdrop", 0.0, 0.0, 1.0, 1.0, "")
 	backdrop.focus_mode = Control.FOCUS_NONE
@@ -109,24 +108,6 @@ func _ready() -> void:
 
 
 func _build_painted_controls() -> void:
-	var actions := HBoxContainer.new()
-	actions.name = "CounterActions"
-	actions.z_index = 5
-	actions.add_theme_constant_override("separation", 24)
-	add_child(actions)
-	_bounds(actions, 0.29, 0.858, 0.70, 0.945)
-	for entry in [["AskButton", "询问", &"dialogue"], ["InspectButton", "鉴定", &"appraisal"], ["OfferButton", "报价", &"trade"]]:
-		var button := Button.new()
-		button.name = entry[0]
-		button.text = entry[1]
-		button.set_meta("action_id", entry[2])
-		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.add_theme_font_size_override("font_size", 24)
-		CounterTheme.style_paper_button(button)
-		if entry[2] == &"appraisal": button.pressed.connect(_on_item_action.bind(entry[2]))
-		else: button.pressed.connect(_on_customer_action.bind(entry[2]))
-		actions.add_child(button)
-		_quick_actions.append(button)
 	for entry in [["InventoryButton", "库存", 0.80], ["LedgerButton", "账本", 0.87]]:
 		var button := Button.new()
 		button.name = entry[0]
@@ -145,19 +126,6 @@ func _build_painted_controls() -> void:
 		label.add_theme_font_override("font", CounterTheme.display_font())
 	for node in [$CustomerPanel, $CustomerPanel/CustomerMargin, %CustomerText]:
 		node.mouse_filter = Control.MOUSE_FILTER_IGNORE
-
-func _sync_quick_actions(customer_actions: Array, item_actions: Array, pawn_return: bool) -> void:
-	for button in _quick_actions:
-		var id: StringName = button.get_meta("action_id")
-		var entries: Array = item_actions if id == &"appraisal" else customer_actions
-		button.disabled = true
-		button.tooltip_text = "柜台暂空"
-		for entry in entries:
-			if StringName(entry.get("id", "")) == id:
-				button.disabled = not bool(entry.get("enabled", true))
-				button.tooltip_text = String(entry.get("reason", ""))
-				if button.tooltip_text.is_empty(): button.tooltip_text = "打开" + {&"dialogue": "对话", &"appraisal": "鉴定", &"trade": "交易"}[id] + " · 查看不耗时"
-		if id == &"trade": button.text = "验票" if pawn_return else "报价"
 
 func _make_hotspot(name_value: String, left: float, top: float, right: float, bottom: float, tooltip: String) -> Button:
 	var button := Button.new()
@@ -192,6 +160,7 @@ func _make_context(name_value: String, left: float, top: float, right: float, bo
 	panel.name = name_value
 	panel.unique_name_in_owner = true
 	panel.visible = false
+	panel.add_theme_stylebox_override("panel", StyleBoxEmpty.new())
 	panel.z_index = 10
 	add_child(panel)
 	_bounds(panel, left, top, right, bottom)
@@ -204,6 +173,8 @@ func _make_context_button(name_value: String, label: String, panel_id: StringNam
 	button.unique_name_in_owner = true
 	button.text = label
 	button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	CounterTheme.style_paper_button(button)
+	button.add_theme_font_size_override("font_size", 20)
 	if customer:
 		button.pressed.connect(_on_customer_action.bind(panel_id))
 	else:
@@ -237,7 +208,6 @@ func render(model: Dictionary) -> void:
 	_apply_action(_dialogue_action, customer_actions, &"dialogue")
 	_apply_action(_trade_action, customer_actions, &"trade")
 	_apply_action(_appraisal_action, item_actions, &"appraisal")
-	_sync_quick_actions(customer_actions, item_actions, visual.get("pawn_return", false))
 	if not _customer_hotspot.visible:
 		_customer_context.hide()
 	if not _item_hotspot.visible:
@@ -342,6 +312,7 @@ func set_counter_message(message: String) -> void:
 
 func set_atmosphere(mode: int, preview: bool, intrusion: bool, haunting: bool, dead: bool) -> void:
 	$Room.atmosphere = mode
+	bell.atmosphere = mode
 	$Room.smoke_wrong = intrusion or (preview and mode == 1)
 	$Room.lamp_wrong = haunting or (preview and mode == 2)
 	$Room.lamp_dead = dead
