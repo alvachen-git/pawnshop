@@ -2,7 +2,7 @@ class_name CounterReadModels
 extends RefCounted
 
 const JUDGEMENTS := {"unknown": "暂不判断", "sound": "完好真品", "damaged": "有修补/瑕疵", "fake": "仿制/材质不符"}
-const OUTCOMES := {"bought": "成交", "pawned": "活当放款", "rejected": "拒收", "timed_out": "等候超时离场", "shop_closed": "关铺失去机会", "patience_exhausted": "耐心耗尽", "rounds_exhausted": "议价结束"}
+const OUTCOMES := {"redeemed_early": "提前赎回", "redemption_deferred": "约定到期再来", "bought": "成交", "pawned": "活当放款", "rejected": "拒收", "timed_out": "等候超时离场", "shop_closed": "关铺失去机会", "patience_exhausted": "耐心耗尽", "rounds_exhausted": "议价结束"}
 
 static func build(day: DayController, service: CounterService, message: String, message_visit_id := "") -> Dictionary:
 	var blank := {"body": "暂无正在接待的顾客。\n请在营业页开铺或等待来客。", "buttons": [], "visit_id": ""}
@@ -102,11 +102,13 @@ static func build(day: DayController, service: CounterService, message: String, 
 		model.trade.can_pawn = service.reason(day, "pawn", visit.visit_id, "", 1).is_empty()
 		model.trade.pawn_asking = maxi(1, roundi(visit.trade.asking_price * terms.loan_ratio))
 		model.trade.body += "\n活当要款 %d · 期限%d夜 · 赎金=本金+向上取整的%.0f%%息费。\n收购/活当共用剩余轮次与耐心。" % [model.trade.pawn_asking, terms.term_nights, terms.redemption_fee_ratio * 100]
+		if EarlyRedemption.enabled(day.definition) and terms.id == FamiliarStories.TERMS: model.trade.body += "\n" + EarlyRedemption.AGREEMENT
 	for feature in ["appraisal", "dialogue", "trade"]:
 		model[feature].visit_id = visit.visit_id
 		model[feature].body += "\n\n" + message
 	CounterVisualReadModels.enrich(model, day, service, visit)
 	for feature in ["appraisal", "dialogue", "trade"]: model[feature].visual.message = message
+	EarlyRedemption.enrich(model, day, service, visit)
 	return model
 
 static func _button(day: DayController, service: CounterService, visit: CustomerVisit, command: String, detail: String, label: String) -> Dictionary:

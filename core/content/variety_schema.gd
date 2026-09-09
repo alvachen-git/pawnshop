@@ -11,6 +11,13 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 	var value: Dictionary = row[field]
 	match kind:
 		"runs":
+			if value.has("early_redemption") and (not value.early_redemption is bool or value.get("familiar_version") != 1): CounterDomainValidator._error(issues, at, "提前取赎须使用熟客配置与布尔开关。")
+			if value.has("familiar_version"):
+				if value.familiar_version != 1 or value.get("seven_version") != 1 or value.get("preparation_version") != 1 or not value.get("familiar_funds") is Array or value.familiar_funds.is_empty():
+					CounterDomainValidator._error(issues, at, "熟客支线需要七夜准备与筹款配置。")
+				else:
+					for amount in value.familiar_funds:
+						if not RunSchema.integer(amount) or amount < 0 or amount > 1000000: CounterDomainValidator._error(issues, at, "熟客筹款金额无效。")
 			if value.has("free_cloth") and not value.free_cloth is bool: CounterDomainValidator._error(issues, at, "红布即时动作开关须为布尔值。")
 			if value.has("profession_wait") and not value.profession_wait is bool: CounterDomainValidator._error(issues, at, "来客等待规则必须为布尔值。")
 			CounterSchema._fields(value, {"customer_ids": "strings", "fixed_slots": "strings", "constrained_slots": "strings", "terms_ids": "strings", "surnames": "strings"}, path, at, issues)

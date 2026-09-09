@@ -55,7 +55,7 @@ func read_state() -> Dictionary:
 func seven_notice() -> String:
 	if not SevenNightPlan.enabled(definition): return ""
 	var introductions := {1: "借据压在柜上：本金500银元，日息按剩余本金1%向上取整，另付铺费5银元。第21夜首期200银元可整笔延期；已付首期则第49夜还余款300，延期则届时还本金500及延期费100。日常短款只宽限至次夜夜末。\n旧掌柜留话：先看货，再听人说；现银交出去，便压在货里了。", 2: "杂货商常收旧物，瓷器收藏客19:00–22:00来收。出门交货往返20分钟，店里的客人可不会替你停住钟。", 3: "今夜起可办活当：期限3夜，赎金为本金加10%固定息费，息费向上取整。在当旧物须替原主保管。", 7: "七夜的账即将合拢。未卖的货、未到期的票与借据都照实留着，本金今夜不催收。"}
-	return String(introductions.get(_day.state.current_night_index, "")) + PreparationService.notice(_day.state, _counter.catalog) + MirrorChapterService.summary(_day.state, definition)
+	return String(introductions.get(_day.state.current_night_index, "")) + PreparationService.notice(_day.state, _counter.catalog) + MirrorChapterService.summary(_day.state, definition) + FamiliarStories.note(_day.state)
 
 func has_save() -> bool:
 	return _save.exists()

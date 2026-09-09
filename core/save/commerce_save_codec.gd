@@ -43,17 +43,22 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			_post(expected, "extend/" + ticket.ticket_id, item.instance_id, int(extension.night), int(extension.minute), int(extension.fee), "extension", int(extension.fee))
 			due += terms.extension_nights
 		if ticket.due_night != due: return "当票期限无法对账。"
+		var return_mode := FamiliarStories.return_mode(row, data, terms.return_mode)
+		var early := EarlyRedemption.recorded(row, data)
+		if not early.is_empty() and ticket.status != "redeemed": return "提前收赎后原票未结。"
 		match ticket.status:
 			"active":
 				if due <= settled or ticket.closed_night != 0 or ticket.closed_minute != -1 or item.ownership_state != "pledged": return "在当状态与期限不符。"
 			"defaulted":
-				if due >= state.pawn_rules_start_night and terms.return_mode != "absent": return "已回访当户不能绝当。"
+				if due >= state.pawn_rules_start_night and return_mode != "absent": return "已回访当户不能绝当。"
 				if due > settled or ticket.closed_night != due or ticket.closed_minute != run.night_minutes or item.ownership_state not in ["owned", "sold"]: return "绝当状态或时刻不符。"
 			"redeemed":
-				if due > completed or ticket.closed_night != due or item.ownership_state != "redeemed" or terms.return_mode == "absent" or (terms.return_mode == "extend_once" and ticket.extensions.is_empty()) or not _return_time(ticket.closed_minute, ticket.closed_night, terms, terms.redeem_minutes, run, state): return "赎回没有有效当户请求。"
-				_post(expected, "redeem/" + ticket.ticket_id, item.instance_id, due, ticket.closed_minute, ticket.redemption_amount, "redemption", ticket.redemption_amount - ticket.principal)
+				if not early.is_empty():
+					if not EarlyRedemption.enabled(run) or ticket.closed_night != early.night or ticket.closed_minute != early.minute or early.minute != early.start + terms.redeem_minutes or ticket.closed_night >= due or ticket.closed_night > completed or item.ownership_state != "redeemed": return "提前取赎与原票或办理时刻不符。"
+				elif due > completed or ticket.closed_night != due or item.ownership_state != "redeemed" or return_mode == "absent" or (return_mode == "extend_once" and ticket.extensions.is_empty()) or not _return_time(ticket.closed_minute, ticket.closed_night, terms, terms.redeem_minutes, run, state): return "赎回没有有效当户请求。"
+				_post(expected, "redeem/" + ticket.ticket_id, item.instance_id, ticket.closed_night, ticket.closed_minute, ticket.redemption_amount, "redemption", ticket.redemption_amount - ticket.principal)
 			"transferred":
-				if due < state.pawn_rules_start_night or due > settled or ticket.closed_night != due or ticket.closed_minute != run.night_minutes or item.ownership_state != "transferred" or terms.return_mode != "absent": return "转当状态、期限或权属不符。"
+				if due < state.pawn_rules_start_night or due > settled or ticket.closed_night != due or ticket.closed_minute != run.night_minutes or item.ownership_state != "transferred" or return_mode != "absent": return "转当状态、期限或权属不符。"
 				var price := PawnController.new().transfer_quote(ticket, terms)
 				_post(expected, "transfer/" + ticket.ticket_id, item.instance_id, due, run.night_minutes, price, "pawn_transfer", price - ticket.principal)
 			_: return "未知当票状态。"

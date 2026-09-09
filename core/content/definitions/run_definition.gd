@@ -2,6 +2,7 @@ class_name RunDefinition
 extends RefCounted
 
 var _seven_plan_cache: Dictionary = {}
+var _familiar_plan_cache: Dictionary = {}
 var _batch_selling := false
 var batch_selling: bool:
 	get: return _batch_selling or not _market.is_empty()

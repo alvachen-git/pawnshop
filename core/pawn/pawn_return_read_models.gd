@@ -14,6 +14,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	var speech := "掌柜的，当票带来了。劳烦验一验，我来赎回原物。" if visit.command == "redeem" else "掌柜的，钱还没凑齐。先付息费，再续一夜可好？"
 	if not ticket.person.is_empty(): speech = customer.persona.get("redeem" if visit.command == "redeem" else "extend", speech)
 	if SevenNightPlan.enabled(day.definition): speech = "掌柜，先前第%d夜押下的%s，我带原票来赎了。说好三夜，如今钱凑齐了。" % [ticket.started_night, definition.display_name]
+	if ticket.terms_id == FamiliarStories.TERMS: speech = FamiliarStoryVoice.redemption(ticket, day.state)
 	var description := "当票 %s · %s\n当户：%s\n本金 %d 银元 · 约定赎金 %d 银元\n办理 %d 分钟。原物仍在铺内，验票后交还。" % [number, definition.display_name, VarietyService.name_for(ticket.person, customer), ticket.principal, ticket.redemption_amount, visit.minutes]
 	if visit.command == "extend": description = "当票 %s · %s\n当户：%s\n续当费 %d 银元 · 延长 %d 夜\n办理 %d 分钟，原物继续留铺。" % [number, definition.display_name, VarietyService.name_for(ticket.person, customer), ceili(ticket.principal * terms.extension_fee_ratio), terms.extension_nights, visit.minutes]
 	var clues: Array[Dictionary] = []

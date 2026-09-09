@@ -25,7 +25,7 @@ func refresh() -> void:
 		body += "柜里的动静，还得留心。" if risk_enabled else "未到期的当票，仍按票上的日子办理。"
 		if state.phase == "run_ended": body += "\n\n天色将明。账册合上，铺门外又响起了车铃。"
 		if state.phase == "dead": body += "\n\n灯盏已经冷透。《绝当录》上，多了一笔。"
-	if state.phase in ["day_summary", "run_ended"]: body += MirrorChapterService.summary(_session._day.state, _session.definition)
+	if state.phase in ["day_summary", "run_ended"]: body += MirrorChapterService.summary(_session._day.state, _session.definition) + FamiliarStories.note(_session._day.state)
 	if _session.definition.fee_policy.enabled:
 		body += "\n\n" + _session.economy_model().description
 		if not state.summaries.is_empty() and state.phase in ["day_summary", "run_ended", "bankrupt"]:
@@ -47,6 +47,7 @@ func refresh() -> void:
 		account["closed_clock"] = TimeController.clock_text(_session.definition.opening_minute, account.closed_at)
 		account["fee_enabled"] = _session.definition.fee_policy.enabled
 		account["debt"] = _session.economy_model().description if account.fee_enabled else ""
+		account["familiar_notes"] = FamiliarStories.note(_session._day.state)
 		account["pawn_results"] = []
 		for ticket in state.pawn_tickets:
 			if ticket.closed_night != state.current_night_index or ticket.status not in ["defaulted", "transferred"]: continue

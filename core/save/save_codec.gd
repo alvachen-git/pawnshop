@@ -1,7 +1,7 @@
 class_name SaveCodec
 extends RefCounted
 
-const VERSION := 16
+const VERSION := 18
 const ROOM_VERSION := 12
 const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt", "shop_resolution", "private_room", "sleep_resolution"]
 var error_message := ""
@@ -20,7 +20,7 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		if not data.has(key) or not RunSchema.integer(data[key]) or abs(data[key]) > 2147483647:
 			return null
 	var legacy := int(data.save_version) == (8 if definition.private_room else 7)
-	if (int(data.save_version) not in [VERSION, 15, 14, 13, 12, 11, 10, 9] and not legacy) or int(data.content_version) != content_version:
+	if (int(data.save_version) not in [VERSION, 17, 16, 15, 14, 13, 12, 11, 10, 9] and not legacy) or int(data.content_version) != content_version:
 		error_message = "存档/内容版本不兼容；旧文件已保留。"
 		return null
 	if not definition.variety.is_empty() and int(data.save_version) != content_version: return null
@@ -97,6 +97,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	state.closed_at = closed
 	state.night_opening_cash = int(data.night_opening_cash)
 	state.action_count = int(data.action_count)
+	error_message = FamiliarStories.restore(data, state, definition, catalog)
+	if not error_message.is_empty(): return null
 	error_message = PreparationService.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
 	error_message = VarietySaveCodec.selections(data, state, definition, catalog)
@@ -132,4 +134,9 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		if not error_message.is_empty(): return null
 	error_message = FeeSaveCodec.finish(data, state, definition)
 	if not error_message.is_empty(): return null
+	if FamiliarStories.enabled(definition):
+		state.familiar_context = {}
+		if state.to_read_model().familiar_progress != FamiliarStories.normalize(data.familiar_progress):
+			error_message = "熟客进展与实际交易不符。"
+			return null
 	return state

@@ -12,7 +12,7 @@ static func ordinary(row: Dictionary) -> bool:
 
 # Keep the seeded base intact. Every consumer sees the same replayable overlay.
 static func plan(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> Array[Dictionary]:
-	var rows := SevenNightPlan.plan(run, catalog, state.run_seed)
+	var rows := FamiliarStories.overlay(state, run, catalog, SevenNightPlan.plan(run, catalog, state.run_seed))
 	if not enabled(run): return rows
 	for record in state.preparation_history:
 		if record.action == "attract": rows.append(record.change.duplicate(true))
@@ -71,7 +71,7 @@ static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalo
 	for offset in names.size() * surnames.size():
 		var index := (first + offset) % (names.size() * surnames.size())
 		person_name = surnames[index / names.size()] + names[index % names.size()]
-		if person_name not in existing_names: break
+		if person_name not in existing_names and (not FamiliarStories.enabled(run) or person_name not in FamiliarStories.NAMES): break
 	row.merge({"visit_id": id, "night": state.current_night_index, "arrival": arrival,
 		"variant_id": VarietyService.pick(item.possible_variants, state.run_seed, key + "/variant").id,
 		"source": "" if sources.is_empty() else VarietyService.pick(sources, state.run_seed, key + "/source"),
@@ -97,7 +97,7 @@ static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		record.change = make_row(state, run, catalog, "%s/%d/prep_extra" % [run.id, night], int(VarietyService.pick(times, state.run_seed, key)), "")
 	elif action == "target":
 		var known := known_ids(state, night)
-		var candidates: Array = rows.filter(func(row: Dictionary) -> bool: return ordinary(row) and not row.has("seven_role") and not row.visit_id.ends_with("/prep_extra") and row.visit_id not in known)
+		var candidates: Array = rows.filter(func(row: Dictionary) -> bool: return ordinary(row) and not row.has("seven_role") and not row.get("familiar_reserved", false) and not row.visit_id.ends_with("/prep_extra") and row.visit_id not in known)
 		if candidates.is_empty(): return ActionResult.new(false, "今夜没有可另约收货的普通来客。")
 		var selected: Dictionary = VarietyService.pick(candidates, state.run_seed, key)
 		record.change = make_row(state, run, catalog, selected.visit_id, int(selected.arrival), category)
@@ -107,7 +107,7 @@ static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog
 			if prior.night == night and prior.action == "target": record.visit_ids.append(prior.change.visit_id)
 		if record.visit_ids.is_empty():
 			# Intel must leave an undisclosed ordinary position for a later targeted request.
-			var replaceable: Array = candidates.filter(func(row: Dictionary) -> bool: return not row.has("seven_role") and not row.visit_id.ends_with("/prep_extra"))
+			var replaceable: Array = candidates.filter(func(row: Dictionary) -> bool: return not row.has("seven_role") and not row.get("familiar_reserved", false) and not row.visit_id.ends_with("/prep_extra"))
 			if not replaceable.is_empty():
 				var reserved: String = VarietyService.pick(replaceable, state.run_seed, key + "/reserve").visit_id
 				candidates = candidates.filter(func(row: Dictionary) -> bool: return row.visit_id != reserved)
@@ -161,6 +161,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	if VarietySaveCodec.normalize_plan(data.seven_plan) != base: return "本局基础来客编排不符。"
 	var simulator := RunState.create(run)
 	simulator.run_seed = state.run_seed
+	FamiliarStories.attach_context(simulator, data)
 	var last := 0
 	for row in data.preparation_history:
 		if not row is Dictionary or row.size() != 7 or not CounterSaveCodec._integers(row, ["night", "minute", "cost"]) or not row.get("action") is String or not row.get("category") is String: return "准备行动记录无效。"

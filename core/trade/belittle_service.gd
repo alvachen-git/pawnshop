@@ -13,4 +13,4 @@ static func apply(visit: CustomerVisit, customer: CustomerDefinition) -> String:
 			trade.reserve_price = maxi(1, trade.reserve_price - discount)
 			trade.asking_price = maxi(trade.reserve_price, trade.asking_price - discount)
 		"proud": trade.patience -= int(policy.patience_cost)
-	return String(policy.response) + "\n要价 %d → %d 银元。" % [before, trade.asking_price]
+	return String(visit.voice.get("belittle_response", policy.response)) + "\n要价 %d → %d 银元。" % [before, trade.asking_price]

@@ -1,0 +1,18 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+SEEDS { "seamstress": 0, "funding": 511, "bookkeeper": 1, "bargain": 507, "late": 507, "independent": 508 } distribution { "bookkeeper": 127, "seamstress": 122, "both": 263 }
+ROUTE 507 normal
+ROUTE 507 candid
+ROUTE 507 guarded
+ROUTE 507 elsewhere
+ROUTE 507 insult_reject
+ROUTE 507 exhaust
+ROUTE 507 timeout
+ROUTE 511 funded
+ROUTE 511 short
+ROUTE 511 unsold
+ROUTE 511 transfer
+ROUTE 511 no_pawn
+ROUTE 508 unsold
+ROUTE 507 late
+FAMILIAR STORIES TESTS: 31448 passes, 0 failures

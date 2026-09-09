@@ -1,0 +1,175 @@
+{
+  "base": "b1b82e85ac160c228ccd58f9ab27eafe3f4cf7a1",
+  "content_version": 17,
+  "source_tests": [
+    {
+      "seconds": 6.6065671,
+      "ok": true,
+      "suite": "run_all",
+      "summary": "M0–M7 TESTS PASSED · 1799 assertions\r"
+    },
+    {
+      "seconds": 2.5832548,
+      "ok": true,
+      "suite": "run_bargaining",
+      "summary": "BARGAINING TESTS: 182 assertions, 0 failures\r"
+    },
+    {
+      "seconds": 2.7460995,
+      "ok": true,
+      "suite": "run_pawn",
+      "summary": "PAWN TESTS: 107 passes, 0 failures\r"
+    },
+    {
+      "seconds": 5.2479161,
+      "ok": true,
+      "suite": "run_room",
+      "summary": "ROOM TESTS: 701 assertions, 0 failures\r"
+    },
+    {
+      "seconds": 2.7501422,
+      "ok": true,
+      "suite": "run_opening",
+      "summary": "OPENING TESTS: 100 assertions, 0 failures\r"
+    },
+    {
+      "seconds": 9.8726106,
+      "ok": true,
+      "suite": "run_variety",
+      "summary": "VARIETY TESTS: 17079 passes, 0 failures\r"
+    },
+    {
+      "seconds": 8.7588863,
+      "ok": true,
+      "suite": "run_integrated_variety",
+      "summary": "INTEGRATED VARIETY TESTS: 16976 passes, 0 failures\r"
+    },
+    {
+      "seconds": 11.9054812,
+      "ok": true,
+      "suite": "run_market",
+      "summary": "MARKET TESTS: 5931 passes, 0 failures\r"
+    },
+    {
+      "seconds": 13.7528663,
+      "ok": true,
+      "suite": "run_four_night",
+      "summary": "FOUR NIGHT TESTS: 42532 passes, 0 failures\r"
+    },
+    {
+      "seconds": 31.3389636,
+      "ok": true,
+      "suite": "run_seven_night",
+      "summary": "SEVEN NIGHT TESTS: 136843 passes, 0 failures\r"
+    },
+    {
+      "seconds": 62.2618137,
+      "ok": true,
+      "suite": "run_integrated_seven",
+      "summary": "INTEGRATED SEVEN TESTS: 8011 passes, 0 failures\r"
+    },
+    {
+      "seconds": 32.5280204,
+      "ok": true,
+      "suite": "manual_save_tests",
+      "summary": "MANUAL SAVE TESTS: 1163 assertions, 0 failures\r"
+    },
+    {
+      "seconds": 2.0024363,
+      "ok": true,
+      "suite": "customer_departure_tests",
+      "summary": "DEPARTURE TESTS: 78 assertions, 0 failures\r"
+    },
+    {
+      "seconds": 2.0903936,
+      "ok": true,
+      "suite": "reception_feedback_tests",
+      "summary": "RECEPTION FEEDBACK TESTS: 113 assertions, 0 failures\r"
+    },
+    {
+      "seconds": 4.3112557,
+      "ok": true,
+      "suite": "bell_tests",
+      "summary": "BELL TESTS: 195 passes, 0 failures\r"
+    },
+    {
+      "seconds": 3.5730523,
+      "ok": true,
+      "suite": "free_cloth_tests",
+      "summary": "FREE CLOTH TESTS: 302 passes, 0 failures\r"
+    },
+    {
+      "seconds": 44.5622627,
+      "ok": true,
+      "suite": "run_mirror_chapter",
+      "summary": "MIRROR CHAPTER TESTS: 4090 passes, 0 failures\r"
+    },
+    {
+      "seconds": 49.7440807,
+      "ok": true,
+      "suite": "familiar_mirror_integration",
+      "summary": "FAMILIAR MIRROR INTEGRATION: 4090 passes, 0 failures\r"
+    },
+    {
+      "seconds": 149.4120028,
+      "summary": "FAMILIAR STORIES TESTS: 31448 passes, 0 failures\r",
+      "ok": true,
+      "suite": "run_familiar_stories"
+    },
+    {
+      "summary": "FAMILIAR CHECKPOINTS: 496 checks, 0 failures",
+      "ok": true,
+      "suite": "familiar_checkpoint_process"
+    },
+    {
+      "seconds": 54.9994709,
+      "summary": "PREPARATION TESTS: 305412 assertions, 0 failures\r",
+      "ok": true,
+      "suite": "preparation_tests"
+    }
+  ],
+  "window_tests": [
+    {
+      "suite": "familiar-ui-1280-final",
+      "ok": true,
+      "summary": [
+        "FAMILIAR UI: 1646 assertions, 0 failures"
+      ]
+    },
+    {
+      "suite": "familiar-ui-1600",
+      "ok": true,
+      "summary": [
+        "FAMILIAR UI: 1646 assertions, 0 failures"
+      ]
+    },
+    {
+      "suite": "manual_save_ui_smoke-familiar",
+      "ok": true,
+      "summary": [
+        "MANUAL SAVE UI TESTS: 82 assertions, 0 failures"
+      ]
+    },
+    {
+      "suite": "mirror_chapter_ui_smoke-familiar",
+      "ok": true,
+      "summary": [
+        "MIRROR CHAPTER UI: 861 assertions, 0 failures"
+      ]
+    },
+    {
+      "suite": "familiar-summary-normal",
+      "ok": true,
+      "summary": [
+        "FAMILIAR SUMMARY UI: 11 assertions, 0 failures"
+      ]
+    },
+    {
+      "suite": "familiar-summary-wide",
+      "ok": true,
+      "summary": [
+        "FAMILIAR SUMMARY UI: 11 assertions, 0 failures"
+      ]
+    }
+  ]
+}

@@ -28,7 +28,7 @@ static func witnessed(state: RunState, visit_id: String) -> bool:
 func current(day: DayController) -> MirrorEncounterDefinition:
 	if day.state.phase != &"open" or not PawnReturnService.current(day.state).is_empty(): return null
 	var visit := customers.active(day.state)
-	if visit == null: return null
+	if visit == null or EarlyRedemption.is_visit(visit): return null
 	for definition in day.definition.mirror_encounters:
 		if visit.visit_id != "%s/%d/%s" % [day.definition.id, day.state.current_night_index, definition.slot_id]: continue
 		if not CounterDomainValidator._contains_all(day.state.narrative_flags, definition.required_flags): continue
