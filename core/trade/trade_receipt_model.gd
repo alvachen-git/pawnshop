@@ -46,6 +46,7 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 	for ticket in day.state.pawn_tickets:
 		if ticket.item_instance_id == item.instance_id and entry.kind in ["pawn_loan", "extension"]:
 			detail = "第%d夜到期 · 约定赎金 %d 银元\n在当物品不可出售。" % [ticket.due_night, ticket.redemption_amount]
+			if EarlyRedemption.enabled(day.definition) and ticket.terms_id == FamiliarStories.TERMS: detail += "\n" + EarlyRedemption.AGREEMENT
 	if SevenNightPlan.enabled(day.definition) and entry.kind in ["acquisition", "pawn_loan"]:
 		var row := VarietySaveCodec.selection(day.state, item.source_visit_id)
 		if not row.is_empty() and not row.context_id.is_empty(): note += "\n" + String(SevenNightPlan.context(day.definition, row.context_id).voice.completed)

@@ -2,6 +2,7 @@ class_name CustomerManager
 extends RefCounted
 
 func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> void:
+	if FamiliarStories.enabled(run): state.familiar_plan = FamiliarStories.plan(run, catalog, state.run_seed)
 	state.visits.clear()
 	var return_delay := PawnReturnService.prepare(state, catalog)
 	if not run.variety.is_empty():

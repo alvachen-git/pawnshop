@@ -55,7 +55,8 @@ func execute(day: DayController, ticket: PawnTicket, terms: PawnTermsDefinition,
 		ticket.closed_night = day.state.current_night_index
 		ticket.closed_minute = day.state.game_minutes
 		item.ownership_state = "redeemed"
-		return ActionResult.new(true, "收取赎金 %d，原物已交还当户。" % ticket.redemption_amount)
+		var speech := FamiliarStoryVoice.redemption(ticket, day.state)
+		return ActionResult.new(true, (speech + "\n" if not speech.is_empty() else "") + "收取赎金 %d，原物已交还当户。" % ticket.redemption_amount)
 	var fee := ceili(ticket.principal * terms.extension_fee_ratio)
 	EconomyManager.new().commit(day.state, fee, item.instance_id, "extend/" + ticket.ticket_id, "extension", fee)
 	ticket.extensions.append({"night": day.state.current_night_index, "minute": day.state.game_minutes, "fee": fee, "previous_due": ticket.due_night, "new_due": ticket.due_night + terms.extension_nights})
@@ -77,7 +78,7 @@ func disposal_reason(state: RunState, catalog: ContentCatalog, choices: Dictiona
 	if choices.size() != due.size(): return "请逐张选好留货或转当，再合账。"
 	for ticket in due:
 		var terms := catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
-		if terms.return_mode != "absent": return "持票到店的当户尚未办结，不能绝当。"
+		if FamiliarStories.return_mode(ticket.to_data(), FamiliarStories.history_data(state), terms.return_mode) != "absent": return "持票到店的当户尚未办结，不能绝当。"
 		if choices.get(ticket.ticket_id, "") not in ["keep", "transfer"]: return "请逐张选好留货或转当，再合账。"
 	return ""
 

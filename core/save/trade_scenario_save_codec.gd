@@ -26,6 +26,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		sample.current_night_index = night
 		sample.run_seed = state.run_seed
 		sample.preparation_history = state.preparation_history.duplicate(true)
+		FamiliarStories.attach_context(sample, data)
 		CustomerManager.new().prepare_night(sample, run, catalog)
 		selections.append_array(sample.scenario_selections)
 		var delay := PawnReturnService.delay_for(data, night, catalog)
@@ -43,6 +44,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			replay.phase = &"open"
 			replay.cash = 1000000
 			replay.visits.append(visit)
+			EarlyRedemption.prepare_replay(replay, state, visit, data)
 			replay_days[visit.visit_id] = DayController.new(run, replay)
 	if selections != data.scenario_selections: return "交易情境与本局种子不一致。"
 	if not ordinary: state.scenario_selections.assign(selections)

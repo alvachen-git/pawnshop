@@ -43,7 +43,7 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 	roles[pen4] = "pen4"
 	roles[24 + VarietyService.rng(seed_value, "seven/pen5").randi_range(1 if roles.get(23, "") == "pen4" else 0, 5)] = "pen5"
 	var swapped := VarietyService.rng(seed_value, "seven/pen_variant").randi_range(0, 1) == 1
-	var names: Array = []
+	var names: Array = FamiliarStories.NAMES.duplicate() if FamiliarStories.enabled(run) else []
 	for night in range(1, 8):
 		var times: Array = []
 		for band in [[0, 120], [120, 300], [300, 450]]:

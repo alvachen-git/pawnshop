@@ -36,6 +36,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		sample.current_night_index = night
 		sample.run_seed = state.run_seed
 		sample.preparation_history = state.preparation_history.duplicate(true)
+		FamiliarStories.attach_context(sample, data)
 		CustomerManager.new().prepare_night(sample, run, catalog)
 		for visit in sample.visits: visits[visit.visit_id] = visit
 	var manager := RiskManager.new(catalog)

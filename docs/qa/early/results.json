@@ -1,0 +1,75 @@
+{
+  "content_version": 18,
+  "source_regressions": [
+    {
+      "ok": true,
+      "summary": "M0–M7 TESTS PASSED · 1799 assertions\r",
+      "suite": "run_all"
+    },
+    {
+      "ok": true,
+      "summary": "PAWN TESTS: 107 passes, 0 failures\r",
+      "suite": "run_pawn"
+    },
+    {
+      "ok": true,
+      "summary": "BARGAINING TESTS: 182 assertions, 0 failures\r",
+      "suite": "run_bargaining"
+    },
+    {
+      "ok": true,
+      "summary": "ROOM TESTS: 701 assertions, 0 failures\r",
+      "suite": "run_room"
+    },
+    {
+      "ok": true,
+      "summary": "FOUR NIGHT TESTS: 42532 passes, 0 failures\r",
+      "suite": "run_four_night"
+    },
+    {
+      "ok": true,
+      "summary": "INTEGRATED SEVEN TESTS: 8011 passes, 0 failures\r",
+      "suite": "run_integrated_seven"
+    },
+    {
+      "ok": true,
+      "summary": "PREPARATION TESTS: 305412 assertions, 0 failures\r",
+      "suite": "preparation_tests"
+    },
+    {
+      "ok": true,
+      "summary": "MANUAL SAVE TESTS: 1163 assertions, 0 failures\r",
+      "suite": "manual_save_tests"
+    },
+    {
+      "ok": true,
+      "summary": "DEPARTURE TESTS: 78 assertions, 0 failures\r",
+      "suite": "customer_departure_tests"
+    },
+    {
+      "ok": true,
+      "summary": "RECEPTION FEEDBACK TESTS: 113 assertions, 0 failures\r",
+      "suite": "reception_feedback_tests"
+    },
+    {
+      "ok": true,
+      "summary": "MIRROR CHAPTER TESTS: 4090 passes, 0 failures\r",
+      "suite": "run_mirror_chapter"
+    },
+    {
+      "ok": true,
+      "summary": "FAMILIAR CHECKPOINTS: 496 checks, 0 failures\r",
+      "suite": "familiar_checkpoint_process"
+    },
+    {
+      "ok": true,
+      "summary": "EARLY REDEMPTION: 4736 passes, 0 failures\r",
+      "suite": "run_early_redemption"
+    }
+  ],
+  "cross_process": "567 checks, 0 failures",
+  "windows": {
+    "1280x720": "168 assertions, 0 failures",
+    "1600x900": "168 assertions, 0 failures"
+  }
+}

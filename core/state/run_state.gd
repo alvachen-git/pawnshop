@@ -14,6 +14,10 @@ var night_opening_cash: int = 0
 var action_count: int = 0
 var run_token := ""
 var seven_plan: Array[Dictionary] = []
+var familiar_plan: Dictionary = {}
+var familiar_progress: Dictionary = {}
+# Read-only raw history context used during ordered validation; never serialized.
+var familiar_context: Dictionary = {}
 var preparation_history: Array[Dictionary] = []
 var preparation_version := 0
 var sample_plan: Array[Dictionary] = []
@@ -63,7 +67,7 @@ static func create(definition: RunDefinition) -> RunState:
 
 
 func to_read_model() -> Dictionary:
-	return {
+	var data := {
 		"run_definition_id": String(run_definition_id),
 		"run_token": run_token,
 		"ordinary_selections": ordinary_selections.duplicate(true),
@@ -107,3 +111,9 @@ func to_read_model() -> Dictionary:
 		"sale_batches": sale_batches.duplicate(true),
 		"visit_history": visit_history.duplicate(true),
 	}
+
+	if not familiar_plan.is_empty():
+		data["familiar_plan"] = familiar_plan.duplicate(true)
+		familiar_progress = FamiliarStories.progress(data)
+		data["familiar_progress"] = familiar_progress.duplicate(true)
+	return data

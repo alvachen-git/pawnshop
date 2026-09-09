@@ -13,6 +13,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			fixture.current_night_index = index + 1
 			fixture.run_seed = state.run_seed
 			fixture.preparation_history = state.preparation_history.duplicate(true)
+			FamiliarStories.attach_context(fixture, data)
 			CustomerManager.new().prepare_night(fixture, run, catalog)
 			var delay := PawnReturnService.delay_for(data, index + 1, catalog)
 			for expected in fixture.visits:
@@ -33,6 +34,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if OpeningPreparation.enabled(run) and expected_visits.has(entry.visit_id) and entry.visit_id.ends_with("/prep_extra"): found_slot = true
 		if not found_slot: return "来访ID不属于当前运行配置。"
 		var planned: CustomerVisit = expected_visits[entry.visit_id]
+		if entry.outcome in ["redeemed_early", "redemption_deferred"] and (not EarlyRedemption.enabled(run) or not EarlyRedemption.is_visit(planned)): return "提前取赎结果不属于这次来访。"
 		if planned.customer_id != entry.customer_id: return "来访人物与抽选结果不符。"
 		if entry.outcome in ["bought", "pawned"] and (entry.minute < planned.arrival or entry.minute >= mini(planned.expires_at, run.night_minutes)): return "成交不在来访窗口内。"
 		history_ids.append(entry.visit_id)

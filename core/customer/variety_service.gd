@@ -107,6 +107,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		if row.get("sample_role") == "pawn": visit.voice["introduction"] = "这件旧物舍不得卖。我只办活当，三夜后带票来赎。"
 		if row.get("sample_role") == "urgent": visit.voice["introduction"] = "车子不等人。我只留三十分钟，掌柜挑要紧的看。"
 		if row.get("seven_role") == "pawn": visit.voice["introduction"] += "\n只办活当，三夜后我带票来赎。"
+		FamiliarStoryVoice.apply(visit, row, state, catalog)
 		state.visits.append(visit)
 	state.visits.sort_custom(func(a: CustomerVisit, b: CustomerVisit) -> bool: return a.arrival < b.arrival)
 

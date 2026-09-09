@@ -227,6 +227,7 @@ func render(model: Dictionary) -> void:
 			_speech.text = visual.speech.back().answer
 		_speech.tooltip_text = _speech.text
 		%ItemText.text = "%s\n已知估值 %s 银元\n已见线索 %d 条" % [visual.item_name, visual.estimate, visual.clues.size()]
+		if visual.has("item_status"): %ItemText.text = visual.item_status
 	$Room.has_customer = active and _portrait.texture == null
 	$Room.has_item = active and _item_image.texture == null
 	$Room.queue_redraw()

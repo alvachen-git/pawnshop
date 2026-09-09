@@ -57,6 +57,7 @@ func initialize() -> ContentLoadResult:
 		session = RunSession.new(definition, catalog.content_version, saves, catalog)
 		if OrdinarySamplePlan.enabled(definition) or SevenNightPlan.enabled(definition): print("RUN SEED: ", session.read_state().run_seed)
 		if SevenNightPlan.enabled(definition) and "--log-plan" in OS.get_cmdline_user_args(): print("SEVEN VISIT PLAN: ", JSON.stringify(session.read_state().seven_plan))
+		if FamiliarStories.enabled(definition) and "--log-plan" in OS.get_cmdline_user_args(): print("FAMILIAR STORY PLAN: ", JSON.stringify(session.read_state().familiar_plan))
 		content_ready.emit(catalog)
 	else:
 		content_failed.emit(result.issues)

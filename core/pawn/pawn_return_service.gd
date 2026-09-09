@@ -2,14 +2,16 @@ class_name PawnReturnService
 extends RefCounted
 
 # Return visits reference existing collateral. They never enter the acquisition queue.
-static func plan(tickets: Array, night: int, catalog: ContentCatalog) -> Array[Dictionary]:
+static func plan(tickets: Array, night: int, catalog: ContentCatalog, context: Dictionary = {}) -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	if catalog == null: return rows
 	for ticket in tickets:
 		if ticket is Dictionary and not ticket.get("person", {}) is Dictionary: return []
 		if not ticket is Dictionary or not CounterSaveCodec._text_fields(ticket, ["ticket_id", "terms_id", "customer_id", "item_instance_id"]) or not RunSchema.integer(ticket.get("started_night")) or not ticket.get("extensions") is Array: return []
 		var terms := catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
-		if terms == null or terms.return_mode == "absent": continue
+		if terms == null: continue
+		var mode := FamiliarStories.return_mode(ticket, context, terms.return_mode)
+		if mode == "absent": continue
 		var due: int = int(ticket.started_night) + terms.term_nights
 		var extended := false
 		for extension in ticket.extensions:
@@ -18,7 +20,8 @@ static func plan(tickets: Array, night: int, catalog: ContentCatalog) -> Array[D
 				due = int(extension.new_due)
 				extended = true
 		if due != night: continue
-		var command := "extend" if terms.return_mode == "extend_once" and not extended else "redeem"
+		if not EarlyRedemption.recorded(ticket, context).is_empty(): continue
+		var command := "extend" if mode == "extend_once" and not extended else "redeem"
 		rows.append({"id": "return/%d/%s" % [night, ticket.ticket_id], "ticket_id": ticket.ticket_id,
 			"customer_id": ticket.customer_id, "item_instance_id": ticket.item_instance_id,
 			"night": night, "command": command, "minutes": terms.extend_minutes if command == "extend" else terms.redeem_minutes,
@@ -29,7 +32,7 @@ static func plan(tickets: Array, night: int, catalog: ContentCatalog) -> Array[D
 	return rows
 
 static func prepare(state: RunState, catalog: ContentCatalog) -> int:
-	var rows := plan(state.pawn_tickets.map(func(t: PawnTicket) -> Dictionary: return t.to_data()), state.current_night_index, catalog)
+	var rows := plan(state.pawn_tickets.map(func(t: PawnTicket) -> Dictionary: return t.to_data()), state.current_night_index, catalog, FamiliarStories.history_data(state))
 	var delay := 0
 	for row in rows:
 		delay += int(row.minutes)
@@ -51,7 +54,7 @@ static func delay_for(data: Dictionary, night: int, catalog: ContentCatalog) -> 
 	if not data.get("pawn_tickets", []) is Array: return 0
 	if night < int(data.get("pawn_rules_start_night", 2147483647)): return 0
 	var delay := 0
-	for row in plan(data.get("pawn_tickets", []), night, catalog): delay += int(row.minutes)
+	for row in plan(data.get("pawn_tickets", []), night, catalog, data): delay += int(row.minutes)
 	return delay
 
 static func validate(data: Dictionary, state: RunState, run: RunDefinition, catalog: ContentCatalog) -> String:
@@ -59,7 +62,7 @@ static func validate(data: Dictionary, state: RunState, run: RunDefinition, cata
 	var expected: Array[Dictionary] = []
 	for night in range(state.pawn_rules_start_night, state.current_night_index + 1):
 		var earliest := 0
-		for planned in plan(data.pawn_tickets, night, catalog):
+		for planned in plan(data.pawn_tickets, night, catalog, data):
 			if expected.size() >= data.pawn_returns.size(): return "当户回访记录不完整。"
 			var row: Variant = data.pawn_returns[expected.size()]
 			if not row is Dictionary or row.size() != planned.size() or not row.get("status") is String: return "当户回访结构无效。"

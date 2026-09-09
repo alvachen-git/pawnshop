@@ -16,6 +16,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	var visit := customers.active(day.state)
 	if day.state.phase != &"open" or visit == null or visit.visit_id != visit_id:
 		return "当前顾客已离开或柜台未营业。"
+	if EarlyRedemption.is_visit(visit): return EarlyRedemption.reason(day, visit, command, detail, amount)
 	var customer := catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 	var item := catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)
@@ -86,6 +87,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	if not error.is_empty(): return ActionResult.new(false, error)
 	var visit := customers.active(day.state)
 	var customer := catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
+	if EarlyRedemption.is_visit(visit): return EarlyRedemption.execute(day, self, visit, command)
 	var item := catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
 	if command == "judge":
 		visit.item.judgement = detail
