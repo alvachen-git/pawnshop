@@ -71,7 +71,7 @@ static func domain(catalog: ContentCatalog) -> Array:
 		if run.variety.is_empty(): continue
 		if SevenNightPlan.enabled(run):
 			issues.append_array(story_domain(run, catalog))
-			if run.total_nights != 7 or run.customer_slots.size() != 42 or not run.batch_selling or not run.market.is_empty(): CounterDomainValidator._error(issues, run.id, "七夜运行配置不一致。")
+			if run.total_nights != 7 or run.customer_slots.size() != 42 or not run.batch_selling: CounterDomainValidator._error(issues, run.id, "七夜运行配置不一致。")
 			for id in run.variety.customer_ids:
 				if run.variety.contexts.filter(func(c: Dictionary) -> bool: return c.customer_id == id).size() != 2: CounterDomainValidator._error(issues, run.id, "每类人物须有两种处境。")
 			for c in run.variety.contexts:

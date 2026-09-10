@@ -108,18 +108,6 @@ func _ready() -> void:
 
 
 func _build_painted_controls() -> void:
-	for entry in [["InventoryButton", "库存", 0.80], ["LedgerButton", "账本", 0.87]]:
-		var button := Button.new()
-		button.name = entry[0]
-		button.text = entry[1]
-		button.z_index = 5
-		button.add_theme_font_size_override("font_size", 19)
-		button.tooltip_text = "查看" + entry[1] + " · 不耗时"
-		CounterTheme.style_paper_button(button)
-		add_child(button)
-		_bounds(button, 0.925, entry[2], 0.992, entry[2] + 0.064)
-		if entry[0] == "InventoryButton": button.pressed.connect(inventory_requested.emit)
-		else: button.pressed.connect(ledger_requested.emit)
 	$CustomerPanel.add_theme_stylebox_override("panel", CounterTheme.painted_paper())
 	$CustomerPanel.z_index = 3
 	for label in [%ShopTitle, %CustomerText, %ItemText, _speech]:

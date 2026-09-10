@@ -30,6 +30,13 @@ try {
     Run-Test 'free-cloth' 'free_cloth_tests.gd'
     Run-Test 'mirror-chapter-core' 'run_mirror_chapter.gd'
     Run-Test 'mirror-chapter-process' 'mirror_chapter_checkpoint.gd'
+    Run-Test 'market-seven-core' 'run_market_seven.gd'
+    Run-Test 'market-familiar-core' 'run_market_seven.gd' @('combined')
+    Run-Test 'early-redemption-v18' 'run_early_redemption.gd'
+    Run-Test 'early-redemption-v19' 'run_early_redemption.gd' @('combined')
+    Run-Test 'early-process-v18' 'early_checkpoint_process.gd'
+    Run-Test 'early-process-v19' 'early_checkpoint_process.gd' @('combined')
+    Run-Test 'market-seven-process' 'market_seven_checkpoint.gd'
     Run-Test 'room-core' 'run_room.gd'
     Run-Test 'pawn-core' 'run_pawn.gd'
     Run-Test 'variety-core' 'run_variety.gd'
@@ -55,6 +62,9 @@ try {
         $sizeArgs = @(if ($wide) { 'wide' })
         Run-Test "manual-save-$size" 'manual_save_ui_smoke.gd' $sizeArgs $false
         Run-Test "mirror-chapter-$size" 'mirror_chapter_ui_smoke.gd' $sizeArgs $false
+        Run-Test "market-seven-$size" 'market_seven_ui_smoke.gd' $sizeArgs $false
+        Run-Test "counter-notice-$size" 'counter_notice_ui_smoke.gd' $sizeArgs $false
+        Run-Test "early-redemption-v19-$size" 'early_redemption_ui.gd' (@('combined') + $sizeArgs) $false
         Run-Test "bell-$size" 'bell_ui_smoke.gd' $sizeArgs $false
         Run-Test "integrated-seven-$size" 'integrated_ui_smoke.gd' $sizeArgs $false
         Run-Test "preparation-$size" 'preparation_ui_smoke.gd' $sizeArgs $false
@@ -77,6 +87,7 @@ try {
         Run-Test "accounts-$size" 'art03_ui_smoke.gd' $sizeArgs $false
         Run-Test "debt-production-$size" 'art03_debt_ui_smoke.gd' (@('production') + $sizeArgs) $false
     }
+    Run-Test 'market-seven-ui-process' 'market_seven_checkpoint.gd' @('ui')
     foreach ($mode in @('write','read','continue','read_final')) {
         Run-Test "manual-process-$mode" 'manual_save_process.gd' @($mode)
     }
