@@ -1,6 +1,7 @@
 param(
     [Parameter(Mandatory=$true)][string]$GodotPath,
-    [Parameter(Mandatory=$true)][string]$OutputDir
+    [Parameter(Mandatory=$true)][string]$OutputDir,
+    [string]$StartAt = ''
 )
 . "$PSScriptRoot/windows_common.ps1"
 $root = Split-Path $PSScriptRoot -Parent
@@ -11,7 +12,12 @@ New-Item -ItemType Directory -Force -Path $output | Out-Null
 $oldAppData = $env:APPDATA
 $oldExpected = $env:PAWNSHOP_TEST_APPDATA
 $results = [Collections.Generic.List[object]]::new()
+$script:waitingForStart = -not [string]::IsNullOrEmpty($StartAt)
 function Run-Test([string]$Name, [string]$Script, [string[]]$UserArgs = @(), [bool]$Headless = $true) {
+    if ($script:waitingForStart) {
+        if ($Name -ne $StartAt) { return }
+        $script:waitingForStart = $false
+    }
     $arguments = @('--path', $root, '--script', "res://tests/$Script")
     if ($Headless) { $arguments = @('--headless') + $arguments }
     if (@($UserArgs).Count -gt 0) { $arguments += @('--') + $UserArgs }
@@ -31,12 +37,22 @@ try {
     Run-Test 'mirror-chapter-core' 'run_mirror_chapter.gd'
     Run-Test 'mirror-chapter-process' 'mirror_chapter_checkpoint.gd'
     Run-Test 'market-seven-core' 'run_market_seven.gd'
-    Run-Test 'market-familiar-core' 'run_market_seven.gd' @('combined')
-    Run-Test 'early-redemption-v18' 'run_early_redemption.gd'
-    Run-Test 'early-redemption-v19' 'run_early_redemption.gd' @('combined')
-    Run-Test 'early-process-v18' 'early_checkpoint_process.gd'
-    Run-Test 'early-process-v19' 'early_checkpoint_process.gd' @('combined')
     Run-Test 'market-seven-process' 'market_seven_checkpoint.gd'
+    Run-Test 'familiar-core' 'run_familiar_stories.gd'
+    Run-Test 'familiar-process' 'familiar_checkpoint_process.gd'
+    Run-Test 'familiar-mirror' 'familiar_mirror_integration.gd'
+    Run-Test 'early-core' 'run_early_redemption.gd'
+    Run-Test 'early-process' 'early_checkpoint_process.gd'
+    Run-Test 'complete-core' 'run_complete_seven.gd'
+    Run-Test 'complete-early' 'run_complete_early.gd'
+    Run-Test 'complete-process' 'complete_checkpoint_process.gd'
+    Run-Test 'complete-familiar' 'run_complete_familiar.gd'
+    Run-Test 'complete-familiar-process' 'complete_familiar_checkpoint.gd'
+    Run-Test 'complete-economy' 'complete_economy.gd' @('quick')
+    Run-Test 'complete-market-process' 'complete_market_checkpoint.gd' @('economy')
+    Run-Test 'market-familiar-core' 'run_market_seven.gd' @('combined')
+    Run-Test 'early-redemption-v19' 'run_early_redemption.gd' @('combined')
+    Run-Test 'early-process-v19' 'early_checkpoint_process.gd' @('combined')
     Run-Test 'room-core' 'run_room.gd'
     Run-Test 'pawn-core' 'run_pawn.gd'
     Run-Test 'variety-core' 'run_variety.gd'
@@ -60,9 +76,12 @@ try {
     foreach ($wide in @($false,$true)) {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "complete-early-$size" 'complete_early_ui.gd' $sizeArgs $false
+        Run-Test "complete-$size" 'complete_ui_smoke.gd' $sizeArgs $false
+        Run-Test "market-seven-$size" 'market_seven_ui_smoke.gd' $sizeArgs $false
+        Run-Test "early-$size" 'early_redemption_ui.gd' $sizeArgs $false
         Run-Test "manual-save-$size" 'manual_save_ui_smoke.gd' $sizeArgs $false
         Run-Test "mirror-chapter-$size" 'mirror_chapter_ui_smoke.gd' $sizeArgs $false
-        Run-Test "market-seven-$size" 'market_seven_ui_smoke.gd' $sizeArgs $false
         Run-Test "counter-notice-$size" 'counter_notice_ui_smoke.gd' $sizeArgs $false
         Run-Test "early-redemption-v19-$size" 'early_redemption_ui.gd' (@('combined') + $sizeArgs) $false
         Run-Test "bell-$size" 'bell_ui_smoke.gd' $sizeArgs $false
@@ -87,6 +106,7 @@ try {
         Run-Test "accounts-$size" 'art03_ui_smoke.gd' $sizeArgs $false
         Run-Test "debt-production-$size" 'art03_debt_ui_smoke.gd' (@('production') + $sizeArgs) $false
     }
+    Run-Test 'complete-market-ui-process' 'complete_market_checkpoint.gd' @('ui','economy')
     Run-Test 'market-seven-ui-process' 'market_seven_checkpoint.gd' @('ui')
     foreach ($mode in @('write','read','continue','read_final')) {
         Run-Test "manual-process-$mode" 'manual_save_process.gd' @($mode)
@@ -128,10 +148,12 @@ try {
     foreach ($mode in @('warning','death','restart','archive')) {
         Run-Test "m5-process-$mode" 'm5_checkpoint_process.gd' @($mode)
     }
+    if ($script:waitingForStart) { throw "Unknown start test: $StartAt" }
+    if ($StartAt) { Write-Utf8 (Join-Path $output 'start-at.txt') $StartAt }
     # Screenshots are produced by the existing real-viewport tests, not by release EXE.
     if (Test-Path "$root/.godot/qa") { Copy-Item "$root/.godot/qa" (Join-Path $output 'screenshots') -Recurse }
     Write-Utf8 (Join-Path $output 'results.json') (ConvertTo-Json -InputObject @($results.ToArray()) -Depth 10)
-    Write-Host "WINDOWS SOURCE VALIDATION PASSED: $output"
+    Write-Host "WINDOWS SOURCE VALIDATION PASSED: $output (start: $StartAt)"
 } finally {
     $env:APPDATA = $oldAppData
     $env:PAWNSHOP_TEST_APPDATA = $oldExpected

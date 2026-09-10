@@ -51,6 +51,10 @@ static func build(day: DayController, service: CommerceService, message: String)
 	if day.definition.fee_policy.enabled: ledger.body += FeeService.archive_text(day.state)
 	ledger.body += "\n" + message
 	var model := {"inventory": inventory, "ledger": ledger}
+	var flow := CashFlowReadModel.build(day.state, day.definition)
+	if not flow.is_empty():
+		model.inventory.cash_flow = flow
+		model.ledger.cash_flow = flow
 	CommerceVisualReadModels.enrich(model, day, service, message)
 	if day.definition.batch_selling: model.inventory.sales = BatchSaleReadModel.build(day, service)
 	return model

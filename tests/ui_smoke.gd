@@ -92,8 +92,7 @@ func _click(label: String) -> void:
 		"账本": &"ledger",
 	}
 	if scene_routes.has(label):
-		# Painted shortcuts can be visible in the tree while occluded by the drawer.
-		# Close it with real input before using the original scene hotspot.
+		# Close the visible drawer before clicking a scene hotspot it may obscure.
 		var close := _main.get_node("CounterScreen/%CloseDrawerButton") as Button
 		if close.is_visible_in_tree(): await _click_button(close)
 		var counter_view := _main.get_node("CounterScreen/CounterView") as CounterView

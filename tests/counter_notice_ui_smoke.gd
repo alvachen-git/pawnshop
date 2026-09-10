@@ -7,7 +7,7 @@ func _run() -> void:
 	_main = load(ProjectSettings.get_setting("application/run/main_scene")).instantiate()
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
-	_check(_session.content_version == 19 and _session.definition.id == "market_familiar" and FamiliarStories.enabled(_session.definition) and not _session.definition.market.is_empty(), "default combines familiar stories with market")
+	_check(_session.content_version == 19 and _session.definition.id == "complete_seven" and FamiliarStories.enabled(_session.definition) and not _session.definition.market.is_empty(), "default combines familiar stories with market")
 	_session._save.library.path = "res://.godot/qa/notice_library_%d.json" % Time.get_ticks_usec()
 	_main.title_menu.configure(true, false)
 	_session.definition._randomize_seed = false
