@@ -1,0 +1,1256 @@
+{
+  "base_main": "56276b048a27419cc17ce6731e77d23fac353792",
+  "groups": 182,
+  "failures_after_fix": 0,
+  "note": "The obsolete UI test clicked the envelope while the drawer was open. The test now closes the drawer with mouse input; validation resumed from that failed group. Screenshots and raw engine logs remain local.",
+  "results": [
+    {
+      "name": "environment",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "font",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "core",
+      "passed": true,
+      "counts": [
+        "1799 assertions"
+      ]
+    },
+    {
+      "name": "free-cloth",
+      "passed": true,
+      "counts": [
+        "302 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "mirror-chapter-core",
+      "passed": true,
+      "counts": [
+        "4090 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "mirror-chapter-process",
+      "passed": true,
+      "counts": [
+        "3 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-seven-core",
+      "passed": true,
+      "counts": [
+        "7410 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "market-seven-process",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "familiar-core",
+      "passed": true,
+      "counts": [
+        "31448 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "familiar-process",
+      "passed": true,
+      "counts": [
+        "496 checks, 0 failures"
+      ]
+    },
+    {
+      "name": "familiar-mirror",
+      "passed": true,
+      "counts": [
+        "4090 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "early-core",
+      "passed": true,
+      "counts": [
+        "4736 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "early-process",
+      "passed": true,
+      "counts": [
+        "567 checks, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-core",
+      "passed": true,
+      "counts": [
+        "22189 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-early",
+      "passed": true,
+      "counts": [
+        "4738 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-process",
+      "passed": true,
+      "counts": [
+        "567 checks, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-familiar",
+      "passed": true,
+      "counts": [
+        "31446 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-familiar-process",
+      "passed": true,
+      "counts": [
+        "496 checks, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-economy",
+      "passed": true,
+      "counts": [
+        "2965 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-market-process",
+      "passed": true,
+      "counts": [
+        "24 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-familiar-core",
+      "passed": true,
+      "counts": [
+        "7410 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "early-redemption-v19",
+      "passed": true,
+      "counts": [
+        "4736 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "early-process-v19",
+      "passed": true,
+      "counts": [
+        "567 checks, 0 failures"
+      ]
+    },
+    {
+      "name": "room-core",
+      "passed": true,
+      "counts": [
+        "701 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-core",
+      "passed": true,
+      "counts": [
+        "107 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "variety-core",
+      "passed": true,
+      "counts": [
+        "17079 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "market-core",
+      "passed": true,
+      "counts": [
+        "5931 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-core",
+      "passed": true,
+      "counts": [
+        "182 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-variety-core",
+      "passed": true,
+      "counts": [
+        "69 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-variety",
+      "passed": true,
+      "counts": [
+        "16976 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-night-core",
+      "passed": true,
+      "counts": [
+        "42532 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-night-core",
+      "passed": true,
+      "counts": [
+        "136843 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-edges",
+      "passed": true,
+      "counts": [
+        "340 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "departure-core",
+      "passed": true,
+      "counts": [
+        "78 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "reception-feedback-core",
+      "passed": true,
+      "counts": [
+        "113 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-save-core",
+      "passed": true,
+      "counts": [
+        "1163 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "opening-core",
+      "passed": true,
+      "counts": [
+        "100 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-seven-core",
+      "passed": true,
+      "counts": [
+        "8011 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-core",
+      "passed": true,
+      "counts": [
+        "305412 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bell-core",
+      "passed": true,
+      "counts": [
+        "195 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "ui_smoke",
+      "passed": true,
+      "counts": [
+        "79 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "scene_navigation_ui_smoke",
+      "passed": true,
+      "counts": [
+        "77 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m2_ui_smoke",
+      "passed": true,
+      "counts": [
+        "97 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m3_ui_smoke",
+      "passed": true,
+      "counts": [
+        "136 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m4_ui_smoke",
+      "passed": true,
+      "counts": [
+        "175 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m5_ui_smoke",
+      "passed": true,
+      "counts": [
+        "304 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "art03_extension_ui_smoke",
+      "passed": true,
+      "counts": [
+        "68 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-early-1280x720",
+      "passed": true,
+      "counts": [
+        "168 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-1280x720",
+      "passed": true,
+      "counts": [
+        "465 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-seven-1280x720",
+      "passed": true,
+      "counts": [
+        "427 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "early-1280x720",
+      "passed": true,
+      "counts": [
+        "168 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-save-1280x720",
+      "passed": true,
+      "counts": [
+        "82 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "mirror-chapter-1280x720",
+      "passed": true,
+      "counts": [
+        "862 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "counter-notice-1280x720",
+      "passed": true,
+      "counts": [
+        "75 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "early-redemption-v19-1280x720",
+      "passed": true,
+      "counts": [
+        "168 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bell-1280x720",
+      "passed": true,
+      "counts": [
+        "88 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-seven-1280x720",
+      "passed": true,
+      "counts": [
+        "507 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-1280x720",
+      "passed": true,
+      "counts": [
+        "540 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-default-1280x720",
+      "passed": true,
+      "counts": [
+        "91 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "opening-1280x720",
+      "passed": true,
+      "counts": [
+        "94 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "variety-1280x720",
+      "passed": true,
+      "counts": [
+        "105 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-1280x720",
+      "passed": true,
+      "counts": [
+        "86 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-1280x720",
+      "passed": true,
+      "counts": [
+        "323 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "four-1280x720",
+      "passed": true,
+      "counts": [
+        "190 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "title-menu-1280x720",
+      "passed": true,
+      "counts": [
+        "108 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-1280x720",
+      "passed": true,
+      "counts": [
+        "102 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-1280x720",
+      "passed": true,
+      "counts": [
+        "285 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "departure-1280x720",
+      "passed": true,
+      "counts": [
+        "42 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "reception-feedback-1280x720",
+      "passed": true,
+      "counts": [
+        "67 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "waiting-departure-1280x720",
+      "passed": true,
+      "counts": [
+        "58 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "receipt-1280x720",
+      "passed": true,
+      "counts": [
+        "76 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-1280x720",
+      "passed": true,
+      "counts": [
+        "36 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m7-1280x720",
+      "passed": true,
+      "counts": [
+        "840 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-production-1280x720",
+      "passed": true,
+      "counts": [
+        "422 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "accounts-1280x720",
+      "passed": true,
+      "counts": [
+        "184 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "debt-production-1280x720",
+      "passed": true,
+      "counts": [
+        "433 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-early-1600x900",
+      "passed": true,
+      "counts": [
+        "168 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-1600x900",
+      "passed": true,
+      "counts": [
+        "465 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-seven-1600x900",
+      "passed": true,
+      "counts": [
+        "427 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "early-1600x900",
+      "passed": true,
+      "counts": [
+        "168 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-save-1600x900",
+      "passed": true,
+      "counts": [
+        "82 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "mirror-chapter-1600x900",
+      "passed": true,
+      "counts": [
+        "862 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "counter-notice-1600x900",
+      "passed": true,
+      "counts": [
+        "75 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "early-redemption-v19-1600x900",
+      "passed": true,
+      "counts": [
+        "168 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bell-1600x900",
+      "passed": true,
+      "counts": [
+        "88 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-seven-1600x900",
+      "passed": true,
+      "counts": [
+        "507 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-1600x900",
+      "passed": true,
+      "counts": [
+        "540 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-default-1600x900",
+      "passed": true,
+      "counts": [
+        "91 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "opening-1600x900",
+      "passed": true,
+      "counts": [
+        "94 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "variety-1600x900",
+      "passed": true,
+      "counts": [
+        "105 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-1600x900",
+      "passed": true,
+      "counts": [
+        "86 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-1600x900",
+      "passed": true,
+      "counts": [
+        "323 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "four-1600x900",
+      "passed": true,
+      "counts": [
+        "190 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "title-menu-1600x900",
+      "passed": true,
+      "counts": [
+        "108 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-1600x900",
+      "passed": true,
+      "counts": [
+        "102 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-1600x900",
+      "passed": true,
+      "counts": [
+        "285 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "departure-1600x900",
+      "passed": true,
+      "counts": [
+        "42 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "reception-feedback-1600x900",
+      "passed": true,
+      "counts": [
+        "67 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "waiting-departure-1600x900",
+      "passed": true,
+      "counts": [
+        "58 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "receipt-1600x900",
+      "passed": true,
+      "counts": [
+        "76 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-1600x900",
+      "passed": true,
+      "counts": [
+        "36 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m7-1600x900",
+      "passed": true,
+      "counts": [
+        "840 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-production-1600x900",
+      "passed": true,
+      "counts": [
+        "422 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "accounts-1600x900",
+      "passed": true,
+      "counts": [
+        "184 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "debt-production-1600x900",
+      "passed": true,
+      "counts": [
+        "433 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-market-ui-process",
+      "passed": true,
+      "counts": [
+        "27 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-seven-ui-process",
+      "passed": true,
+      "counts": [
+        "7 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-process-write",
+      "passed": true,
+      "counts": [
+        "41 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-process-read",
+      "passed": true,
+      "counts": [
+        "23 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-process-continue",
+      "passed": true,
+      "counts": [
+        "62 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-process-read_final",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-opening",
+      "passed": true,
+      "counts": [
+        "2 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-first",
+      "passed": true,
+      "counts": [
+        "161 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-third",
+      "passed": true,
+      "counts": [
+        "16 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-risk",
+      "passed": true,
+      "counts": [
+        "108 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-survive",
+      "passed": true,
+      "counts": [
+        "6 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-sixth",
+      "passed": true,
+      "counts": [
+        "226 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-end",
+      "passed": true,
+      "counts": [
+        "220 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-read",
+      "passed": true,
+      "counts": [
+        "5 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-start",
+      "passed": true,
+      "counts": [
+        "161 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-attract",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-tea",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-finish",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-second",
+      "passed": true,
+      "counts": [
+        "16 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-target",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-intel",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-third",
+      "passed": true,
+      "counts": [
+        "111 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-sixth",
+      "passed": true,
+      "counts": [
+        "223 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-end",
+      "passed": true,
+      "counts": [
+        "218 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-read",
+      "passed": true,
+      "counts": [
+        "7 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-prepare",
+      "passed": true,
+      "counts": [
+        "315 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-sixth",
+      "passed": true,
+      "counts": [
+        "216 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-room",
+      "passed": true,
+      "counts": [
+        "102 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-sleep",
+      "passed": true,
+      "counts": [
+        "3 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-seventh",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-finish",
+      "passed": true,
+      "counts": [
+        "11 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-read",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-process-write",
+      "passed": true,
+      "counts": [
+        "9 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "market-process-next",
+      "passed": true,
+      "counts": [
+        "7 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "market-process-read",
+      "passed": true,
+      "counts": [
+        "4 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-write",
+      "passed": true,
+      "counts": [
+        "53 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-fourth",
+      "passed": true,
+      "counts": [
+        "21 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-room",
+      "passed": true,
+      "counts": [
+        "10 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-sleep",
+      "passed": true,
+      "counts": [
+        "4 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-finish",
+      "passed": true,
+      "counts": [
+        "5 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-read",
+      "passed": true,
+      "counts": [
+        "7 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-process-write",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "variety-process-write",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "pawn-process-settle",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "variety-process-settle",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "pawn-process-read",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "variety-process-read",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "m7-process-write",
+      "passed": true,
+      "counts": [
+        "6 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "v7-copy-compatibility",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "m7-process-resume",
+      "passed": true,
+      "counts": [
+        "10 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m7-process-read",
+      "passed": true,
+      "counts": [
+        "3 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-write-scenario",
+      "passed": true,
+      "counts": [
+        "9 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-sleep-scenario",
+      "passed": true,
+      "counts": [
+        "6 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-read-scenario",
+      "passed": true,
+      "counts": [
+        "5 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-write-ordinary",
+      "passed": true,
+      "counts": [
+        "9 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-sleep-ordinary",
+      "passed": true,
+      "counts": [
+        "6 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-read-ordinary",
+      "passed": true,
+      "counts": [
+        "5 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-write_room",
+      "passed": true,
+      "counts": [
+        "6 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-sleep",
+      "passed": true,
+      "counts": [
+        "2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-summary",
+      "passed": true,
+      "counts": [
+        "2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-read_summary",
+      "passed": true,
+      "counts": [
+        "2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-write_shop",
+      "passed": true,
+      "counts": [
+        "26 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-read_shop",
+      "passed": true,
+      "counts": [
+        "4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-write_pursuit",
+      "passed": true,
+      "counts": [
+        "43 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-pursuit_sleep",
+      "passed": true,
+      "counts": [
+        "2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-death",
+      "passed": true,
+      "counts": [
+        "2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-read_death",
+      "passed": true,
+      "counts": [
+        "3 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-write_debt",
+      "passed": true,
+      "counts": [
+        "4 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-resume_bankrupt",
+      "passed": true,
+      "counts": [
+        "5 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-read_bankrupt",
+      "passed": true,
+      "counts": [
+        "1 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-write_mirror",
+      "passed": true,
+      "counts": [
+        "37 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-resume_death",
+      "passed": true,
+      "counts": [
+        "2 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-read_death",
+      "passed": true,
+      "counts": [
+        "1 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m5-process-warning",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "m5-process-death",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "m5-process-restart",
+      "passed": true,
+      "counts": []
+    },
+    {
+      "name": "m5-process-archive",
+      "passed": true,
+      "counts": []
+    }
+  ]
+}

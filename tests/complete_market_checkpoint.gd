@@ -19,11 +19,11 @@ func _initialize() -> void:
 		check(state.phase == &"run_ended" and "wm_seek" in state.narrative_flags and state.mirror_history.size() == 2 and state.market_history.size() == 8, "chapter and all demand messages restored")
 	var library := SaveLibrary.new("res://.godot/qa/complete/library.json")
 	check(not library.read_entry("manual/1").is_empty(), "manual opening restored in independent process")
-	for id in ["market_seven", "familiar_seven", "familiar_early", "complete_seven"]:
+	for id in ["market_seven", "familiar_seven", "familiar_early", "market_familiar", "complete_seven"]:
 		var old := library.read_entry("auto/" + id)
 		check(not old.is_empty() and old.run.id == id, "cross-process run identity " + id)
 		if not old.is_empty():
-			check(old.catalog.content_version == (19 if id == "complete_seven" else (18 if id == "familiar_early" else 17)), "cross-process matching content " + id)
+			check(old.catalog.content_version == (19 if id in ["complete_seven", "market_familiar"] else (18 if id == "familiar_early" else 17)), "cross-process matching content " + id)
 			check(CashFlowReadModel.build(old.state, old.run).is_empty() == (id != "complete_seven"), "legacy UI stays unchanged after reading")
 
 	if "ui" in OS.get_cmdline_user_args():

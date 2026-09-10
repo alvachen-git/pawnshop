@@ -94,6 +94,8 @@ func _run() -> void:
 	await _capture("04_preparation")
 	driver.open(_session)
 	await receipts()
+	var close := _main.get_node("CounterScreen/%CloseDrawerButton") as Button
+	if close.is_visible_in_tree(): await _click_button(close)
 	await _click_button(notice)
 	await _click("查看往来口信")
 	var history: String = _session.counter_model().inventory.sales.history
