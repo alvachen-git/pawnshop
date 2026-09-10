@@ -55,7 +55,8 @@ static func validate_timing(state: RunState, run: RunDefinition, catalog: Conten
 		var sales := state.sale_records.filter(func(row: Dictionary) -> bool: return row.get("batch_id", "") == trip.id)
 		if sales.map(func(row: Dictionary) -> String: return row.item_instance_id) != trip.item_ids: return "批次货单与逐件销售不符。"
 		var delay := PawnReturnService.delay_for(data, trip.night, catalog)
-		for visit in VarietyService.plan(run, catalog, state.run_seed):
+		var visits := OpeningPreparation.plan(state, run, catalog) if OpeningPreparation.enabled(run) else VarietyService.plan(run, catalog, state.run_seed)
+		for visit in visits:
 			if visit.night != trip.night: continue
 			var customer := catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 			var arrival: int = int(visit.arrival) + delay

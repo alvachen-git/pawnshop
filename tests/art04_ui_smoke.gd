@@ -61,10 +61,10 @@ func _run() -> void:
 	_check(not view._portrait.visible and not view._item_image.visible, "成交移除人物与银簪")
 	_check(not view.get_hotspot(&"customer").visible and not view.get_hotspot(&"item").visible, "空柜台没有顾客或物品的情境入口")
 	await _clean_capture("05_empty")
-	for name in ["InventoryButton", "LedgerButton"]:
-		await _click_button(view.get_node(name))
-		_check(screen.get_node("%Drawer").visible, "次级纸签可操作")
-		await _clean_capture(name)
+	for kind in [&"inventory", &"ledger"]:
+		await _click_button(view.get_hotspot(kind))
+		_check(screen.get_node("%Drawer").visible, "柜子与桌面账本可操作")
+		await _clean_capture(String(kind))
 		await _click("收起 · Esc")
 	for name in ["ShopStatusView", "MenuButton", "CashStatus", "DebtStatus"]:
 		_check(Rect2(Vector2.ZERO, screen.size).grow(0.1).encloses(screen.get_node("%" + name).get_global_rect()), "持续信息没有溢出：" + name)

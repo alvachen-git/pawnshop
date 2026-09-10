@@ -1,11 +1,11 @@
 extends "res://tests/run_familiar_stories.gd"
 
 func run() -> void:
-	var loaded := JsonContentProvider.new("res://data/familiar_early_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new(("res://data/market_familiar_manifest.json" if "combined" in OS.get_cmdline_user_args() else "res://data/familiar_early_manifest.json")).load_catalog()
 	check(loaded.is_success(), "content18")
 	if not loaded.is_success(): quit(1); return
 	catalog = loaded.catalog
-	run_def = catalog.get_definition("runs", "familiar_early")
+	run_def = catalog.get_definition("runs", catalog.default_run_id)
 	driver.check = check; driver.catalog = catalog
 	var chosen := -1
 	for seed_value in 512:
@@ -22,12 +22,12 @@ func run() -> void:
 	quit(0 if failures == 0 else 1)
 
 func roundtrip(s: RunSession, label: String) -> void:
-	var data := SaveCodec.new().encode(s._day.state, 18)
+	var data := SaveCodec.new().encode(s._day.state, catalog.content_version)
 	var codec := SaveCodec.new()
-	var restored := codec.decode(JSON.parse_string(JSON.stringify(data)), run_def, 18, catalog, true)
+	var restored := codec.decode(JSON.parse_string(JSON.stringify(data)), run_def, catalog.content_version, catalog, true)
 	check(restored != null, "restore " + label + ": " + codec.error_message)
 	if restored != null: check(restored.to_read_model() == data_without_versions(data), "exact state")
-	var dir := "res://.godot/qa/early"
+	var dir := ("res://.godot/qa/early_market" if "combined" in OS.get_cmdline_user_args() else "res://.godot/qa/early")
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(dir))
 	var file := FileAccess.open(dir + "/%s_%d_%s.json" % [label.replace(" ", "_"), s._day.state.current_night_index, s._day.state.phase], FileAccess.WRITE)
 	file.store_string(JSON.stringify(data)); file.close()
@@ -35,7 +35,7 @@ func roundtrip(s: RunSession, label: String) -> void:
 func play(seed_value: int, route: String) -> void:
 	run_def._randomize_seed = false; run_def._seed = seed_value
 	var save := SaveManager.new("user://tests/early/%s.json" % route)
-	var s := RunSession.new(run_def, 18, save, catalog)
+	var s := RunSession.new(run_def, catalog.content_version, save, catalog)
 	s.new_run()
 	var follow_seen := false
 	var receipts := []

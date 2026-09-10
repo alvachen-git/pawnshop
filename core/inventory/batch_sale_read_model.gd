@@ -28,5 +28,11 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 		buyers.append({"id": id, "name": buyer.display_name, "wanted": "、".join(wanted), "reason": reason, "stock": stock,
 			"window": "第六夜，时段待打听" if not known else "%s–%s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end)],
 			"note": demand.body if special else "按实物品相报价，收货件数不限。"})
-	return {"buyers": buyers, "history": PreparationService.notice(day.state, service.catalog) if SevenNightPlan.enabled(day.definition) else MarketService.history_text(day), "clock": TimeController.clock_text(day.definition.opening_minute, day.state.game_minutes),
+	var notices: PackedStringArray = []
+	if SevenNightPlan.enabled(day.definition):
+		var appointment := PreparationService.notice(day.state, service.catalog)
+		if not appointment.is_empty(): notices.append(appointment)
+	var market_history := MarketService.history_text(day)
+	if not market_history.is_empty(): notices.append(market_history)
+	return {"buyers": buyers, "history": "\n\n".join(notices), "clock": TimeController.clock_text(day.definition.opening_minute, day.state.game_minutes),
 		"return_clock": TimeController.clock_text(day.definition.opening_minute, day.state.game_minutes + 20), "market_id": market.get("id", "fixed"), "run_token": day.state.run_token}

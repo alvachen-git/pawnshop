@@ -24,7 +24,7 @@ func run() -> void:
 	quit(0 if failures == 0 else 1)
 
 func fresh(route: String) -> RunSession:
-	return RunSession.new(run_def, 16, SaveManager.new("res://.godot/qa/mirror_chapter/runtime/%d_%s.json" % [Time.get_ticks_usec(), route]), catalog)
+	return RunSession.new(run_def, catalog.content_version, SaveManager.new("res://.godot/qa/mirror_chapter/runtime/%d_%s.json" % [Time.get_ticks_usec(), route]), catalog)
 
 func study(s: RunSession, id: String, choice := "read") -> void:
 	var result := s.study_command(id, choice)
@@ -54,22 +54,22 @@ func chapter(route: String) -> void:
 	check(s._day.state.sale_records.filter(func(row: Dictionary) -> bool: return row.buyer_id == PreparationService.BUYER).size() == 2, "sixth night pen appointment")
 	check(("wm_motive" in s._day.state.narrative_flags) == (route != "reject"), "chapter knowledge only from investigation")
 	var codec := SaveCodec.new()
-	var data := codec.encode(s._day.state, 16)
-	check(codec.decode(data, run_def, 16, catalog) != null, "final checkpoint " + codec.error_message)
+	var data := codec.encode(s._day.state, catalog.content_version)
+	check(codec.decode(data, run_def, catalog.content_version, catalog) != null, "final checkpoint " + codec.error_message)
 	if route == "ability":
-		var transfer := FileAccess.open("res://.godot/qa/mirror_chapter/cross_process.json", FileAccess.WRITE)
+		var transfer := FileAccess.open(chapter_transfer_path(), FileAccess.WRITE)
 		transfer.store_string(JSON.stringify(data)); transfer.close()
 		var forged := data.duplicate(true)
 		forged.mirror_history.clear()
-		check(codec.decode(forged, run_def, 16, catalog) == null, "testimony requires mirror provenance")
+		check(codec.decode(forged, run_def, catalog.content_version, catalog) == null, "testimony requires mirror provenance")
 		forged = data.duplicate(true)
 		forged.event_history = forged.event_history.filter(func(row: Dictionary) -> bool: return row.event_id != "wm_notes")
-		check(codec.decode(forged, run_def, 16, catalog) == null, "cannot forge investigation source")
+		check(codec.decode(forged, run_def, catalog.content_version, catalog) == null, "cannot forge investigation source")
 		forged = data.duplicate(true)
 		forged.mirror_history.insert(1, forged.mirror_history[0].duplicate(true))
-		check(codec.decode(forged, run_def, 16, catalog) == null, "no duplicate use on load")
+		check(codec.decode(forged, run_def, catalog.content_version, catalog) == null, "no duplicate use on load")
 		var library := SaveLibrary.new("res://.godot/qa/mirror_chapter/runtime/library_%d.json" % Time.get_ticks_usec())
-		check(library.write_entry("manual/1", s._day.state, run_def, 16, catalog), "manual save " + library.error_message)
+		check(library.write_entry("manual/1", s._day.state, run_def, catalog.content_version, catalog), "manual save " + library.error_message)
 		check(not library.read_entry("manual/1").is_empty(), "manual restore " + library.error_message)
 
 func chapter_work(s: RunSession, route: String) -> void:
@@ -132,3 +132,6 @@ func chapter_work(s: RunSession, route: String) -> void:
 			check(result.ok, "pen sample retained: " + result.message + " cash=" + str(s._day.state.cash))
 		else: check(s.counter_command("reject", v.visit_id).ok, "ordinary customer")
 	check(false, "bounded chapter work")
+
+func chapter_transfer_path() -> String:
+	return "res://.godot/qa/mirror_chapter/cross_process.json"

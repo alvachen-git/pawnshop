@@ -91,7 +91,11 @@ func _click(label: String) -> void:
 		"库存": &"inventory",
 		"账本": &"ledger",
 	}
-	if scene_routes.has(label) and _find_button(_main, label) == null:
+	if scene_routes.has(label):
+		# Painted shortcuts can be visible in the tree while occluded by the drawer.
+		# Close it with real input before using the original scene hotspot.
+		var close := _main.get_node("CounterScreen/%CloseDrawerButton") as Button
+		if close.is_visible_in_tree(): await _click_button(close)
 		var counter_view := _main.get_node("CounterScreen/CounterView") as CounterView
 		await _click_button(counter_view.get_hotspot(scene_routes[label]))
 		return
@@ -169,7 +173,7 @@ func _click_trade_intent(command: String, detail: String) -> void:
 	_check(false, "缺少交易操作：" + command + "/" + detail)
 
 func _find_button(node: Node, label: String) -> Button:
-	if node is Button and node.text == label and node.is_visible_in_tree():
+	if node is Button and (node.text == label or node.accessibility_name == label) and node.is_visible_in_tree():
 		return node
 	for child in node.get_children():
 		var found := _find_button(child, label)
@@ -205,7 +209,7 @@ func _check(condition: bool, label: String) -> void:
 		push_error("UI FAIL: " + label)
 
 func _find_any_button(node: Node, label: String) -> Button:
-	if node is Button and node.text == label: return node
+	if node is Button and (node.text == label or node.accessibility_name == label): return node
 	for child in node.get_children():
 		var found := _find_any_button(child, label)
 		if found != null: return found

@@ -13,6 +13,9 @@ var _session: RunSession
 var _room_phase := ""
 var _room_pending := ""
 var _market_notice: Button
+var _notice_stamp: Label
+var _notice_key := ""
+var _notice_read_key := ""
 var _departure: TradeReceiptView
 var _departure_queue: Array[Dictionary] = []
 var _departure_return_panel: StringName = &""
@@ -29,6 +32,12 @@ const PANEL_TITLES := {"day": "营业", "appraisal": "鉴定", "dialogue": "对�
 func _ready() -> void:
 	theme = CounterTheme.build()
 	CounterTheme.style_paper_button(%MenuButton)
+	%MenuButton.icon = preload("res://assets/ui/icons/menu-2.svg")
+	%MenuButton.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	%MenuButton.add_theme_color_override("icon_normal_color", Color("302a24"))
+	%MenuButton.add_theme_color_override("icon_hover_color", Color("302a24"))
+	%MenuButton.add_theme_color_override("icon_pressed_color", Color("302a24"))
+	%MenuButton.add_theme_color_override("icon_focus_color", Color("302a24"))
 	%ShopStatusView.add_theme_stylebox_override("panel", CounterTheme.painted_paper())
 	_counter_view.shop_requested.connect(_route_from_counter.bind(&"day", &"shop"))
 	_counter_view.customer_action_requested.connect(_route_from_customer)
@@ -77,13 +86,49 @@ func bind_session(session: RunSession) -> void:
 	_market_notice = Button.new()
 	_market_notice.name = "MarketNotice"
 	_market_notice.set_anchors_and_offsets_preset(Control.PRESET_TOP_LEFT)
-	_market_notice.anchor_left = 0.025
-	_market_notice.anchor_right = 0.265
-	_market_notice.anchor_top = 0.837
-	_market_notice.anchor_bottom = 0.895
-	_market_notice.add_theme_font_size_override("font_size", 16)
-	_market_notice.pressed.connect(func() -> void: _flow.show_panel(&"inventory"); %InventoryPanel._select(2))
+	_market_notice.anchor_left = 1.0
+	_market_notice.anchor_right = 1.0
+	_market_notice.anchor_top = 0.904
+	_market_notice.anchor_bottom = 0.904
+	_market_notice.offset_left = -118
+	_market_notice.offset_right = -12
+	_market_notice.offset_top = -130
+	_market_notice.offset_bottom = -12
+	_market_notice.icon = preload("res://assets/ui/mail/envelope.png")
+	_market_notice.expand_icon = true
+	_market_notice.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_market_notice.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+	_market_notice.add_theme_constant_override("icon_max_width", 100)
+	_market_notice.add_theme_font_override("font", CounterTheme.display_font())
+	_market_notice.add_theme_font_size_override("font_size", 15)
+	_market_notice.add_theme_color_override("font_color", Color("f0dfb6"))
+	_market_notice.add_theme_color_override("font_hover_color", Color("fff3d5"))
+	_market_notice.add_theme_color_override("font_focus_color", Color("fff3d5"))
+	_market_notice.add_theme_color_override("font_pressed_color", Color("d5bd8b"))
+	_market_notice.add_theme_color_override("font_outline_color", Color("211910"))
+	_market_notice.add_theme_constant_override("outline_size", 3)
+	for button_state in ["normal", "hover", "pressed", "disabled"]:
+		_market_notice.add_theme_stylebox_override(button_state, StyleBoxEmpty.new())
+	_market_notice.add_theme_color_override("icon_hover_color", Color("fff0cc"))
+	_market_notice.add_theme_color_override("icon_pressed_color", Color("c8b38b"))
+	_market_notice.accessibility_name = "陆掌眼来信"
+	_market_notice.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_market_notice.pressed.connect(_open_market_notice)
 	add_child(_market_notice)
+	move_child(_market_notice, %Drawer.get_index())
+	_notice_stamp = Label.new()
+	_notice_stamp.text = "新"
+	_notice_stamp.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_notice_stamp.add_theme_color_override("font_color", Color("8d2a24"))
+	_notice_stamp.add_theme_font_size_override("font_size", 14)
+	_market_notice.add_child(_notice_stamp)
+	_notice_stamp.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	_notice_stamp.offset_left = -22
+	_notice_stamp.offset_right = -8
+	_notice_stamp.offset_top = 6
+	_notice_stamp.offset_bottom = 24
+	%Drawer.visibility_changed.connect(_refresh_notice_visibility)
+	_session_menu.visibility_changed.connect(_refresh_notice_visibility)
 	%InventoryPanel.batch_submitted.connect(session.sell_batch)
 	_room = PrivateRoomView.new()
 	_room.name = "PrivateRoom"
@@ -218,12 +263,14 @@ func _receipt_closed(destination: String) -> void:
 
 func _sync_room() -> void:
 	var state := _session.read_state()
-	_market_notice.visible = not _session.definition.market.is_empty() and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending()
-	if _market_notice.visible:
+	_refresh_notice_visibility()
+	if not _session.definition.market.is_empty():
 		var current := MarketService.current(_session.definition, int(state.run_seed), int(state.current_night_index), int(state.game_minutes))
 		var demand := MarketService.demand(_session.definition, current)
-		_market_notice.text = "陆掌眼口信 · 收" + demand.name
-		_market_notice.tooltip_text = demand.body + "\n点击查看行情与卖货。"
+		_market_notice.text = "陆掌眼来信\n眼下收" + demand.name
+		_market_notice.tooltip_text = demand.body + "\n查看口信不耗时；外出交货一趟20分钟。"
+		_notice_key = state.run_token + "/" + current.id
+		_notice_stamp.visible = _notice_key != _notice_read_key
 	var model := _session.counter_model()
 	var id: String = model.active_id if model.trade.get("pawn_return", false) else ""
 	if id.is_empty(): _return_id = ""
@@ -246,6 +293,19 @@ func _sync_room() -> void:
 			_room.get_node("RoomBed").grab_focus()
 		elif state.phase == "shop_resolution" and state.risk_pending.is_empty(): _flow.show_panel(&"night")
 		elif state.phase == "sleep_resolution" and not state.risk_pending.is_empty(): _flow.show_panel(&"risk")
+
+
+func _refresh_notice_visibility() -> void:
+	var state := _session.read_state()
+	_market_notice.visible = not _session.definition.market.is_empty() and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending() and not %Drawer.visible and not _session_menu.visible
+
+
+func _open_market_notice() -> void:
+	_notice_read_key = _notice_key
+	_notice_stamp.hide()
+	_return_focus = _market_notice
+	_flow.show_panel(&"inventory")
+	%InventoryPanel.open_buyer(_session.definition.market.buyer_id)
 
 
 func _route_from_counter(panel_id: StringName, hotspot: StringName) -> void:
