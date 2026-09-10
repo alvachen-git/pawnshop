@@ -1,0 +1,151 @@
+{
+  "base": "b1b82e8",
+  "files": [
+    {
+      "path": "core/content/variety_schema.gd",
+      "sha256": "682934a821ba4b253fd252ed85e4edcd677af2389dc1683d1a3ca8ccbedd908e"
+    },
+    {
+      "path": "core/inventory/batch_sale_read_model.gd",
+      "sha256": "83317c24610d0a8175912232db21e73c9f163d0e042db93f470f00e113e8481d"
+    },
+    {
+      "path": "core/save/market_save_codec.gd",
+      "sha256": "51c85d449cb280b2b3f35b9a4df1c6cd249ffacdb96b4bfd33f144bdeb32d54e"
+    },
+    {
+      "path": "core/save/save_codec.gd",
+      "sha256": "96a5a4c691b2161e3ea3a02b4a13d07c12cce0c6dd88f16dda0a6835385142c8"
+    },
+    {
+      "path": "core/save/save_library.gd",
+      "sha256": "dc62213a660c9e9eb9cb91717dd095386d441220f6a83990664c0cc84e9b9b5c"
+    },
+    {
+      "path": "data/market_seven/buyers.json",
+      "sha256": "c4c23eb8a9e953bd5dbda46e9afc2e165725f4b0c3126dfc65c6d6cbe8f52deb"
+    },
+    {
+      "path": "data/market_seven/run.json",
+      "sha256": "13719ad86dcfa5016e2d787fccbd100b1afae20246eb6c9fdddbe4ca8cfaa2cf"
+    },
+    {
+      "path": "data/market_seven_manifest.json",
+      "sha256": "f517d6650d74cb7b9b337e6c6854d33ac4749cea7bd1b8539620161f9f797e75"
+    },
+    {
+      "path": "docs/MARKET_SEVEN.md",
+      "sha256": "11dc7046fddcd6ea8ffc60595122c06abe6b848b84bcbd901fb39fa0cc0903d3"
+    },
+    {
+      "path": "docs/MARKET_SEVEN_VALIDATION.md",
+      "sha256": "a87f61483de581101145d938c4080125d5ee8eabbb5d0ae3a55729c10b8df8a6"
+    },
+    {
+      "path": "docs/qa/market-seven/.gdignore",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/qa/market-seven/COMPARISON.md",
+      "sha256": "51440d6dd20221350a7c1bcb0ba4d148a8ffcb1a649875c0d34209b34f642c18"
+    },
+    {
+      "path": "docs/qa/market-seven/comparison-test.txt",
+      "sha256": "149f918698431796fa70dd6aa62082817269e5ffb25cdbfda9488dba9a0de9dc"
+    },
+    {
+      "path": "docs/qa/market-seven/comparison.json",
+      "sha256": "0b922e757d2e5c86a00fda461813bf7b952bd45d8466f5ab3ef7831e9e9017ad"
+    },
+    {
+      "path": "docs/qa/market-seven/market_seven_1280_01_guest_blocked.png",
+      "sha256": "856c8c5c49a16c58855ce9af6b8499cabf3b177bb2bf79c5700ad5fc52de8fef"
+    },
+    {
+      "path": "docs/qa/market-seven/market_seven_1280_02_lu_quote.png",
+      "sha256": "eafad935b6e9fa8d6c194fc510fd03d47bfbdb06688425c44ee4087b2101d0ca"
+    },
+    {
+      "path": "docs/qa/market-seven/market_seven_1280_05_shared_history.png",
+      "sha256": "2e2529abf19961e6446e382f1eda1b3fd6053429296ea54d7118650d13606ab0"
+    },
+    {
+      "path": "docs/qa/market-seven/market_seven_1600_03_lu_receipt.png",
+      "sha256": "f30ad70fb5e1fedc927e0694421cd378eef158c69eb0d90e5059227198fea9b0"
+    },
+    {
+      "path": "docs/qa/market-seven/market_seven_1600_04_preparation.png",
+      "sha256": "269d48a1b8b22c28e27a49dcc4a56d8e2b9f7d07e1129732a88e9fb64b501843"
+    },
+    {
+      "path": "docs/qa/market-seven/market_seven_1600_05_shared_history.png",
+      "sha256": "c0b1a5bab00e620fcea18191eb2b222b132324c4b7d7553857cd99e5d77c694b"
+    },
+    {
+      "path": "docs/qa/market-seven/mirror_chapter_1600_07_chapter_choice.png",
+      "sha256": "26c29d38f5c1bdace35d119c354b4b5be6166bbe7116455a32beda4b6f667bf8"
+    },
+    {
+      "path": "docs/qa/market-seven/process-test.txt",
+      "sha256": "42f5490f8df194cd14e4bcbff0b8d84b4daeb2d9fd8ef3cd085084d4f0cbf695"
+    },
+    {
+      "path": "docs/qa/market-seven/ui-1280-test.txt",
+      "sha256": "07a14d44342ad45dcf323bb8746a3644362637871e43b92d82a3cb545d6b0d3e"
+    },
+    {
+      "path": "docs/qa/market-seven/ui-1600-test.txt",
+      "sha256": "00784c52477dc651734b9026b9d517296cf2820f1adb0fe0728919def28ba705"
+    },
+    {
+      "path": "docs/qa/market-seven/windows-results.json",
+      "sha256": "e6b889c27743386e9dca6c9d28b2d6e5aced8661921bf9c0754f8817ea10032b"
+    },
+    {
+      "path": "tests/market_seven_checkpoint.gd",
+      "sha256": "fe5f01a765feef93befb4de125055bd09b037151c6eb1c973407d31ce46c9521"
+    },
+    {
+      "path": "tests/market_seven_checkpoint.gd.uid",
+      "sha256": "70fac62ce9df9bce4ddcbb25b47f8a1d8ef41ad7c08f767e91d15d5d98307757"
+    },
+    {
+      "path": "tests/market_seven_comparison.gd",
+      "sha256": "a868e7891da17c18573971fda4b3c9ca676c9c52c3f43ef773fb950a738565cb"
+    },
+    {
+      "path": "tests/market_seven_comparison.gd.uid",
+      "sha256": "cd578d06160a3078c9a12e777bb3eafe9d89781e28302f06825b3ea8eb9a031e"
+    },
+    {
+      "path": "tests/market_seven_ui_smoke.gd",
+      "sha256": "889fb8958ea3c596396c7e1853155241756c2b3cdd3d97b1c0b1c670a2653577"
+    },
+    {
+      "path": "tests/market_seven_ui_smoke.gd.uid",
+      "sha256": "fa1a03f829c4ddbb0eb0288f5874c44b7afdb79f8458a10b43a95186278689ac"
+    },
+    {
+      "path": "tests/run_market_seven.gd",
+      "sha256": "4d8963e96a1f32b4e9e124348ec70c15862316b8826af043fdf0795dc41959f6"
+    },
+    {
+      "path": "tests/run_market_seven.gd.uid",
+      "sha256": "4faaebe04c8dcb5bc60fb9e6cce61b1b756b12ed6444568ebc5977c30eb581a0"
+    },
+    {
+      "path": "tools/market_seven_report.py",
+      "sha256": "12b2fd66ff0603e838eed3b94e028199c4585bbb792fb2484ae638111cdc48bc"
+    },
+    {
+      "path": "tools/test_windows.ps1",
+      "sha256": "503dac78b22503ee0613f60a24197f97a8e06fe1071d87cb00e79fc2df5aad86"
+    },
+    {
+      "path": "tests/run_mirror_chapter.gd",
+      "sha256": "44607919e0a21212762e7a5af4c02f7b884d877bdcea090653d98b589106a439"
+    }
+  ],
+  "integration_base": "a10992a51d9bdcdae7540e1f683bc02e73c456b3",
+  "scope": "Frozen market input only; root counter/art changes excluded."
+}

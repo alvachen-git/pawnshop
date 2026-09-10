@@ -1,0 +1,64 @@
+[
+  {
+    "seed": 0,
+    "policy": "immediate",
+    "phase": "run_ended",
+    "cash": 200,
+    "sale_gross_profit": 11,
+    "remaining_inventory_cost": 40,
+    "pledged_inventory_cost": 0,
+    "missed_customers": 7,
+    "sale_minutes": 460,
+    "buyers": {
+      "buyer_collector": 2,
+      "buyer_lu": 6,
+      "buyer_recycler": 16,
+      "buyer_silversmith": 1
+    }
+  },
+  {
+    "seed": 0,
+    "policy": "positive",
+    "phase": "run_ended",
+    "cash": 511,
+    "sale_gross_profit": 332,
+    "remaining_inventory_cost": 50,
+    "pledged_inventory_cost": 0,
+    "missed_customers": 7,
+    "sale_minutes": 360,
+    "buyers": {
+      "buyer_collector": 8,
+      "buyer_lu": 15,
+      "buyer_silversmith": 1
+    }
+  },
+  {
+    "seed": 0,
+    "policy": "patient",
+    "phase": "run_ended",
+    "cash": 314,
+    "sale_gross_profit": 125,
+    "remaining_inventory_cost": 40,
+    "pledged_inventory_cost": 0,
+    "missed_customers": 7,
+    "sale_minutes": 260,
+    "buyers": {
+      "buyer_lu": 12,
+      "buyer_recycler": 10
+    }
+  },
+  {
+    "seed": 0,
+    "policy": "appointment",
+    "phase": "run_ended",
+    "cash": 217,
+    "sale_gross_profit": -12,
+    "remaining_inventory_cost": 0,
+    "pledged_inventory_cost": 0,
+    "missed_customers": 0,
+    "sale_minutes": 20,
+    "buyers": {
+      "buyer_pen_appointment": 2
+    }
+  }
+]

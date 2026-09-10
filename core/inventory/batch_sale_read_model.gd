@@ -34,5 +34,8 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 		if not appointment.is_empty(): notices.append(appointment)
 	var market_history := MarketService.history_text(day)
 	if not market_history.is_empty(): notices.append(market_history)
-	return {"buyers": buyers, "history": "\n\n".join(notices), "clock": TimeController.clock_text(day.definition.opening_minute, day.state.game_minutes),
+	var model := {"buyers": buyers, "history": "\n\n".join(notices), "clock": TimeController.clock_text(day.definition.opening_minute, day.state.game_minutes),
 		"return_clock": TimeController.clock_text(day.definition.opening_minute, day.state.game_minutes + 20), "market_id": market.get("id", "fixed"), "run_token": day.state.run_token}
+	var flow := CashFlowReadModel.build(day.state, day.definition)
+	if not flow.is_empty(): model.cash_flow = flow
+	return model

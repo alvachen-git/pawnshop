@@ -53,6 +53,7 @@ func render(model: Dictionary) -> void:
 	AccountPaper.label(debt, "借据与息费", 21)
 	AccountPaper.rule(debt)
 	AccountPaper.label(debt, v.debt, 17)
+	if model.has("cash_flow"): AccountPaper.label(debt, CashFlowReadModel.debt_detail(model.cash_flow), 15)
 	AccountPaper.rule(debt)
 	AccountPaper.label(debt, "当夜已计息费 %d 银元\n本夜实际付息费 %d 银元\n经营净收益 %+d 银元" % [v.financial.interest_expense + v.financial.shop_expense, v.financial.fees_paid, v.financial.operating_profit], 16)
 	AccountPaper.label(debt, "息费在夜末入账。实际付款可能包含以前的短款。", 14)
@@ -74,6 +75,7 @@ func render(model: Dictionary) -> void:
 		AccountPaper.metrics(ticket, [["放款本金 / 银元", row.principal], ["约定赎金 / 银元", row.redemption]])
 		AccountPaper.label(ticket, "第%d夜入当    第%d夜到期" % [row.start, row.due], 16)
 		AccountPaper.label(ticket, row.request, 15)
+		if model.has("cash_flow") and row.state == "active": AccountPaper.label(ticket, "约定收款，尚未入账；不计入当前可周转现银。", 14)
 		for entry in model.buttons:
 			if entry.target_id == row.id: AccountPaper.action(ticket, entry, _emit_intent)
 	_body.text = v.message

@@ -1,0 +1,1229 @@
+{
+  "base_commit": "a10992a51d9bdcdae7540e1f683bc02e73c456b3",
+  "content_version": 19,
+  "run_id": "complete_seven",
+  "seed_plan_count": 512,
+  "suite_count": 174,
+  "failed_suites": 0,
+  "execution": "Current-turn run1 successful suites plus run2 resumed at corrected legacy market UI fixture; extra complete early UI at 1280x720.",
+  "results": [
+    {
+      "name": "environment",
+      "passed": true,
+      "summary": [
+        "M8A ENV PASS: C:/Users/alvachen/Documents/ChatGPT/pawnbroker/.artifacts/complete-validation/run1/appdata/Godot/app_userdata/鬼市当铺"
+      ]
+    },
+    {
+      "name": "font",
+      "passed": true,
+      "summary": [
+        "M8A FONT TESTS PASSED: bundled glyphs; no system fallback; applied weight=400"
+      ]
+    },
+    {
+      "name": "core",
+      "passed": true,
+      "summary": [
+        "M0–M7 TESTS PASSED · 1799 assertions"
+      ]
+    },
+    {
+      "name": "free-cloth",
+      "passed": true,
+      "summary": [
+        "FREE CLOTH TESTS: 302 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "mirror-chapter-core",
+      "passed": true,
+      "summary": [
+        "MIRROR CHAPTER TESTS: 4090 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "mirror-chapter-process",
+      "passed": true,
+      "summary": [
+        "MIRROR CROSS PROCESS: 3 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-seven-core",
+      "passed": true,
+      "summary": [
+        "MARKET SEVEN TESTS: 7401 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "market-seven-process",
+      "passed": true,
+      "summary": [
+        "MARKET SEVEN PROCESS TESTS: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "familiar-core",
+      "passed": true,
+      "summary": [
+        "FAMILIAR STORIES TESTS: 31448 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "familiar-process",
+      "passed": true,
+      "summary": [
+        "FAMILIAR CHECKPOINTS: 496 checks, 0 failures"
+      ]
+    },
+    {
+      "name": "familiar-mirror",
+      "passed": true,
+      "summary": [
+        "FAMILIAR MIRROR INTEGRATION: 4090 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "early-core",
+      "passed": true,
+      "summary": [
+        "EARLY REDEMPTION: 4736 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "early-process",
+      "passed": true,
+      "summary": [
+        "EARLY CHECKPOINTS: 567 checks, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-core",
+      "passed": true,
+      "summary": [
+        "COMPLETE SEVEN: 22180 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-early",
+      "passed": true,
+      "summary": [
+        "COMPLETE EARLY: 4738 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-process",
+      "passed": true,
+      "summary": [
+        "COMPLETE CHECKPOINTS: 567 checks, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-familiar",
+      "passed": true,
+      "summary": [
+        "COMPLETE FAMILIAR TESTS: 31446 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-familiar-process",
+      "passed": true,
+      "summary": [
+        "FAMILIAR CHECKPOINTS: 496 checks, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-economy",
+      "passed": true,
+      "summary": [
+        "MARKET COMPARISON TESTS: 2965 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-market-process",
+      "passed": true,
+      "summary": [
+        "COMPLETE MARKET PROCESS TESTS: 21 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-core",
+      "passed": true,
+      "summary": [
+        "ROOM TESTS: 701 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-core",
+      "passed": true,
+      "summary": [
+        "PAWN TESTS: 107 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "variety-core",
+      "passed": true,
+      "summary": [
+        "VARIETY TESTS: 17079 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "market-core",
+      "passed": true,
+      "summary": [
+        "MARKET TESTS: 5931 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-core",
+      "passed": true,
+      "summary": [
+        "BARGAINING TESTS: 182 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-variety-core",
+      "passed": true,
+      "summary": [
+        "BARGAINING VARIETY TESTS: 69 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-variety",
+      "passed": true,
+      "summary": [
+        "INTEGRATED VARIETY TESTS: 16976 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-night-core",
+      "passed": true,
+      "summary": [
+        "FOUR NIGHT TESTS: 42532 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-night-core",
+      "passed": true,
+      "summary": [
+        "SEVEN NIGHT TESTS: 136843 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-edges",
+      "passed": true,
+      "summary": [
+        "SEVEN EDGE TESTS: 340 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "departure-core",
+      "passed": true,
+      "summary": [
+        "DEPARTURE TESTS: 78 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "reception-feedback-core",
+      "passed": true,
+      "summary": [
+        "RECEPTION FEEDBACK TESTS: 113 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-save-core",
+      "passed": true,
+      "summary": [
+        "MANUAL SAVE TESTS: 1163 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "opening-core",
+      "passed": true,
+      "summary": [
+        "OPENING TESTS: 100 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-seven-core",
+      "passed": true,
+      "summary": [
+        "INTEGRATED SEVEN TESTS: 8011 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-core",
+      "passed": true,
+      "summary": [
+        "PREPARATION TESTS: 305412 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bell-core",
+      "passed": true,
+      "summary": [
+        "BELL TESTS: 195 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "ui_smoke",
+      "passed": true,
+      "summary": [
+        "UI SMOKE: 79 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "scene_navigation_ui_smoke",
+      "passed": true,
+      "summary": [
+        "SCENE NAVIGATION UI SMOKE: 77 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m2_ui_smoke",
+      "passed": true,
+      "summary": [
+        "M2 UI SMOKE: 97 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m3_ui_smoke",
+      "passed": true,
+      "summary": [
+        "M3 UI SMOKE: 136 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m4_ui_smoke",
+      "passed": true,
+      "summary": [
+        "M4 UI SMOKE: 175 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m5_ui_smoke",
+      "passed": true,
+      "summary": [
+        "M5 UI SMOKE: 304 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "art03_extension_ui_smoke",
+      "passed": true,
+      "summary": [
+        "ART03 EXTENSION UI: 68 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-1280x720",
+      "passed": true,
+      "summary": [
+        "COMPLETE UI: 464 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-seven-1280x720",
+      "passed": true,
+      "summary": [
+        "MARKET SEVEN UI TESTS: 426 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "early-1280x720",
+      "passed": true,
+      "summary": [
+        "EARLY UI: 168 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-save-1280x720",
+      "passed": true,
+      "summary": [
+        "MANUAL SAVE UI TESTS: 82 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "mirror-chapter-1280x720",
+      "passed": true,
+      "summary": [
+        "MIRROR CHAPTER UI: 862 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bell-1280x720",
+      "passed": true,
+      "summary": [
+        "BELL UI: 88 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-seven-1280x720",
+      "passed": true,
+      "summary": [
+        "INTEGRATED UI: 507 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-1280x720",
+      "passed": true,
+      "summary": [
+        "PREPARATION UI: 540 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-default-1280x720",
+      "passed": true,
+      "summary": [
+        "DEFAULT PREPARATION UI: 91 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "opening-1280x720",
+      "passed": true,
+      "summary": [
+        "OPENING UI: 94 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "variety-1280x720",
+      "passed": true,
+      "summary": [
+        "VARIETY UI TESTS: 105 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-1280x720",
+      "passed": true,
+      "summary": [
+        "MARKET UI TESTS: 86 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-1280x720",
+      "passed": true,
+      "summary": [
+        "SEVEN UI TESTS: 323 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "four-1280x720",
+      "passed": true,
+      "summary": [
+        "FOUR UI TESTS: 190 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "title-menu-1280x720",
+      "passed": true,
+      "summary": [
+        "TITLE MENU UI TESTS: 108 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-1280x720",
+      "passed": true,
+      "summary": [
+        "PAWN UI SMOKE: 102 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-1280x720",
+      "passed": true,
+      "summary": [
+        "ROOM UI TESTS: 285 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "departure-1280x720",
+      "passed": true,
+      "summary": [
+        "DEPARTURE UI TESTS: 42 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "reception-feedback-1280x720",
+      "passed": true,
+      "summary": [
+        "RECEPTION FEEDBACK UI TESTS: 67 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "waiting-departure-1280x720",
+      "passed": true,
+      "summary": [
+        "WAITING DEPARTURE UI TESTS: 58 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "receipt-1280x720",
+      "passed": true,
+      "summary": [
+        "RECEIPT UI TESTS: 76 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-1280x720",
+      "passed": true,
+      "summary": [
+        "BARGAINING UI TESTS: 36 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m7-1280x720",
+      "passed": true,
+      "summary": [
+        "M7 UI SMOKE: 840 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-production-1280x720",
+      "passed": true,
+      "summary": [
+        "M6 UI SMOKE: 422 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "accounts-1280x720",
+      "passed": true,
+      "summary": [
+        "M3 UI SMOKE: 184 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "debt-production-1280x720",
+      "passed": true,
+      "summary": [
+        "M6 UI SMOKE: 433 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-early-1600x900",
+      "passed": true,
+      "summary": [
+        "COMPLETE EARLY UI: 168 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-1600x900",
+      "passed": true,
+      "summary": [
+        "COMPLETE UI: 464 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-seven-1600x900",
+      "passed": true,
+      "summary": [
+        "MARKET SEVEN UI TESTS: 426 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "early-1600x900",
+      "passed": true,
+      "summary": [
+        "EARLY UI: 168 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-save-1600x900",
+      "passed": true,
+      "summary": [
+        "MANUAL SAVE UI TESTS: 82 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "mirror-chapter-1600x900",
+      "passed": true,
+      "summary": [
+        "MIRROR CHAPTER UI: 862 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bell-1600x900",
+      "passed": true,
+      "summary": [
+        "BELL UI: 88 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-seven-1600x900",
+      "passed": true,
+      "summary": [
+        "INTEGRATED UI: 507 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-1600x900",
+      "passed": true,
+      "summary": [
+        "PREPARATION UI: 540 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-default-1600x900",
+      "passed": true,
+      "summary": [
+        "DEFAULT PREPARATION UI: 91 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "opening-1600x900",
+      "passed": true,
+      "summary": [
+        "OPENING UI: 94 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "variety-1600x900",
+      "passed": true,
+      "summary": [
+        "VARIETY UI TESTS: 105 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-1600x900",
+      "passed": true,
+      "summary": [
+        "MARKET UI TESTS: 86 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-1600x900",
+      "passed": true,
+      "summary": [
+        "SEVEN UI TESTS: 323 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "four-1600x900",
+      "passed": true,
+      "summary": [
+        "FOUR UI TESTS: 190 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "title-menu-1600x900",
+      "passed": true,
+      "summary": [
+        "TITLE MENU UI TESTS: 108 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-1600x900",
+      "passed": true,
+      "summary": [
+        "PAWN UI SMOKE: 102 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-1600x900",
+      "passed": true,
+      "summary": [
+        "ROOM UI TESTS: 285 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "departure-1600x900",
+      "passed": true,
+      "summary": [
+        "DEPARTURE UI TESTS: 42 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "reception-feedback-1600x900",
+      "passed": true,
+      "summary": [
+        "RECEPTION FEEDBACK UI TESTS: 67 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "waiting-departure-1600x900",
+      "passed": true,
+      "summary": [
+        "WAITING DEPARTURE UI TESTS: 58 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "receipt-1600x900",
+      "passed": true,
+      "summary": [
+        "RECEIPT UI TESTS: 76 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-1600x900",
+      "passed": true,
+      "summary": [
+        "BARGAINING UI TESTS: 36 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m7-1600x900",
+      "passed": true,
+      "summary": [
+        "M7 UI SMOKE: 840 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-production-1600x900",
+      "passed": true,
+      "summary": [
+        "M6 UI SMOKE: 422 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "accounts-1600x900",
+      "passed": true,
+      "summary": [
+        "M3 UI SMOKE: 184 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "debt-production-1600x900",
+      "passed": true,
+      "summary": [
+        "M6 UI SMOKE: 433 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "complete-market-ui-process",
+      "passed": true,
+      "summary": [
+        "COMPLETE MARKET PROCESS TESTS: 24 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-process-write",
+      "passed": true,
+      "summary": [
+        "MANUAL PROCESS TESTS write: 41 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-process-read",
+      "passed": true,
+      "summary": [
+        "MANUAL PROCESS TESTS read: 23 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-process-continue",
+      "passed": true,
+      "summary": [
+        "MANUAL PROCESS TESTS continue: 62 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "manual-process-read_final",
+      "passed": true,
+      "summary": [
+        "MANUAL PROCESS TESTS read_final: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-opening",
+      "passed": true,
+      "summary": [
+        "INTEGRATED PROCESS opening: 2 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-first",
+      "passed": true,
+      "summary": [
+        "INTEGRATED PROCESS first: 161 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-third",
+      "passed": true,
+      "summary": [
+        "INTEGRATED PROCESS third: 16 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-risk",
+      "passed": true,
+      "summary": [
+        "INTEGRATED PROCESS risk: 108 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-survive",
+      "passed": true,
+      "summary": [
+        "INTEGRATED PROCESS survive: 6 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-sixth",
+      "passed": true,
+      "summary": [
+        "INTEGRATED PROCESS sixth: 226 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-end",
+      "passed": true,
+      "summary": [
+        "INTEGRATED PROCESS end: 220 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "integrated-process-read",
+      "passed": true,
+      "summary": [
+        "INTEGRATED PROCESS read: 5 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-start",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS start: 161 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-attract",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS attract: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-tea",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS tea: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-finish",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS finish: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-second",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS second: 16 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-target",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS target: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-intel",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS intel: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-third",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS third: 111 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-sixth",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS sixth: 223 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-end",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS end: 218 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "preparation-process-read",
+      "passed": true,
+      "summary": [
+        "PREPARATION PROCESS read: 7 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-prepare",
+      "passed": true,
+      "summary": [
+        "SEVEN PROCESS prepare: 315 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-sixth",
+      "passed": true,
+      "summary": [
+        "SEVEN PROCESS sixth: 216 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-room",
+      "passed": true,
+      "summary": [
+        "SEVEN PROCESS room: 102 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-sleep",
+      "passed": true,
+      "summary": [
+        "SEVEN PROCESS sleep: 3 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-seventh",
+      "passed": true,
+      "summary": [
+        "SEVEN PROCESS seventh: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-finish",
+      "passed": true,
+      "summary": [
+        "SEVEN PROCESS finish: 11 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "seven-process-read",
+      "passed": true,
+      "summary": [
+        "SEVEN PROCESS read: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "market-process-write",
+      "passed": true,
+      "summary": [
+        "MARKET PROCESS write: 9 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "market-process-next",
+      "passed": true,
+      "summary": [
+        "MARKET PROCESS next: 7 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "market-process-read",
+      "passed": true,
+      "summary": [
+        "MARKET PROCESS read: 4 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-write",
+      "passed": true,
+      "summary": [
+        "FOUR PROCESS write: 53 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-fourth",
+      "passed": true,
+      "summary": [
+        "FOUR PROCESS fourth: 21 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-room",
+      "passed": true,
+      "summary": [
+        "FOUR PROCESS room: 10 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-sleep",
+      "passed": true,
+      "summary": [
+        "FOUR PROCESS sleep: 4 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-finish",
+      "passed": true,
+      "summary": [
+        "FOUR PROCESS finish: 5 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "four-process-read",
+      "passed": true,
+      "summary": [
+        "FOUR PROCESS read: 7 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-process-write",
+      "passed": true,
+      "summary": [
+        "PAWN PROCESS write: 0 failures"
+      ]
+    },
+    {
+      "name": "variety-process-write",
+      "passed": true,
+      "summary": [
+        "VARIETY PROCESS write: 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-process-settle",
+      "passed": true,
+      "summary": [
+        "PAWN PROCESS settle: 0 failures"
+      ]
+    },
+    {
+      "name": "variety-process-settle",
+      "passed": true,
+      "summary": [
+        "VARIETY PROCESS settle: 0 failures"
+      ]
+    },
+    {
+      "name": "pawn-process-read",
+      "passed": true,
+      "summary": [
+        "PAWN PROCESS read: 0 failures"
+      ]
+    },
+    {
+      "name": "variety-process-read",
+      "passed": true,
+      "summary": [
+        "VARIETY PROCESS read: 0 failures"
+      ]
+    },
+    {
+      "name": "m7-process-write",
+      "passed": true,
+      "summary": [
+        "M7 CROSS PROCESS write: 6 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "v7-copy-compatibility",
+      "passed": true,
+      "summary": [
+        "M8A COPY PASS: true; source SHA256=212b2571cbae39c4d2181fae81e54e4aed21559346f366489aec77c1198214f9"
+      ]
+    },
+    {
+      "name": "m7-process-resume",
+      "passed": true,
+      "summary": [
+        "M7 CROSS PROCESS resume: 10 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m7-process-read",
+      "passed": true,
+      "summary": [
+        "M7 CROSS PROCESS read: 3 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-write-scenario",
+      "passed": true,
+      "summary": [
+        "BARGAINING PROCESS TESTS: 9 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-sleep-scenario",
+      "passed": true,
+      "summary": [
+        "BARGAINING PROCESS TESTS: 6 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-read-scenario",
+      "passed": true,
+      "summary": [
+        "BARGAINING PROCESS TESTS: 5 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-write-ordinary",
+      "passed": true,
+      "summary": [
+        "BARGAINING PROCESS TESTS: 9 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-sleep-ordinary",
+      "passed": true,
+      "summary": [
+        "BARGAINING PROCESS TESTS: 6 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "bargaining-process-read-ordinary",
+      "passed": true,
+      "summary": [
+        "BARGAINING PROCESS TESTS: 5 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-write_room",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS write_room: 6 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-sleep",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS sleep: 2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-summary",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS summary: 2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-read_summary",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS read_summary: 2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-write_shop",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS write_shop: 26 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-read_shop",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS read_shop: 4 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-write_pursuit",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS write_pursuit: 43 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-pursuit_sleep",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS pursuit_sleep: 2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-death",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS death: 2 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "room-process-read_death",
+      "passed": true,
+      "summary": [
+        "ROOM PROCESS read_death: 3 assertions, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-write_debt",
+      "passed": true,
+      "summary": [
+        "M6 CROSS PROCESS write_debt: 4 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-resume_bankrupt",
+      "passed": true,
+      "summary": [
+        "M6 CROSS PROCESS resume_bankrupt: 5 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-read_bankrupt",
+      "passed": true,
+      "summary": [
+        "M6 CROSS PROCESS read_bankrupt: 1 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-write_mirror",
+      "passed": true,
+      "summary": [
+        "M6 CROSS PROCESS write_mirror: 37 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-resume_death",
+      "passed": true,
+      "summary": [
+        "M6 CROSS PROCESS resume_death: 2 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m6-process-read_death",
+      "passed": true,
+      "summary": [
+        "M6 CROSS PROCESS read_death: 1 passes, 0 failures"
+      ]
+    },
+    {
+      "name": "m5-process-warning",
+      "passed": true,
+      "summary": [
+        "M5 PROCESS warning PASS=true"
+      ]
+    },
+    {
+      "name": "m5-process-death",
+      "passed": true,
+      "summary": [
+        "M5 PROCESS death PASS=true"
+      ]
+    },
+    {
+      "name": "m5-process-restart",
+      "passed": true,
+      "summary": [
+        "M5 PROCESS restart PASS=true"
+      ]
+    },
+    {
+      "name": "m5-process-archive",
+      "passed": true,
+      "summary": [
+        "M5 PROCESS archive PASS=true"
+      ]
+    },
+    {
+      "name": "complete-early-1280x720",
+      "passed": true,
+      "summary": [
+        "COMPLETE EARLY UI: 168 assertions, 0 failures"
+      ]
+    }
+  ]
+}

@@ -98,12 +98,25 @@ func _totals() -> void:
 	var income := 0
 	var cost := 0
 	var reason := ""
+	var selected_buyer: Dictionary = {}
 	for buyer in _model.buyers:
 		if buyer.id != _buyer: continue
 		reason = buyer.reason
+		selected_buyer = buyer
 		for row in buyer.stock:
 			if row.id in _selected: income += row.price; cost += row.cost
 	_total.text = "已选%d件 · 收入%d · 成本%d 银元\n预计交易毛利%+d 银元\n当前%s → 预计回店%s · 往返20分钟" % [_selected.size(), income, cost, income - cost, _model.clock, _model.return_clock]
+	if _model.has("cash_flow"):
+		var preview := CashFlowReadModel.sale_preview(_model.cash_flow, selected_buyer, _selected)
+		if not preview.valid:
+			reason = preview.reason
+			_total.text = "货单无法试算：" + reason
+		else:
+			if preview.count == 0:
+				_total.text = "尚未选择货物。勾选后可查看本批收款与周转试算。"
+			else:
+				_total.text = "已选%d件 · 预计收款%d · 成本%d 银元\n预计交易毛利%+d 银元\n当前%s → 预计回店%s · 往返20分钟\n成交后预计现银%d银元\n%s" % [preview.count, preview.income, preview.cost, preview.profit, _model.clock, _model.return_clock, preview.cash, CashFlowReadModel.balance_text(preview.balance, true)]
+			if not reason.is_empty(): _total.text = "当前不能交货，以下为试算。\n" + _total.text
 	_submit.disabled = _selected.is_empty() or not reason.is_empty()
 	_submit.tooltip_text = "请先选择货物。" if _selected.is_empty() else reason
 	if not reason.is_empty(): _total.text += "\n" + reason

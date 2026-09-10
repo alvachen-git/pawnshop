@@ -4,6 +4,7 @@ extends IntentPanel
 signal panel_requested(panel: StringName)
 signal batch_submitted(buyer_id: String, item_ids: Array)
 var _sale_view: BatchSaleView
+var _cash_flow: VBoxContainer
 var _sheet: VBoxContainer
 var _tabs: HBoxContainer
 var _filter := 0
@@ -15,6 +16,10 @@ func _ready() -> void:
 	_tabs = HBoxContainer.new()
 	_column.add_child(_tabs)
 	_column.move_child(_tabs, 0)
+	_cash_flow = VBoxContainer.new()
+	_cash_flow.name = "CashFlowOverview"
+	_column.add_child(_cash_flow)
+	_column.move_child(_cash_flow, 0)
 	for title in ["铺中货物", "出柜记录", "卖货"]:
 		var button := Button.new()
 		button.text = title
@@ -32,6 +37,9 @@ func _ready() -> void:
 
 func render(model: Dictionary) -> void:
 	_model = model
+	AccountPaper.clear(_cash_flow)
+	_cash_flow.visible = model.has("cash_flow")
+	if _cash_flow.visible: AccountPaper.label(_cash_flow, CashFlowReadModel.overview(model.cash_flow), 15)
 	_tabs.get_child(2).visible = model.has("sales")
 	if not model.has("sales") and _filter == 2: _filter = 0
 	if not model.has("visual"):
