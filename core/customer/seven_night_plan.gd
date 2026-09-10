@@ -118,6 +118,7 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 				"reaction": VarietyService.pick(["admit", "explain", "evade"], seed_value, id + "/reaction"),
 				"terms_id": "sample_three_redeem" if role == "pawn" else VarietyService.pick(config.terms_ids, seed_value, id + "/terms")})
 			if not role.is_empty(): row["seven_role"] = role
+			if role != "pawn": row.terms_id = PawnRedemptionPolicy.terms_for(run, customer, seed_value, id, row.terms_id)
 			var given: Array = customer.persona.names
 			var surnames: Array = config.surnames
 			var first := VarietyService.rng(seed_value, id + "/name").randi_range(0, given.size() * surnames.size() - 1)

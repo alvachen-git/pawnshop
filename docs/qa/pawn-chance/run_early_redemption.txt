@@ -1,0 +1,4 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+EARLY SEED: 508
+EARLY REDEMPTION: 4736 passes, 0 failures

@@ -5,7 +5,7 @@ func _run() -> void:
 	root.size = Vector2i(1600, 900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280, 720)
 	root.content_scale_size = root.size
 	_main = load(ProjectSettings.get_setting("application/run/main_scene")).instantiate()
-	_main.get_node("Bootstrap").manifest_path = "res://data/market_familiar_manifest.json"
+	if "chance" not in OS.get_cmdline_user_args(): _main.get_node("Bootstrap").manifest_path = "res://data/market_familiar_manifest.json"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
 	_session._save.library.path = "res://.godot/qa/market_seven/ui_%d.json" % Time.get_ticks_usec()

@@ -7,7 +7,7 @@ func _run() -> void:
 	root.content_scale_size = root.size
 	for decision in ["early_redeem", "defer_redeem"]:
 		_main = load("res://scenes/start.tscn").instantiate()
-		_main.get_node("Bootstrap").manifest_path = ("res://data/market_familiar_manifest.json" if "combined" in OS.get_cmdline_user_args() else "res://data/familiar_early_manifest.json")
+		_main.get_node("Bootstrap").manifest_path = ("res://data/pawn_chance_manifest.json" if "chance" in OS.get_cmdline_user_args() else "res://data/market_familiar_manifest.json" if "combined" in OS.get_cmdline_user_args() else "res://data/familiar_early_manifest.json")
 		_main.get_node("Bootstrap").save_path = "res://.godot/qa/early/ui_auto.json"
 		root.add_child(_main)
 		_session = _main.get_node("Bootstrap").session
@@ -17,7 +17,7 @@ func _run() -> void:
 		await _frames(); await _click_button(_main.title_menu.buttons[0])
 		var plan := FamiliarStories.plan(_session.definition, driver.catalog, 508)
 		var story := FamiliarStories.story_for({"familiar_plan": plan}, "seamstress")
-		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string((("res://.godot/qa/early_market/" if "combined" in OS.get_cmdline_user_args() else "res://.godot/qa/early/") + "allow_%d_pre_open.json") % story.follow_night))
+		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string((("res://.godot/qa/early_chance/" if "chance" in OS.get_cmdline_user_args() else "res://.godot/qa/early_market/" if "combined" in OS.get_cmdline_user_args() else "res://.godot/qa/early/") + "allow_%d_pre_open.json") % story.follow_night))
 		var codec := SaveCodec.new()
 		var state := codec.decode(data, _session.definition, driver.catalog.content_version, driver.catalog, true)
 		_check(state != null, "real pre-return fixture")

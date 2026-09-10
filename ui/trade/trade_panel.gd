@@ -91,6 +91,7 @@ func render(model: Dictionary) -> void:
 		if not visual.get("patience_rule", "").is_empty(): _body.text += "\n" + visual.patience_rule
 		if not String(visual.get("visit_constraint", "")).is_empty(): _body.text += "\n" + String(visual.visit_constraint)
 		_body.text += "\n线索未必是毛病，牵强压价可能惹恼客人。"
+		if not String(visual.get("pawn_background", "")).is_empty(): _body.text += "\n" + String(visual.pawn_background)
 		if not String(visual.get("bargaining_cue", "")).is_empty(): _body.text += "\n" + String(visual.bargaining_cue)
 	_style_bargaining(model)
 	_pawn_price.max_value = model.max_input

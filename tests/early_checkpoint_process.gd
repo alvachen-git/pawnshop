@@ -9,13 +9,13 @@ func check(ok: bool, label: String) -> void:
 	if not ok: failures += 1; push_error(label)
 
 func run() -> void:
-	var catalog := JsonContentProvider.new(("res://data/market_familiar_manifest.json" if "combined" in OS.get_cmdline_user_args() else "res://data/familiar_early_manifest.json")).load_catalog().catalog
+	var catalog := JsonContentProvider.new(("res://data/pawn_chance_manifest.json" if "chance" in OS.get_cmdline_user_args() else "res://data/market_familiar_manifest.json" if "combined" in OS.get_cmdline_user_args() else "res://data/familiar_early_manifest.json")).load_catalog().catalog
 	var definition := catalog.get_definition("runs", catalog.default_run_id) as RunDefinition
-	var files := DirAccess.get_files_at(("res://.godot/qa/early_market" if "combined" in OS.get_cmdline_user_args() else "res://.godot/qa/early"))
+	var files := DirAccess.get_files_at(("res://.godot/qa/early_chance" if "chance" in OS.get_cmdline_user_args() else "res://.godot/qa/early_market" if "combined" in OS.get_cmdline_user_args() else "res://.godot/qa/early"))
 	check(files.size() >= 100, "actual route checkpoints")
 	for name in files:
 		if not name.ends_with(".json"): continue
-		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(("res://.godot/qa/early_market/" if "combined" in OS.get_cmdline_user_args() else "res://.godot/qa/early/") + name))
+		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(("res://.godot/qa/early_chance/" if "chance" in OS.get_cmdline_user_args() else "res://.godot/qa/early_market/" if "combined" in OS.get_cmdline_user_args() else "res://.godot/qa/early/") + name))
 		var codec := SaveCodec.new()
 		var state := codec.decode(data, definition, catalog.content_version, catalog, true)
 		check(state != null, "read " + name + ": " + codec.error_message)

@@ -6,5 +6,5 @@
 start_at_title = true
 
 [node name="Bootstrap" parent="." index="0"]
-manifest_path = "res://data/complete_seven_manifest.json"
-save_path = "user://complete_seven/autosave_v19.json"
+manifest_path = "res://data/pawn_chance_manifest.json"
+save_path = "user://pawn_chance_seven/autosave_v20.json"
