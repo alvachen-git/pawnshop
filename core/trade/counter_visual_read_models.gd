@@ -36,6 +36,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		"quote_minutes": customer.terms.quote_minutes, "pressure_minutes": customer.terms.pressure_minutes,
 		"patience_rule": "耐心 %d · 报价不成扣%d，错误施压扣%d；耗尽便离场" % [visit.trade.patience, customer.terms.failed_quote_cost, customer.terms.false_pressure_cost] if not day.definition.variety.is_empty() else "",
 		"pawn_terms": "期限%d夜 · 息费%.0f%%" % [terms.term_nights, terms.redemption_fee_ratio * 100] if terms != null else "此客不办理活当",
+		"pawn_background": PawnRedemptionPolicy.background(day.definition, customer, VarietySaveCodec.selection(day.state, visit.visit_id)),
 		"message": "",
 		"bargaining_cue": visit.voice.get("belittle_cue", customer.belittle.get("cue", "")),
 		"visit_constraint": visit.voice.get("introduction", ""),

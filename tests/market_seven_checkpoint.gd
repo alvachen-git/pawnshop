@@ -27,7 +27,7 @@ func _initialize() -> void:
 				latest = folder + file
 		check(not latest.is_empty(), "real UI produced an archive library")
 		if not latest.is_empty():
-			var entry := SaveLibrary.new(latest).read_entry("auto/market_familiar")
+			var entry := SaveLibrary.new(latest).read_entry("auto/pawn_chance_seven" if "chance" in OS.get_cmdline_user_args() else "auto/market_familiar")
 			check(not entry.is_empty(), "real default automatic slot restored in another process")
 			if not entry.is_empty():
 				check(entry.state.market_history.size() >= 4 and entry.state.sale_records.any(func(row: Dictionary) -> bool: return row.buyer_id == "buyer_lu"), "automatic slot retains Lu sale and cross-night demand")

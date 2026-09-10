@@ -8,6 +8,9 @@ var _persona: Dictionary = {}
 var persona: Dictionary:
 	get: return _persona.duplicate(true)
 var _pawn_terms_id: String
+var _pawn_redemption_chance := -1
+var pawn_redemption_chance: int:
+	get: return _pawn_redemption_chance
 var pawn_terms_id: String:
 	get: return _pawn_terms_id
 
@@ -69,6 +72,7 @@ static func from_dto(dto: CustomerDTO) -> CustomerDefinition:
 	definition._belittle = dto.belittle.duplicate(true)
 	definition._persona = dto.persona.duplicate(true)
 	definition._pawn_terms_id = dto.pawn_terms_id
+	definition._pawn_redemption_chance = dto.pawn_redemption_chance
 	definition._id = dto.id
 	definition._name_key = dto.name_key
 	definition._portrait_asset_id = dto.portrait_asset_id

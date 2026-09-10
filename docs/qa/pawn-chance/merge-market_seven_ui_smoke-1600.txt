@@ -1,0 +1,5 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 546.30 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3060 Laptop GPU
+
+RUN SEED: 802902593
+MARKET SEVEN UI TESTS: 427 assertions, 0 failures

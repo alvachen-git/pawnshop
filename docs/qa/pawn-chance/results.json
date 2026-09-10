@@ -1,0 +1,112 @@
+[
+  {
+    "name": "core",
+    "passed": true,
+    "summary": "PAWN CHANCE TESTS: 41813 passes, 0 failures; 56 checkpoints"
+  },
+  {
+    "name": "process-write",
+    "passed": true,
+    "summary": "PAWN CHANCE PROCESS TESTS: 98 checks, 0 failures"
+  },
+  {
+    "name": "process-read",
+    "passed": true,
+    "summary": "PAWN CHANCE PROCESS TESTS: 10 checks, 0 failures"
+  },
+  {
+    "name": "early20",
+    "passed": true,
+    "summary": "EARLY REDEMPTION: 4736 passes, 0 failures"
+  },
+  {
+    "name": "early20-process",
+    "passed": true,
+    "summary": "EARLY CHECKPOINTS: 567 checks, 0 failures"
+  },
+  {
+    "name": "market-chance",
+    "passed": true,
+    "summary": "MARKET SEVEN TESTS: 7410 passes, 0 failures"
+  },
+  {
+    "name": "market-combined",
+    "passed": true,
+    "summary": "MARKET SEVEN TESTS: 7410 passes, 0 failures"
+  },
+  {
+    "name": "market-legacy",
+    "passed": true,
+    "summary": "MARKET SEVEN TESTS: 7410 passes, 0 failures"
+  },
+  {
+    "name": "run_pawn",
+    "passed": true,
+    "summary": "PAWN TESTS: 107 passes, 0 failures"
+  },
+  {
+    "name": "run_all",
+    "passed": true,
+    "summary": "M0–M7 TESTS PASSED · 1799 assertions"
+  },
+  {
+    "name": "manual_save_tests",
+    "passed": true,
+    "summary": "MANUAL SAVE TESTS: 1163 assertions, 0 failures"
+  },
+  {
+    "name": "run_early_redemption",
+    "passed": true,
+    "summary": "EARLY REDEMPTION: 4736 passes, 0 failures"
+  },
+  {
+    "name": "early19",
+    "passed": true,
+    "summary": "EARLY REDEMPTION: 4736 passes, 0 failures"
+  },
+  {
+    "name": "pawn_chance_ui-1280",
+    "passed": true,
+    "summary": "PAWN CHANCE UI TESTS: 131 assertions, 0 failures"
+  },
+  {
+    "name": "pawn_chance_ui-1600",
+    "passed": true,
+    "summary": "PAWN CHANCE UI TESTS: 131 assertions, 0 failures"
+  },
+  {
+    "name": "early_redemption_ui-1280",
+    "passed": true,
+    "summary": "EARLY UI: 168 assertions, 0 failures"
+  },
+  {
+    "name": "early_redemption_ui-1600",
+    "passed": true,
+    "summary": "EARLY UI: 168 assertions, 0 failures"
+  },
+  {
+    "name": "counter_notice_ui_smoke-1280",
+    "passed": true,
+    "summary": "COUNTER NOTICE UI: 75 assertions, 0 failures"
+  },
+  {
+    "name": "counter_notice_ui_smoke-1600",
+    "passed": true,
+    "summary": "COUNTER NOTICE UI: 75 assertions, 0 failures"
+  },
+  {
+    "name": "market_seven_ui_smoke-1280",
+    "passed": true,
+    "summary": "MARKET SEVEN UI TESTS: 427 assertions, 0 failures"
+  },
+  {
+    "name": "market_seven_ui_smoke-1600",
+    "passed": true,
+    "summary": "MARKET SEVEN UI TESTS: 427 assertions, 0 failures"
+  },
+  {
+    "name": "market-ui-process",
+    "passed": true,
+    "summary": "MARKET SEVEN PROCESS TESTS: 7 assertions, 0 failures"
+  }
+]
