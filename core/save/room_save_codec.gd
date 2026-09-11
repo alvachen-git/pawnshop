@@ -16,6 +16,10 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	for night in range(1, state.summaries.size() + 1):
 		var sample := RunState.create(run)
 		sample.current_night_index = night
+		if state.night_market_enabled:
+			sample.night_market_history.assign(state.night_market_history.filter(func(r: Dictionary) -> bool: return int(r.night) <= night))
+			sample.ordinary_selections = state.ordinary_selections
+			sample.room_history.assign(rows.slice(0, cursor))
 		sample.game_minutes = run.night_minutes
 		sample.inventory_instances = state.inventory_instances
 		sample.ledger_entries = state.ledger_entries

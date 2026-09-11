@@ -61,7 +61,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		instance.acquisition_price = int(entry.acquisition_price)
 		instance.acquired_night = int(entry.acquired_night)
 		instance.source_visit_id = entry.source_visit_id
-		if entry.get("acquisition_type") not in ["purchase", "pawn"] or entry.get("ownership_state") not in ["owned", "pledged", "sold", "redeemed", "transferred"]: return "库存权属无效。"
+		if entry.get("acquisition_type") not in ["purchase", "pawn"] or entry.get("ownership_state") not in (["owned", "pledged", "sold", "redeemed", "transferred", "lost"] if state.night_market_enabled else ["owned", "pledged", "sold", "redeemed", "transferred"]): return "库存权属无效。"
 		if (entry.acquisition_type == "pawn") != (bought[entry.source_visit_id].outcome == "pawned"): return "当票与交易模式不符。"
 		instance.acquisition_type = entry.acquisition_type
 		instance.ownership_state = entry.ownership_state

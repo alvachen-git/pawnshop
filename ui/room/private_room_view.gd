@@ -141,7 +141,10 @@ func _draw() -> void:
 	var flame := Color("a6bca5" if _model.get("haunting", false) else "e4bc79")
 	if not _model.get("dead", false):
 		draw_circle(Vector2(262, 311), 24, Color(flame, 0.08))
-		draw_colored_polygon(PackedVector2Array([Vector2(255, 329), Vector2(267 if _model.get("haunting", false) else 261, 296), Vector2(268, 329)]), flame)
+		var grade := int(_model.get("lamp_grade", 0))
+		var tip := 320 if grade >= 4 else (309 if grade == 2 else 296)
+		draw_colored_polygon(PackedVector2Array([Vector2(255, 329), Vector2(267 if _model.get("haunting", false) else 261, tip), Vector2(268, 329)]), flame)
+		if grade == 3: draw_colored_polygon(PackedVector2Array([Vector2(268, 329), Vector2(276, 302), Vector2(281, 329)]), flame)
 
 func _box(rect: Rect2, color: String) -> void:
 	draw_rect(rect, Color(color))

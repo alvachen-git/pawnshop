@@ -1,6 +1,8 @@
 class_name CustomerVisit
 extends RefCounted
 
+var night_policy := ""
+var night_aftermath := ""
 var transaction_modes: Array = []
 var person: Dictionary = {}
 var pawn_terms_id := ""

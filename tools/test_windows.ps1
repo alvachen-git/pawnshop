@@ -33,6 +33,8 @@ try {
     Run-Test 'environment' 'm8a_environment.gd'
     Run-Test 'font' 'm8a_font.gd'
     Run-Test 'core' 'run_all.gd'
+    Run-Test 'night-market-core' 'run_night_market.gd'
+    Run-Test 'night-market-process' 'run_night_market.gd' @('process-read')
     Run-Test 'free-cloth' 'free_cloth_tests.gd'
     Run-Test 'mirror-chapter-core' 'run_mirror_chapter.gd'
     Run-Test 'mirror-chapter-process' 'mirror_chapter_checkpoint.gd'
@@ -76,6 +78,8 @@ try {
     foreach ($wide in @($false,$true)) {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "night-lighting-$size" 'night_lighting_ui.gd' $sizeArgs $false
+        Run-Test "night-market-$size" 'night_market_ui.gd' $sizeArgs $false
         Run-Test "complete-early-$size" 'complete_early_ui.gd' $sizeArgs $false
         Run-Test "complete-$size" 'complete_ui_smoke.gd' $sizeArgs $false
         Run-Test "market-seven-$size" 'market_seven_ui_smoke.gd' $sizeArgs $false

@@ -25,6 +25,9 @@ static func selections(data: Dictionary, state: RunState, run: RunDefinition, ca
 		if copy.has("wait_minutes"):
 			if not RunSchema.integer(copy.wait_minutes): return "来客等待期限无效。"
 			copy.wait_minutes = int(copy.wait_minutes)
+		if copy.has("night_band"):
+			if not RunSchema.integer(copy.night_band): return "夜客时段无效。"
+			copy.night_band = int(copy.night_band)
 		normalized.append(copy)
 	if normalized != expected: return "来客身份、物品或来源与本局编排不符。"
 	state.ordinary_selections.assign(expected)
@@ -101,7 +104,7 @@ static func normalize_plan(value: Variant) -> Variant:
 	for raw in value:
 		if not raw is Dictionary: return null
 		var row: Dictionary = raw.duplicate(true)
-		for key in ["night", "arrival", "wait_minutes"]:
+		for key in ["night", "arrival", "wait_minutes", "night_band"]:
 			if not row.has(key): continue
 			if not RunSchema.integer(row[key]): return null
 			row[key] = int(row[key])

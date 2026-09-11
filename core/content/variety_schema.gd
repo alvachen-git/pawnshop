@@ -11,6 +11,26 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 	var value: Dictionary = row[field]
 	match kind:
 		"runs":
+			if value.has("night_market"):
+				var late: Variant = value.night_market
+				var valid: bool = late is Dictionary and late.get("version") == 1 and value.get("seven_version") == 1 and row.get("private_room") == true
+				if valid:
+					valid = CounterSaveCodec._integers(late, ["wait_minutes", "treatment_minutes"]) and late.wait_minutes >= 15 and late.wait_minutes <= 120 and int(late.wait_minutes) % 5 == 0 and late.treatment_minutes == 20
+					valid = valid and late.get("ask_ratios") is Dictionary and late.get("outcomes") is Dictionary and (late.get("reserve_ratio") is float or late.get("reserve_ratio") is int)
+				if valid:
+					valid = float(late.reserve_ratio) > 0 and float(late.reserve_ratio) <= 1
+					for policy in ["one_quote", "wet_cloth"]:
+						var ratio: Variant = late.ask_ratios.get(policy)
+						valid = valid and (ratio is float or ratio is int) and float(ratio) > 0 and float(ratio) <= 1
+					for band in ["2", "3"]:
+						var weights: Variant = late.outcomes.get(band)
+						if not weights is Array or weights.size() != 3: valid = false; break
+						var total := 0
+						for weight in weights:
+							if not RunSchema.integer(weight) or weight < 0: valid = false; break
+							total += int(weight)
+						if total != 100: valid = false
+				if not valid: CounterDomainValidator._error(issues, at, "夜客配置需要有效价格、耗时与合计100的后果权重。")
 			if value.has("early_redemption") and (not value.early_redemption is bool or value.get("familiar_version") != 1): CounterDomainValidator._error(issues, at, "提前取赎须使用熟客配置与布尔开关。")
 			if value.has("familiar_version"):
 				if value.familiar_version != 1 or value.get("seven_version") != 1 or value.get("preparation_version") != 1 or not value.get("familiar_funds") is Array or value.familiar_funds.is_empty():

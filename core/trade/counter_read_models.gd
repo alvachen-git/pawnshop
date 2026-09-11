@@ -108,6 +108,11 @@ static func build(day: DayController, service: CounterService, message: String, 
 		model[feature].body += "\n\n" + message
 	CounterVisualReadModels.enrich(model, day, service, visit)
 	for feature in ["appraisal", "dialogue", "trade"]: model[feature].visual.message = message
+	if not visit.night_policy.is_empty():
+		model.trade.night_policy = visit.night_policy
+		if visit.night_policy == "one_quote":
+			model.trade.buttons = model.trade.buttons.filter(func(b: Dictionary) -> bool: return b.command not in ["pressure", "belittle", "concession"])
+			model.dialogue.buttons = model.dialogue.buttons.filter(func(b: Dictionary) -> bool: return not b.reason.contains("另行压价"))
 	EarlyRedemption.enrich(model, day, service, visit)
 	return model
 

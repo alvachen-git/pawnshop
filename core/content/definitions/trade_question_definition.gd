@@ -23,6 +23,7 @@ func _init(data: Dictionary) -> void:
 	_data = data.duplicate(true)
 
 func answer(visit: CustomerVisit) -> String:
+	if visit.night_policy == "wet_cloth" and id == "origin": return "他抬起头，袖里的水声忽然停了：‘说过了，莫问来处。’"
 	if id == "circumstance" and visit.voice.has("circumstance"): return String(visit.voice.circumstance)
 	if not visit.person.is_empty() and id == "origin":
 		return "当户口供（待核）：" + String(visit.voice.get("origin", "旧物经手留下，您可以核对凭据。")) + "\n" + String(visit.voice.get("source_claim", ""))

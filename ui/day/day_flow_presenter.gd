@@ -35,6 +35,11 @@ func refresh() -> void:
 		commands.append(entry)
 	for action in definition.actions:
 		commands.append({"id": action.id, "label": "%s · %d 分钟" % [action.label, action.minutes], "enabled": _session.can_execute(action.id)})
+	if NightMarketPlan.enabled(definition):
+		for id in NightMarketRisk.unresolved(_session._day.state):
+			var command := "seal_cloth/" + id
+			var n := int(NightMarketRisk.selection(_session._day.state, id).get("night", 0))
+			commands.append({"id": command, "label": "按旧规封存包布（第%d夜） · 20分钟" % n, "enabled": _session.can_execute(command), "reason": NightMarketRisk.treatment_reason(_session._day, id)})
 	commands.append({"id": "wait_until_seal", "label": "等到封铺（消耗全部剩余时间）", "enabled": _session.can_execute("wait_until_seal")})
 	if SevenNightPlan.enabled(definition) and not OpeningPreparation.enabled(definition):
 		for entry in commands:

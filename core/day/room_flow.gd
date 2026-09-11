@@ -32,6 +32,7 @@ static func outcome(state: RunState, manager: RiskManager, night: int) -> String
 	if "defy" in [shop, personal]: return "mirror_death"
 	if manager.storage_outcome(state, night) == "mirror_pending" and shop.is_empty(): return "mirror_pending"
 	if not MirrorEncounterService.pursuit(state, night).is_empty() and personal.is_empty(): return "mirror_pending"
+	if NightMarketRisk.lamp_level(state) == 5: return "night_guest_death"
 	if not shop.is_empty() or not personal.is_empty(): return "mirror_survived"
 	return manager.storage_outcome(state, night)
 
@@ -53,8 +54,11 @@ static func execute(state: RunState, manager: RiskManager, command: String) -> A
 			state.phase = &"sleep_resolution"
 			var pursuit := MirrorEncounterService.pursuit(state, state.current_night_index)
 			state.risk_pending = pursuit.mirror_id if not pursuit.is_empty() else ""
-		"finish_sleep": state.phase = &"day_summary"
+		"finish_sleep":
+			state.phase = &"day_summary"
+			NightMarketRisk.finish_sleep(state)
 	update_outcome(state, manager)
+	if state.phase == &"dead" and state.summaries.back().outcome == "night_guest_death": return ActionResult.new(true, "命灯冷了。柜下那块湿布，终于自己展开了。")
 	return ActionResult.new(true, "窗外的车铃声，隔着墙渐渐远了。")
 
 static func respond(state: RunState, manager: RiskManager, id: String, command: String) -> ActionResult:

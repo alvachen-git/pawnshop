@@ -35,5 +35,9 @@ func refresh() -> void:
 		if encounter.get("night", 0) == state.current_night_index and encounter.get("action", "") == "pursue": haunting = true
 	for summary in state.summaries:
 		if summary.outcome in ["mirror_scar", "mirror_survived", "mirror_death"]: haunting = true
+	var band := NightMarketPlan.band(int(state.game_minutes)) if NightMarketPlan.enabled(_session.definition) and preview_mode < 0 else -1
+	_view.get_node("Room").night_band = band
+	if NightMarketPlan.enabled(_session.definition) and preview_mode < 0: current_mode = NORMAL
 	_view.set_atmosphere(current_mode, preview_mode >= 0, intrusion, haunting, state.phase == "dead")
+	_view.set_night_lighting(band)
 	_status.render_snapshot(state, _session.definition, intrusion, haunting)

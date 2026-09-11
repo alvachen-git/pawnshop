@@ -312,3 +312,10 @@ func set_atmosphere(mode: int, preview: bool, intrusion: bool, haunting: bool, d
 	if preview:
 		%AtmosphereLabel.text = "美术预览 · " + ["正常营业", "深夜异常", "禁时鬼市"][mode]
 	%AtmosphereLabel.tooltip_text = "仅切换视觉，不推进时间、不改变规则或存档。" if preview else ""
+
+func set_night_lighting(band: int) -> void:
+	if band < 0: return
+	# Only scene sprites dim; appraisal evidence, dialogue and money stay readable.
+	_portrait.modulate = [Color.WHITE, Color("8e8271"), Color("655f55"), Color("4b4944")][band]
+	_item_image.modulate = [Color.WHITE, Color("ead8b5"), Color("d3c7aa"), Color("b8b09b")][band]
+	%AtmosphereLabel.text = ["人声尚近", "灯下做买卖", "街外无光", "只剩一盏灯"][band]
