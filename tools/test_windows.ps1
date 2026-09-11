@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory=$true)][string]$GodotPath,
     [Parameter(Mandatory=$true)][string]$OutputDir,
-    [string]$StartAt = ''
+    [string]$StartAt = '',
+    [switch]$GoodsOnly
 )
 . "$PSScriptRoot/windows_common.ps1"
 $root = Split-Path $PSScriptRoot -Parent
@@ -32,6 +33,29 @@ try {
     Invoke-GodotChecked $engine @('--headless','--editor','--path',$root,'--quit') (Join-Path $output 'import.log') | Out-Null
     Run-Test 'environment' 'm8a_environment.gd'
     Run-Test 'font' 'm8a_font.gd'
+    Run-Test 'goods-core' 'run_goods_expertise.gd'
+    Run-Test 'goods-edges' 'goods_edges.gd'
+    Run-Test 'goods-process-write' 'goods_checkpoint.gd'
+    Run-Test 'goods-process-read' 'goods_checkpoint.gd' @('read')
+    Run-Test 'goods-market' 'run_market_seven.gd' @('goods')
+    Run-Test 'goods-early-redemption' 'run_early_redemption.gd' @('goods')
+    Run-Test 'goods-ui-fixture' 'goods_ui_fixture.gd'
+    foreach ($wide in @($false,$true)) {
+        $size = if ($wide) { '1600x900' } else { '1280x720' }
+        $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "goods-$size" 'goods_ui.gd' $sizeArgs $false
+        Run-Test "goods-appraisal-$size" 'goods_appraisal_ui.gd' $sizeArgs $false
+    }
+    Run-Test 'goods-pair-process' 'goods_pair_checkpoint.gd'
+    if ($GoodsOnly) {
+        Run-Test 'goods-legacy-core' 'run_all.gd'
+        Run-Test 'goods-legacy-v20' 'pawn_chance_merge.gd'
+        New-Item -ItemType Directory -Force -Path (Join-Path $output 'screenshots') | Out-Null
+        Get-ChildItem "$root/.godot/qa" -Filter 'goods*.png' | Copy-Item -Destination (Join-Path $output 'screenshots')
+        Write-Utf8 (Join-Path $output 'results.json') (ConvertTo-Json -InputObject @($results.ToArray()) -Depth 10)
+        Write-Host "WINDOWS GOODS VALIDATION PASSED: $output"
+        return
+    }
     Run-Test 'core' 'run_all.gd'
     Run-Test 'night-market-core' 'run_night_market.gd'
     Run-Test 'night-market-process' 'run_night_market.gd' @('process-read')

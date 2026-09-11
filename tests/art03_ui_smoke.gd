@@ -17,7 +17,7 @@ func _capture(label: String) -> void:
 		await _click("铺中货物")
 		await super._capture("01_stock")
 		await _click("查看货物 · 青花小碗")
-		_check(_all_text(stock).contains("已见物证"), "库存可以复查已知物证")
+		_check(_all_text(stock).contains("品相要点"), "库存可以复查影响价值的已知品相")
 	if label == "03_tickets":
 		await super._capture("03_cash_entries")
 		await _click("当票")

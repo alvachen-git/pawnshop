@@ -22,12 +22,16 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 			if not unlocked: item_error = "取得介绍后才能询价。"
 			elif not known: item_error = "收货细目尚未问清；可提前调查，或等开收后看收货单。"
 			var price := service.quote(item, buyer) if item_error.is_empty() else 0
-			var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
-			stock.append({"id": item.instance_id, "name": definition.display_name, "cost": item.acquisition_price, "price": price,
+			var base := service.base_quote(item, buyer)
+			var label := definition.display_name + (" · 货签%d" % (day.state.inventory_instances.find(item) + 1) if GoodsExpertise.enabled(day.definition) else "")
+			stock.append({"id": item.instance_id, "name": label, "cost": item.acquisition_price, "price": price,
 				"premium": ProvenanceService.premium(item, buyer, base) if item_error.is_empty() else 0, "reason": item_error})
 		buyers.append({"id": id, "name": buyer.display_name, "wanted": "、".join(wanted), "reason": reason, "stock": stock,
 			"window": "第六夜，时段待打听" if not known else "%s–%s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end)],
 			"note": demand.body if special else "按实物品相报价，收货件数不限。"})
+	if GoodsExpertise.enabled(day.definition):
+		for row in buyers:
+			row.pairs = GoodsExpertiseUI.sale_pairs(day, service, service.catalog.get_definition("buyers", row.id))
 	var notices: PackedStringArray = []
 	if SevenNightPlan.enabled(day.definition):
 		var appointment := PreparationService.notice(day.state, service.catalog)

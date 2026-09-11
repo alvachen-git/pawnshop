@@ -34,6 +34,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 							total += int(weight)
 						if total != 100: valid = false
 				if not valid: CounterDomainValidator._error(issues, at, "夜客配置需要有效价格、耗时与合计100的后果权重。")
+			if value.has("goods_expertise_version") and (not RunSchema.integer(value.goods_expertise_version) or value.goods_expertise_version != 1 or value.get("pawn_redemption_version") != 1): CounterDomainValidator._error(issues, at, "新品须使用职业赎回版及有效规则版本。")
 			if value.has("pawn_redemption_version") and (not RunSchema.integer(value.pawn_redemption_version) or value.pawn_redemption_version != 1 or value.get("seven_version") != 1):
 				CounterDomainValidator._error(issues, at, "职业赎回概率须使用七夜配置与有效规则版本。")
 			if value.has("early_redemption") and (not value.early_redemption is bool or value.get("familiar_version") != 1): CounterDomainValidator._error(issues, at, "提前取赎须使用熟客配置与布尔开关。")

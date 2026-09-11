@@ -82,6 +82,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		visit.item.instance_id = "item/" + visit.visit_id
 		visit.item.definition_id = item.id
 		visit.item.selected_variant_id = row.variant_id
+		visit.item.goods = row.get("goods", {}).duplicate(true)
 		if not row.source.is_empty(): visit.item.provenance = {"truth": row.source, "status": "unchecked", "evidence": [], "investigated": false}
 		visit.trade.opening_price = maxi(1, roundi(item.base_value * customer.terms.ask_multiplier))
 		visit.trade.asking_price = visit.trade.opening_price

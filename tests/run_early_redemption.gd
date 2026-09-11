@@ -1,7 +1,7 @@
 extends "res://tests/run_familiar_stories.gd"
 
 func run() -> void:
-	var loaded := JsonContentProvider.new(("res://data/pawn_chance_manifest.json" if "chance" in OS.get_cmdline_user_args() else "res://data/market_familiar_manifest.json" if "combined" in OS.get_cmdline_user_args() else "res://data/familiar_early_manifest.json")).load_catalog()
+	var loaded := JsonContentProvider.new(("res://data/goods_expertise_manifest.json" if "goods" in OS.get_cmdline_user_args() else "res://data/pawn_chance_manifest.json" if "chance" in OS.get_cmdline_user_args() else "res://data/market_familiar_manifest.json" if "combined" in OS.get_cmdline_user_args() else "res://data/familiar_early_manifest.json")).load_catalog()
 	check(loaded.is_success(), "content18")
 	if not loaded.is_success(): quit(1); return
 	catalog = loaded.catalog

@@ -73,6 +73,20 @@ func refresh() -> void:
 		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")
 
 func _on_command(command: String) -> void:
+	if command.begins_with("prep_seek/"):
+		var target := command.trim_prefix("prep_seek/")
+		var state := _session._day.state
+		var item := InventoryManager.new().find(state, target)
+		if item == null: return
+		var dialog := ConfirmationDialog.new()
+		dialog.title = "寻配茶盏"
+		dialog.dialog_text = "为货签%d茶盏寻配 · 3银元 / 准备1次\n约来同纹样、相对式样的候选，价钱另谈。\n是否原配还须验看，不保证成交。" % (state.inventory_instances.find(item) + 1)
+		dialog.ok_button_text = "托人寻配"; dialog.cancel_button_text = "暂不寻配"
+		_view.add_child(dialog)
+		dialog.confirmed.connect(func() -> void: _session.execute("prep_seek", target); dialog.queue_free())
+		dialog.canceled.connect(dialog.queue_free)
+		dialog.popup_centered(Vector2i(450, 210))
+		return
 	if command == "prep_choose_category":
 		_category_picker = true
 		_picker_night = _session._day.state.current_night_index
@@ -113,6 +127,11 @@ func _preparation_commands() -> Array:
 		var tooltip: String = action[2] + "。"
 		if not error.is_empty(): tooltip += "\n" + error
 		commands.append({"id": "prep_choose_category" if action[0] == "target" else "prep_" + action[0], "label": action[1], "enabled": error.is_empty(), "reason": error, "tooltip": tooltip})
+	if state.goods_version == 1:
+		for item in state.inventory_instances:
+			if item.definition_id != GoodsExpertise.CUP or item.ownership_state != "owned" or "form" not in item.revealed_clue_ids: continue
+			var error := OpeningPreparation.reason(state, "seek", item.instance_id)
+			commands.append({"id": "prep_seek/" + item.instance_id, "label": "寻配茶盏 · 货签%d · 3银元 / 准备1次" % (state.inventory_instances.find(item) + 1), "enabled": error.is_empty(), "reason": error, "tooltip": GoodsExpertise.description(item, _session._counter.catalog.get_definition("items", item.definition_id))})
 	commands.append({"id": "read_seven_notes", "label": "查看已知消息 · 不耗次数", "enabled": true})
 	return commands
 
