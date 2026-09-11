@@ -54,6 +54,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 	var bounds := service.appraisal.valuation(visit.item, item)
 	var evidence_lines: PackedStringArray = []
 	for clue_id in visit.item.revealed_clue_ids: evidence_lines.append("• " + item.find_clue(clue_id).text)
+	var goods_note := GoodsExpertise.description(visit.item, item)
 	model.appraisal.body = "%s\n证据估值：%d–%d（不是买家报价）\n你的判断：%s\n\n%s" % [item.display_name, bounds.x, bounds.y, JUDGEMENTS[visit.item.judgement], "\n".join(evidence_lines) if not evidence_lines.is_empty() else "尚未取得证据。卖家说法不能替代检查。"]
 	for action in item.appraisal_actions:
 		model.appraisal.buttons.append(_button(day, service, visit, "appraise", action.id, "%s · %d分钟" % [action.label, action.minutes]))
@@ -69,6 +70,8 @@ static func build(day: DayController, service: CounterService, message: String, 
 			model.dialogue.buttons.append(_button(day, service, visit, "question", question.id, "%s · %d分钟" % [question.prompt, question.minutes]))
 	else:
 		model.appraisal.images = TradeScenarioService.known_images(visit, scenario)
+		if visit.item.definition_id == GoodsExpertise.CUP and "form" in visit.item.revealed_clue_ids:
+			model.appraisal.images.append({"id": "cup_marks", "label": "纹样式样", "path": "res://assets/goods_v21/tea_cup_pattern%d_side%d.svg" % [int(visit.item.goods.pattern), int(visit.item.goods.side)], "requires_clues": ["form"]})
 		if model.appraisal.images.any(func(row: Dictionary) -> bool: return not row.path.is_empty()): model.appraisal.body += "\n\n翻看正背面、复看细节不耗时；取证另计时间。"
 		model.dialogue.body = String(visit.voice.get("introduction", scenario.introduction)) + "\n\n听来的话先记着，物品还须自己掌眼。无凭据地质疑，客人可能不悦。"
 		for question in scenario.questions:
@@ -105,6 +108,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		if EarlyRedemption.enabled(day.definition) and terms.id == FamiliarStories.TERMS: model.trade.body += "\n" + EarlyRedemption.AGREEMENT
 		var background := PawnRedemptionPolicy.background(day.definition, customer, VarietySaveCodec.selection(day.state, visit.visit_id))
 		if not background.is_empty(): model.trade.body += "\n" + background
+	if not goods_note.is_empty(): model.appraisal.body += "\n" + goods_note
 	for feature in ["appraisal", "dialogue", "trade"]:
 		model[feature].visit_id = visit.visit_id
 		model[feature].body += "\n\n" + message

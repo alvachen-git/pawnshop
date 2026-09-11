@@ -18,6 +18,8 @@ var familiar_plan: Dictionary = {}
 var familiar_progress: Dictionary = {}
 # Read-only raw history context used during ordered validation; never serialized.
 var familiar_context: Dictionary = {}
+var expertise_history: Array[Dictionary] = []
+var goods_version := 0
 var preparation_history: Array[Dictionary] = []
 var preparation_version := 0
 var sample_plan: Array[Dictionary] = []
@@ -60,6 +62,7 @@ static func create(definition: RunDefinition) -> RunState:
 	var state := RunState.new()
 	state.run_definition_id = definition.id
 	state.night_market_enabled = NightMarketPlan.enabled(definition)
+	state.goods_version = int(definition.variety.get("goods_expertise_version", 0))
 	state.preparation_version = int(definition.variety.get("preparation_version", 0))
 	state.room_enabled = definition.private_room
 	if not definition.ghost_rule_ids.is_empty() or definition.fee_policy.enabled: state.run_token = Crypto.new().generate_random_bytes(16).hex_encode()
@@ -118,6 +121,7 @@ func to_read_model() -> Dictionary:
 	if night_market_enabled:
 		data["night_market_history"] = night_market_history.duplicate(true)
 		data["night_market_enabled"] = true
+	if goods_version == 1: data["expertise_history"] = expertise_history.duplicate(true)
 	if not familiar_plan.is_empty():
 		data["familiar_plan"] = familiar_plan.duplicate(true)
 		familiar_progress = FamiliarStories.progress(data)

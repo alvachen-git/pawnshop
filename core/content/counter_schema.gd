@@ -5,6 +5,15 @@ extends RefCounted
 static func validate(kind: String, record: Dictionary, path: String, at: String) -> Array:
 	var issues: Array = []
 	if kind == "items":
+		if record.has("expertise"):
+			var expert: Variant = record.expertise
+			_fields(expert, {"kind": "text", "fee": "positive", "minutes": "positive"}, path, at + ".expertise", issues)
+			if expert is Dictionary:
+				if expert.get("kind") not in ["fan", "cup"]: issues.append(ContentIssue.new("error", "invalid_field", path, at, "未知行家服务。"))
+				elif expert.kind == "fan":
+					_fields(expert, {"unreviewed_value": "positive"}, path, at, issues)
+					_fields(expert.get("results"), {"sound": "text", "flawed": "text", "mended": "text"}, path, at, issues)
+				if not RunSchema.integer(expert.get("minutes")) or int(expert.get("minutes", 0)) % 5 != 0: issues.append(ContentIssue.new("error", "invalid_field", path, at, "复核时长须为5分钟倍数。"))
 		if record.has("display_name"):
 			_fields(record, {"display_name": "text", "description": "text", "unknown_min": "nonnegative", "unknown_max": "positive"}, path, at, issues)
 		_rows(record.get("possible_variants", []), {"id": "text", "weight": "ratio_positive", "true_value": "positive", "clue_ids": "strings"}, path, at + ".possible_variants", issues)

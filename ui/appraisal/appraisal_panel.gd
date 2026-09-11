@@ -59,6 +59,7 @@ func render(model: Dictionary) -> void:
 		_body.text = "已见线索\n"
 		if visual.clues.is_empty(): _body.text += "尚未取证。可从下方选择检查。"
 		for clue in visual.clues: _body.text += ("本次发现 · " if clue.id in _new_clues else "• ") + clue.text + "\n"
+		if not visual.get("goods_note", "").is_empty(): _body.text += "\n" + visual.goods_note + "\n"
 		if not visual.get("provenance", "").is_empty(): _body.text += "\n" + visual.provenance + "\n"
 		if not visual.message.is_empty() and not _body.text.contains(visual.message):
 			_body.text += "\n" + visual.message

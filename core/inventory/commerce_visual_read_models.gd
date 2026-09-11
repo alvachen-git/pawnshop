@@ -1,6 +1,8 @@
 class_name CommerceVisualReadModels
 extends RefCounted
 
+const ValueNotes = preload("res://core/inventory/inventory_value_notes.gd")
+
 # Presentation facts only. Sale and pawn commands remain in CommerceReadModels.
 static func enrich(model: Dictionary, day: DayController, service: CommerceService, message: String) -> void:
 	var financial := FinancialSummary.build(day.state)
@@ -8,8 +10,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	for item in day.state.inventory_instances:
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 		var bounds := AppraisalSystem.new().valuation(item, definition)
-		var clues: Array = []
-		for id in item.revealed_clue_ids: clues.append(definition.find_clue(id).text)
+		var clues: Array = ValueNotes.build(item, definition)
 		var buyers: Dictionary = {}
 		if item.ownership_state == "owned":
 			for id in day.definition.buyer_ids:
@@ -18,12 +19,12 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 				if id == PreparationService.BUYER and not PreparationService.requirements_known(day.state): buyers[id] = "第六夜，时段待打听"
 				if id == "buyer_appointment": buyers[id] = OrdinarySamplePlan.notice(day.state)
 				if service.sale_reason(day, item, buyer).is_empty() and not item.provenance.is_empty():
-					var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+					var base := maxi(1, roundi(GoodsExpertise.value(item, definition) * buyer.value_multiplier))
 					buyers[id] += "\n基础报价 %d · 来源溢价 %d 银元" % [base, ProvenanceService.premium(item, buyer, base)]
 		stock.append({"id": item.instance_id, "name": definition.display_name, "asset": definition.visual_asset_id,
 			"state": item.ownership_state, "stamp": CommerceReadModels.STATES[item.ownership_state],
 			"cost": item.acquisition_price, "cost_label": "放款" if item.acquisition_type == "pawn" else "成本", "estimate": "%d–%d" % [bounds.x, bounds.y],
-			"provenance": ("货面浮着湿灰；到营业页按旧规封存包布。\n" if NightMarketRisk.item_pending(day.state, item.source_visit_id) and item.ownership_state == "owned" else "") + ProvenanceService.known_text(item, definition), "clues": clues, "buyers": buyers, "night": item.acquired_night, "ghost": not definition.ghost_rule_id.is_empty()})
+			"provenance": ("货面浮着湿灰；到营业页按旧规封存包布。\n" if NightMarketRisk.item_pending(day.state, item.source_visit_id) and item.ownership_state == "owned" else "") + ProvenanceService.known_text(item, definition, false), "clues": clues, "buyers": buyers, "night": item.acquired_night, "ghost": not definition.ghost_rule_id.is_empty()})
 	var tickets: Array = []
 	for index in day.state.pawn_tickets.size():
 		var ticket := day.state.pawn_tickets[index]
@@ -47,7 +48,8 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	var entries: Array = []
 	for entry in day.state.ledger_entries:
 		var subject := "铺面息费"
-		if entry.kind == "preparation": subject = "招揽客人" if entry.transaction_id.ends_with("/attract") else "备茶候客"
+		if entry.kind == "preparation": subject = {"attract": "招揽客人", "tea": "备茶候客", "seek": "寻配茶盏"}.get(entry.transaction_id.get_slice("/", entry.transaction_id.get_slice_count("/") - 1), "开铺准备")
+		if entry.kind == "expertise": subject = "行家复核"
 		var item := InventoryManager.new().find(day.state, entry.item_instance_id)
 		if item != null: subject = (service.catalog.get_definition("items", item.definition_id) as ItemDefinition).display_name
 		var receipt_id := String(entry.transaction_id) if entry.kind in ["acquisition", "pawn_loan", "sale", "redemption", "extension", "provenance_inquiry"] else ""
