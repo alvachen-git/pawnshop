@@ -15,9 +15,15 @@ func bind(session: RunSession, view: PrivateRoomView) -> void:
 
 func _execute(command: String) -> void:
 	_error = ""
-	var result := _session.execute(command)
+	var result := _session.execute("finish_sleep" if command == "relax_sleep" else command)
+	if result.ok and command == "relax_sleep":
+		var state := _session.read_state()
+		# Keep ending summaries and pending story choices; otherwise wake next day.
+		if state.phase == "day_summary" and state.current_night_index < _session.definition.total_nights and _session.can_execute("continue_run"):
+			result = _session.execute("continue_run")
 	if not result.ok: _error = result.message
 	refresh()
+	if not result.ok and not _view.visible: _view.show_transition_error(result.message)
 
 func refresh() -> void:
 	var state := _session.read_state()

@@ -26,6 +26,8 @@ var _inspect_source: Button
 var _prop_hint: Label
 var _hint_source: Button
 var _mirror: BedroomMirror
+var _sleep_prompt := false
+var _transition_error: AcceptDialog
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
@@ -103,13 +105,31 @@ func _create_observation() -> void:
 	_close_observation.size_flags_horizontal = Control.SIZE_SHRINK_END
 	style_action(_close_observation)
 	column.add_child(_close_observation)
-	_close_observation.pressed.connect(dismiss_observation)
+	_close_observation.pressed.connect(_observation_pressed)
 	_observation.hide()
 
 func _observe(text: String, source: Button) -> void:
+	_sleep_prompt = false
+	_close_observation.text = "收回目光"
+	_close_observation.disabled = false
 	_body.text = text
 	_inspect_source = source
 	_observation.show()
+
+func _observation_pressed() -> void:
+	if _sleep_prompt:
+		if _model.get("can_finish", false): command_requested.emit("relax_sleep")
+	else:
+		dismiss_observation()
+
+func show_transition_error(message: String) -> void:
+	if _transition_error == null:
+		_transition_error = AcceptDialog.new()
+		_transition_error.title = "未能进入下一天"
+		_transition_error.ok_button_text = "知道了"
+		add_child(_transition_error)
+	_transition_error.dialog_text = message
+	_transition_error.popup_centered(Vector2i(440, 180))
 
 func dismiss_observation() -> bool:
 	if not _observation.visible: return false
@@ -198,13 +218,17 @@ func _layout() -> void:
 
 func render(model: Dictionary) -> void:
 	var phase_changed: bool = _model.get("phase", "") != model.phase
+	var finish_ready: bool = model.can_finish and not _model.get("can_finish", false)
 	_model = model
 	visible = model.visible
 	if not visible and _confirm != null: _confirm.hide()
 	_night.text = "第%d夜" % model.night
-	if phase_changed or not model.error.is_empty():
+	if phase_changed or finish_ready or not model.error.is_empty():
 		_body.text = model.body + ("\n\n" + model.error if not model.error.is_empty() else "")
+		_sleep_prompt = model.phase == "sleep_resolution" and not model.dead
+		_close_observation.text = "放松入眠" if _sleep_prompt else "收回目光"
 		_observation.visible = visible and not model.pending and (model.dead or model.phase == "sleep_resolution" or not model.error.is_empty())
+	_close_observation.disabled = _sleep_prompt and not model.can_finish
 	_bed.text = "就寝" if model.phase == "private_room" else "等到天明"
 	_bed.accessibility_name = "床 · 就寝" if model.phase == "private_room" else "等到天明"
 	if model.dead:
