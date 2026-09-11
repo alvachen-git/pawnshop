@@ -21,9 +21,9 @@ func _run() -> void:
 	await _frames()
 	var screen := _main.get_node("CounterScreen") as CounterScreen
 	var page := screen._feedback
-	_check(page.visible and page.record.note.contains("耐心耗尽"), "patience loss has explicit feedback")
+	_check(not page.visible and screen._recent_bar.visible and page.record.note.contains("耐心耗尽"), "patience loss has persistent feedback")
 	_check(page.record.kind == "departure" and page.record.amount == 0 and not screen._receipt.visible, "no false transaction/payment controls")
-	_check(page._paper.get_global_rect().end.y <= root.size.y and page._paper.global_position.y >= 0, "paper fits viewport")
+	_check(screen.get_global_rect().encloses(screen._recent_bar.get_global_rect()), "reply fits viewport")
 	var before := _session.read_state()
 	await create_timer(0.3).timeout
 	_check(before == _session.read_state(), "reading consumes no game time")
@@ -33,7 +33,7 @@ func _run() -> void:
 	key.pressed = true
 	root.push_input(key)
 	await _frames()
-	_check(page.visible and before == _session.read_state(), "escape cannot click through departing guest")
+	_check(not page.visible and screen._recent_bar.visible and before == _session.read_state(), "escape needs no result acknowledgment")
 	await _settle_feedback()
 	_check(not page.visible and before == _session.read_state(), "departure finishes without acknowledgment or game time")
 	_session.changed.emit()
@@ -48,7 +48,7 @@ func _run() -> void:
 	await _click("交易")
 	await _click_button(_command_button("belittle", ""))
 	await _frames()
-	_check(page.visible and page.record.note.contains("议价轮次"), "rounds loss feedback")
+	_check(not page.visible and screen._recent_button.get_meta("reply_style") == "refused", "rounds loss uses refusal reply")
 	await _settle_feedback()
 	helper.wait_to(_session, 360)
 	await _frames()
@@ -56,7 +56,7 @@ func _run() -> void:
 	v = helper.active(_session)
 	helper.wait_to(_session, v.expires_at)
 	await _frames()
-	_check(page.visible and page.record.note.contains("等候期限"), "timeout feedback")
+	_check(not page.visible and screen._recent_button.get_meta("reply_style") == "timed_out", "timeout reply")
 	await create_timer(0.25).timeout
 	await _capture("02_timeout")
 	await _settle_feedback()
@@ -73,7 +73,7 @@ func _run() -> void:
 	_session.counter_command("offer", v.visit_id, "", v.trade.asking_price)
 	await _frames()
 	var receipt := _main.find_child("TradeReceipt", true, false) as TradeReceiptView
-	_check(not receipt.visible and page.visible and page.record.kind == "acquisition", "successful feedback has priority over waiting timeout")
+	_check(not receipt.visible and not page.visible and page.record.kind == "acquisition", "successful reply has priority over waiting timeout")
 	before = _session.read_state()
 	await _settle_feedback()
 	_check(not page.visible and screen._recent.note.contains("等候期限"), "waiting departure becomes a notification after receipt")
@@ -95,7 +95,7 @@ func _run() -> void:
 	await _click_button(_command_button("belittle", ""))
 	await _frames()
 	page = _main.find_child("TradeFeedback", true, false) as TradeFeedbackView
-	_check(page.visible and page.record.note.contains("议价轮次"), "seven-night scene shows departures")
+	_check(not page.visible and page.record.note.contains("议价轮次"), "seven-night departures do not flash")
 	await create_timer(0.25).timeout
 	await _capture("03_seven")
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(_session._save.path))

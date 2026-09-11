@@ -37,7 +37,7 @@ func _run() -> void:
 	_session.counter_command("appraise", v.visit_id, "light")
 	_check((_main.find_child("AppraisalPanel", true, false) as AppraisalPanel)._body.text.contains("本次发现"), "新增物证醒目标识")
 	_session.counter_command("offer", v.visit_id, "", 72)
-	_check(screen._feedback.visible, "成交启动演出")
+	_check(not screen._feedback.visible and screen._recent_bar.visible, "成交只留下回复记录")
 	before = _session.read_state()
 	screen._flow.show_panel(&"inventory")
 	await create_timer(0.85).timeout
@@ -46,7 +46,7 @@ func _run() -> void:
 	_check(screen._recent.is_empty() and not screen._feedback.visible, "读档清空旧结果")
 	helper.open(_session); v = helper.active(_session)
 	_session.counter_command("offer", v.visit_id, "", v.trade.asking_price)
-	_check(screen._feedback.visible and _session.load_checkpoint().ok, "演出中读取检查点")
+	_check(screen._recent_bar.visible and _session.load_checkpoint().ok, "保留回复时读取检查点")
 	await create_timer(0.85).timeout
 	_check(not screen._feedback.visible and screen._recent.is_empty() and _session.read_state().cash == 100, "读档取消演出与扣款，不触发迟到回调")
 	helper.open(_session); v = helper.active(_session)
@@ -55,9 +55,9 @@ func _run() -> void:
 	var id := v.visit_id
 	_check(not _session.counter_command("offer", id, "", v.trade.asking_price).ok, "报价完成前超时，实际未成交")
 	await _frames()
-	_check(screen._feedback.visible and screen._feedback.record.kind == "departure" and screen._counter_view._active_id == id and screen._counter_view.feedback_held and _session.read_state().cash == 100, "失败操作的真实离场仍归属原客，不扣款")
+	_check(not screen._feedback.visible and screen._feedback.record.kind == "departure" and screen._recent_button.get_meta("reply_style") == "timed_out" and not screen._counter_view.feedback_held and _session.read_state().cash == 100, "超时只留下原客回复，不扣款")
 	await _settle_feedback()
-	_check(not screen._feedback._step.text.contains("收讫"), "未成交不盖收货章")
+	_check(not screen._recent_button.text.contains("收讫"), "未成交不盖收货章")
 	_session.new_run(); helper.open(_session); v = helper.active(_session)
 	_session.counter_command("offer", v.visit_id, "", v.trade.asking_price)
 	_session._save.library = SaveLibrary.new("user://tests/feedback_title_library.json")

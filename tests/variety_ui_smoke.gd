@@ -105,7 +105,7 @@ func _run() -> void:
 	await _click("委托来源调查 · 2银元 / 10分钟")
 	await _click_button(visible_dialog(_main).get_ok_button())
 	var feedback := (_main.get_node("CounterScreen") as CounterScreen)._feedback
-	_check(feedback.visible and feedback.record.amount == -2 and _session.read_state().cash == before.cash - 2, "inquiry automatic feedback / exact debit")
+	_check(not feedback.visible and feedback.record.amount == -2 and _session.read_state().cash == before.cash - 2, "inquiry nonmodal record / exact debit")
 	await create_timer(0.2).timeout
 	await _capture("07_inquiry_receipt")
 	await _click("库存")
@@ -116,7 +116,7 @@ func _run() -> void:
 	await _click("交易")
 	trade._price.value = helper.active(_session).trade.reserve_price
 	await _click("正式报价并收购")
-	_check(feedback.visible and not receipt.visible and helper.active(_session) != null and helper.active(_session).arrival == 90, "automatic feedback before next active visitor")
+	_check(not feedback.visible and not receipt.visible and helper.active(_session) != null and helper.active(_session).arrival == 90, "nonmodal result allows next active visitor")
 	await _settle_feedback()
 	await _click_button((_main.get_node("CounterScreen") as CounterScreen)._recent_button)
 	_check(receipt.z_index == 20 and receipt._paper.get_global_rect().encloses(receipt._primary.get_global_rect()), "receipt above portrait / controls fit")
