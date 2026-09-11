@@ -3,7 +3,7 @@ extends RefCounted
 
 # Presentation only: no money is reserved or written to the run/save.
 static func enabled(run: RunDefinition) -> bool:
-	return run.id in [&"complete_seven", &"pawn_chance_seven"] or NightMarketPlan.enabled(run)
+	return run.id in [&"complete_seven", &"pawn_chance_seven", &"goods_expertise_seven"] or NightMarketPlan.enabled(run)
 
 static func build(state: RunState, run: RunDefinition) -> Dictionary:
 	if not enabled(run): return {}

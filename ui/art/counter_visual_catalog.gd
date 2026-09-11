@@ -33,6 +33,9 @@ static func portrait_material(texture: Texture2D) -> ShaderMaterial:
 	return material
 
 static func _painted_front(asset: String) -> String:
+	if asset.begins_with("goods."):
+		var goods_path := "res://assets/goods_v21/" + asset.trim_prefix("goods.") + "_front.svg"
+		return goods_path if ResourceLoader.exists(goods_path) else ""
 	var paths := {"asset.item_blue_bowl": "bowl_front", "placeholder.silver_hairpin": "hairpin_front"}
 	if not paths.has(asset): return ""
 	var path := "res://assets/art04/items/" + String(paths[asset]) + ".png"

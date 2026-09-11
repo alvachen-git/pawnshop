@@ -13,17 +13,21 @@ static func batch(day: DayController, catalog: ContentCatalog, first: int) -> Di
 		var row: Dictionary = day.state.ledger_entries[index]
 		var item := InventoryManager.new().find(day.state, row.item_instance_id)
 		var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
-		var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+		var base := maxi(1, roundi(GoodsExpertise.value(item, definition) * buyer.value_multiplier))
 		total += row.amount
 		cost += item.acquisition_price
-		lines.append("%s · 收%d / 成本%d / 盈亏%+d\n基础报价%d · 来源溢价%d" % [definition.display_name, row.amount, item.acquisition_price, row.realized_profit, base, row.amount - base])
+		var source := ProvenanceService.premium(item, buyer, base)
+		var line := "%s · 收%d / 成本%d / 盈亏%+d\n基础报价%d · 来源溢价%d" % [definition.display_name, row.amount, item.acquisition_price, row.realized_profit, base, source]
+		if GoodsExpertise.enabled(day.definition): line += " · 原配加价%d" % (row.amount - base - source)
+		lines.append(line)
 	receipt.item = "%s · 交货%d件" % [buyer.display_name, trip.item_ids.size()]
 	receipt.item_asset = ""
 	receipt.images = []
 	receipt.amount = total
 	receipt.after = day.state.cash
 	receipt.note = "往返20分钟，货款已收妥。"
-	receipt.detail = "总成本%d · 已实现盈亏%+d 银元\n未扣来源调查费与每日息费。\n\n%s" % [cost, total - cost, "\n\n".join(lines)]
+	var expenses := "未扣调查、行家复核、寻货及每日费用。" if GoodsExpertise.enabled(day.definition) else "未扣来源调查费与每日息费。"
+	receipt.detail = "总成本%d · 已实现盈亏%+d 银元\n%s\n\n%s" % [cost, total - cost, expenses, "\n\n".join(lines)]
 	return receipt
 
 # Only committed, player-visible facts. No hidden variant, true value or margin
@@ -41,7 +45,7 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 	if entry.kind == "sale" and not item.provenance.is_empty():
 		var sale: Dictionary = day.state.sale_records.back()
 		var buyer := catalog.get_definition("buyers", sale.buyer_id) as BuyerDefinition
-		var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+		var base := maxi(1, roundi(GoodsExpertise.value(item, definition) * buyer.value_multiplier))
 		detail += "\n基础报价 %d · 来源溢价 %d 银元" % [base, ProvenanceService.premium(item, buyer, base)]
 	for ticket in day.state.pawn_tickets:
 		if ticket.item_instance_id == item.instance_id and entry.kind in ["pawn_loan", "extension"]:

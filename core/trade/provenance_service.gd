@@ -6,11 +6,11 @@ const LABELS := {"unchecked": "尚未核验", "verified": "来历已证实", "un
 static func describe(item: ItemInstance) -> String:
 	return "" if item.provenance.is_empty() else "来源：" + LABELS[item.provenance.status]
 
-static func known_text(item: ItemInstance, definition: ItemDefinition) -> String:
+static func known_text(item: ItemInstance, definition: ItemDefinition, include_inquiry_count := true) -> String:
 	var text := describe(item)
 	if not item.provenance.is_empty() and item.provenance.status != "unchecked":
 		text += "\n" + result_text(item, definition)
-		if item.provenance.investigated: text += "\n已委托调查一次。"
+		if include_inquiry_count and item.provenance.investigated: text += "\n已委托调查一次。"
 	return text
 
 static func outcome(truth: String) -> String:
@@ -37,6 +37,7 @@ static func result_text(item: ItemInstance, definition: ItemDefinition) -> Strin
 static func inquiry_reason(day: DayController, item: ItemInstance, definition: ItemDefinition) -> String:
 	if item == null or definition == null or item.provenance.is_empty(): return "没有可调查的来源线索。"
 	if day.state.phase != &"open" or item.ownership_state != "owned": return "只能在营业时调查铺中自有现货。"
+	if GoodsExpertise.enabled(day.definition) and item.provenance.status == "unconfirmed": return "已核验过，暂无新的来源可查。"
 	if item.provenance.investigated or item.provenance.status in ["verified", "mismatch"]: return "来源已查清，或这件物品已调查过。"
 	if not day.state.pending_event_id.is_empty() or not day.state.risk_pending.is_empty() or not PawnReturnService.current(day.state).is_empty() or MirrorEncounterService.new(null).pending(day): return "请先处理眼前的事情。"
 	if day.state.cash < int(definition.provenance.inquiry_fee): return "现银不足，未委托调查。"

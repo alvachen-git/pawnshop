@@ -194,6 +194,8 @@ func new_run() -> void:
 
 func _copy_state(source: RunState) -> RunState:
 	var copy := RunState.new()
+	copy.goods_version = source.goods_version
+	copy.expertise_history = source.expertise_history.duplicate(true)
 	copy.preparation_version = source.preparation_version
 	for key in source.to_read_model():
 		if key in ["inventory_instances", "pawn_tickets"]: continue
@@ -272,9 +274,9 @@ func _emit_receipt(previous_size: int) -> void:
 	var receipt := TradeReceiptModel.build(_day, _counter.catalog, _day.state.ledger_entries.back())
 	if not receipt.is_empty(): transaction_completed.emit(receipt)
 
-func sell_batch(buyer_id: String, item_ids: Array) -> ActionResult:
+func sell_batch(buyer_id: String, item_ids: Array, pairs: Array = []) -> ActionResult:
 	var previous := _day.state.ledger_entries.size()
-	var result := _commerce.sell_batch(_day, buyer_id, item_ids)
+	var result := _commerce.sell_batch(_day, buyer_id, item_ids, pairs)
 	if result.ok:
 		_counter.customers.update(_day.state)
 		if _risk != null: _risk.capture_close(_day.state)

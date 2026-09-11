@@ -27,7 +27,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		"item_asset": item.visual_asset_id, "customer_name": VarietyService.name_for(visit.person, customer),
 		"portrait_asset": customer.portrait_asset_id,
 		"introduction": String(visit.voice.get("introduction", customer.terms.introduction if not visit.person.is_empty() else (scenario.introduction if scenario != null else customer.terms.introduction))) + ("\n" + String(visit.voice.get("belittle_cue", customer.belittle.cue)) if not customer.belittle.is_empty() else ""),
-		"clues": clues, "speech": speech,
+		"clues": clues, "speech": speech, "goods_note": GoodsExpertise.description(visit.item, item),
 		"estimate": "%d–%d" % [bounds.x, bounds.y],
 		"judgement": CounterReadModels.JUDGEMENTS[visit.item.judgement],
 		"asking": visit.trade.asking_price, "rounds_left": visit.trade.rounds_left,
