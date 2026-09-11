@@ -29,22 +29,22 @@ func _run() -> void:
 	_check(not feedback.visible and not receipt.visible and messages.is_empty() and _session.read_state().cash == 100, "拒价不盖章也不扣款")
 	trade._price.value = 23
 	await _click("正式报价并收购")
-	_check(feedback.visible and not receipt.visible and feedback.record.kind == "acquisition", "普通收购自动演出，不弹需确认的大凭据")
-	_check(screen._counter_view._active_id == id and screen._counter_view.feedback_held, "演出保留原客，不提前换新客")
+	_check(not feedback.visible and not receipt.visible and feedback.record.kind == "acquisition", "普通收购无闪现弹窗")
+	_check(screen._counter_view._active_id != id and not screen._counter_view.feedback_held, "成交后立即恢复接待")
 	_check(messages.size() == 1 and feedback.record.before == 100 and feedback.record.after == 77, "演出使用真实入账结果")
-	_check(screen._status_view.get_node("%CashStatus").text.contains("100"), "交货阶段状态栏不提前跳款")
+	_check(screen._status_view.get_node("%CashStatus").text.contains("77"), "状态栏立即显示真实现金")
 	_check(not str(operations).contains("reserve_price") and not str(operations).contains("selected_variant") and not str(operations).contains("true_value"), "操作快照不泄露底价或隐藏品相")
 	var before := _session.read_state()
 	await _raw_click(screen._counter_view.get_hotspot(&"customer"))
 	_check(not screen._counter_view._customer_context.visible and before == _session.read_state(), "快速点击不穿透、不重复成交")
 	_session.counter_command("offer", id, "", 23)
-	_check(feedback.visible and messages.size() == 1 and before == _session.read_state(), "无效重复报价不打断演出、不再记账")
+	_check(not feedback.visible and messages.size() == 1 and before == _session.read_state(), "无效重复报价不再记账")
 	await create_timer(0.50).timeout
-	_check(feedback._money.text.contains("100 → 77"), "演出显示实际现金变化")
-	_check(screen._status_view.get_node("%CashStatus").text.contains("77"), "盖章后状态栏与现金反馈同步")
+	_check(screen._recent.before == 100 and screen._recent.after == 77, "结果保留真实现金快照")
+	_check(screen._status_view.get_node("%CashStatus").text.contains("77"), "等待后状态栏仍与真实现金一致")
 	await _capture("01_purchase_feedback")
 	await create_timer(0.27).timeout
-	_check(not feedback.visible and not receipt.visible and before == _session.read_state(), "普通演出0.8秒内结束，不另计时间行动")
+	_check(not feedback.visible and not receipt.visible and before == _session.read_state(), "无延迟弹窗，不另计时间行动")
 	_check(screen._recent_bar.visible, "结束后保留可收起的小条目")
 	await _click_button(screen._recent_button)
 	_check(receipt.visible and receipt._cash.text.contains("100 → 77"), "主动点击最近条目复查凭据")
@@ -56,7 +56,7 @@ func _run() -> void:
 	for row in _session.counter_model().inventory.buttons:
 		if row.detail == "buyer_recycler": sale_label = row.label
 	await _click(sale_label)
-	_check(feedback.visible and feedback.record.kind == "sale", "单件出售自动收款反馈")
+	_check(not feedback.visible and feedback.record.kind == "sale" and screen._recent_bar.visible, "单件出售直接保留记录")
 	await _settle_feedback()
 	await _click_button(screen._recent_button)
 	_check(receipt.visible and receipt._detail.text.contains("已实现盈亏"), "出售凭据显示已实现盈亏")
@@ -66,9 +66,9 @@ func _run() -> void:
 	await _click("交易")
 	trade._pawn_price.value = 30
 	await _click("正式报价并活当")
-	_check(feedback.visible and feedback.record.kind == "pawn_loan" and feedback.record.due_night > 0, "活当反馈明确到期夜次")
+	_check(not feedback.visible and feedback.record.kind == "pawn_loan" and feedback.record.due_night > 0, "活当记录明确到期夜次")
 	await create_timer(0.50).timeout
-	_check(feedback._step.text.contains("留铺保管") and feedback._step.text.contains("到期"), "活当演出不误称买下物品")
+	_check(screen._recent_button.text.contains("留铺保管") and screen._recent_button.text.contains("到期"), "活当回复下方显示真实条款")
 	await _capture("03_pawn_feedback")
 	await _settle_feedback()
 	await _click_button(screen._recent_button)
@@ -78,7 +78,7 @@ func _run() -> void:
 	_session.new_run()
 	helper.open(_session)
 	_session.counter_command("offer", _session.counter_model().active_id, "", 72)
-	_check(feedback.visible, "取消测试先建立真实成交演出")
+	_check(screen._recent_bar.visible, "取消测试先建立真实成交记录")
 	_session.new_run()
 	await create_timer(0.85).timeout
 	_check(not feedback.visible and not receipt.visible and screen._recent.is_empty() and not screen._counter_view.feedback_held, "新局取消旧演出与回调")

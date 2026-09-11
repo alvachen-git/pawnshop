@@ -188,8 +188,6 @@ func bind_session(session: RunSession) -> void:
 	_feedback = TradeFeedbackView.new()
 	_feedback.name = "TradeFeedback"
 	add_child(_feedback)
-	_feedback.finished.connect(_feedback_finished)
-	_feedback.money_revealed.connect(_status_view.release_cash)
 	_feedback_state_id = session._day.state.get_instance_id()
 	session.operation_completed.connect(_on_operation_feedback)
 	%LedgerPanel.receipt_requested.connect(_review_receipt)
@@ -202,10 +200,12 @@ func bind_session(session: RunSession) -> void:
 	_recent_bar.anchor_right = 0.78
 	_recent_bar.anchor_top = 0.89
 	_recent_bar.anchor_bottom = 0.89
-	_recent_bar.offset_top = -42
+	_recent_bar.offset_top = -64
 	_recent_button = Button.new()
 	_recent_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_recent_button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_recent_button.add_theme_font_size_override("font_size", 17)
+	_recent_button.custom_minimum_size.y = 60
 	_recent_button.pressed.connect(func() -> void:
 		if _recent.get("kind", "") == "departure":
 			_review_panel = _flow.get_active_panel_id() if %Drawer.visible else &""
@@ -272,12 +272,15 @@ func _drain_departures() -> void:
 	var notice: Dictionary = _departure_queue.pop_front()
 	if not notice.get("active_departed", true):
 		# Waiting customers only leave a notification; the current reception stays.
-		_remember_feedback(notice)
+		if _operation.get("paid", false) and _recent.get("kind", "") != "departure":
+			_recent.note += "\n" + String(notice.note)
+			_recent.detail += "\n\n" + String(notice.detail)
+			_recent_button.tooltip_text = _recent.note
+		else: _remember_feedback(notice)
 		_counter_view.release_feedback()
 		_drain_departures.call_deferred()
 		return
 	_start_feedback(notice)
-	_counter_view.depart_with_item()
 
 func _departure_closed(_destination: String) -> void:
 	if _session.read_state().phase != "open": _flow.show_panel(&"night")
@@ -526,18 +529,14 @@ func _on_operation_feedback(operation: Dictionary) -> void:
 	var before: Dictionary = operation.before.counter
 	var after: Dictionary = operation.after.counter
 	var left: bool = not String(before.active_id).is_empty() and before.active_id != after.active_id
-	if operation.paid or left:
-		_counter_view.feedback_held = true
-	if operation.paid and operation.command in ["offer", "pawn", "sell", "sell_batch", "redeem", "extend", "inquire"]:
-		_status_view.cash_held = true
 	if left and operation.command == "reject":
 		var visual: Dictionary = before.get("visual", {})
 		_start_feedback({"id": "reject/" + String(operation.before.run) + "/" + String(before.active_id),
+			"reply_style": "rejected", "reply_name": String(visual.get("customer_name", "客人")),
 			"kind": "departure", "title": "谢过，今夜不收", "item": String(visual.get("item_name", "旧物")),
 			"note": "客人收好东西，离开柜台。", "detail": operation.message, "clock": "",
 			"amount": 0, "before": operation.before.cash, "after": operation.after.cash,
 			"item_asset": "", "images": [], "destination": "", "can_inspect": false})
-		_counter_view.depart_with_item()
 
 func _start_feedback(receipt: Dictionary) -> void:
 	var key := String(_session._day.state.run_token) + "/" + String(receipt.id)
@@ -546,18 +545,22 @@ func _start_feedback(receipt: Dictionary) -> void:
 	_reviewing = false
 	_receipt_followup = receipt.get("followup", "")
 	_remember_feedback(receipt)
-	_recent_bar.hide()
 	_close_menu()
 	_counter_view.dismiss_contexts()
 	%Drawer.hide()
-	var visual: Dictionary = _operation.get("before", {}).get("counter", {}).get("visual", {})
-	_feedback.present(receipt, visual.get("customer_name", "") if receipt.kind in ["acquisition", "pawn_loan", "redemption", "extension"] else "")
-	if receipt.kind in ["acquisition", "pawn_loan", "redemption", "extension"]: _counter_view.hand_over_item()
+	_feedback.record = receipt.duplicate(true)
+	_status_view.release_cash()
+	_feedback_finished()
 
 func _remember_feedback(receipt: Dictionary) -> void:
 	_recent = receipt.duplicate(true)
 	_recent_collapsed = false
 	_recent_button.text = "%s · %s · 查看详情" % [receipt.title, receipt.item]
+	if receipt.get("due_night", 0) > 0:
+		_recent_button.text = "留铺保管 · 第%d夜到期 · %s · 查看详情" % [receipt.due_night, receipt.item]
+	var reply := CustomerReplyModel.build(receipt, _operation)
+	if not reply.text.is_empty(): _recent_button.text = String(reply.text) + "\n" + _recent_button.text
+	_recent_button.set_meta("reply_style", reply.style)
 	_recent_button.tooltip_text = receipt.note
 	_refresh_recent_visibility()
 

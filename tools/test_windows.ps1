@@ -114,6 +114,7 @@ try {
         Run-Test "waiting-departure-$size" 'waiting_departure_ui_smoke.gd' $sizeArgs $false
         Run-Test "receipt-$size" 'receipt_ui_smoke.gd' $sizeArgs $false
         Run-Test "trade-feedback-lifecycle-$size" 'trade_feedback_lifecycle_ui.gd' $sizeArgs $false
+        Run-Test "customer-reply-$size" 'customer_reply_ui.gd' $sizeArgs $false
         Run-Test "bargaining-$size" 'bargaining_ui_smoke.gd' $sizeArgs $false
         Run-Test "m7-$size" 'm7_ui_smoke.gd' $sizeArgs $false
         Run-Test "m6-production-$size" 'm6_ui_smoke.gd' (@('production') + $sizeArgs) $false

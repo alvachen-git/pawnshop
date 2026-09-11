@@ -45,6 +45,8 @@ func _refresh() -> void:
 	var active_departed := false
 	var early_departed := false
 	var deferred := false
+	var reply_name := ""
+	var reply_style := ""
 	for row in state.visit_history.slice(_cursor):
 		if not REASONS.has(row.outcome) or not _known.has(row.visit_id): continue
 		var visit: CustomerVisit = _known[row.visit_id].visit
@@ -55,6 +57,9 @@ func _refresh() -> void:
 		var customer := _session._counter.catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 		var item := _session._counter.catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
 		var name := VarietyService.name_for(visit.person, customer)
+		if reply_name.is_empty() or was_active:
+			reply_name = name
+			reply_style = "refused" if row.outcome in ["patience_exhausted", "rounds_exhausted"] else "timed_out" if row.outcome == "timed_out" else "rejected" if row.outcome == "shop_closed" else ""
 		subjects.append(name + " · " + item.display_name)
 		var speech: String = {"redemption_deferred": "姜素云收好当票：‘那就照票上的日子来，钱我留着。’", "patience_exhausted": "他把东西收回怀里：“这买卖，不谈了。”", "rounds_exhausted": "他重新扎好包袱：“价钱合不到一处，就到这里吧。”", "timed_out": "他朝门外看了一眼，收好东西，匆匆离开。", "shop_closed": "门板落下前，客人带着旧物离开了。"}[row.outcome]
 		if row.outcome == "timed_out" and visit.voice.has("timed_out"): speech = String(visit.voice.timed_out)
@@ -81,6 +86,7 @@ func _refresh() -> void:
 	var title := ("未能成交" if active_departed else "等候客人离场") if ids.size() == 1 else "来客离场"
 	if ids.size() == 1 and early_departed: title = "已约定回访" if deferred else "提前取赎未办妥"
 	departed.emit({"id": "departure/" + "/".join(ids), "kind": "departure", "title": title, "item": subjects[0] if ids.size() == 1 else "%d位客人带着货物离开了" % ids.size(),
+		"reply_name": reply_name, "reply_style": reply_style if not early_departed else "",
 		"night": state.current_night_index, "active_departed": active_departed,
 		"clock": "第%d夜 · %s" % [state.current_night_index, TimeController.clock_text(_session.definition.opening_minute, state.game_minutes)],
 		"note": lines[0] if ids.size() == 1 else "离场缘由列在下方，可滚动查看。", "detail": detail,
