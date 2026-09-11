@@ -86,6 +86,7 @@ try {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
         Run-Test "night-lighting-$size" 'night_lighting_ui.gd' $sizeArgs $false
+        Run-Test "incense-smoke-$size" 'incense_smoke_ui.gd' $sizeArgs $false
         Run-Test "night-market-$size" 'night_market_ui.gd' $sizeArgs $false
         Run-Test "complete-early-$size" 'complete_early_ui.gd' $sizeArgs $false
         Run-Test "complete-$size" 'complete_ui_smoke.gd' $sizeArgs $false
