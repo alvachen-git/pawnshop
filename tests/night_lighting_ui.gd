@@ -9,6 +9,7 @@ func _run() -> void:
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
 	_session._save.library.path = "res://.godot/lighting-library-%d.json" % Time.get_ticks_usec()
+	_main.title_menu.configure(true, false)
 	_session.definition._randomize_seed = false; _session.definition._seed = 0
 	driver.check = _check; driver.catalog = _session._counter.catalog
 	narrative = _main.get_node("CounterScreen/NarrativeScene")
@@ -18,6 +19,16 @@ func _run() -> void:
 	screen._close_drawer()
 	var stage: CounterStage = screen.get_node("CounterView/Room")
 	var original := _session._day.state.game_minutes
+	# Lighting refresh must preserve the arrival/handoff animation alpha.
+	var counter := screen._counter_view
+	await create_timer(0.4).timeout
+	counter._portrait.modulate.a = 0.35
+	counter._item_image.modulate.a = 0.45
+	counter.set_atmosphere(0, false, false, false, false)
+	counter.set_night_lighting(3)
+	_check(is_equal_approx(counter._portrait.modulate.a, 0.35) and is_equal_approx(counter._item_image.modulate.a, 0.45), "lighting preserves feedback fade")
+	counter._portrait.modulate.a = 1.0
+	counter._item_image.modulate.a = 1.0
 	var images: Array[Image] = []
 	for pair in [[175,0], [180,1], [355,1], [360,2], [475,2], [480,3]]:
 		_session._day.state.game_minutes = pair[0]

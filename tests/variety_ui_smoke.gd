@@ -40,9 +40,24 @@ func _run() -> void:
 		_check(_session.counter_model().visual.portrait_asset == "asset.customer_" + customer, "distinct portrait asset " + customer)
 		await _capture("portrait_" + customer)
 	await seed_game(portrait_seeds.customer_watchmaker)
+	var watch_model := _session.counter_model()
+	for entry in watch_model.appraisal.buttons:
+		if entry.command == "appraise":
+			_session.counter_command("appraise", watch_model.active_id, entry.detail)
+			break
 	await _click("交易")
 	var trade := _find_trade(_main)
-	_check(trade._body.text.contains("耐心 1"), "watchmaker patience rule visible")
+	_check(not trade._body.text.contains("耐心") and not trade._body.text.contains("最迟留到") and trade._metrics.get_child_count() == 2, "trade panel hides patience and deadline system data")
+	_check(trade._bargain_toggle.visible, "revealed evidence is collected behind the bargain menu")
+	_check(trade._purchase_mode.button_pressed and trade._price.visible and not trade._pawn_price.visible, "purchase mode uses the shared amount slot")
+	await _click_button(trade._bargain_toggle)
+	_check(trade._bargain_popup.visible and trade.get_global_rect().encloses(trade._bargain_popup.get_global_rect()), "bargain menu opens inside the trade panel")
+	await _capture("01b_bargain_menu")
+	await _click_button(trade._bargain_toggle)
+	_check(not trade._bargain_popup.visible, "bargain menu closes without leaving the form scrolled open")
+	await _click_button(trade._pawn_mode)
+	_check(trade._pawn_mode.button_pressed and trade._pawn_price.visible and not trade._price.visible and trade._terms.text.contains("期限"), "pawn mode reuses the amount slot and shows its terms")
+	await _click_button(trade._purchase_mode)
 	await _capture("01_watchmaker_rules")
 	trade._price.value = 1
 	await _click("正式报价并收购")
@@ -69,6 +84,8 @@ func _run() -> void:
 	await _click("查看货物 · 青花小碗")
 	await _capture("04_premium_quote")
 	await _click(label)
+	await _settle_feedback()
+	await _click_button((_main.get_node("CounterScreen") as CounterScreen)._recent_button)
 	var receipt := _main.find_child("TradeReceipt", true, false) as TradeReceiptView
 	_check(receipt.visible and receipt._detail.text.contains("来源溢价"), "sale receipt separates premium")
 	await create_timer(0.2).timeout
@@ -87,7 +104,8 @@ func _run() -> void:
 	_check(_session.read_state() == before, "cancel inquiry is free")
 	await _click("委托来源调查 · 2银元 / 10分钟")
 	await _click_button(visible_dialog(_main).get_ok_button())
-	_check(receipt.visible and receipt._amount.text.contains("2") and _session.read_state().cash == before.cash - 2, "inquiry receipt / exact debit")
+	var feedback := (_main.get_node("CounterScreen") as CounterScreen)._feedback
+	_check(feedback.visible and feedback.record.amount == -2 and _session.read_state().cash == before.cash - 2, "inquiry automatic feedback / exact debit")
 	await create_timer(0.2).timeout
 	await _capture("07_inquiry_receipt")
 	await _click("库存")
@@ -98,7 +116,9 @@ func _run() -> void:
 	await _click("交易")
 	trade._price.value = helper.active(_session).trade.reserve_price
 	await _click("正式报价并收购")
-	_check(receipt.visible and helper.active(_session) != null and helper.active(_session).arrival == 90, "receipt overlaps next active visitor")
+	_check(feedback.visible and not receipt.visible and helper.active(_session) != null and helper.active(_session).arrival == 90, "automatic feedback before next active visitor")
+	await _settle_feedback()
+	await _click_button((_main.get_node("CounterScreen") as CounterScreen)._recent_button)
 	_check(receipt.z_index == 20 and receipt._paper.get_global_rect().encloses(receipt._primary.get_global_rect()), "receipt above portrait / controls fit")
 	_check(_main.get_node("CounterScreen").get_global_rect().encloses(receipt._paper.get_global_rect()), "receipt fits actual viewport")
 	before = _session.read_state()

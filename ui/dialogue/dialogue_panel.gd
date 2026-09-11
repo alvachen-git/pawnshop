@@ -51,7 +51,7 @@ func render(model: Dictionary) -> void:
 	_history.text = "口供记录 · 尚须与实物核对\n"
 	for row in speech: _history.text += "\n" + row.question + "\n" + row.answer + "\n"
 	if not visual.is_empty():
-		_body.text = visual.introduction if speech.is_empty() else speech.back().question + "\n\n" + speech.back().answer
+		_body.text = visual.introduction if speech.is_empty() else "最近答复 · " + speech.back().question + "\n\n" + speech.back().answer
 		_body.text += "\n\n口供须与实物核对。"
 		if not visual.message.is_empty() and not _body.text.contains(visual.message):
 			_body.text += "\n" + visual.message

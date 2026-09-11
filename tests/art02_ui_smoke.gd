@@ -61,6 +61,7 @@ func _run() -> void:
 	trade._price.value = price
 	await _click("正式报价并收购")
 	_check(_session.read_state().cash == cash - price and _session.counter_model().active_id.is_empty(), "新界面完成真实收购")
+	await _settle_feedback()
 	_check(item_image.texture == null and not item_hotspot.visible, "成交后清除旧物品图像与热点")
 	await _capture("07_purchase")
 	await _wait_to(90)
@@ -75,7 +76,7 @@ func _run() -> void:
 	_check(appraisal._selected == "plated", "取得划痕后显示灰芯局部图")
 	await _capture("09_holder_detail")
 	await _click("交易")
-	await _intent("trade", "pressure", "iron_core")
+	await _click_trade_intent("pressure", "iron_core")
 	trade._pawn_price.value = _session.counter_model().trade.pawn_asking
 	await _click("正式报价并活当")
 	_check(_session.read_state().pawn_tickets.size() == 1, "活当报价仍能出票")

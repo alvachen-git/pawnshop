@@ -42,8 +42,9 @@ func _run() -> void:
 		var expected: String = (driver.catalog.get_definition("customers", current.customer_id) as CustomerDefinition).persona.pawn_background
 		_check(panel._body.text.contains(expected), "background rendered before loan")
 		for hidden in ["20%", "50%", "80%", "sample_three", "赎回概率", "贫穷档"]: _check(not panel._body.text.contains(hidden), "no hidden result " + hidden)
-		_check(panel._body.text.contains("期限3夜") and panel._body.text.contains("10%"), "contract remains visible")
+		_check(panel._terms.text.contains("期限3夜") and panel._terms.text.contains("10%") and panel._terms.is_visible_in_tree(), "contract remains visible")
 		await _capture(chance + "_background")
+		await _click_button(panel._pawn_mode)
 		panel._pawn_price.value = maxi(1, roundi(current.trade.reserve_price * 0.5))
 		var ancestor := panel._pawn_submit.get_parent()
 		while ancestor != null:

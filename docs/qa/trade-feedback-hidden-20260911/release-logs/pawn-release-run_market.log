@@ -1,0 +1,4 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+MARKET SAMPLES [{"cash":333,"lu_sales":1,"margin":63,"sale_minutes":100,"sales":5,"seed":0,"stock":0,"stock_cost":0},{"cash":294,"lu_sales":0,"margin":44,"sale_minutes":60,"sales":6,"seed":1,"stock":1,"stock_cost":20},{"cash":385,"lu_sales":3,"margin":115,"sale_minutes":140,"sales":8,"seed":7,"stock":0,"stock_cost":0},{"cash":326,"lu_sales":2,"margin":76,"sale_minutes":140,"sales":7,"seed":42,"stock":1,"stock_cost":20},{"cash":372,"lu_sales":2,"margin":102,"sale_minutes":140,"sales":8,"seed":73,"stock":0,"stock_cost":0},{"cash":342,"lu_sales":3,"margin":92,"sale_minutes":160,"sales":8,"seed":121,"stock":1,"stock_cost":20},{"cash":323,"lu_sales":2,"margin":73,"sale_minutes":120,"sales":8,"seed":255,"stock":1,"stock_cost":20},{"cash":344,"lu_sales":2,"margin":94,"sale_minutes":120,"sales":9,"seed":511,"stock":1,"stock_cost":20}]
+MARKET TESTS: 5931 passes, 0 failures

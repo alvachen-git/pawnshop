@@ -192,6 +192,9 @@ func _extensions_and_providers() -> void:
 	var id: String = s.read_state().pawn_tickets[0].ticket_id
 	check.call(not s.commerce_command("redeem", id).ok, "续当请求不能当作赎回强收本金")
 	check.call(s.commerce_command("extend", id).ok and s.read_state().cash == 76 and s.read_state().pawn_tickets[0].due_night == 3, "续当收取3息费并延长一夜")
+	var loan_receipt := s.receipt_for("loan/" + s._day.state.pawn_tickets[0].source_visit_id)
+	var extension_receipt := s.receipt_for("extend/" + id)
+	check.call(loan_receipt.due_night == 2 and extension_receipt.due_night == 3, "复查开票保留原到期日，续当凭据显示新日期")
 	check.call(not s.commerce_command("extend", id).ok, "不可重复续当刷现金")
 	end_night(s)
 	_roundtrip(s, alternate)

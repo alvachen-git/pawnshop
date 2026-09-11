@@ -129,7 +129,7 @@ func narrative_choice(id := "") -> void:
 	await _frames()
 
 func receipts() -> void:
-	await _frames()
+	await _settle_feedback()
 	for name in ["TradeReceipt", "CustomerDeparture"]:
 		var receipt := _main.find_child(name, true, false) as TradeReceiptView
 		for step in 50:
