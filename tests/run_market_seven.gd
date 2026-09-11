@@ -3,7 +3,7 @@ extends "res://tests/run_mirror_chapter.gd"
 var combined := "combined" in OS.get_cmdline_user_args()
 
 func run() -> void:
-	var loaded := JsonContentProvider.new("res://data/market_familiar_manifest.json" if combined else "res://data/market_seven_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://data/pawn_chance_manifest.json" if "chance" in OS.get_cmdline_user_args() else "res://data/market_familiar_manifest.json" if combined else "res://data/market_seven_manifest.json").load_catalog()
 	for issue in loaded.issues: print(issue.format_message())
 	check(loaded.is_success(), "v17 market seven catalog")
 	if not loaded.is_success(): quit(1); return
@@ -23,7 +23,7 @@ func run() -> void:
 	quit(0 if failures == 0 else 1)
 
 func chapter_transfer_path() -> String:
-	return "res://.godot/qa/market_seven/combined_cross_process.json" if combined else "res://.godot/qa/market_seven/cross_process.json"
+	return "res://.godot/qa/market_seven/chance_cross_process.json" if "chance" in OS.get_cmdline_user_args() else "res://.godot/qa/market_seven/combined_cross_process.json" if combined else "res://.godot/qa/market_seven/cross_process.json"
 
 func contract() -> void:
 	var found := {}

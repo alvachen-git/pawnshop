@@ -3,6 +3,9 @@ extends RefCounted
 
 static func validate(kind: String, row: Dictionary, path: String, at: String) -> Array:
 	var issues: Array = []
+	if kind == "customers" and row.has("pawn_redemption_chance"):
+		if not RunSchema.integer(row.pawn_redemption_chance) or int(row.pawn_redemption_chance) not in PawnRedemptionPolicy.CHANCES:
+			CounterDomainValidator._error(issues, at, "活当赎回概率须为20、50或80的整数。")
 	var field := "variety" if kind == "runs" else ("persona" if kind == "customers" else "provenance")
 	if not row.has(field): return issues
 	if not row[field] is Dictionary or row[field].is_empty():
@@ -31,6 +34,8 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 							total += int(weight)
 						if total != 100: valid = false
 				if not valid: CounterDomainValidator._error(issues, at, "夜客配置需要有效价格、耗时与合计100的后果权重。")
+			if value.has("pawn_redemption_version") and (not RunSchema.integer(value.pawn_redemption_version) or value.pawn_redemption_version != 1 or value.get("seven_version") != 1):
+				CounterDomainValidator._error(issues, at, "职业赎回概率须使用七夜配置与有效规则版本。")
 			if value.has("early_redemption") and (not value.early_redemption is bool or value.get("familiar_version") != 1): CounterDomainValidator._error(issues, at, "提前取赎须使用熟客配置与布尔开关。")
 			if value.has("familiar_version"):
 				if value.familiar_version != 1 or value.get("seven_version") != 1 or value.get("preparation_version") != 1 or not value.get("familiar_funds") is Array or value.familiar_funds.is_empty():
@@ -109,6 +114,9 @@ static func domain(catalog: ContentCatalog) -> Array:
 				CounterDomainValidator._error(issues, run.id, "随机人物引用或姓名池缺失。")
 				continue
 			var compatible := false
+			if PawnRedemptionPolicy.enabled(run):
+				if customer.pawn_redemption_chance not in PawnRedemptionPolicy.CHANCES or not customer.persona.get("pawn_background") is String or String(customer.persona.get("pawn_background", "")).strip_edges().is_empty():
+					CounterDomainValidator._error(issues, id, "职业赎回规则需要概率与生计背景。")
 			for item_id in customer.item_pool:
 				var item := catalog.get_definition("items", item_id) as ItemDefinition
 				if item != null and item.item_type == "normal":
@@ -117,6 +125,9 @@ static func domain(catalog: ContentCatalog) -> Array:
 			if not compatible: CounterDomainValidator._error(issues, id, "人物没有适配的普通物品。")
 		for id in run.variety.terms_ids:
 			if not catalog.has_definition("pawn_terms", id): CounterDomainValidator._error(issues, run.id, "随机当约不存在。")
+		if PawnRedemptionPolicy.enabled(run):
+			for id in [PawnRedemptionPolicy.REDEEM, PawnRedemptionPolicy.DEFAULT]:
+				if id not in run.variety.terms_ids or not catalog.has_definition("pawn_terms", id): CounterDomainValidator._error(issues, run.id, "职业赎回规则缺少三夜当约。")
 		var slot_ids := run.customer_slots.map(func(s: VisitSlotDefinition) -> String: return s.id)
 		for id in run.variety.fixed_slots + run.variety.constrained_slots:
 			if id not in slot_ids: CounterDomainValidator._error(issues, run.id, "固定来访引用不存在。")

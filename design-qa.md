@@ -40,3 +40,11 @@ final result: passed
 - [x] 玩家说明、截图和检查记录更新。
 
 上一轮纸签与菜单检查存档在 `docs/qa/counter-notice/design-qa.md`。本轮未打包或推送。
+
+## 寝屋紧凑衣柜版 · 2026-09-11
+
+已接入原生寝屋，独立报告见 [寝屋视觉与交互检查](docs/qa/bedroom/design-qa.md)。本地入口为 试玩寝屋.cmd，未推送。
+
+## 独立寝屋镜面 · 2026-09-11
+
+final result: passed。反射校正与组件验证见 [镜面 QA](docs/qa/bedroom-mirror/design-qa.md)。

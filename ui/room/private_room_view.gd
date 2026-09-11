@@ -2,91 +2,236 @@ class_name PrivateRoomView
 extends Control
 
 signal command_requested(command: String)
+signal menu_requested
+
+const ART_SIZE := Vector2(1672, 941)
 var _bed: Button
 var _lamp: Button
 var _desk: Button
+var _photo: Button
+var _menu: Button
 var _body: Label
 var _heading: Label
+var _night: Label
 var _confirm: ConfirmationDialog
-var _model: Dictionary = {}
-var _photo: Button
 var _letter: AcceptDialog
+var _observation: PanelContainer
+var _close_observation: Button
+var _background: TextureRect
+var _state_material: ShaderMaterial
+var _model: Dictionary = {}
+var _placements: Dictionary = {}
+var _props: Array[Button] = []
+var _inspect_source: Button
+var _prop_hint: Label
+var _hint_source: Button
+var _mirror: BedroomMirror
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	resized.connect(queue_redraw)
+	_background = TextureRect.new()
+	_background.texture = preload("res://assets/bedroom/room-normal.png")
+	_background.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_background.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_state_material = ShaderMaterial.new()
+	_state_material.shader = preload("res://assets/bedroom/room_state.gdshader")
+	_state_material.set_shader_parameter("rest_texture", preload("res://assets/bedroom/room-rest.png"))
+	_state_material.set_shader_parameter("shell_texture", preload("res://assets/bedroom/room-shell.png"))
+	_background.material = _state_material
+	add_child(_background)
 	_heading = Label.new()
-	_heading.text = "楼 上 · 寝 屋"
-	_heading.add_theme_font_size_override("font_size", 30)
-	_heading.add_theme_color_override("font_color", Color("ead9b5"))
+	_heading.text = "楼上 · 寝屋"
+	_heading.add_theme_font_override("font", CounterTheme.display_font())
+	_heading.add_theme_color_override("font_color", Color("eed7a2"))
+	_heading.add_theme_color_override("font_shadow_color", Color("100c08"))
+	_heading.add_theme_constant_override("shadow_offset_y", 2)
+	_heading.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(_heading)
-	_place(_heading, Rect2(0.05, 0.05, 0.7, 0.08))
+	_place(_heading, Rect2(34, 31, 450, 60))
+	_night = Label.new()
+	_night.add_theme_color_override("font_color", Color("c9b28a"))
+	_night.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(_night)
+	_place(_night, Rect2(37, 93, 220, 28))
+	var wardrobe := _hotspot("RoomWardrobe", "衣柜", Rect2(32, 215, 119, 580))
+	wardrobe.pressed.connect(func() -> void: _observe("旧衣挤在柜里，带着木头和皂角的气味。", wardrobe))
+	_lamp = _hotspot("RoomLamp", "命灯", Rect2(184, 306, 72, 150))
+	_lamp.pressed.connect(func() -> void: _observe(_model.lamp, _lamp))
+	_desk = _hotspot("RoomDesk", "书桌 · 旧信", Rect2(245, 448, 190, 48))
+	_desk.pressed.connect(_read_letter)
+	_photo = _hotspot("RoomPhoto", "姚曼卿的照片", Rect2(262, 362, 73, 83))
+	_photo.pressed.connect(func() -> void: _observe(tr("opening.room.photo"), _photo))
+	_mirror = preload("res://ui/room/bedroom_mirror.tscn").instantiate() as BedroomMirror
+	_mirror.name = "RoomMirror"
+	add_child(_mirror)
+	_place(_mirror, Rect2(1031, 71, 217, 305))
+	_style_hotspot(_mirror.hit_target)
+	_mirror.hit_target.pressed.connect(func() -> void: _observe(_mirror.observation_text(), _mirror.hit_target))
+	_bed = _action("RoomBed", "就寝", Rect2(708, 776, 166, 55))
+	_bed.pressed.connect(_bed_pressed)
+	_menu = _action("RoomMenu", "菜单", Rect2(1500, 816, 138, 54))
+	_menu.pressed.connect(func() -> void: dismiss_observation(); menu_requested.emit())
+	_prop_hint = Label.new()
+	_prop_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_prop_hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_prop_hint.add_theme_color_override("font_color", Color("f4dfb1"))
+	_prop_hint.add_theme_color_override("font_outline_color", Color("1b140b"))
+	_prop_hint.add_theme_constant_override("outline_size", 6)
+	add_child(_prop_hint)
+	_prop_hint.hide()
+	_create_observation()
+	resized.connect(_layout)
+	_layout()
+
+func _create_observation() -> void:
+	_observation = PanelContainer.new()
+	_observation.name = "Observation"
+	_observation.add_theme_stylebox_override("panel", CounterTheme.box("19140eec", "8b7553", 24, 20))
+	add_child(_observation)
+	_place(_observation, Rect2(520, 128, 500, 310))
+	var column := VBoxContainer.new()
+	column.add_theme_constant_override("separation", 12)
+	_observation.add_child(column)
 	_body = Label.new()
 	_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_body.add_theme_font_size_override("font_size", 19)
-	_body.add_theme_color_override("font_color", Color("dfd4bd"))
+	_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_body.add_theme_color_override("font_color", Color("e7d8ba"))
 	_body.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(_body)
-	_place(_body, Rect2(0.05, 0.16, 0.37, 0.25))
-	_lamp = _hotspot("RoomLamp", "命灯", Rect2(0.16, 0.47, 0.10, 0.12))
-	_lamp.pressed.connect(func() -> void: _body.text = _model.lamp)
-	_desk = _hotspot("RoomDesk", "书桌 · 旧信", Rect2(0.065, 0.63, 0.25, 0.17))
-	_desk.pressed.connect(_read_letter)
-	_photo = _hotspot("RoomPhoto", "姚曼卿的照片", Rect2(0.05, 0.82, 0.25, 0.075))
-	_photo.pressed.connect(func() -> void: _body.text = tr("opening.room.photo"))
-	_bed = _hotspot("RoomBed", "床 · 就寝", Rect2(0.405, 0.62, 0.35, 0.28))
-	_bed.pressed.connect(_bed_pressed)
+	column.add_child(_body)
+	_close_observation = Button.new()
+	_close_observation.text = "收回目光"
+	_close_observation.size_flags_horizontal = Control.SIZE_SHRINK_END
+	style_action(_close_observation)
+	column.add_child(_close_observation)
+	_close_observation.pressed.connect(dismiss_observation)
+	_observation.hide()
 
-func _create_confirmation() -> void:
-	_confirm = ConfirmationDialog.new()
-	_confirm.title = "就寝"
-	_confirm.dialog_text = "准备就寝，结束今天的活动？"
-	_confirm.ok_button_text = "就寝"
-	_confirm.cancel_button_text = "再坐一会儿"
-	_confirm.confirmed.connect(func() -> void: command_requested.emit("sleep"))
-	add_child(_confirm)
+func _observe(text: String, source: Button) -> void:
+	_body.text = text
+	_inspect_source = source
+	_observation.show()
+
+func dismiss_observation() -> bool:
+	if not _observation.visible: return false
+	_observation.hide()
+	if is_instance_valid(_inspect_source) and not _inspect_source.disabled:
+		_inspect_source.grab_focus()
+	return true
 
 func _hotspot(node_name: String, caption: String, bounds: Rect2) -> Button:
 	var button := Button.new()
 	button.name = node_name
 	button.text = caption
-	button.add_theme_stylebox_override("normal", CounterTheme.box("171c1c55", "847452", 6, 1))
-	button.add_theme_stylebox_override("hover", CounterTheme.box("4b453b88", "d7bd83", 6, 2))
-	button.add_theme_stylebox_override("disabled", CounterTheme.box("171c1c22", "605b4b", 6, 1))
-	button.add_theme_color_override("font_color", Color("efdfb9"))
-	button.add_theme_color_override("font_disabled_color", Color("999180"))
-	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_style_hotspot(button)
 	add_child(button)
 	_place(button, bounds)
 	return button
 
+func _style_hotspot(button: Button) -> void:
+	button.clip_text = true
+	for state in ["normal", "pressed", "disabled", "hover"]:
+		button.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+		button.add_theme_color_override("font_color" if state == "normal" else "font_" + state + "_color", Color.TRANSPARENT)
+	button.add_theme_color_override("font_focus_color", Color.TRANSPARENT)
+	var edge := CounterTheme.box("c9a4660b", "cdb28288", 0, 0)
+	button.add_theme_stylebox_override("hover", edge)
+	button.add_theme_stylebox_override("focus", edge)
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	button.mouse_entered.connect(_show_prop_hint.bind(button))
+	button.focus_entered.connect(_show_prop_hint.bind(button))
+	button.mouse_exited.connect(_hide_prop_hint.bind(button))
+	button.focus_exited.connect(_hide_prop_hint.bind(button))
+	_props.append(button)
+
+func _show_prop_hint(button: Button) -> void:
+	if button.disabled: return
+	_hint_source = button
+	_prop_hint.text = button.text
+	_prop_hint.size = Vector2(maxf(180, button.size.x), 30)
+	var local_position := button.global_position - global_position
+	_prop_hint.position = Vector2(maxf(8, local_position.x + (button.size.x - _prop_hint.size.x) * 0.5), local_position.y - 34)
+	_prop_hint.show()
+
+func _hide_prop_hint(button: Button) -> void:
+	if _hint_source == button:
+		_prop_hint.hide()
+
+func _action(node_name: String, caption: String, bounds: Rect2) -> Button:
+	var button := Button.new()
+	button.name = node_name
+	button.text = caption
+	button.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	style_action(button)
+	add_child(button)
+	_place(button, bounds)
+	return button
+
+static func style_action(button: Button) -> void:
+	button.add_theme_font_override("font", CounterTheme.display_font())
+	for state in ["normal", "hover", "pressed", "disabled"]:
+		var fill: String = {"normal": "20180fb8", "hover": "493725e8", "pressed": "140f09ed", "disabled": "20180f88"}[state]
+		button.add_theme_stylebox_override(state, CounterTheme.box(fill, "c4a879" if state != "disabled" else "706049", 10, 4))
+		button.add_theme_color_override("font_color" if state == "normal" else "font_" + state + "_color", Color("edd6a4") if state != "disabled" else Color("9c8b70"))
+	button.add_theme_color_override("font_focus_color", Color("f6e4bc"))
+	button.add_theme_stylebox_override("focus", CounterTheme.box("00000000", "e9c993", 0, 0))
+
 func _place(control: Control, bounds: Rect2) -> void:
-	control.anchor_left = bounds.position.x
-	control.anchor_top = bounds.position.y
-	control.anchor_right = bounds.end.x
-	control.anchor_bottom = bounds.end.y
+	_placements[control] = bounds
+
+func _layout() -> void:
+	if not is_instance_valid(_background): return
+	var scale_factor := minf(size.x / ART_SIZE.x, size.y / ART_SIZE.y)
+	var origin := (size - ART_SIZE * scale_factor) * 0.5
+	_background.position = origin
+	_background.size = ART_SIZE * scale_factor
+	for control: Control in _placements:
+		var bounds: Rect2 = _placements[control]
+		control.position = origin + bounds.position * scale_factor
+		control.size = bounds.size * scale_factor
+	_heading.add_theme_font_size_override("font_size", roundi(40 * scale_factor))
+	_night.add_theme_font_size_override("font_size", maxi(14, roundi(18 * scale_factor)))
+	_prop_hint.add_theme_font_size_override("font_size", maxi(18, roundi(23 * scale_factor)))
+	_body.add_theme_font_size_override("font_size", maxi(17, roundi(21 * scale_factor)))
+	for button in [_bed, _menu, _close_observation]:
+		button.add_theme_font_size_override("font_size", maxi(18, roundi(24 * scale_factor)))
+	queue_redraw()
 
 func render(model: Dictionary) -> void:
 	var phase_changed: bool = _model.get("phase", "") != model.phase
 	_model = model
 	visible = model.visible
 	if not visible and _confirm != null: _confirm.hide()
-	_heading.text = "楼 上 · 寝 屋    第%d夜" % model.night
-	if phase_changed or not model.error.is_empty(): _body.text = model.body + ("\n\n" + model.error if not model.error.is_empty() else "")
-	_bed.text = "床 · 就寝" if model.phase == "private_room" else "等到天明"
-	if model.dead: _bed.text = "灯已熄"
+	_night.text = "第%d夜" % model.night
+	if phase_changed or not model.error.is_empty():
+		_body.text = model.body + ("\n\n" + model.error if not model.error.is_empty() else "")
+		_observation.visible = visible and not model.pending and (model.dead or model.phase == "sleep_resolution" or not model.error.is_empty())
+	_bed.text = "就寝" if model.phase == "private_room" else "等到天明"
+	_bed.accessibility_name = "床 · 就寝" if model.phase == "private_room" else "等到天明"
+	if model.dead:
+		_bed.text = "灯已熄"
+		_bed.accessibility_name = "灯已熄"
 	_bed.disabled = not model.can_sleep and not model.can_finish
-	_lamp.disabled = model.pending or model.dead
-	_desk.disabled = model.pending or model.dead
+	for prop in _props: prop.disabled = model.pending or model.dead
+	if model.pending or model.dead: _prop_hint.hide()
 	_photo.visible = model.get("photo_placed", false)
-	_photo.disabled = model.pending or model.dead
-	if not visible and _letter != null: _letter.hide()
-	queue_redraw()
+	_state_material.set_shader_parameter("photo_placed", model.get("photo_placed", false))
+	_state_material.set_shader_parameter("lamp_dead", model.dead)
+	_state_material.set_shader_parameter("haunting", model.haunting)
+	_state_material.set_shader_parameter("lamp_grade", int(model.get("lamp_grade", 0)))
+	var mirror_state: Dictionary = model.get("mirror", {}).duplicate()
+	mirror_state["lamp_lit"] = not model.dead
+	if model.dead: mirror_state["mode"] = &"normal"
+	_mirror.set_state(mirror_state)
+	if not visible:
+		_mirror.reset()
+		_observation.hide()
+		if _letter != null: _letter.hide()
 
 func _read_letter() -> void:
 	if not _model.get("gu_letter", false):
-		_body.text = "信纸压在砚台下面，折痕已经发白。\n\n「到了上海，先安顿住处。夜里潮，旧衣别急着扔。钱总能慢慢挣。」\n\n信尾没有再写别的话。"
+		_observe("信纸压在砚台下面，折痕已经发白。\n\n「到了上海，先安顿住处。夜里潮，旧衣别急着扔。钱总能慢慢挣。」\n\n信尾没有再写别的话。", _desk)
 		return
+	dismiss_observation()
 	if _letter == null:
 		_letter = AcceptDialog.new()
 		_letter.title = "顾敬堂的信"
@@ -100,51 +245,21 @@ func _read_letter() -> void:
 		add_child(_letter)
 	_letter.popup_centered(Vector2i(570, 490))
 
+func _create_confirmation() -> void:
+	_confirm = ConfirmationDialog.new()
+	_confirm.title = "就寝"
+	_confirm.dialog_text = "准备就寝，结束今天的活动？"
+	_confirm.ok_button_text = "就寝"
+	_confirm.cancel_button_text = "再坐一会儿"
+	_confirm.confirmed.connect(func() -> void: command_requested.emit("sleep"))
+	add_child(_confirm)
+
 func _bed_pressed() -> void:
+	dismiss_observation()
 	if _model.can_sleep:
 		if _confirm == null: _create_confirmation()
 		_confirm.popup_centered(Vector2i(380, 160))
 	elif _model.can_finish: command_requested.emit("finish_sleep")
 
 func _draw() -> void:
-	draw_set_transform(Vector2.ZERO, 0, size / Vector2(1280, 648))
-	_box(Rect2(0, 0, 1280, 648), "202725")
-	_box(Rect2(0, 335, 1280, 313), "292621")
-	for y in range(380, 650, 55): draw_line(Vector2(0, y), Vector2(1280, y), Color("413a30"), 2)
-	for x in [35, 453, 977, 1245]: _box(Rect2(x, 0, 12, 648), "161c1b")
-	# Window, closed door, and a quiet mirror kept front-facing on the right.
-	_box(Rect2(560, 46, 186, 185), "73694f")
-	_box(Rect2(570, 56, 166, 165), "15252b")
-	for x in [610, 651, 692]: _box(Rect2(x, 56, 4, 165), "665e48")
-	_box(Rect2(570, 132, 166, 4), "665e48")
-	_box(Rect2(1030, 68, 175, 358), "514331")
-	_box(Rect2(1040, 78, 155, 338), "302f26")
-	draw_circle(Vector2(1171, 258), 5, Color("a79767"))
-	_box(Rect2(817, 89, 148, 240), "826e50")
-	_box(Rect2(827, 99, 128, 220), "52605c")
-	_box(Rect2(843, 243, 92, 56), "333e3a")
-	draw_line(Vector2(842, 118), Vector2(918, 180), Color("7a847766"), 3)
-	# Bed frame and a folded quilt.
-	_box(Rect2(492, 351, 497, 250), "211e19")
-	_box(Rect2(505, 366, 469, 182), "666859")
-	_box(Rect2(533, 386, 163, 56), "a89f7c")
-	_box(Rect2(514, 461, 450, 101), "434e47")
-	for y in [480, 507, 534]: draw_line(Vector2(518, y), Vector2(960, y), Color("6b7160"), 2)
-	# Desk and life lamp on the left.
-	_box(Rect2(69, 392, 354, 24), "796547")
-	_box(Rect2(85, 416, 24, 181), "473928")
-	_box(Rect2(382, 416, 24, 181), "473928")
-	_box(Rect2(114, 369, 112, 19), "b5a47e")
-	_box(Rect2(265, 371, 43, 15), "171d1a")
-	_box(Rect2(235, 331, 54, 13), "867348")
-	_box(Rect2(257, 340, 10, 46), "867348")
-	var flame := Color("a6bca5" if _model.get("haunting", false) else "e4bc79")
-	if not _model.get("dead", false):
-		draw_circle(Vector2(262, 311), 24, Color(flame, 0.08))
-		var grade := int(_model.get("lamp_grade", 0))
-		var tip := 320 if grade >= 4 else (309 if grade == 2 else 296)
-		draw_colored_polygon(PackedVector2Array([Vector2(255, 329), Vector2(267 if _model.get("haunting", false) else 261, tip), Vector2(268, 329)]), flame)
-		if grade == 3: draw_colored_polygon(PackedVector2Array([Vector2(268, 329), Vector2(276, 302), Vector2(281, 329)]), flame)
-
-func _box(rect: Rect2, color: String) -> void:
-	draw_rect(rect, Color(color))
+	draw_rect(Rect2(Vector2.ZERO, size), Color("100e0a"))

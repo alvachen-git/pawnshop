@@ -103,6 +103,8 @@ static func build(day: DayController, service: CounterService, message: String, 
 		model.trade.pawn_asking = maxi(1, roundi(visit.trade.asking_price * terms.loan_ratio))
 		model.trade.body += "\n活当要款 %d · 期限%d夜 · 赎金=本金+向上取整的%.0f%%息费。\n收购/活当共用剩余轮次与耐心。" % [model.trade.pawn_asking, terms.term_nights, terms.redemption_fee_ratio * 100]
 		if EarlyRedemption.enabled(day.definition) and terms.id == FamiliarStories.TERMS: model.trade.body += "\n" + EarlyRedemption.AGREEMENT
+		var background := PawnRedemptionPolicy.background(day.definition, customer, VarietySaveCodec.selection(day.state, visit.visit_id))
+		if not background.is_empty(): model.trade.body += "\n" + background
 	for feature in ["appraisal", "dialogue", "trade"]:
 		model[feature].visit_id = visit.visit_id
 		model[feature].body += "\n\n" + message

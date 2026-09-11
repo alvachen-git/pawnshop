@@ -1,0 +1,77 @@
+[
+  {
+    "name": "run_pawn_chance",
+    "passed": true,
+    "summary": "PAWN CHANCE TESTS: 41813 passes, 0 failures; 56 checkpoints"
+  },
+  {
+    "name": "pawn_chance_merge",
+    "passed": true,
+    "summary": "PAWN CHANCE MERGE: 41 passes, 0 failures"
+  },
+  {
+    "name": "pawn_chance_checkpoint",
+    "passed": true,
+    "summary": "PAWN CHANCE PROCESS TESTS: 98 checks, 0 failures"
+  },
+  {
+    "name": "run_complete_seven",
+    "passed": true,
+    "summary": "COMPLETE SEVEN: 22189 passes, 0 failures"
+  },
+  {
+    "name": "pawn-read",
+    "passed": true,
+    "summary": "PAWN CHANCE PROCESS TESTS: 10 checks, 0 failures"
+  },
+  {
+    "name": "run_market_seven",
+    "passed": true,
+    "summary": "MARKET SEVEN TESTS: 7410 passes, 0 failures"
+  },
+  {
+    "name": "run_early_redemption",
+    "passed": true,
+    "summary": "EARLY REDEMPTION: 4736 passes, 0 failures"
+  },
+  {
+    "name": "early_checkpoint_process",
+    "passed": true,
+    "summary": "EARLY CHECKPOINTS: 567 checks, 0 failures"
+  },
+  {
+    "name": "pawn_chance_ui-1280",
+    "passed": true,
+    "summary": "PAWN CHANCE UI TESTS: 131 assertions, 0 failures"
+  },
+  {
+    "name": "pawn_chance_ui-1600",
+    "passed": true,
+    "summary": "PAWN CHANCE UI TESTS: 131 assertions, 0 failures"
+  },
+  {
+    "name": "market_seven_ui_smoke-1280",
+    "passed": true,
+    "summary": "MARKET SEVEN UI TESTS: 427 assertions, 0 failures"
+  },
+  {
+    "name": "market_seven_ui_smoke-1600",
+    "passed": true,
+    "summary": "MARKET SEVEN UI TESTS: 427 assertions, 0 failures"
+  },
+  {
+    "name": "counter_notice_ui_smoke-1280",
+    "passed": true,
+    "summary": "COUNTER NOTICE UI: 75 assertions, 0 failures"
+  },
+  {
+    "name": "counter_notice_ui_smoke-1600",
+    "passed": true,
+    "summary": "COUNTER NOTICE UI: 75 assertions, 0 failures"
+  },
+  {
+    "name": "complete-ui-1280",
+    "passed": true,
+    "summary": "COMPLETE UI: 465 assertions, 0 failures"
+  }
+]

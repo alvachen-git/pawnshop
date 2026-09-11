@@ -2,9 +2,11 @@
 
 默认新游戏使用 **v21深夜经营版**：保留七夜整合版的开场、铜镜、准备、行情、熟客及提前赎簪，新增四档氛围、一次报价夜客、湿包货物与命灯后果。随机启动、复现种子与试玩步骤见 [深夜经营说明](docs/NIGHT_MARKET.md)。旧版整合内容见 [整合版说明](docs/COMPLETE_SEVEN.md)，铜镜内容沿用原章，见 [铜镜第一章说明](docs/MIRROR_CHAPTER.md)。
 
+保留职业赎回版 v20 的独立入口与原存档规则，见 [职业赎回说明](docs/PAWN_REDEMPTION_CHANCE.md)。寝屋使用最新美术及独立镜面效果。
+
 固定柜台式 2D 当铺经营与规则恐怖游戏。七夜流程整合开场、随机经营、铜镜遭遇与寝屋，每夜六位基础潜在来客，保留限时钢笔收货及三夜活当回访。原三夜、四夜和七夜经营版本继续作为旧存档入口。第21/49夜还本系统仍属后续范围。
 
-批量卖货需先选买家、再勾选货物，一趟20分钟、不限量；店里有客须先接待。默认七夜版同时使用陆掌眼的动态收货与第六夜预约，两个渠道分别计算货单；原三夜v12的行情保留在旧内容中，见 [卖货机制说明](docs/SELLING_MARKET_GUIDE.md)。
+批量卖货需先选买家、再勾选货物，一趟20分钟、不限量；店里有客须先接待。七夜新版从第一夜开放陆掌眼动态行情，与既有预约收货共同运作；旧版本继续按各自原规则，见 [卖货机制说明](docs/SELLING_MARKET_GUIDE.md)。
 
 普通交易增加了议价说辞、完整证据反馈与一次性贬低试探，详见 [议价说明与测试入口](docs/BARGAINING_GUIDE.md)。
 
@@ -44,7 +46,7 @@ macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path 
 
 ## 存档
 
-默认七夜新局使用 **save_version=19 / content_version=19**，运行标识 `complete_seven`；自动位置 `auto/complete_seven` 位于既有档案库 `user://save_library/library_v1.json`，独立路径为 `user://complete_seven/autosave_v19.json`。六个手动槽继续共用。旧 `market_familiar` v19、`market_seven` v17、`familiar_seven` v17、`familiar_early` v18及更早档案同时按运行标识与内容版本还原，不加入新编排；读取旧档后返回标题，新游戏仍进入整合版。营业中禁存、自动检查点与失败回滚规则不变。
+默认七夜新局使用 **save_version=20 / content_version=20**，自动位置为 `auto/pawn_chance_seven`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://pawn_chance_seven/autosave_v20.json`。版本19及更早存档按原内容还原，不重抽既有当票，也不向旧局插入新规则；读取旧存档再返回标题，新游戏仍进入新版。旧v16自动档及红布操作历史保留。
 
 旧三夜局使用v12，独立路径为 `user://p0/autosave_v12.json`。独立四夜样板仍用v11，保存于 `user://ordinary_four/autosave_v11.json`。三夜入口可导入通过完整历史校验的旧v9/v10/v11局，原文件保留；旧局继续使用对应旧内容，重新开局才进入v12。旧v10分别保留实施前测试快照和已上线版本的配置，包含两种历史现金/债务组合。
 

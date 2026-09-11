@@ -52,6 +52,13 @@ try {
     Run-Test 'complete-familiar-process' 'complete_familiar_checkpoint.gd'
     Run-Test 'complete-economy' 'complete_economy.gd' @('quick')
     Run-Test 'complete-market-process' 'complete_market_checkpoint.gd' @('economy')
+    Run-Test 'pawn-chance-core' 'run_pawn_chance.gd'
+    Run-Test 'pawn-chance-merge' 'pawn_chance_merge.gd'
+    Run-Test 'pawn-chance-process-write' 'pawn_chance_checkpoint.gd'
+    Run-Test 'pawn-chance-process-read' 'pawn_chance_checkpoint.gd' @('read')
+    Run-Test 'pawn-chance-market' 'run_market_seven.gd' @('chance')
+    Run-Test 'early-redemption-v20' 'run_early_redemption.gd' @('chance')
+    Run-Test 'early-process-v20' 'early_checkpoint_process.gd' @('chance')
     Run-Test 'market-familiar-core' 'run_market_seven.gd' @('combined')
     Run-Test 'early-redemption-v19' 'run_early_redemption.gd' @('combined')
     Run-Test 'early-process-v19' 'early_checkpoint_process.gd' @('combined')
@@ -86,6 +93,8 @@ try {
         Run-Test "early-$size" 'early_redemption_ui.gd' $sizeArgs $false
         Run-Test "manual-save-$size" 'manual_save_ui_smoke.gd' $sizeArgs $false
         Run-Test "mirror-chapter-$size" 'mirror_chapter_ui_smoke.gd' $sizeArgs $false
+        Run-Test "pawn-chance-$size" 'pawn_chance_ui.gd' $sizeArgs $false
+        Run-Test "early-redemption-v20-$size" 'early_redemption_ui.gd' (@('chance') + $sizeArgs) $false
         Run-Test "counter-notice-$size" 'counter_notice_ui_smoke.gd' $sizeArgs $false
         Run-Test "early-redemption-v19-$size" 'early_redemption_ui.gd' (@('combined') + $sizeArgs) $false
         Run-Test "bell-$size" 'bell_ui_smoke.gd' $sizeArgs $false

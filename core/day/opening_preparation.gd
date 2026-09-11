@@ -79,6 +79,7 @@ static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalo
 		"reaction": VarietyService.pick(["admit", "explain", "evade"], state.run_seed, key + "/reaction"),
 		"terms_id": VarietyService.pick(run.variety.terms_ids, state.run_seed, key + "/terms"),
 		"person": {"id": "person/" + id, "name": person_name, "portrait": customer.portrait_asset_id}})
+	row.terms_id = PawnRedemptionPolicy.terms_for(run, customer, state.run_seed, id, row.terms_id)
 	return row
 
 static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog, action: String, category := "") -> ActionResult:

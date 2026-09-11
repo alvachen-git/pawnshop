@@ -135,7 +135,7 @@ func bind_session(session: RunSession) -> void:
 	add_child(_room)
 	move_child(_room, _counter_view.get_index() + 1)
 	_room.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_room.anchor_bottom = 0.90
+	_room.menu_requested.connect(_toggle_menu)
 	_room.hide()
 	var day_presenter := DayFlowPresenter.new()
 	add_child(day_presenter)
@@ -204,7 +204,7 @@ func bind_session(session: RunSession) -> void:
 func focus_active_screen() -> void:
 	if _narrative != null and _narrative.visible and _narrative._choices.get_child_count() > 0:
 		_narrative._choices.get_child(0).grab_focus()
-	else: %MenuButton.grab_focus()
+	else: _active_menu_button().grab_focus()
 
 func _drain_departures() -> void:
 	if _departure == null: return
@@ -283,6 +283,8 @@ func _sync_room() -> void:
 			if entry.transaction_id == _receipt_id: still_present = true
 		if state.run_token != _receipt_run or not still_present or state.phase != "open": _receipt.hide()
 	_counter_view.visible = not _room.visible
+	%MenuButton.visible = not _room.visible
+	_status_view.visible = not _room.visible
 	%PreviewSelector.visible = OS.is_debug_build() and not _room.visible
 	if state.phase != _room_phase or state.risk_pending != _room_pending:
 		_room_phase = state.phase
@@ -325,7 +327,7 @@ func _route_from_item(panel_id: StringName) -> void:
 
 func _route_from_menu(panel_id: StringName) -> void:
 	if _room.visible and panel_id != &"risk": return
-	_return_focus = %MenuButton
+	_return_focus = _active_menu_button()
 	_flow.show_panel(panel_id)
 
 
@@ -358,10 +360,14 @@ func _toggle_menu() -> void:
 	%Drawer.hide()
 	if _session_menu.visible:
 		_close_menu()
-		%MenuButton.grab_focus()
+		_active_menu_button().grab_focus()
 	else:
-		_return_focus = %MenuButton
+		_return_focus = _active_menu_button()
 		_session_menu.open_menu()
+
+
+func _active_menu_button() -> Button:
+	return _room._menu if _room != null and _room.visible else %MenuButton
 
 
 func _close_menu() -> void:
@@ -391,7 +397,10 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	if _session_menu.visible:
 		_close_menu()
-		%MenuButton.grab_focus()
+		_active_menu_button().grab_focus()
+		get_viewport().set_input_as_handled()
+		return
+	if _room != null and _room.visible and _room.dismiss_observation():
 		get_viewport().set_input_as_handled()
 		return
 	if %Drawer.visible:

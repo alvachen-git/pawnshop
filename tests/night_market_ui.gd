@@ -61,6 +61,8 @@ func _run() -> void:
 		driver.action(_session, "enter_room"); driver.drain(_session)
 		await receipts(); await _frames()
 		if captured.has("wet_cloth"):
+			var room: PrivateRoomView = _main.get_node("CounterScreen")._room
+			_check(int(room._state_material.get_shader_parameter("lamp_grade")) == NightMarketRisk.lamp_level(_session._day.state), "new bedroom receives actual lamp consequence")
 			await _click_button(_main.get_node("CounterScreen")._room._lamp)
 			await _capture("blue_lamp")
 			break
@@ -68,7 +70,7 @@ func _run() -> void:
 		driver.action(_session, "finish_sleep"); driver.drain(_session)
 		driver.action(_session, "continue_run")
 	_check(captured.has("one_quote") and captured.has("wet_cloth"), "both actual sellers captured")
-	await _click_button(_main.find_child("MenuButton", true, false))
+	await _click_button(_main.get_node("CounterScreen")._room._menu)
 	_check(_main.find_child("AmbientMute", true, false) == null, "removed mute control")
 	await _capture("menu")
 	print("NIGHT MARKET UI: %d assertions, %d failures" % [_assertions, _failures])
