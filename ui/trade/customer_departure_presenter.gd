@@ -81,6 +81,7 @@ func _refresh() -> void:
 	var title := ("未能成交" if active_departed else "等候客人离场") if ids.size() == 1 else "来客离场"
 	if ids.size() == 1 and early_departed: title = "已约定回访" if deferred else "提前取赎未办妥"
 	departed.emit({"id": "departure/" + "/".join(ids), "kind": "departure", "title": title, "item": subjects[0] if ids.size() == 1 else "%d位客人带着货物离开了" % ids.size(),
+		"night": state.current_night_index, "active_departed": active_departed,
 		"clock": "第%d夜 · %s" % [state.current_night_index, TimeController.clock_text(_session.definition.opening_minute, state.game_minutes)],
 		"note": lines[0] if ids.size() == 1 else "离场缘由列在下方，可滚动查看。", "detail": detail,
 		"continuing_visit_id": current.visit_id if current != null and not active_departed else "",

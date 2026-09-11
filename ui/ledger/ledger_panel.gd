@@ -2,6 +2,7 @@ class_name LedgerPanel
 extends IntentPanel
 
 signal panel_requested(panel: StringName)
+signal receipt_requested(transaction_id: String)
 var _tabs: HBoxContainer
 var _pages: Array[VBoxContainer] = []
 var _selected := 0
@@ -100,6 +101,7 @@ func _draw_entries() -> void:
 	var count := 0
 	var entries: Array = _model.visual.entries.duplicate()
 	entries.reverse()
+	var shown_receipts: Dictionary = {}
 	for row in entries:
 		if _night_only and row.night != _model.visual.night: continue
 		count += 1
@@ -110,4 +112,12 @@ func _draw_entries() -> void:
 		var amount := AccountPaper.label(line, "%+d" % row.amount, 21)
 		amount.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		AccountPaper.label(_pages[0], "第%d夜 %s    余额 %d    毛利 %+d" % [row.night, row.clock, row.balance, row.profit], 14)
+		var receipt_id := String(row.get("receipt_id", ""))
+		if not receipt_id.is_empty() and not shown_receipts.has(receipt_id):
+			shown_receipts[receipt_id] = true
+			var review := Button.new()
+			review.text = "查看本批凭据" if row.get("batch", false) else "查看这笔凭据"
+			review.set_meta("receipt_id", receipt_id)
+			review.pressed.connect(receipt_requested.emit.bind(receipt_id))
+			_pages[0].add_child(review)
 	if count == 0: AccountPaper.label(_pages[0], "本页尚无收支。", 17)

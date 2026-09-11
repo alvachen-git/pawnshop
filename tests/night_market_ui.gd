@@ -9,6 +9,7 @@ func _run() -> void:
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
 	_session._save.library.path = "res://.godot/night-ui-%s-%d.json" % [_capture_prefix, Time.get_ticks_usec()]
+	_main.title_menu.configure(true, false)
 	_session.definition._randomize_seed = false
 	_session.definition._seed = 0
 	driver.check = _check; driver.catalog = _session._counter.catalog
@@ -31,7 +32,7 @@ func _run() -> void:
 				await receipts()
 				await _click("交易")
 				var trade := _find_trade(_main)
-				_check(not trade._forms[2].visible and not trade._forms[3].visible, "night sellers have no pawn form")
+				_check(not trade._pawn_mode.visible and not trade._pawn_submit.visible and not trade._terms.visible, "night sellers have no pawn form")
 				_check(trade._body.text.contains("只报一回") if visit.night_policy == "one_quote" else trade._body.text.contains("来处莫问"), "rule visible before quote")
 				await _capture(visit.night_policy)
 				captured[visit.night_policy] = true

@@ -73,6 +73,7 @@ func _run() -> void:
 	quit(0 if _failures == 0 else 1)
 
 func _click(label: String) -> void:
+	await _settle_feedback()
 	# Historical flow suites acknowledge the new presentation-only receipt
 	# before their next action. receipt_ui_smoke verifies the page explicitly.
 	var receipt := _main.find_child("TradeReceipt", true, false) as TradeReceiptView
@@ -106,6 +107,13 @@ func _click(label: String) -> void:
 		await _click_button(counter_view.get_hotspot(&"item"))
 	if label == "更多":
 		label = "菜单"
+	if label in ["正式报价并收购", "正式报价并活当"]:
+		var trade := _find_trade_panel(_main)
+		if trade != null:
+			var target_mode := trade._purchase_mode if label == "正式报价并收购" else trade._pawn_mode
+			var target_submit := trade._submit if label == "正式报价并收购" else trade._pawn_submit
+			if not target_submit.is_visible_in_tree():
+				await _click_button(target_mode)
 	# Secondary entries and run lifecycle controls live in the grouped menu.
 	if label in ["铺中记事", "鬼货与绝当录", "夜间结算", "新游戏", "读取夜末存档"] and _find_button(_main, label) == null:
 		await _click("菜单")
@@ -135,6 +143,10 @@ func _click(label: String) -> void:
 		await _click_button(button)
 
 func _click_button(button: Button) -> void:
+	await _settle_feedback()
+	if not is_instance_valid(button):
+		_check(false, "等待演出后按钮仍然有效")
+		return
 	_check(not button.disabled and button.is_visible_in_tree(), "按钮可见且可操作：" + button.text)
 	if button.disabled:
 		return
@@ -162,14 +174,36 @@ func _click_button(button: Button) -> void:
 		viewport.push_input(event, true)
 	await _frames()
 
+func _settle_feedback() -> void:
+	# Deferred departure notifications can begin on the next frame and queue up
+	# when a fixture advances several actions synchronously.
+	await _frames()
+	var feedback := _main.find_child("TradeFeedback", true, false) as TradeFeedbackView
+	for guard in 20:
+		if feedback == null or not feedback.visible: return
+		await create_timer(0.8).timeout
+		await _frames()
+	_check(false, "交易演出队列应在限时内结束")
+
 func _click_trade_intent(command: String, detail: String) -> void:
 	for panel in _main.find_children("*", "", true, false):
 		if not panel is TradePanel: continue
 		for button in panel._buttons.get_children():
 			if button is Button and button.get_meta("trade_command", "") == command and button.get_meta("trade_detail", "") == detail:
+				if not button.is_visible_in_tree():
+					await _click_button(panel._bargain_toggle)
 				await _click_button(button)
 				return
 	_check(false, "缺少交易操作：" + command + "/" + detail)
+
+func _find_trade_panel(node: Node) -> TradePanel:
+	if node is TradePanel:
+		return node
+	for child in node.get_children():
+		var found := _find_trade_panel(child)
+		if found != null:
+			return found
+	return null
 
 func _find_button(node: Node, label: String) -> Button:
 	if node is Button and (node.text == label or node.accessibility_name == label) and node.is_visible_in_tree():

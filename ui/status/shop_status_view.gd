@@ -1,10 +1,13 @@
 class_name ShopStatusView
 extends PanelContainer
+var cash_held := false
+var _pending_cash := ""
 
 func render_snapshot(state: Dictionary, definition: RunDefinition, intrusion: bool, haunting: bool) -> void:
 	%ClockStatus.text = "时辰\n" + TimeController.clock_text(definition.opening_minute, state.game_minutes)
 	%NightStatus.text = "夜次\n第 %d / %d 夜" % [state.current_night_index, definition.total_nights]
-	%CashStatus.text = "现银\n%d 大洋" % state.cash
+	_pending_cash = "现银\n%d 大洋" % state.cash
+	if not cash_held: %CashStatus.text = _pending_cash
 	var arrears := 0
 	for row in state.fee_arrears: arrears += int(row.amount)
 	%DebtStatus.text = "债务\n本金 %d · 短款 %d" % [definition.fee_policy.principal, arrears] if definition.fee_policy.enabled else "债务\n—"
@@ -25,6 +28,10 @@ func render_snapshot(state: Dictionary, definition: RunDefinition, intrusion: bo
 func show_content_ready(_item_count: int, _customer_count: int) -> void:
 	%ContentStatus.text = ""
 	%ContentStatus.hide()
+
+func release_cash() -> void:
+	cash_held = false
+	if not _pending_cash.is_empty(): %CashStatus.text = _pending_cash
 
 
 func show_content_error(message: String) -> void:

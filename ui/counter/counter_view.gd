@@ -22,6 +22,9 @@ var _dialogue_action: Button
 var _trade_action: Button
 var _appraisal_action: Button
 var _active_id := ""
+var feedback_held := false
+var _pending_model: Dictionary = {}
+var _arrival: Tween
 var bell
 
 
@@ -178,12 +181,16 @@ func _bounds(control: Control, left: float, top: float, right: float, bottom: fl
 
 
 func render(model: Dictionary) -> void:
+	if feedback_held:
+		_pending_model = model
+		return
 	%CustomerText.text = model.customer
 	%ItemText.text = model.item
 	%CounterMessage.text = ""
 	%CounterMessage.hide()
 	var visual: Dictionary = model.get("visual", {})
 	var current_active_id := String(model.get("active_id", ""))
+	var arrived := current_active_id != _active_id and not current_active_id.is_empty()
 	if current_active_id != _active_id:
 		dismiss_contexts()
 	_active_id = current_active_id
@@ -214,11 +221,46 @@ func render(model: Dictionary) -> void:
 		if not visual.speech.is_empty():
 			_speech.text = visual.speech.back().answer
 		_speech.tooltip_text = _speech.text
+		if not visual.get("intent", "").is_empty(): _speech.text = visual.intent + "\n" + _speech.text
 		%ItemText.text = "%s\n已知估值 %s 银元\n已见线索 %d 条" % [visual.item_name, visual.estimate, visual.clues.size()]
 		if visual.has("item_status"): %ItemText.text = visual.item_status
 	$Room.has_customer = active and _portrait.texture == null
 	$Room.has_item = active and _item_image.texture == null
 	$Room.queue_redraw()
+	if arrived:
+		if _arrival != null: _arrival.kill()
+		_bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
+		_item_image.offset_top = 0
+		_item_image.offset_bottom = 0
+		_portrait.modulate.a = 0.0
+		_item_image.modulate.a = 0.0
+		var end_y := _item_image.position.y
+		_item_image.position.y -= 8
+		_arrival = create_tween().set_parallel(true)
+		_arrival.tween_property(_portrait, "modulate:a", 1.0, 0.18)
+		_arrival.tween_property(_item_image, "modulate:a", 1.0, 0.18)
+		_arrival.tween_property(_item_image, "position:y", end_y, 0.18)
+
+func release_feedback() -> void:
+	feedback_held = false
+	if not _pending_model.is_empty():
+		var model := _pending_model
+		_pending_model = {}
+		render(model)
+
+func depart_with_item() -> void:
+	if _arrival != null: _arrival.kill()
+	_arrival = create_tween().set_parallel(true)
+	_arrival.tween_property(_portrait, "modulate:a", 0.0, 0.3)
+	_arrival.tween_property(_item_image, "modulate:a", 0.0, 0.3)
+
+func hand_over_item() -> void:
+	if _arrival != null: _arrival.kill()
+	_arrival = create_tween()
+	_arrival.tween_property(_item_image, "position:y", _item_image.position.y + 16, 0.22)
+	_arrival.parallel().tween_property(_item_image, "modulate:a", 0.0, 0.22)
+	_arrival.tween_interval(0.26)
+	_arrival.tween_property(_portrait, "modulate:a", 0.0, 0.18)
 
 
 func _apply_action(button: Button, actions: Array, action_id: StringName) -> void:
@@ -305,8 +347,8 @@ func set_atmosphere(mode: int, preview: bool, intrusion: bool, haunting: bool, d
 	$Room.smoke_wrong = intrusion or (preview and mode == 1)
 	$Room.lamp_wrong = haunting or (preview and mode == 2)
 	$Room.lamp_dead = dead
-	_portrait.modulate = [Color.WHITE, Color("9aaba9"), Color("b3c9ce")][mode]
-	_item_image.modulate = [Color.WHITE, Color("b0b9b5"), Color("c1d2d7")][mode]
+	_portrait.modulate = Color([Color.WHITE, Color("9aaba9"), Color("b3c9ce")][mode], _portrait.modulate.a)
+	_item_image.modulate = Color([Color.WHITE, Color("b0b9b5"), Color("c1d2d7")][mode], _item_image.modulate.a)
 	$Room.queue_redraw()
 	%AtmosphereLabel.text = ["灯火初上", "夜深了", "禁时 · 鬼市"][mode]
 	if preview:
@@ -316,6 +358,6 @@ func set_atmosphere(mode: int, preview: bool, intrusion: bool, haunting: bool, d
 func set_night_lighting(band: int) -> void:
 	if band < 0: return
 	# Only scene sprites dim; appraisal evidence, dialogue and money stay readable.
-	_portrait.modulate = [Color.WHITE, Color("8e8271"), Color("655f55"), Color("4b4944")][band]
-	_item_image.modulate = [Color.WHITE, Color("ead8b5"), Color("d3c7aa"), Color("b8b09b")][band]
+	_portrait.modulate = Color([Color.WHITE, Color("8e8271"), Color("655f55"), Color("4b4944")][band], _portrait.modulate.a)
+	_item_image.modulate = Color([Color.WHITE, Color("ead8b5"), Color("d3c7aa"), Color("b8b09b")][band], _item_image.modulate.a)
 	%AtmosphereLabel.text = ["人声尚近", "灯下做买卖", "街外无光", "只剩一盏灯"][band]

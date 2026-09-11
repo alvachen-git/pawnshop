@@ -50,7 +50,16 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 		if entry.kind == "preparation": subject = "招揽客人" if entry.transaction_id.ends_with("/attract") else "备茶候客"
 		var item := InventoryManager.new().find(day.state, entry.item_instance_id)
 		if item != null: subject = (service.catalog.get_definition("items", item.definition_id) as ItemDefinition).display_name
+		var receipt_id := String(entry.transaction_id) if entry.kind in ["acquisition", "pawn_loan", "sale", "redemption", "extension", "provenance_inquiry"] else ""
+		var batch := false
+		if entry.kind == "sale" and day.definition.batch_selling:
+			for trip in day.state.sale_batches:
+				if entry.item_instance_id in trip.item_ids:
+					receipt_id = "sale/" + String(trip.item_ids[0])
+					batch = true
+					break
 		entries.append({"night": entry.night, "clock": TimeController.clock_text(day.definition.opening_minute, entry.minute),
+			"receipt_id": receipt_id, "batch": batch,
 			"kind": CommerceReadModels.KINDS[entry.kind], "item": subject, "amount": entry.amount, "balance": entry.balance,
 			"profit": entry.realized_profit})
 	model.inventory.visual = {"stock": stock, "financial": financial, "message": message}

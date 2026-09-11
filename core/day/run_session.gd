@@ -6,6 +6,7 @@ signal storage_requested(mode: String)
 signal leave_requested(destination: String)
 signal changed
 signal transaction_completed(receipt: Dictionary)
+signal operation_completed(feedback: Dictionary)
 
 var definition: RunDefinition
 var content_version: int
@@ -96,11 +97,13 @@ func execute(command: String, detail := "") -> ActionResult:
 			changed.emit()
 			return ActionResult.new(false, error)
 	if command.begins_with("seal_cloth/"):
+		var treatment_before := _feedback_snapshot()
 		var treated := NightMarketRisk.treat(_day, command.trim_prefix("seal_cloth/"))
 		if _risk != null: _risk.capture_close(_day.state)
 		if _events != null: _events.poll(_day.state, definition)
 		MarketService.sync(_day.state, definition)
 		message = treated.message
+		_publish_feedback(treatment_before, command, "", treated)
 		changed.emit()
 		return treated
 	# Only these commands create checkpoints. Snapshot before mutation for rollback.
@@ -114,6 +117,7 @@ func execute(command: String, detail := "") -> ActionResult:
 		NightMarketRisk.settle(_day.state)
 		FeeService.settle(_day.state, definition)
 	var prior_visitor: CustomerVisit = _counter.customers.active(_day.state) if _counter != null else null
+	var feedback_before := _feedback_snapshot()
 	var result := RoomFlow.execute(_day.state, _risk, command) if command in ["enter_room", "sleep", "finish_sleep"] else _day.execute(command)
 	if result.ok and _risk != null:
 		_risk.capture_close(_day.state)
@@ -138,6 +142,7 @@ func execute(command: String, detail := "") -> ActionResult:
 	message = result.message
 	if prior_visitor != null and prior_visitor.status == "timed_out": _message_visit_id = prior_visitor.visit_id
 	MarketService.sync(_day.state, definition)
+	_publish_feedback(feedback_before, command, "", result)
 	changed.emit()
 	return result
 
@@ -220,6 +225,7 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	if mirror_pending(): return _mirror_blocked()
 	var result := ActionResult.new(false, "当前运行未接入柜台内容。")
 	var ledger_size := _day.state.ledger_entries.size()
+	var feedback_before := _feedback_snapshot()
 	if _counter != null:
 		result = _counter.execute(_day, command, visit_id, detail, amount)
 	if _risk != null: _risk.capture_close(_day.state)
@@ -227,6 +233,7 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	message = result.message
 	_message_visit_id = visit_id
 	MarketService.sync(_day.state, definition)
+	_publish_feedback(feedback_before, command, visit_id, result)
 	changed.emit()
 	_emit_receipt(ledger_size)
 	return result
@@ -251,6 +258,7 @@ func commerce_command(command: String, target: String, detail := "") -> ActionRe
 	if mirror_pending(): return _mirror_blocked()
 	var result := ActionResult.new(false, "当前运行没有交易内容。")
 	var ledger_size := _day.state.ledger_entries.size()
+	var feedback_before := _feedback_snapshot()
 	if _commerce != null:
 		result = _commerce.execute(_day, command, target, detail)
 		_counter.customers.update(_day.state)
@@ -258,6 +266,7 @@ func commerce_command(command: String, target: String, detail := "") -> ActionRe
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
 	MarketService.sync(_day.state, definition)
+	_publish_feedback(feedback_before, command, target, result)
 	changed.emit()
 	_emit_receipt(ledger_size)
 	return result
@@ -274,6 +283,7 @@ func _emit_receipt(previous_size: int) -> void:
 
 func sell_batch(buyer_id: String, item_ids: Array) -> ActionResult:
 	var previous := _day.state.ledger_entries.size()
+	var feedback_before := _feedback_snapshot()
 	var result := _commerce.sell_batch(_day, buyer_id, item_ids)
 	if result.ok:
 		_counter.customers.update(_day.state)
@@ -281,9 +291,39 @@ func sell_batch(buyer_id: String, item_ids: Array) -> ActionResult:
 		if _events != null: _events.poll(_day.state, definition)
 		MarketService.sync(_day.state, definition)
 	message = result.message
+	_publish_feedback(feedback_before, "sell_batch", buyer_id, result)
 	changed.emit()
 	_emit_receipt(previous)
 	return result
+
+# Public presentation snapshots only; neither hidden item variants nor reserves
+# cross the UI boundary. No feedback state is serialized.
+func _feedback_snapshot() -> Dictionary:
+	if not operation_completed.has_connections(): return {}
+	var model := counter_model()
+	return {"run": _day.state.run_token, "state_id": _day.state.get_instance_id(),
+		"counter": model, "cash": _day.state.cash, "minute": _day.state.game_minutes,
+		"ledger_size": _day.state.ledger_entries.size(), "history_size": _day.state.visit_history.size()}
+
+func _publish_feedback(before: Dictionary, command: String, target: String, result: ActionResult) -> void:
+	if before.is_empty(): return
+	if before.state_id != _day.state.get_instance_id(): return
+	var departures: Array = []
+	for row in _day.state.visit_history.slice(before.history_size):
+		departures.append({"visit_id": row.visit_id, "outcome": row.outcome})
+	operation_completed.emit({"command": command, "target": target, "ok": result.ok,
+		"message": result.message, "before": before, "after": _feedback_snapshot(), "departures": departures,
+		"paid": _day.state.ledger_entries.size() > before.ledger_size})
+
+func receipt_for(transaction_id: String) -> Dictionary:
+	for index in _day.state.ledger_entries.size():
+		var entry: Dictionary = _day.state.ledger_entries[index]
+		if entry.transaction_id != transaction_id: continue
+		if definition.batch_selling and entry.kind == "sale":
+			var batch := TradeReceiptModel.batch(_day, _counter.catalog, index)
+			if not batch.is_empty(): return batch
+		return TradeReceiptModel.build(_day, _counter.catalog, entry)
+	return {}
 
 func event_model() -> Dictionary:
 	var model: Dictionary = _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}

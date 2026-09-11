@@ -22,7 +22,7 @@ func _run() -> void:
 	_find_trade(_main)._price.value = v.trade.asking_price
 	await _click("正式报价并收购")
 	await _capture("03_receipt")
-	await _click("收好凭据")
+	await _settle_feedback()
 	driver.finish(_session)
 	for n in 2: driver.open(_session); driver.finish(_session)
 	await _click("营业")
@@ -59,6 +59,8 @@ func _run() -> void:
 	_check(inventory._sale_view._selected.size() >= 2 and not inventory._sale_view._submit.disabled, "two eligible pens selected")
 	await _capture("06_appointment")
 	await _click("完成交易 · 20分钟")
+	await _settle_feedback()
+	await _click_button(_main.get_node("CounterScreen")._recent_button)
 	var receipt := _main.find_child("TradeReceipt", true, false) as TradeReceiptView
 	_check(receipt.visible and receipt._item.text.contains("交货"), "batch success page")
 	await _capture("07_batch_receipt")
