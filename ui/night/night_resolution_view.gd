@@ -99,6 +99,7 @@ func _draw_account(a: Dictionary) -> void:
 		value.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	AccountPaper.rule(_account)
 	AccountPaper.label(_account, "现货 %d 件 · 成本占款 %d 银元\n在当本金 %d 银元\n交易毛利 %+d · 当夜息费 %d\n现金进出与经营收益分别记账。" % [a.get("inventory_count", 0), a.get("inventory_cost", 0), a.get("pawn_principal", 0), a.get("realized_profit", 0), a.get("interest_expense", 0) + a.get("shop_expense", 0)], 15)
+	if a.get("inventory_loss", 0) > 0: AccountPaper.label(_account, "湿灰损货成本 %d 银元，已计入经营费用；本次没有再支出现金。" % a.inventory_loss, 15)
 	if not a.debt.is_empty(): AccountPaper.label(_account, a.debt, 15)
 	if not a.get("familiar_notes", "").is_empty(): AccountPaper.label(_account, a.familiar_notes, 15)
 	AccountPaper.label(_account, "关门 %s · 耗时行动 %d 次" % [a.closed_clock, a.action_count], 14)

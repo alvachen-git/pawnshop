@@ -8,6 +8,7 @@ func _run() -> void:
 	root.content_scale_size = root.size
 	_main = load(ProjectSettings.get_setting("application/run/main_scene")).instantiate()
 	_main.get_node("Bootstrap").manifest_path = "res://data/complete_seven_manifest.json"
+	_main.get_node("Bootstrap").save_path = "user://complete_seven/autosave_v19.json"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
 	_session._save.library.path = "res://.godot/qa/complete_ui/ui_%d.json" % Time.get_ticks_usec()

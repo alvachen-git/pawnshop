@@ -71,6 +71,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var buyer := catalog.get_definition("buyers", row.buyer_id) as BuyerDefinition
 		if item == null or buyer == null or buyer.id not in run.buyer_ids or item.instance_id in sales or item.ownership_state != "sold": return "销售记录引用或权属无效。"
 		var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
+		if NightMarketRisk.item_pending(state, item.source_visit_id, int(row.night), int(row.minute) - buyer.action_minutes): return "湿灰未处理就已交货。"
 		if row.night < item.acquired_night or row.night > completed or row.night < buyer.night_min or row.night > buyer.night_max or not _window(row.minute, buyer.window_start, buyer.window_end, buyer.action_minutes, run): return "销售不在有效买家窗口内。"
 		if row.night == item.acquired_night and row.minute < acquisitions[item.source_visit_id].minute + buyer.action_minutes: return "先出售后收货。"
 		if item.acquisition_type == "pawn" and (not tickets.has(item.instance_id) or tickets[item.instance_id].status != "defaulted" or row.night <= tickets[item.instance_id].closed_night): return "在当物品不可出售。"
@@ -91,7 +92,12 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		_post(expected, "sale/" + item.instance_id, item.instance_id, int(row.night), int(row.minute), int(row.price), "sale", int(row.realized_profit))
 	for item in state.inventory_instances:
 		if (item.acquisition_type == "pawn") != tickets.has(item.instance_id) or (item.ownership_state == "sold") != sales.has(item.instance_id): return "缺少对应当票或销售。"
-		if item.acquisition_type == "purchase" and item.ownership_state not in ["owned", "sold"]: return "收购物品权属不符。"
+		var lost := NightMarketRisk.loss_night(state, item) if state.night_market_enabled else 0
+		if lost > 0 and lost <= settled:
+			if item.ownership_state != "lost": return "湿灰损货尚未核销。"
+			_post(expected, "night_loss/" + item.instance_id, item.instance_id, lost, run.night_minutes, 0, "inventory_loss", 0)
+		elif item.ownership_state == "lost": return "损货缺少对应夜客后果。"
+		if item.acquisition_type == "purchase" and item.ownership_state not in (["owned", "sold", "lost"] if state.night_market_enabled else ["owned", "sold"]): return "收购物品权属不符。"
 	for row in state.provenance_history:
 		if row.action != "inquire": continue
 		var item := inventory.find(state, row.item_instance_id)
@@ -111,7 +117,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		for key in posting:
 			if row.get(key) != posting[key]: return "流水与交易记录不一致。"
 		var stamp := int(row.night) * (run.night_minutes + 1) + int(row.minute)
-		if row.kind not in ["daily_fees", "pawn_transfer", "preparation"] and row.minute > SaveTimeline.closing(state, int(row.night)): return "关门后不能完成外部交易。"
+		if row.kind not in ["daily_fees", "pawn_transfer", "preparation", "inventory_loss"] and row.minute > SaveTimeline.closing(state, int(row.night)): return "关门后不能完成外部交易。"
 		if stamp < last_time: return "流水时间倒序。"
 		last_time = stamp
 		balance += int(row.amount)
@@ -123,6 +129,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	for summary in state.summaries:
 		var snapshot := RunState.new()
 		snapshot.current_night_index = summary.night
+		snapshot.night_market_enabled = state.night_market_enabled
 		snapshot.preparation_version = state.preparation_version
 		snapshot.ledger_entries = state.ledger_entries
 		snapshot.fee_history = state.fee_history
@@ -134,6 +141,9 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			if item.acquired_night > summary.night: continue
 			var clone := ItemInstance.new()
 			clone.acquisition_price = item.acquisition_price
+			clone.instance_id = item.instance_id
+			var loss := NightMarketRisk.loss_night(state, item) if state.night_market_enabled else 0
+			if loss > 0 and loss <= summary.night: clone.ownership_state = "lost"
 			if tickets.has(item.instance_id):
 				var ticket: PawnTicket = tickets[item.instance_id]
 				if ticket.closed_night == 0 or ticket.closed_night > summary.night:

@@ -24,6 +24,8 @@ var sample_plan: Array[Dictionary] = []
 var buyer_appointment: Dictionary = {}
 var ordinary_selections: Array[Dictionary] = []
 var provenance_history: Array[Dictionary] = []
+var night_market_enabled := false
+var night_market_history: Array[Dictionary] = []
 var risk_history: Array[Dictionary] = []
 var risk_pending := ""
 var room_enabled := false
@@ -57,6 +59,7 @@ var visits: Array[CustomerVisit] = []
 static func create(definition: RunDefinition) -> RunState:
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.night_market_enabled = NightMarketPlan.enabled(definition)
 	state.preparation_version = int(definition.variety.get("preparation_version", 0))
 	state.room_enabled = definition.private_room
 	if not definition.ghost_rule_ids.is_empty() or definition.fee_policy.enabled: state.run_token = Crypto.new().generate_random_bytes(16).hex_encode()
@@ -112,6 +115,9 @@ func to_read_model() -> Dictionary:
 		"visit_history": visit_history.duplicate(true),
 	}
 
+	if night_market_enabled:
+		data["night_market_history"] = night_market_history.duplicate(true)
+		data["night_market_enabled"] = true
 	if not familiar_plan.is_empty():
 		data["familiar_plan"] = familiar_plan.duplicate(true)
 		familiar_progress = FamiliarStories.progress(data)

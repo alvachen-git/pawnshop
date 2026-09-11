@@ -1,9 +1,9 @@
 class_name CommerceReadModels
 extends RefCounted
 
-const STATES := {"owned": "现货", "pledged": "在当（不可售）", "sold": "已售", "redeemed": "已赎回", "transferred": "已转当"}
+const STATES := {"lost": "湿灰毁损", "owned": "现货", "pledged": "在当（不可售）", "sold": "已售", "redeemed": "已赎回", "transferred": "已转当"}
 const TICKETS := {"active": "在当", "redeemed": "已赎回", "transferred": "已转当", "defaulted": "已绝当转现货"}
-const KINDS := {"acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费", "daily_fees": "息费付款", "pawn_transfer": "转当收入", "provenance_inquiry": "来源调查费", "preparation": "准备支出"}
+const KINDS := {"inventory_loss": "损货核销（无现金支出）", "acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费", "daily_fees": "息费付款", "pawn_transfer": "转当收入", "provenance_inquiry": "来源调查费", "preparation": "准备支出"}
 
 static func build(day: DayController, service: CommerceService, message: String) -> Dictionary:
 	var financial := FinancialSummary.build(day.state)

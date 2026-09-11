@@ -93,6 +93,9 @@ func render(model: Dictionary) -> void:
 		_body.text += "\n线索未必是毛病，牵强压价可能惹恼客人。"
 		if not String(visual.get("pawn_background", "")).is_empty(): _body.text += "\n" + String(visual.pawn_background)
 		if not String(visual.get("bargaining_cue", "")).is_empty(): _body.text += "\n" + String(visual.bargaining_cue)
+	if not model.get("night_policy", "").is_empty():
+		_forms[2].hide(); _forms[3].hide()
+		_body.text = "%s · %s\n最迟留到 %s · 报价%d分钟\n%s" % [visual.item_name, visual.attitude, visual.deadline, visual.quote_minutes, visual.visit_constraint]
 	_style_bargaining(model)
 	_pawn_price.max_value = model.max_input
 	_pawn_submit.disabled = not model.get("can_pawn", false)

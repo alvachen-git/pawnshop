@@ -46,6 +46,7 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 		buttons = []
 		for command in ["retreat", "defy"]:
 			buttons.append({"command": command, "target_id": state.risk_pending, "detail": "", "label": (("垂下眼，护住命灯" if command == "retreat" else "回头看向身后的人") if not pursuit.is_empty() else ("低头退开，将红布覆上" if command == "retreat" else "抬眼看向镜中人")), "enabled": true, "reason": ""})
+	if state.phase == &"dead" and not state.summaries.is_empty() and state.summaries.back().outcome == "night_guest_death": body = "灯芯烧尽了\n\n柜下传来湿布展开的声音。你想起身，屋里已经没有自己的影子。"
 	if state.room_enabled:
 		if state.phase == &"shop_resolution" and not state.risk_pending.is_empty():
 			body = "镜中来客\n\n镜面里的柜台比屋里暗了一层。香灰伏向铜镜，身后有人轻声道：\n\n「别应声，也别看它的眼睛。」\n\n红布就在手边。"
@@ -69,6 +70,12 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 			for button in buttons:
 				if button.command in ["retreat", "defy"]: button.label = "垂下眼，护住灯火" if button.command == "retreat" else "抬眼看向那道影子"
 	var archive := "《绝当录》\n"
+	if state.night_market_enabled and state.risk_pending.is_empty():
+		if state.phase == &"dead" and not state.summaries.is_empty() and state.summaries.back().outcome == "night_guest_death":
+			body = "灯芯烧尽了\n\n柜下传来湿布展开的声音。你想起身，屋里已经没有自己的影子。"
+		elif state.phase in [&"private_room", &"sleep_resolution"] and NightMarketRisk.lamp_level(state) > 0:
+			body = "寝屋无声\n\n" + NightMarketRisk.LAMPS[NightMarketRisk.lamp_level(state)]
+			if haunting: body += "\n镜里跟来的影子仍在床边。"
 	if state.death_archive.is_empty(): archive += "纸页尚空。"
 	for record in state.death_archive:
 		# IDs identify the recorded consequence; prose can be revised without rewriting history.

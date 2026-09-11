@@ -98,7 +98,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	var death: Dictionary = {}
 	for record in state.death_archive:
 		if record.run_token == state.run_token: death = record
-	if state.phase == &"dead":
+	if state.phase == &"dead" and state.night_market_enabled and data.room_history.any(func(r: Variant) -> bool: return r is Dictionary and r.get("night") == state.current_night_index and r.get("action") == "finish_sleep"):
+		var expected_late := NightMarketRisk.death_record(state)
+		for key in expected_late:
+			if key not in ["cause", "item_name"] and death.get(key) != expected_late[key]: return "命灯记录与夜客遗留资产不符。"
+	elif state.phase == &"dead":
 		if state.risk_history.is_empty() or state.risk_history.back().action != "defy": return "死亡状态缺少一致的绝当录。"
 		var expected_death := manager.death_record(state, state.risk_history.back().item_id)
 		# Editorial snapshots may differ after a copy revision; identity and assets must still agree.

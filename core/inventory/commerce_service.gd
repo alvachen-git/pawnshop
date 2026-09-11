@@ -59,6 +59,7 @@ func execute(day: DayController, command: String, target: String, detail: String
 
 func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition) -> String:
 	if item == null or buyer == null: return "物品或买家不存在。"
+	if NightMarketRisk.item_pending(day.state, item.source_visit_id): return "货上浮起湿灰，须先按旧规封存包布，再拿去交货。"
 	var appointment_error := PreparationService.item_reason(item, buyer.id)
 	if not appointment_error.is_empty(): return appointment_error
 	if item.ownership_state != "owned": return "只有铺中自有现货可以出售。"

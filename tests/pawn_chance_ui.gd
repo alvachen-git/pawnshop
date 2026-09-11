@@ -8,9 +8,11 @@ func _run() -> void:
 	var fixtures: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/pawn_chance/fixtures.json"))
 	for chance in ["20", "50"]:
 		_main = load("res://scenes/start.tscn").instantiate()
+		_main.get_node("Bootstrap").manifest_path = "res://data/pawn_chance_manifest.json"
+		_main.get_node("Bootstrap").save_path = "user://pawn_chance_seven/autosave_v20.json"
 		root.add_child(_main)
 		_session = _main.get_node("Bootstrap").session
-		_check(_session.definition.id == "pawn_chance_seven" and _session.content_version == 20, "default v20")
+		_check(_session.definition.id == "pawn_chance_seven" and _session.content_version == 20, "legacy v20 entry")
 		_session._save.library.path = "res://.godot/qa/pawn_chance/ui_%d.json" % Time.get_ticks_usec()
 		_main.title_menu.configure(true, false)
 		driver.check = _check; driver.catalog = _session._counter.catalog

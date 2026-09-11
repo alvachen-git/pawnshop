@@ -23,7 +23,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 		stock.append({"id": item.instance_id, "name": definition.display_name, "asset": definition.visual_asset_id,
 			"state": item.ownership_state, "stamp": CommerceReadModels.STATES[item.ownership_state],
 			"cost": item.acquisition_price, "cost_label": "放款" if item.acquisition_type == "pawn" else "成本", "estimate": "%d–%d" % [bounds.x, bounds.y],
-			"provenance": ProvenanceService.known_text(item, definition), "clues": clues, "buyers": buyers, "night": item.acquired_night, "ghost": not definition.ghost_rule_id.is_empty()})
+			"provenance": ("货面浮着湿灰；到营业页按旧规封存包布。\n" if NightMarketRisk.item_pending(day.state, item.source_visit_id) and item.ownership_state == "owned" else "") + ProvenanceService.known_text(item, definition), "clues": clues, "buyers": buyers, "night": item.acquired_night, "ghost": not definition.ghost_rule_id.is_empty()})
 	var tickets: Array = []
 	for index in day.state.pawn_tickets.size():
 		var ticket := day.state.pawn_tickets[index]

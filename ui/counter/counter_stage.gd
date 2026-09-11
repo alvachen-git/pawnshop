@@ -8,6 +8,7 @@ extends Control
 	set(value):
 		atmosphere = value
 		queue_redraw()
+var night_band := -1
 var has_customer := false
 var has_item := false
 var smoke_wrong := false
@@ -40,6 +41,7 @@ func _draw() -> void:
 	if size.x <= 0 or size.y <= 0: return
 	if _paint_material != null:
 		_paint_material.set_shader_parameter("atmosphere", atmosphere)
+		_paint_material.set_shader_parameter("night_band", night_band)
 		_paint_material.set_shader_parameter("lamp_wrong", lamp_wrong and show_life_lamp)
 		_paint_material.set_shader_parameter("lamp_dead", lamp_dead and show_life_lamp)
 	draw_set_transform(Vector2.ZERO, 0, size / Vector2(1280, 648))

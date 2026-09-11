@@ -5,6 +5,7 @@ uniform sampler2D shell_texture : source_color, filter_linear;
 uniform bool photo_placed = false;
 uniform bool lamp_dead = false;
 uniform bool haunting = false;
+uniform int lamp_grade = 0;
 
 // State changes sample only the affected prop from the matched second painting.
 float region(vec2 p, vec4 bounds, float feather) {
@@ -26,6 +27,11 @@ void fragment() {
 	if (haunting && !lamp_dead) {
 		float flame = region(p, vec4(205.0, 345.0, 248.0, 401.0), 12.0);
 		painted.rgb = mix(painted.rgb, painted.rgb * vec3(0.74, 0.91, 1.12), flame * 0.6);
+	}
+	if (lamp_grade > 0 && !lamp_dead) {
+		float flame = region(p, vec4(205.0, 345.0, 248.0, 401.0), 12.0);
+		vec3 tint = lamp_grade >= 4 ? vec3(0.5, 0.48, 0.51) : (lamp_grade == 2 ? vec3(0.6, 0.52, 0.46) : vec3(0.42, 0.85, 1.3));
+		painted.rgb = mix(painted.rgb, painted.rgb * tint, flame * 0.9);
 	}
 	COLOR = painted;
 }

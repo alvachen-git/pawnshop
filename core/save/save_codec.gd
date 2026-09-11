@@ -20,7 +20,7 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		if not data.has(key) or not RunSchema.integer(data[key]) or abs(data[key]) > 2147483647:
 			return null
 	var legacy := int(data.save_version) == (8 if definition.private_room else 7)
-	if (int(data.save_version) not in [VERSION, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9] and not legacy) or int(data.content_version) != content_version:
+	if (int(data.save_version) not in [21, VERSION, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9] and not legacy) or int(data.content_version) != content_version:
 		error_message = "存档/内容版本不兼容；旧文件已保留。"
 		return null
 	if not definition.variety.is_empty() and int(data.save_version) != content_version: return null
@@ -86,6 +86,7 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 		return null
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.night_market_enabled = NightMarketPlan.enabled(definition)
 	state.preparation_version = int(definition.variety.get("preparation_version", 0))
 	state.pawn_rules_start_night = int(data.pawn_rules_start_night)
 	state.room_enabled = definition.private_room
@@ -111,6 +112,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 			state.summaries.back()[key] = int(entry[key])
 	error_message = MarketSaveCodec.restore(data, state, definition)
 	if not error_message.is_empty(): return null
+	error_message = NightMarketSaveCodec.prepare(data, state, definition)
+	if not error_message.is_empty(): return null
 	error_message = CounterSaveCodec.restore(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
 	error_message = PawnReturnService.validate(data, state, definition, catalog)
@@ -128,6 +131,8 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	error_message = MarketSaveCodec.validate_timing(state, definition, catalog)
 	if not error_message.is_empty(): return null
 	error_message = VarietySaveCodec.validate_timing(state, definition, catalog)
+	if not error_message.is_empty(): return null
+	error_message = NightMarketSaveCodec.validate(data, state, definition, catalog)
 	if not error_message.is_empty(): return null
 	if definition.private_room:
 		error_message = RoomSaveCodec.restore(data, state, definition, catalog)

@@ -16,10 +16,15 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	var visit := customers.active(day.state)
 	if day.state.phase != &"open" or visit == null or visit.visit_id != visit_id:
 		return "当前顾客已离开或柜台未营业。"
+	var late_error := NightMarketPlan.command_reason(visit, command)
+	if not late_error.is_empty(): return late_error
 	if EarlyRedemption.is_visit(visit): return EarlyRedemption.reason(day, visit, command, detail, amount)
 	var customer := catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 	var item := catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)
+	if visit.night_policy == "one_quote" and command == "question" and scenario != null:
+		var q := scenario.find_question(detail)
+		if q != null and not q.pressure_clue.is_empty(): return "这位客人不接受另行压价，只听一次正式报价。"
 	var cost := 0
 	match command:
 		"verify_source":
@@ -156,6 +161,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 				message = (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "成交：支付 %d，物品已入库。估值不等于现金，尚未出售。" % amount
 			else:
 				message = String(visit.voice.get("refused", "对方拒绝了报价，提出新的要价。"))
+	message += NightMarketRisk.after_command(day.state, visit, command, detail)
 	if visit.status == "active":
 		if visit.trade.patience <= 0:
 			customers.finish(day.state, visit, "patience_exhausted")

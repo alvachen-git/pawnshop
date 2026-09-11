@@ -8,11 +8,12 @@ static func enabled(run: RunDefinition) -> bool:
 	return run.variety.get("preparation_version", 0) == 1
 
 static func ordinary(row: Dictionary) -> bool:
-	return not row.get("context_id", "").is_empty()
+	return not row.get("context_id", "").is_empty() and not row.has("night_policy")
 
 # Keep the seeded base intact. Every consumer sees the same replayable overlay.
 static func plan(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> Array[Dictionary]:
 	var rows := FamiliarStories.overlay(state, run, catalog, SevenNightPlan.plan(run, catalog, state.run_seed))
+	rows = NightMarketPlan.overlay(rows, run, catalog, state.run_seed)
 	if not enabled(run): return rows
 	for record in state.preparation_history:
 		if record.action == "attract": rows.append(record.change.duplicate(true))
