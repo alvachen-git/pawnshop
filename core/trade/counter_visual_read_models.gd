@@ -20,6 +20,9 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 			for question in scenario.questions:
 				if question.id == id: speech.append({"question": question.prompt, "answer": question.answer(visit)})
 	var terms := service.catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
+	var modes: Array = customer.transaction_modes if visit.transaction_modes.is_empty() else visit.transaction_modes
+	var offers := "sell" in modes
+	var pawns := "pawn" in modes and "pawn" in customer.transaction_modes and terms != null
 	var visual := {
 		"customer_id": visit.customer_id,
 		"item_name": item.display_name, "item_description": item.description,
@@ -31,18 +34,23 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		"estimate": "%d–%d" % [bounds.x, bounds.y],
 		"judgement": CounterReadModels.JUDGEMENTS[visit.item.judgement],
 		"asking": visit.trade.asking_price, "rounds_left": visit.trade.rounds_left,
+		"intent": "只卖" if offers and not pawns else "只当" if pawns and not offers else "卖、当皆可" if offers and pawns else "眼下不能收购或活当",
+		"offer_allowed": offers, "pawn_allowed": pawns,
+		"cash": day.state.cash,
+		"offer_reason": service.reason(day, "offer", visit.visit_id, "", 1),
+		"pawn_reason": service.reason(day, "pawn", visit.visit_id, "", 1),
 		"attitude": "显得不耐烦" if visit.trade.patience < customer.patience else "尚愿意交谈",
 		"deadline": TimeController.clock_text(day.definition.opening_minute, visit.expires_at),
 		"quote_minutes": customer.terms.quote_minutes, "pressure_minutes": customer.terms.pressure_minutes,
 		"patience_rule": "耐心 %d · 报价不成扣%d，错误施压扣%d；耗尽便离场" % [visit.trade.patience, customer.terms.failed_quote_cost, customer.terms.false_pressure_cost] if not day.definition.variety.is_empty() else "",
-		"pawn_terms": "期限%d夜 · 息费%.0f%%" % [terms.term_nights, terms.redemption_fee_ratio * 100] if terms != null else "此客不办理活当",
+		"pawn_terms": "期限%d夜 · 息费%.0f%%" % [terms.term_nights, terms.redemption_fee_ratio * 100] if pawns else "此客不办理活当",
 		"pawn_background": PawnRedemptionPolicy.background(day.definition, customer, VarietySaveCodec.selection(day.state, visit.visit_id)),
 		"message": "",
 		"bargaining_cue": visit.voice.get("belittle_cue", customer.belittle.get("cue", "")),
 		"visit_constraint": visit.voice.get("introduction", ""),
 	}
 	# Reuse the same user-visible operation feedback passed into the main model.
-	if EarlyRedemption.enabled(day.definition) and terms != null and terms.id == FamiliarStories.TERMS: visual.pawn_terms += "\n" + EarlyRedemption.AGREEMENT
+	if EarlyRedemption.enabled(day.definition) and pawns and terms.id == FamiliarStories.TERMS: visual.pawn_terms += "\n" + EarlyRedemption.AGREEMENT
 	model.visual = visual
 	for feature in ["appraisal", "dialogue", "trade"]:
 		model[feature].visual = visual.duplicate(true)

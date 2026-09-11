@@ -71,9 +71,13 @@ func _receipt_with_waiting_owner() -> void:
 	await _click("进入下一夜")
 	await _click("开铺")
 	await _click("验票收赎，交还原物")
-	var receipt := _main.find_child("TradeReceipt", true, false) as TradeReceiptView
+	var screen := _main.get_node("CounterScreen") as CounterScreen
+	var receipt := screen._receipt
 	var counter := _main.get_node("CounterScreen/CounterView") as CounterView
-	_check(receipt.visible and _session.counter_model().trade.pawn_return and counter._portrait.visible and counter._speech_panel.visible, "首票凭据显示时第二位原主已在柜台")
+	_check(not screen._feedback.visible and not receipt.visible and _session.counter_model().trade.pawn_return and not counter.feedback_held and counter._active_id == _session.counter_model().active_id, "首票不弹窗，直接接待下一位原主")
+	await _settle_feedback()
+	_check(not counter.feedback_held and _find_trade(_main).is_visible_in_tree(), "自动反馈结束直接接待下一位原主")
+	await _click_button(screen._recent_button)
 	await create_timer(0.25).timeout
 	await _capture("07_receipt_with_waiting_owner")
 	if DisplayServer.get_name() != "headless":

@@ -8,6 +8,8 @@ var _selected := "front"
 var _last_visit := ""
 var _summary: Label
 var _judgements: GridContainer
+var _known_clues: Array = []
+var _new_clues: Array = []
 
 func _ready() -> void:
 	super._ready()
@@ -46,10 +48,17 @@ func render(model: Dictionary) -> void:
 	var visual: Dictionary = model.get("visual", {})
 	_summary.visible = not visual.is_empty()
 	if not visual.is_empty():
+		var ids: Array = visual.clues.map(func(clue: Dictionary) -> String: return clue.id)
+		if _last_visit != _visit_id:
+			_known_clues = ids.duplicate()
+			_new_clues.clear()
+		elif ids != _known_clues:
+			_new_clues = ids.filter(func(id: String) -> bool: return id not in _known_clues)
+			_known_clues = ids.duplicate()
 		_summary.text = "%s\n证据估值 %s\n你的判断：%s" % [visual.item_name, visual.estimate, visual.judgement]
 		_body.text = "已见线索\n"
 		if visual.clues.is_empty(): _body.text += "尚未取证。可从下方选择检查。"
-		for clue in visual.clues: _body.text += "• " + clue.text + "\n"
+		for clue in visual.clues: _body.text += ("本次发现 · " if clue.id in _new_clues else "• ") + clue.text + "\n"
 		if not visual.get("goods_note", "").is_empty(): _body.text += "\n" + visual.goods_note + "\n"
 		if not visual.get("provenance", "").is_empty(): _body.text += "\n" + visual.provenance + "\n"
 		if not visual.message.is_empty() and not _body.text.contains(visual.message):

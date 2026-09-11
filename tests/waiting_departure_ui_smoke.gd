@@ -24,18 +24,21 @@ func _run() -> void:
 	await _click("交易")
 	for i in 6: driver.action(_session, "short_task")
 	await _frames()
-	var page := _main.find_child("CustomerDeparture", true, false) as TradeReceiptView
-	_check(page.visible and page._title.text == "等候客人离场", "waiting expiry is not a failed negotiation")
-	_check(page._item.text.contains("沈文清") and not page._item.text.contains("周绍安"), "notice identifies the departed visitor")
-	_check(page._note.text.contains("还没轮到柜台") and page._detail.text.contains("柜台仍在接待：周绍安"), "queue role and ongoing customer explicit")
-	_check(page._primary.text == "继续当前接待", "button does not imply a different customer")
+	var screen := _main.get_node("CounterScreen") as CounterScreen
+	var page := screen._feedback
+	_check(not page.visible and screen._recent_bar.visible and screen._recent.title == "等候客人离场", "waiting expiry is a nonmodal notification")
+	_check(screen._recent.item.contains("沈文清") and not screen._recent.item.contains("周绍安"), "notice identifies the departed visitor")
+	_check(screen._recent.note.contains("还没轮到柜台") and screen._recent.detail.contains("柜台仍在接待：周绍安"), "queue role and ongoing customer explicit")
+	_check(not screen._receipt.visible, "no acknowledgment interrupts current customer")
 	_check(current.status == "active" and waiting.status == "timed_out", "current negotiation never ended")
 	_check(_session.counter_model().queue.contains("沈文清") and _session.counter_model().queue.contains("20:15"), "counter result has departed visitor and time")
 	_check(not _session.counter_model().queue.contains("周绍安"), "does not attribute departure to current visitor")
 	await create_timer(0.25).timeout
 	await _capture("01_waiting_notice")
 	var before := _session.read_state()
-	await _click_button(page._primary)
+	await _click_button(screen._recent_button)
+	_check(screen._receipt.visible and not screen._receipt._cash.visible, "player may review the waiting notice without a cash animation")
+	await _click_button(screen._receipt._primary)
 	_check(before == _session.read_state() and _session.counter_model().active_id == current.visit_id, "dismissal preserves original reception and game time")
 	_check(_main.get_node("CounterScreen/ScreenFlowCoordinator").get_active_panel_id() == &"trade" and _main.get_node("CounterScreen/%Drawer").visible, "waiting notice returns to ongoing trade panel")
 	var escape := InputEventKey.new()
@@ -50,9 +53,9 @@ func _run() -> void:
 		if current.status != "active": break
 		_session.counter_command("offer", current.visit_id, "", 1)
 	await _frames()
-	_check(page.visible and page._title.text == "未能成交" and page._item.text.contains("周绍安"), "real current failure identifies Zhou")
+	_check(not page.visible and screen._recent_bar.visible and page.record.title == "未能成交" and page.record.item.contains("周绍安"), "real current failure identifies Zhou without popup")
 	_check(current.status in ["patience_exhausted", "rounds_exhausted"], "current visitor really leaves after failed negotiation")
-	await _click_button(page._primary)
+	await _settle_feedback()
 	_check(_session.counter_model().active_id != current.visit_id, "departed customer cannot reappear on dismissal")
 	var view := _main.get_node("CounterScreen/CounterView") as CounterView
 	_check(not view.get_hotspot(&"customer").visible, "empty counter after actual departure")

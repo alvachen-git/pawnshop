@@ -15,7 +15,7 @@ func _run() -> void:
 	_capture_prefix = "goods_1600" if "wide" in OS.get_cmdline_user_args() else "goods_1280"
 	root.size = Vector2i(1600, 900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280, 720)
 	root.content_scale_size = root.size
-	_main = load("res://scenes/start.tscn").instantiate(); _main.get_node("Bootstrap").manifest_path = "res://data/goods_expertise_manifest.json"; _main.get_node("Bootstrap").save_path = "user://goods_expertise_seven/autosave_v21.json"; root.add_child(_main)
+	_main = load("res://scenes/goods_expertise_start.tscn").instantiate(); root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
 	_check(_session.definition.id == "goods_expertise_seven" and _session.content_version == 21, "default v21")
 	_session._save.library.path = "res://.godot/qa/goods/ui_library_%d.json" % Time.get_ticks_usec()

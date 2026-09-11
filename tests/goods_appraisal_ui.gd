@@ -14,7 +14,7 @@ func _run() -> void:
 				if row.night == 1 and row.item_id == id: chosen = seed_value; target = row.visit_id; break
 			if chosen >= 0: break
 		_check(chosen >= 0, "new item natural seed " + id)
-		_main = load("res://scenes/start.tscn").instantiate(); _main.get_node("Bootstrap").manifest_path = "res://data/goods_expertise_manifest.json"; _main.get_node("Bootstrap").save_path = "user://goods_expertise_seven/autosave_v21.json"; root.add_child(_main)
+		_main = load("res://scenes/goods_expertise_start.tscn").instantiate(); root.add_child(_main)
 		_session = _main.get_node("Bootstrap").session
 		_session._save.library.path = "res://.godot/qa/goods/appraisal_%d.json" % Time.get_ticks_usec()
 		_session.definition._randomize_seed = false; _session.definition._seed = chosen

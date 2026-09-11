@@ -33,7 +33,7 @@ func _run() -> void:
 	await _click("账本")
 	await _capture("06_ledger")
 	await _click("交易")
-	await _click("拒绝收货 · 5分钟")
+	await _click("拒收 · 5分钟")
 	_check(_session.read_state().game_minutes == 45, "排队顾客可接续入场并付出拒绝成本")
 	await _click("营业")
 	await _click("关门（本夜不可重开）")

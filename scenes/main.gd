@@ -71,6 +71,7 @@ func _notification(what: int) -> void:
 
 func _leave(destination: String) -> void:
 	if destination == "quit": get_tree().quit(); return
+	_counter_screen._cancel_feedback(true)
 	storage.close()
 	_counter_screen.hide()
 	_counter_screen.process_mode = Node.PROCESS_MODE_DISABLED

@@ -1,6 +1,6 @@
 # 七夜 v21：商品扩充与行家复核
 
-默认新游戏使用 `goods_expertise_seven`，继承 v20 七夜内容。新增银戒指、银锁、折扇、茶盏及对应职业货池；旧商品数值、职业赎回概率、剧情保护席、铜镜、预约和20分钟批量卖货保持原规则。
+商品版独立入口使用 `goods_expertise_seven`，继承 v20 七夜内容。新增银戒指、银锁、折扇、茶盏及对应职业货池；旧商品数值、职业赎回概率、剧情保护席、铜镜、预约和20分钟批量卖货保持原规则。合入 main 后，常规启动仍进入深夜经营版；两套玩法与旧存档分别保留，同局整合另行开发。
 
 ## 玩家能做什么
 
@@ -31,17 +31,17 @@
 - `GoodsExpertise.value`统一未复核估值基数；所有买家报价、预览、成交和存档重放复用该规则。原配货单显式选取并标准化保存。
 - `GoodsSaveCodec`核对种子身份、所有权、费用、时间、认证与成交流水；拒绝伪造复核、重复加价、售后补认证。
 - 保存继续遵循原有准备/夜间检查点，不新增营业中随时存档。写盘失败回滚准备效果或整次夜间推进。UI真实成对交易后的夜末回滚也纳入测试。
-- 独立自动位置 `auto/goods_expertise_seven`，路径 `user://goods_expertise_seven/autosave_v21.json`；共用手动存档库。旧档按原版本恢复，返回标题后新游戏仍用v21。
+- 独立自动位置 `auto/goods_expertise_seven`，路径 `user://goods_expertise_seven/autosave_v21.json`；共用手动存档库。旧档按原版本恢复，返回标题后新游戏使用本次启动入口的版本。
 
 ## 本地启动与验证
 
 在仓库根目录运行：
 
 ```powershell
-& .\.tools\godot-4.6.1\Godot_v4.6.1-stable_win64_console.exe --path .
+& .\.tools\godot-4.6.1\Godot_v4.6.1-stable_win64_console.exe --path . res://scenes/goods_expertise_start.tscn
 ```
 
-用标题页“新游戏”进入新版；读取旧存档会继续旧规则。不要为了测试删除自己的存档。
+用这个独立入口的标题页“新游戏”进入商品版；读取旧存档会继续旧规则。省略场景参数则进入 main 默认的深夜经营版。不要为了测试删除自己的存档。
 
 Windows专项回归（使用新的空输出目录、隔离测试存档）：
 
@@ -54,4 +54,4 @@ Windows专项回归（使用新的空输出目录、隔离测试存档）：
 
 不带`-GoodsOnly`时，新增检查也会纳入完整Windows回归。经营对照由`tests/run_goods_expertise.gd -- economy`生成64局检查点，再用`tools/report_goods.py`生成可复查报告。运行独立Godot脚本时，应与Windows脚本一样设置隔离APPDATA及日志路径。
 
-交付：[验证报告](qa/goods-expertise/VALIDATION.md)、[经营对照](qa/goods-expertise/COMPARISON.md)、[界面与美术预览](qa/goods-expertise/PREVIEW.md)。首版数值未经平衡结论确认；本轮不打包、推送或合并。
+交付：[验证报告](qa/goods-expertise/VALIDATION.md)、[经营对照](qa/goods-expertise/COMPARISON.md)、[界面与美术预览](qa/goods-expertise/PREVIEW.md)、[main 接入记录](qa/goods-expertise/MERGE_VALIDATION.md)。首版数值未经平衡结论确认；本次不另行打包。
