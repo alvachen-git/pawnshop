@@ -19,4 +19,6 @@ static func build(receipt: Dictionary, operation: Dictionary) -> Dictionary:
 		# Compare with the public request before this quote, never a hidden reserve.
 		var asking := int(counter.get("trade", {}).get("pawn_asking", 0)) if receipt.kind == "pawn_loan" else int(visual.get("asking", 0))
 		style = "reluctant" if -int(receipt.amount) < asking or visual.get("attitude", "") == "显得不耐烦" else "satisfied"
-	return {"style": style, "text": "%s：“%s”" % [name, LINES[style]] if LINES.has(style) else ""}
+	var line := String(LINES.get(style, ""))
+	if style == "timed_out" and receipt.get("quote_refused", false): line = "这个价钱不成。" + line
+	return {"style": style, "text": "%s：“%s”" % [name, line] if not line.is_empty() else ""}
