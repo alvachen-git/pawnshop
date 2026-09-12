@@ -15,6 +15,8 @@ static func after_command(state: RunState, visit: CustomerVisit, command: String
 	if action.is_empty(): return ""
 	if state.night_market_history.any(func(r: Dictionary) -> bool: return r.action == action and r.visit_id == visit.visit_id): return ""
 	state.night_market_history.append({"action": action, "night": state.current_night_index, "minute": state.game_minutes, "visit_id": visit.visit_id})
+	if action == "taboo" or (action == "purchase" and visit.night_aftermath == "haunt"):
+		PersonalRisk.damage(state, "wet_cloth/" + visit.visit_id, 1, "湿包布落在柜边，你的影子迟了一步。", "wet_cloth")
 	if action == "taboo": return "\n他把一角湿布压在柜边。你挪了挪脚，影子却迟了一步。包布须照旧规封存。"
 	match visit.night_aftermath:
 		"item": return "\n货面浮出一层湿灰。先别转手，封铺前须把包布封好。"
@@ -51,7 +53,7 @@ static func treat(day: DayController, id: String) -> ActionResult:
 	day.spend_action(int(day.definition.variety.night_market.treatment_minutes))
 	day.state.night_market_history.append({"action": "seal_cloth", "visit_id": id, "night": day.state.current_night_index, "start": start, "minute": day.state.game_minutes})
 	CustomerManager.new().update(day.state)
-	return ActionResult.new(true, "你照旧规折好湿布，封进匣里。柜上的灰迹渐渐干了，脚边的影子也归了位。")
+	return ActionResult.new(true, "你照旧规折好湿布，封进匣里。柜上的灰迹渐渐干了。胸口那点寒意还没有散。" if day.state.personal_risk_enabled and day.state.personal_damage > 0 else "你照旧规折好湿布，封进匣里。柜上的灰迹渐渐干了。" if day.state.personal_risk_enabled else "你照旧规折好湿布，封进匣里。柜上的灰迹渐渐干了，脚边的影子也归了位。")
 
 static func loss_night(state: RunState, item: ItemInstance) -> int:
 	for r in state.night_market_history:
@@ -68,6 +70,7 @@ static func settle(state: RunState) -> void:
 
 # Derived from actual source actions and completed sleeps. Ambient audio never enters here.
 static func lamp_level(state: RunState) -> int:
+	if state.personal_risk_enabled: return 0
 	if not state.night_market_enabled: return 0
 	var active := {}
 	var grade := 0

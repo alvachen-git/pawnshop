@@ -29,7 +29,8 @@ static func storage_pending(state: RunState, manager: RiskManager) -> String:
 static func outcome(state: RunState, manager: RiskManager, night: int) -> String:
 	var shop := response(state, night, "shop")
 	var personal := response(state, night, "personal")
-	if "defy" in [shop, personal]: return "mirror_death"
+	if state.personal_risk_enabled and state.personal_damage == 4: return "personal_lamp_death"
+	if not state.personal_risk_enabled and "defy" in [shop, personal]: return "mirror_death"
 	if manager.storage_outcome(state, night) == "mirror_pending" and shop.is_empty(): return "mirror_pending"
 	if not MirrorEncounterService.pursuit(state, night).is_empty() and personal.is_empty(): return "mirror_pending"
 	if NightMarketRisk.lamp_level(state) == 5: return "night_guest_death"
@@ -69,9 +70,14 @@ static func respond(state: RunState, manager: RiskManager, id: String, command: 
 	state.room_history.append({"night": state.current_night_index, "action": side + "_" + command})
 	state.risk_pending = ""
 	if command == "defy":
-		state.phase = &"dead"
-		state.death_archive.append(manager.death_record(state, id))
+		if state.personal_risk_enabled:
+			var instance := "mirror/" + String(MirrorEncounterService.pursuit(state, state.current_night_index).get("visit_id", "")) if side == "personal" else "shop/%d/%s" % [state.current_night_index, id]
+			PersonalRisk.damage(state, instance, 2, "你回头时，那道影子猛地撞进胸口。" if side == "personal" else "镜中伸出的手攥住了你的喉咙。", "mirror" if side == "personal" else "shop_attack")
+		else:
+			state.phase = &"dead"
+			state.death_archive.append(manager.death_record(state, id))
 	update_outcome(state, manager)
+	if command == "defy" and state.personal_risk_enabled and state.phase != &"dead": return ActionResult.new(true, "胸口像被冰水灌透。你扶住床沿，喘了许久，那道影子终于退开了。" if side == "personal" else "喉头一阵腥甜。你跌回柜后，再抬头时，镜里的手已经不见了。")
 	if command == "retreat":
 		var item := InventoryManager.new().find(state, id)
 		if item != null and item.ownership_state == "transferred": return ActionResult.new(true, "你护住灯火，等柜前那道影子慢慢退开。")

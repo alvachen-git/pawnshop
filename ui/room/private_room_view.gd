@@ -242,8 +242,12 @@ func render(model: Dictionary) -> void:
 	_state_material.set_shader_parameter("lamp_dead", model.dead)
 	_state_material.set_shader_parameter("haunting", model.haunting)
 	_state_material.set_shader_parameter("lamp_grade", int(model.get("lamp_grade", 0)))
+	var lamp_state: Dictionary = model.get("lamp_state", {})
+	_state_material.set_shader_parameter("personal_damage", int(lamp_state.get("damage", -1)))
+	_state_material.set_shader_parameter("lamp_light", float(lamp_state.get("light", 0.0 if model.dead else 1.0)))
 	var mirror_state: Dictionary = model.get("mirror", {}).duplicate()
 	mirror_state["lamp_lit"] = not model.dead
+	mirror_state["lamp_light"] = float(lamp_state.get("light", 0.0 if model.dead else 1.0))
 	if model.dead: mirror_state["mode"] = &"normal"
 	_mirror.set_state(mirror_state)
 	if not visible:

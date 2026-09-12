@@ -1,7 +1,7 @@
 class_name RiskManager
 extends RefCounted
 
-const OUTCOMES := ["night_guest_death", "peaceful", "mirror_safe", "mirror_scar", "mirror_pending", "mirror_survived", "mirror_death"]
+const OUTCOMES := ["personal_lamp_death", "night_guest_death", "peaceful", "mirror_safe", "mirror_scar", "mirror_pending", "mirror_survived", "mirror_death"]
 const LABELS := {"night_guest_death": "命灯熄灭", "peaceful": "一夜无事", "mirror_safe": "红布无声", "mirror_scar": "余祟未散", "mirror_pending": "镜中来客", "mirror_survived": "灯火未歇", "mirror_death": "命灯熄灭"}
 var catalog: ContentCatalog
 

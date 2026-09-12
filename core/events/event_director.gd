@@ -94,6 +94,7 @@ func choose(day: DayController, event_id: String, choice_id: String) -> ActionRe
 	for flag in choice.grant_flags:
 		if flag not in day.state.narrative_flags: day.state.narrative_flags.append(flag)
 	day.state.event_history.append({"event_id": event.id, "choice_id": choice.id, "night": day.state.current_night_index, "phase": event.phase, "offered_minute": day.state.pending_event_minute, "minute": day.state.game_minutes})
+	PersonalRisk.apply_effect(day.state, choice.personal_effect, "event/%s/%d" % [event.id, day.state.event_history.size()], choice.result)
 	day.state.pending_event_id = ""
 	day.state.pending_event_minute = -1
 	poll(day.state, day.definition)
@@ -101,10 +102,16 @@ func choose(day: DayController, event_id: String, choice_id: String) -> ActionRe
 
 func model(day: DayController, message: String) -> Dictionary:
 	var body := "铺中记事\n当前没有待处理的消息，可以继续经营。\n\n" + message
+	var risk_warning := ""
 	var buttons: Array = []
 	if not day.state.pending_event_id.is_empty():
 		var event := catalog.get_definition("events", day.state.pending_event_id) as EventDefinition
 		body = "%s · %s\n\n%s\n\n" % [event.title, event.speaker, event.body]
+		if day.state.personal_risk_enabled:
+			for option in event.choices:
+				if option.available(day.state.narrative_flags, day.state.inventory_instances) and option.personal_effect.has("personal_damage"):
+					var warning := PersonalRisk.warning(day.state, "event/%s/%d" % [event.id, day.state.event_history.size() + 1], int(option.personal_effect.personal_damage))
+					if not warning.is_empty(): risk_warning = warning; body += warning; break
 		for choice in event.choices:
 			if not choice.available(day.state.narrative_flags, day.state.inventory_instances): continue
 			var reason := "" if day.state.game_minutes + choice.minutes < event.window_end else "时间不足"
@@ -119,7 +126,7 @@ func model(day: DayController, message: String) -> Dictionary:
 		model.presentation = event.presentation.duplicate(true)
 		model.title = event.title
 		model.speaker = event.speaker
-		model.text = event.body
+		model.text = event.body + risk_warning
 		model.feedback = ""
 		if not day.state.event_history.is_empty() and day.state.event_history.back().event_id == event.id:
 			model.feedback = event.find_choice(day.state.event_history.back().choice_id).result.replace("{accounts}", FeeService.describe(day.state, day.definition))

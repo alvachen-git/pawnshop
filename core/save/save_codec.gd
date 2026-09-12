@@ -1,7 +1,7 @@
 class_name SaveCodec
 extends RefCounted
 
-const VERSION := 21
+const VERSION := 22
 const ROOM_VERSION := 12
 const CHECKPOINTS := ["pre_open", "day_summary", "run_ended", "dead", "bankrupt", "shop_resolution", "private_room", "sleep_resolution"]
 var error_message := ""
@@ -16,6 +16,11 @@ func decode(data: Variant, definition: RunDefinition, content_version: int, cata
 	error_message = "存档结构损坏或状态不一致。"
 	if not data is Dictionary:
 		return null
+	if PersonalRisk.enabled(definition):
+		var personal := PersonalSaveCodec.new()
+		var restored := personal.decode(data, definition, content_version, catalog)
+		error_message = personal.error_message
+		return restored
 	for key in ["save_version", "content_version", "current_night_index", "game_minutes", "cash", "run_seed", "closed_at", "night_opening_cash", "action_count"]:
 		if not data.has(key) or not RunSchema.integer(data[key]) or abs(data[key]) > 2147483647:
 			return null
