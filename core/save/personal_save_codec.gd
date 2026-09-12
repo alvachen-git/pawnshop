@@ -15,6 +15,7 @@ class ReplayStore extends SaveManager:
 func decode(data: Dictionary, run: RunDefinition, version: int, catalog: ContentCatalog) -> RunState:
 	if version != 22 or data.get("save_version") != 22 or data.get("content_version") != 22 or data.get("run_definition_id") != String(run.id) or catalog == null: return null
 	if not data.get("action_journal") is Array or data.action_journal.size() > 4096: return null
+	if data.has("room_photo_position") and (not data.room_photo_position is String or data.room_photo_position not in ["", "desk", "drawer"]): return null
 	if not RunSchema.integer(data.get("run_seed")) or data.run_seed < 0 or data.run_seed > 2147483647: return null
 	if not data.get("run_token") is String or data.run_token.length() != 32 or not data.run_token.is_valid_hex_number(): return null
 	if not RiskSaveCodec.valid_archive(data.get("death_archive")) or not FeeSaveCodec.valid_archive(data.get("bankruptcy_archive")): return null
@@ -38,6 +39,12 @@ func decode(data: Dictionary, run: RunDefinition, version: int, catalog: Content
 	var actual: Dictionary = JSON.parse_string(JSON.stringify(data))
 	actual.erase("save_version")
 	actual.erase("content_version")
+	# Released v22 saves had no placement field. Only transcripts without the
+	# new commands may inherit the opening choice; newer saves remain exact.
+	if not actual.has("room_photo_position"):
+		for row in data.action_journal:
+			if row.method == "execute" and row.args[0] in RoomKeepsakes.COMMANDS: return null
+		actual["room_photo_position"] = ""
 	for key in ["death_archive", "bankruptcy_archive"]:
 		var own: Array = actual[key].filter(func(row: Dictionary) -> bool: return row.run_token == state.run_token)
 		if own != expected[key]: return null

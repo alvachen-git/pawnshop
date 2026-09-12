@@ -69,6 +69,7 @@ func has_save() -> bool:
 	return _save.exists()
 
 func can_execute(command: String) -> bool:
+	if command in RoomKeepsakes.COMMANDS: return not mirror_pending() and RoomKeepsakes.can_execute(_day.state, command)
 	if command.begins_with("seal_cloth/"): return not mirror_pending() and NightMarketRisk.treatment_reason(_day, command.trim_prefix("seal_cloth/")).is_empty()
 	if command.begins_with("prep_"): return PreparationService.reason(_day.state, definition, command.trim_prefix("prep_")).is_empty()
 	if command == "open_shop" and SevenNightPlan.enabled(definition) and not OpeningPreparation.enabled(definition) and _day.state.current_night_index >= 4 and not PreparationService.used(_day.state, "finish", _day.state.current_night_index): return false
@@ -80,9 +81,18 @@ func execute(command: String, detail := "") -> ActionResult:
 	if LivingMirror.enabled(definition) and _ghost_depth == 0 and command == "open_shop" and can_execute(command) and _day.state.current_night_index >= 2 and not PreparationService.used(_day.state, "finish", _day.state.current_night_index):
 		var prepared := execute("prep_finish")
 		if not prepared.ok: return prepared
+	# Invalid or repeated placement must not grow the transcript or write a save.
+	if command in RoomKeepsakes.COMMANDS and (not detail.is_empty() or not can_execute(command)):
+		return ActionResult.new(false, "现在不能挪动照片。")
 	return _journal_call("execute", [command, detail])
 
 func _impl_execute(command: String, detail := "") -> ActionResult:
+	if command in RoomKeepsakes.COMMANDS:
+		var placed := RoomKeepsakes.execute(_day.state, command)
+		if placed.ok: _persist()
+		message = placed.message
+		_emit_changed()
+		return placed
 	if command.begins_with("prep_"):
 		var previous := _copy_state(_day.state)
 		var prepared := OpeningPreparation.perform(_day.state, definition, _counter.catalog, command.trim_prefix("prep_"), detail) if OpeningPreparation.enabled(definition) else PreparationService.perform(_day.state, definition, command.trim_prefix("prep_"))
@@ -175,6 +185,7 @@ func load_checkpoint() -> ActionResult:
 		if _save.loaded_catalog != null and _save.loaded_definition != null:
 			_switch_content(_save.loaded_definition, _save.loaded_catalog.content_version, _save.loaded_catalog)
 		_day.state = restored
+		if restored.personal_risk_enabled: emit_signal("restored")
 		_pawn_choices = restored.pending_pawn_choices.duplicate(true)
 		if _counter != null and restored.phase == &"pre_open":
 			_counter.customers.prepare_night(restored, definition, _counter.catalog)
