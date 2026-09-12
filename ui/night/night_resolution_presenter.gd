@@ -18,7 +18,7 @@ func refresh() -> void:
 	var body := "夜深了\n\n关门前，再看一眼柜里的东西。" if risk_enabled else "夜深了\n\n街上最后一辆车过去，该核一核今夜的账了。"
 	if state.phase == "night_resolution":
 		body = "已封铺\n\n" + ("街上的脚步声散了，铺里还剩最后一点灯火。" if risk_enabled else "先核当票与息费，再回房歇息。")
-	elif state.phase in ["day_summary", "run_ended", "dead", "bankrupt"]:
+	elif state.phase in ["day_summary", "run_ended", "bankrupt"]:
 		var summary: Dictionary = state.summaries.back()
 		var outcome: String = RiskManager.LABELS.get(summary.outcome, "平安夜（占位，未计算鬼货风险）")
 		body = "第 %d 夜 · 日结\n\n%s\n开夜现金：%d\n夜末现金：%d\n本夜现金变化：%+d\n耗时行动：%d 次\n关门时刻：%s\n\n现货：%d件 · 成本占款 %d\n在当本金：%d\n收购支出：%d · 活当放款：%d\n销售收入：%d · 赎金/续当收入：%d\n本夜已实现盈亏：%+d\n\n现金流不等于利润；到期无人来赎的当票已逐张核销。" % [summary.night, outcome, summary.opening_cash, summary.closing_cash, summary.closing_cash - summary.opening_cash, summary.action_count, TimeController.clock_text(_session.definition.opening_minute, summary.closed_at), summary.inventory_count, summary.inventory_cost, summary.pawn_principal, summary.purchase_spend, summary.pawn_disbursed, summary.sales_revenue, summary.redemption_receipts, summary.realized_profit]
@@ -35,6 +35,8 @@ func refresh() -> void:
 	if not state.risk_pending.is_empty(): body += "\n\n镜中来客尚未离开，请到「鬼货与绝当录」应对后再继续。"
 	if state.phase == "dead":
 		body = "命灯熄灭\n\n灯盏已经冷透。《绝当录》上，多了一笔。"
+		if state.get("personal_risk_enabled", false) and not state.death_archive.is_empty():
+			body = "第%d夜 · %s\n\n%s\n\n《绝当录》上，多了一笔。" % [state.current_night_index, TimeController.clock_text(_session.definition.opening_minute, int(state.game_minutes)), state.death_archive.back().cause]
 	elif not state.risk_pending.is_empty():
 		body = "镜中来客\n\n账页还摊着，镜子那边却传来了一声轻响。"
 		if not state.mirror_history.is_empty() and state.mirror_history.back().action == "pursue": body = "身后的来客\n\n账页还摊着，身后却多了一声脚步。"

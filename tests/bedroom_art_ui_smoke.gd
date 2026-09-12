@@ -9,7 +9,7 @@ func _run() -> void:
 	width = 1600 if "wide" in OS.get_cmdline_user_args() else 1280
 	root.size = Vector2i(width, width * 9 / 16)
 	root.content_scale_size = root.size
-	shot_root = "res://docs/qa/bedroom/"
+	shot_root = _shot_directory()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(shot_root))
 	scene = load("res://scenes/start.tscn").instantiate()
 	scene.get_node("Bootstrap").save_path = "user://tests/bedroom_review_%d.json" % Time.get_ticks_usec()
@@ -47,6 +47,7 @@ func _run() -> void:
 	check(not scene.get_node("CounterScreen/ShopStatusView").visible, "寝室不叠加柜台底栏")
 	await _pointer(Vector2(1250, 100))
 	await shot("normal")
+	await _review_extra(room)
 	if _keep_open:
 		root.title = "鬼市当铺 · 寝室试玩（独立测试存档）"
 		print("BEDROOM REVIEW READY")
@@ -113,6 +114,12 @@ func _pointer(point: Vector2) -> void:
 	motion.position = point
 	root.push_input(motion, true)
 	await frames()
+
+func _review_extra(_room: PrivateRoomView) -> void:
+	pass
+
+func _shot_directory() -> String:
+	return "res://docs/qa/bedroom/"
 
 func _key(key: Key) -> void:
 	for down in [true, false]:

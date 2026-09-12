@@ -10,6 +10,7 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 	var haunting := not MirrorEncounterService.pursuit(state, state.current_night_index).is_empty()
 	for summary in state.summaries:
 		if summary.outcome in ["mirror_scar", "mirror_survived", "mirror_death"]: haunting = true
+	if state.personal_risk_enabled: haunting = state.personal_damage > 0
 	var closed: Array = []
 	for row in state.risk_history:
 		var key := "%d/%s" % [row.night, row.item_id]
@@ -33,7 +34,7 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 	if state.phase == &"dead":
 		body = "灯芯烧尽了\n\n柜上的账册无风翻开，停在一张空白页上。\n\n门闩还落着。镜面里，映出一间空铺。"
 		if not MirrorEncounterService.pursuit(state, state.current_night_index).is_empty(): body = "灯芯烧尽了\n\n那双脚的影子终于与你重合。命灯冷了，旧当票落在柜上，再没有人伸手去接。"
-	elif not state.summaries.is_empty() and state.summaries.back().outcome == "mirror_survived":
+	elif not state.summaries.is_empty() and state.summaries.back().outcome == "mirror_survived" and (not state.personal_risk_enabled or state.personal_damage > 0):
 		body += "\n红布下再无声息，地上的影子却迟迟没有归位。\n"
 	if not state.risk_pending.is_empty():
 		var rule := manager.rule_for(InventoryManager.new().find(state, state.risk_pending))
@@ -76,6 +77,18 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 		elif state.phase in [&"private_room", &"sleep_resolution"] and NightMarketRisk.lamp_level(state) > 0:
 			body = "寝屋无声\n\n" + NightMarketRisk.LAMPS[NightMarketRisk.lamp_level(state)]
 			if haunting: body += "\n镜里跟来的影子仍在床边。"
+	if state.personal_risk_enabled:
+		if state.phase == &"dead":
+			body = "灯芯烧尽了\n\n" + state.death_archive.back().cause + "\n\n柜上的账册翻开了，再没有人伸手去按住。"
+			buttons = []
+		elif not state.risk_pending.is_empty():
+			var instance := "mirror/" + String(MirrorEncounterService.pursuit(state, state.current_night_index).get("visit_id", "")) if state.phase == &"sleep_resolution" else "shop/%d/%s" % [state.current_night_index, state.risk_pending]
+			body += PersonalRisk.warning(state, instance, 2)
+		elif state.phase in [&"private_room", &"sleep_resolution"]:
+			body = "寝屋无声\n\n" + PersonalRisk.lamp_state(state).description
+		elif not state.personal_risk_history.is_empty():
+			var latest: Dictionary = state.personal_risk_history.back()
+			if latest.night == state.current_night_index and latest.minute == state.game_minutes and latest.phase == String(state.phase): body += "\n\n" + latest.cause
 	if state.death_archive.is_empty(): archive += "纸页尚空。"
 	for record in state.death_archive:
 		# IDs identify the recorded consequence; prose can be revised without rewriting history.

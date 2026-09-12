@@ -3,6 +3,12 @@ extends RefCounted
 
 const PHASE_PRE_OPEN := &"pre_open"
 
+var personal_risk_enabled := false
+var personal_damage := 0
+var personal_risk_history: Array[Dictionary] = []
+var personal_death_phase := ""
+var pending_pawn_choices: Dictionary = {}
+var action_journal: Array[Dictionary] = []
 var run_definition_id: StringName
 var current_night_index: int = 1
 var phase: StringName = PHASE_PRE_OPEN
@@ -61,6 +67,7 @@ var visits: Array[CustomerVisit] = []
 static func create(definition: RunDefinition) -> RunState:
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.personal_risk_enabled = PersonalRisk.enabled(definition)
 	state.night_market_enabled = NightMarketPlan.enabled(definition)
 	state.goods_version = int(definition.variety.get("goods_expertise_version", 0))
 	state.preparation_version = int(definition.variety.get("preparation_version", 0))
@@ -118,6 +125,8 @@ func to_read_model() -> Dictionary:
 		"visit_history": visit_history.duplicate(true),
 	}
 
+	if personal_risk_enabled:
+		data.merge({"pending_pawn_choices": pending_pawn_choices.duplicate(true), "personal_risk_enabled": true, "personal_damage": personal_damage, "personal_risk_history": personal_risk_history.duplicate(true), "personal_death_phase": personal_death_phase, "action_journal": action_journal.duplicate(true)})
 	if night_market_enabled:
 		data["night_market_history"] = night_market_history.duplicate(true)
 		data["night_market_enabled"] = true

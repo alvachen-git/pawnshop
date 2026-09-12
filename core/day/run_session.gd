@@ -71,15 +71,18 @@ func can_execute(command: String) -> bool:
 	return _day.state.risk_pending.is_empty() and _day.state.phase not in [&"dead", &"bankrupt"] and _day.state.pending_event_id.is_empty() and not mirror_pending() and (_day.can_execute(command) or RoomFlow.can_execute(_day.state, command))
 
 func execute(command: String, detail := "") -> ActionResult:
+	return _journal_call("execute", [command, detail])
+
+func _impl_execute(command: String, detail := "") -> ActionResult:
 	if command.begins_with("prep_"):
 		var previous := _copy_state(_day.state)
 		var prepared := OpeningPreparation.perform(_day.state, definition, _counter.catalog, command.trim_prefix("prep_"), detail) if OpeningPreparation.enabled(definition) else PreparationService.perform(_day.state, definition, command.trim_prefix("prep_"))
 		if prepared.ok and OpeningPreparation.enabled(definition): OpeningPreparation.refresh_visits(_day.state, definition, _counter.catalog)
-		if prepared.ok and not _save.save_state(_day.state, definition, content_version):
+		if prepared.ok and not _persist():
 			_day.state = previous
 			prepared = ActionResult.new(false, "准备未记下，请重试。" + _save.error_message)
 		message = prepared.message
-		changed.emit()
+		_emit_changed()
 		return prepared
 	if command == "open_shop" and not can_execute(command): return ActionResult.new(false, "请先结束准备并处理眼前的事情。")
 	if command == "open_shop" and OpeningPreparation.enabled(definition) and _day.state.current_night_index >= 2 and not PreparationService.used(_day.state, "finish", _day.state.current_night_index):
@@ -95,7 +98,7 @@ func execute(command: String, detail := "") -> ActionResult:
 		if not error.is_empty():
 			message = error
 			MarketService.sync(_day.state, definition)
-			changed.emit()
+			_emit_changed()
 			return ActionResult.new(false, error)
 	if command.begins_with("seal_cloth/"):
 		var treatment_before := _feedback_snapshot()
@@ -105,7 +108,7 @@ func execute(command: String, detail := "") -> ActionResult:
 		MarketService.sync(_day.state, definition)
 		message = treated.message
 		_publish_feedback(treatment_before, command, "", treated)
-		changed.emit()
+		_emit_changed()
 		return treated
 	# Only these commands create checkpoints. Snapshot before mutation for rollback.
 	var checkpoint := command in ["resolve_night", "continue_run", "enter_room", "sleep", "finish_sleep"]
@@ -134,17 +137,19 @@ func execute(command: String, detail := "") -> ActionResult:
 	if result.ok and _events != null: _events.poll(_day.state, definition)
 	MarketService.sync(_day.state, definition)
 	if result.ok and checkpoint:
-		if not _save.save_state(_day.state, definition, content_version):
+		if not _persist():
 			_day.state = previous
 			result = ActionResult.new(false, "未推进；请重试。" + _save.error_message)
 		else:
 			result.message = "这一夜的账，记下了。"
-	if result.ok and command == "resolve_night": _pawn_choices.clear()
+	if result.ok and command == "resolve_night":
+		_pawn_choices.clear()
+		_day.state.pending_pawn_choices.clear()
 	message = result.message
 	if prior_visitor != null and prior_visitor.status == "timed_out": _message_visit_id = prior_visitor.visit_id
 	MarketService.sync(_day.state, definition)
 	_publish_feedback(feedback_before, command, "", result)
-	changed.emit()
+	_emit_changed()
 	return result
 
 func load_checkpoint() -> ActionResult:
@@ -160,12 +165,12 @@ func load_checkpoint() -> ActionResult:
 		if _save.loaded_catalog != null and _save.loaded_definition != null:
 			_switch_content(_save.loaded_definition, _save.loaded_catalog.content_version, _save.loaded_catalog)
 		_day.state = restored
-		_pawn_choices.clear()
+		_pawn_choices = restored.pending_pawn_choices.duplicate(true)
 		if _counter != null and restored.phase == &"pre_open":
 			_counter.customers.prepare_night(restored, definition, _counter.catalog)
 	message = result.message
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return result
 
 func _switch_content(run: RunDefinition, version: int, catalog: ContentCatalog) -> void:
@@ -196,28 +201,16 @@ func new_run() -> void:
 	if _events != null: _events.poll(_day.state, definition)
 	message = "暮色又落到了铺门前。柜上的账册，翻开了第一页。"
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 
 func _copy_state(source: RunState) -> RunState:
-	var copy := RunState.new()
-	copy.goods_version = source.goods_version
-	copy.expertise_history = source.expertise_history.duplicate(true)
-	copy.preparation_version = source.preparation_version
-	for key in source.to_read_model():
-		if key in ["inventory_instances", "pawn_tickets"]: continue
-		copy.set(key, source.get(key).duplicate(true) if source.get(key) is Array or source.get(key) is Dictionary else source.get(key))
-	for item in source.inventory_instances:
-		var clone := ItemInstance.new()
-		for key in item.to_data(): clone.set(key, item.to_data()[key])
-		copy.inventory_instances.append(clone)
-	for ticket in source.pawn_tickets:
-		var clone := PawnTicket.new()
-		for key in ticket.to_data(): clone.set(key, ticket.to_data()[key])
-		copy.pawn_tickets.append(clone)
-	copy.visits = source.visits.duplicate()
-	return copy
+	if replaying: return source
+	return RunSnapshot.copy(source)
 
 func counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	return _journal_call("counter_command", [command, visit_id, detail, amount])
+
+func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
 	if command in ["redeem", "extend"]:
 		var visit := PawnReturnService.current(_day.state)
 		if visit.is_empty() or visit.id != visit_id: return _return_blocked()
@@ -240,7 +233,7 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	_message_visit_id = visit_id
 	MarketService.sync(_day.state, definition)
 	_publish_feedback(feedback_before, command, visit_id, result)
-	changed.emit()
+	_emit_changed()
 	_emit_receipt(ledger_size)
 	return result
 
@@ -259,6 +252,9 @@ func counter_model() -> Dictionary:
 	return model
 
 func commerce_command(command: String, target: String, detail := "") -> ActionResult:
+	return _journal_call("commerce_command", [command, target, detail])
+
+func _impl_commerce_command(command: String, target: String, detail := "") -> ActionResult:
 	if command not in ["redeem", "extend"] and not PawnReturnService.current(_day.state).is_empty(): return _return_blocked()
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
@@ -274,21 +270,24 @@ func commerce_command(command: String, target: String, detail := "") -> ActionRe
 	message = result.message
 	MarketService.sync(_day.state, definition)
 	_publish_feedback(feedback_before, command, target, result)
-	changed.emit()
+	_emit_changed()
 	_emit_receipt(ledger_size)
 	return result
 
 func _emit_receipt(previous_size: int) -> void:
 	if definition.batch_selling and _day.state.ledger_entries.size() > previous_size and _day.state.ledger_entries[previous_size].kind == "sale":
-		transaction_completed.emit(TradeReceiptModel.batch(_day, _counter.catalog, previous_size))
+		_emit_transaction(TradeReceiptModel.batch(_day, _counter.catalog, previous_size))
 		return
 	# A rejected quote can return ok=true. A new ledger posting, rather than
 	# ActionResult.ok or localized message matching, proves money changed hands.
 	if _counter == null or _day.state.ledger_entries.size() != previous_size + 1: return
 	var receipt := TradeReceiptModel.build(_day, _counter.catalog, _day.state.ledger_entries.back())
-	if not receipt.is_empty(): transaction_completed.emit(receipt)
+	if not receipt.is_empty(): _emit_transaction(receipt)
 
 func sell_batch(buyer_id: String, item_ids: Array, pairs: Array = []) -> ActionResult:
+	return _journal_call("sell_batch", [buyer_id, item_ids, pairs])
+
+func _impl_sell_batch(buyer_id: String, item_ids: Array, pairs: Array = []) -> ActionResult:
 	var previous := _day.state.ledger_entries.size()
 	var feedback_before := _feedback_snapshot()
 	var result := _commerce.sell_batch(_day, buyer_id, item_ids, pairs)
@@ -299,7 +298,7 @@ func sell_batch(buyer_id: String, item_ids: Array, pairs: Array = []) -> ActionR
 		MarketService.sync(_day.state, definition)
 	message = result.message
 	_publish_feedback(feedback_before, "sell_batch", buyer_id, result)
-	changed.emit()
+	_emit_changed()
 	_emit_receipt(previous)
 	return result
 
@@ -318,7 +317,7 @@ func _publish_feedback(before: Dictionary, command: String, target: String, resu
 	var departures: Array = []
 	for row in _day.state.visit_history.slice(before.history_size):
 		departures.append({"visit_id": row.visit_id, "outcome": row.outcome})
-	operation_completed.emit({"command": command, "target": target, "ok": result.ok,
+	_emit_operation({"command": command, "target": target, "ok": result.ok,
 		"message": result.message, "before": before, "after": _feedback_snapshot(), "departures": departures,
 		"paid": _day.state.ledger_entries.size() > before.ledger_size})
 
@@ -338,6 +337,9 @@ func event_model() -> Dictionary:
 	return model
 
 func event_command(event_id: String, choice_id: String) -> ActionResult:
+	return _journal_call("event_command", [event_id, choice_id])
+
+func _impl_event_command(event_id: String, choice_id: String) -> ActionResult:
 	if mirror_pending(): return _mirror_blocked()
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	var result := ActionResult.new(false, "没有事件内容。")
@@ -349,18 +351,18 @@ func event_command(event_id: String, choice_id: String) -> ActionResult:
 		result = _events.choose(_day, event_id, choice_id)
 		if result.ok and _counter != null: _counter.customers.update(_day.state)
 	if _risk != null: _risk.capture_close(_day.state)
-	if result.ok and checkpoint and not _save.save_state(_day.state, definition, content_version):
+	if result.ok and checkpoint and not _persist():
 		_day.state = previous
 		result = ActionResult.new(false, "未推进；请重试。" + _save.error_message)
 	message = result.message
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return result
 
 func _event_blocked() -> ActionResult:
 	message = "请先到「铺中记事」处理眼前的事情。"
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return ActionResult.new(false, message)
 
 func risk_model() -> Dictionary:
@@ -386,6 +388,9 @@ func risk_model() -> Dictionary:
 	return model
 
 func risk_command(command: String, id: String, detail := "") -> ActionResult:
+	return _journal_call("risk_command", [command, id, detail])
+
+func _impl_risk_command(command: String, id: String, detail := "") -> ActionResult:
 	if command == "study": return study_command(id, detail)
 	if command in ["cover", "uncover"] and not PawnReturnService.current(_day.state).is_empty(): return _return_blocked()
 	if command.begins_with("mirror_"): return mirror_command(id, command.trim_prefix("mirror_"))
@@ -398,7 +403,7 @@ func risk_command(command: String, id: String, detail := "") -> ActionResult:
 		var previous := _copy_state(_day.state)
 		result = RoomFlow.respond(_day.state, _risk, id, command) if definition.private_room else _risk.respond(_day.state, id, command)
 		if result.ok and not definition.private_room: FeeService.finish(_day.state, definition)
-		if result.ok and not _save.save_state(_day.state, definition, content_version):
+		if result.ok and not _persist():
 			_day.state = previous
 			result = ActionResult.new(false, "应对未提交，请重试。" + _save.error_message)
 	else:
@@ -409,32 +414,35 @@ func risk_command(command: String, id: String, detail := "") -> ActionResult:
 	_risk_error = "" if result.ok else result.message
 	message = result.message
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return result
 
 func _risk_blocked() -> ActionResult:
 	message = "铺门上了封条，柜前再无人等候。" if _day.state.phase == &"bankrupt" else ("灯已冷了，铺中再没有人应声。" if _day.state.phase == &"dead" else "请先在「鬼货与绝当录」应对镜中来客。")
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return ActionResult.new(false, message)
 
 func mirror_pending() -> bool:
 	return _mirror != null and _mirror.pending(_day)
 
 func mirror_command(id: String, command: String) -> ActionResult:
+	return _journal_call("mirror_command", [id, command])
+
+func _impl_mirror_command(id: String, command: String) -> ActionResult:
 	if _mirror == null or not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	var result := _mirror.choose(_day, id, command)
 	_risk_error = "" if result.ok else result.message
 	if _events != null and not mirror_pending(): _events.poll(_day.state, definition)
 	message = result.message
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return result
 
 func _mirror_blocked() -> ActionResult:
 	message = "镜里的旧当票还在眼前。请先收回视线，或再看一眼。"
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return ActionResult.new(false, message)
 
 func economy_model() -> Dictionary:
@@ -443,7 +451,7 @@ func economy_model() -> Dictionary:
 func _return_blocked() -> ActionResult:
 	message = "持票的老客正在柜前等候，请先验票办理。"
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return ActionResult.new(false, message)
 
 func pawn_disposal_model() -> Array[Dictionary]:
@@ -458,13 +466,17 @@ func pawn_disposal_model() -> Array[Dictionary]:
 	return rows
 
 func choose_pawn_disposal(id: String, choice: String) -> ActionResult:
+	return _journal_call("choose_pawn_disposal", [id, choice])
+
+func _impl_choose_pawn_disposal(id: String, choice: String) -> ActionResult:
 	if _commerce == null or _day.state.phase != &"night_resolution" or choice not in ["keep", "transfer"]: return ActionResult.new(false, "眼下不能处置当票。")
 	var ticket := _commerce.pawns.find(_day.state, id)
 	if ticket == null or ticket not in _commerce.pawns.maturities(_day.state): return ActionResult.new(false, "当票尚未到期或已经结清。")
 	_pawn_choices[id] = choice
+	if _day.state.personal_risk_enabled: _day.state.pending_pawn_choices[id] = choice
 	message = "选好后可改动；逐张核妥，再一并合账。"
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return ActionResult.new(true, message)
 
 # Bell exposes only the action available at the counter, never the future visitor's identity.
@@ -490,6 +502,9 @@ func bell_model() -> Dictionary:
 	return model
 
 func bell_command(mode: String, target_id := "") -> ActionResult:
+	return _journal_call("bell_command", [mode, target_id])
+
+func _impl_bell_command(mode: String, target_id := "") -> ActionResult:
 	var model := bell_model()
 	if not model.enabled or model.mode != mode or model.target_id != target_id:
 		return ActionResult.new(false, "柜前的情形已经变了。" if model.enabled else model.hint)
@@ -507,10 +522,13 @@ func bell_command(mode: String, target_id := "") -> ActionResult:
 		if not _day.state.pending_event_id.is_empty() or not _day.state.risk_pending.is_empty() or mirror_pending(): break
 	MarketService.sync(_day.state, definition)
 	message = "铃声落下，门外终于响起脚步。" if _counter.customers.active(_day.state) != null else "你在柜后等着，铺里有了动静。"
-	changed.emit()
+	_emit_changed()
 	return ActionResult.new(true, message + "等候%d分钟。" % (_day.state.game_minutes - start))
 
 func study_command(id: String, choice: String) -> ActionResult:
+	return _journal_call("study_command", [id, choice])
+
+func _impl_study_command(id: String, choice: String) -> ActionResult:
 	if not MirrorChapterService.enabled(definition) or _day.state.phase != &"open" or not _day.state.risk_pending.is_empty(): return _risk_blocked()
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
@@ -520,5 +538,66 @@ func study_command(id: String, choice: String) -> ActionResult:
 	_risk.capture_close(_day.state)
 	message = result.message
 	MarketService.sync(_day.state, definition)
-	changed.emit()
+	_emit_changed()
 	return result
+
+# One outer command owns mutation, checkpoint publication and rollback. Nested
+# commands (bell waits, automatic preparation, mirror routing) share its entry.
+var replaying := false
+var _journal_depth := 0
+var _pending_checkpoint := false
+
+func _persist() -> bool:
+	if _day.state.personal_risk_enabled and _journal_depth > 0:
+		_pending_checkpoint = true
+		return true
+	return _save.save_state(_day.state, definition, content_version)
+
+func _journal_call(method: String, args: Array) -> ActionResult:
+	if not _day.state.personal_risk_enabled or _journal_depth > 0: return callv("_impl_" + method, args)
+	if _day.state.action_journal.size() >= 4096: return ActionResult.new(false, "本局操作记录已满，请读取较早的存档。")
+	var previous: RunState = _copy_state(_day.state) if not replaying else null
+	var pawn_choices := _pawn_choices.duplicate(true)
+	var before_damage := _day.state.personal_risk_history.size()
+	_day.state.action_journal.append({"method": method, "args": args.duplicate(true)})
+	_pending_checkpoint = false
+	_pending_notifications.clear()
+	_journal_depth += 1
+	var result: ActionResult = callv("_impl_" + method, args)
+	_journal_depth -= 1
+	if not replaying and not result.ok:
+		var before := previous.to_read_model()
+		var after := _day.state.to_read_model()
+		before.erase("action_journal"); after.erase("action_journal")
+		if before == after: _day.state.action_journal.pop_back()
+	if not replaying and (_pending_checkpoint or before_damage != _day.state.personal_risk_history.size()):
+		if not _save.save_state(_day.state, definition, content_version):
+			_day.state = previous
+			_pawn_choices = pawn_choices
+			result = ActionResult.new(false, "操作未保存，已恢复原状；请重试。" + _save.error_message)
+			message = result.message
+			_risk_error = result.message
+			_pending_notifications.clear()
+			MarketService.sync(_day.state, definition)
+	if not replaying:
+		if result.ok: _risk_error = ""
+		var notifications := _pending_notifications.duplicate()
+		_pending_notifications.clear()
+		for notification in notifications: emit_signal(notification.signal_name, notification.payload)
+		changed.emit()
+	return result
+
+var _pending_notifications: Array[Dictionary] = []
+
+func _emit_changed() -> void:
+	if _journal_depth == 0 and not replaying: changed.emit()
+
+func _emit_transaction(payload: Dictionary) -> void:
+	if replaying: return
+	if _journal_depth > 0: _pending_notifications.append({"signal_name": "transaction_completed", "payload": payload})
+	else: transaction_completed.emit(payload)
+
+func _emit_operation(payload: Dictionary) -> void:
+	if replaying: return
+	if _journal_depth > 0: _pending_notifications.append({"signal_name": "operation_completed", "payload": payload})
+	else: operation_completed.emit(payload)

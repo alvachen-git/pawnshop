@@ -68,7 +68,9 @@ func choose(day: DayController, id: String, command: String) -> ActionResult:
 	if command == "peek":
 		if not definition.clue_id.is_empty() and definition.clue_id not in visit.item.revealed_clue_ids: visit.item.revealed_clue_ids.append(definition.clue_id)
 		return ActionResult.new(true, definition.text("peek_text"))
-	if command == "pursue": return ActionResult.new(true, definition.text("pursue_text"))
+	if command == "pursue":
+		PersonalRisk.damage(day.state, "mirror/" + visit.visit_id, 1, "追看铜镜后，冰凉的手指抵住了你的后颈。", "mirror")
+		return ActionResult.new(true, definition.text("pursue_text") + ("\n后颈忽然一凉，地上的影子贴住了你的脚。" if day.state.personal_risk_enabled else ""))
 	return ActionResult.new(true, "你收回视线，柜前的人把怀表往前推了推。镜面还露在外头。" if command == "stop" else "你没有去碰那面镜子，继续招呼柜前的客人。")
 
 func model(day: DayController) -> Dictionary:
@@ -80,6 +82,7 @@ func model(day: DayController) -> Dictionary:
 	result.attention_id = visit.visit_id + ("/peek" if peeked else "/offer")
 	var cloth := risk.covered(day.state, held_mirror(day.state, definition).instance_id)
 	result.body = definition.text("peek_text" if peeked else "covered_invitation" if cloth and not definition.text("covered_invitation").is_empty() else "invitation")
+	if day.state.personal_risk_enabled and peeked: result.body += PersonalRisk.warning(day.state, "mirror/" + visit.visit_id, 1)
 	for command in (["stop", "pursue"] if peeked else ["peek", "decline"]):
 		var label: String = {"peek": "借镜照一照来客", "decline": "继续招呼柜前的客人", "stop": "收回视线", "pursue": "看清那张旧当票"}[command]
 		var cost := definition.peek_minutes if command == "peek" else (definition.pursue_minutes if command == "pursue" else 0)

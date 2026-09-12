@@ -7,6 +7,9 @@ static func valid_archive(value: Variant) -> bool:
 	for row in value:
 		if not row is Dictionary or not CounterSaveCodec._text_fields(row, ["run_token", "run_id", "item_id", "rule_id", "cause", "item_name"]) or not CounterSaveCodec._integers(row, ["night", "cash", "inventory_cost", "pawn_principal"]): return false
 		if row.has("encounter_id") and not CounterSaveCodec._text_fields(row, ["encounter_id"]): return false
+		if row.rule_id == "personal_lamp":
+			if not CounterSaveCodec._text_fields(row, ["source_phase", "event_instance"]) or not CounterSaveCodec._integers(row, ["minute"]): return false
+			if row.minute < 0 or row.minute > 540 or row.source_phase not in ["pre_open", "open", "closed_processing", "night_resolution", "shop_resolution", "private_room", "sleep_resolution", "day_summary"]: return false
 		if row.run_token.length() != 32 or not row.run_token.is_valid_hex_number() or row.run_token in tokens or row.night < 1 or row.cash < 0 or row.inventory_cost < 0 or row.pawn_principal < 0: return false
 		for field in ["night", "cash", "inventory_cost", "pawn_principal"]:
 			if row[field] > 2147483647: return false
