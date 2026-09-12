@@ -37,7 +37,8 @@ func _run() -> void:
 	_session.counter_command("appraise", v.visit_id, "light")
 	_check((_main.find_child("AppraisalPanel", true, false) as AppraisalPanel)._body.text.contains("本次发现"), "新增物证醒目标识")
 	_session.counter_command("offer", v.visit_id, "", 72)
-	_check(not screen._feedback.visible and screen._recent_bar.visible, "成交只留下回复记录")
+	_check(not screen._feedback.visible and screen._receipt.visible, "成交显示可确认的凭据")
+	await _click_button(screen._receipt._primary)
 	before = _session.read_state()
 	screen._flow.show_panel(&"inventory")
 	await create_timer(0.85).timeout
@@ -46,7 +47,7 @@ func _run() -> void:
 	_check(screen._recent.is_empty() and not screen._feedback.visible, "读档清空旧结果")
 	helper.open(_session); v = helper.active(_session)
 	_session.counter_command("offer", v.visit_id, "", v.trade.asking_price)
-	_check(screen._recent_bar.visible and _session.load_checkpoint().ok, "保留回复时读取检查点")
+	_check(screen._receipt.visible and _session.load_checkpoint().ok, "凭据显示时读取检查点")
 	await create_timer(0.85).timeout
 	_check(not screen._feedback.visible and screen._recent.is_empty() and _session.read_state().cash == 100, "读档取消演出与扣款，不触发迟到回调")
 	helper.open(_session); v = helper.active(_session)
