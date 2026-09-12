@@ -138,6 +138,7 @@ try {
         Run-Test "reception-feedback-$size" 'reception_feedback_ui_smoke.gd' $sizeArgs $false
         Run-Test "waiting-departure-$size" 'waiting_departure_ui_smoke.gd' $sizeArgs $false
         Run-Test "receipt-$size" 'receipt_ui_smoke.gd' $sizeArgs $false
+        Run-Test "receipt-consistency-$size" 'receipt_consistency_ui.gd' $sizeArgs $false
         Run-Test "trade-feedback-lifecycle-$size" 'trade_feedback_lifecycle_ui.gd' $sizeArgs $false
         Run-Test "customer-reply-$size" 'customer_reply_ui.gd' $sizeArgs $false
         Run-Test "bargaining-$size" 'bargaining_ui_smoke.gd' $sizeArgs $false

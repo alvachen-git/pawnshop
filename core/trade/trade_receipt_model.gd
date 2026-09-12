@@ -53,15 +53,21 @@ static func batch(day: DayController, catalog: ContentCatalog, first: int) -> Di
 # Only committed, player-visible facts. No hidden variant, true value or margin
 # forecast is exposed by buying an item. This receipt is not a save checkpoint.
 static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary) -> Dictionary:
-	var titles := {"acquisition": "收购成交", "pawn_loan": "活当办妥", "sale": "出售成交", "redemption": "赎当办妥", "extension": "续当办妥", "provenance_inquiry": "来源调查结清"}
+	var titles := {"acquisition": "收购成交", "pawn_loan": "活当办妥", "sale": "出售成交", "redemption": "赎当办妥", "extension": "续当办妥", "provenance_inquiry": "来源调查结清", "expertise": "行家复核结清"}
 	if catalog == null or not titles.has(entry.kind): return {}
 	var item := InventoryManager.new().find(day.state, entry.item_instance_id)
 	if item == null: return {}
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
-	var note: String = {"acquisition": "货已收进库存，收购款已付清。", "pawn_loan": "当票已开，在当物品留铺保管。", "sale": "货已交给买家，货款收妥。", "redemption": "赎金收妥，原物已交还当户。", "extension": "续当费收妥，原物继续留铺。", "provenance_inquiry": ProvenanceService.describe(item)}[entry.kind]
+	var note: String = {"acquisition": "货已收进库存，收购款已付清。", "pawn_loan": "当票已开，在当物品留铺保管。", "sale": "货已交给买家，货款收妥。", "redemption": "赎金收妥，原物已交还当户。", "extension": "续当费收妥，原物继续留铺。", "provenance_inquiry": ProvenanceService.describe(item), "expertise": "复核费已付清，行家的结论已记在货签上。"}[entry.kind]
 	var detail := "收购支出为进货成本，出售后再结盈亏。" if entry.kind == "acquisition" else ""
 	if entry.kind == "sale": detail = "进货成本 %d 银元 · 本笔已实现盈亏 %+d 银元" % [item.acquisition_price, entry.realized_profit]
 	if entry.kind == "provenance_inquiry": detail = ProvenanceService.result_text(item, definition) + "\n调查费记入经营费用，原始成本不变。"
+	if entry.kind == "expertise":
+		for record in day.state.expertise_history:
+			if record.id != entry.transaction_id: continue
+			detail = String(definition.expertise.results[record.result]) if record.action == "fan" else ("两盏原配：纹样相对，底足制式一致。" if record.result == "matched" else "两盏并非原配：纹样、左右式样或底足制式不合。")
+			detail += "\n复核费记入经营费用，原始成本不变。"
+			break
 	if entry.kind == "sale" and not item.provenance.is_empty():
 		var sale := _sale_for_entry(day, entry)
 		var buyer := catalog.get_definition("buyers", sale.get("buyer_id", "")) as BuyerDefinition
@@ -82,7 +88,15 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 			if EarlyRedemption.enabled(day.definition) and ticket.terms_id == FamiliarStories.TERMS: detail += "\n" + EarlyRedemption.AGREEMENT
 	if SevenNightPlan.enabled(day.definition) and entry.kind in ["acquisition", "pawn_loan"]:
 		var row := VarietySaveCodec.selection(day.state, item.source_visit_id)
-		if not row.is_empty() and not row.context_id.is_empty() and not row.has("night_policy"): note += "\n" + String(SevenNightPlan.context(day.definition, row.context_id).voice.completed)
+		var matched := false
+		for visit in day.state.visits:
+			if visit.visit_id != item.source_visit_id: continue
+			matched = true
+			var voice: String = visit.voice.get("completed", "")
+			if not voice.is_empty(): note += "\n" + voice
+			break
+		# Older receipts may outlive their live visitor; retain the saved context.
+		if not matched and not row.is_empty() and not row.context_id.is_empty() and not row.has("night_policy"): note += "\n" + String(SevenNightPlan.context(day.definition, row.context_id).voice.completed)
 	var late := VarietySaveCodec.selection(day.state, item.source_visit_id)
 	if entry.kind == "acquisition" and late.get("night_policy") == "wet_cloth":
 		note += "\n那块湿包布留在了柜边。"

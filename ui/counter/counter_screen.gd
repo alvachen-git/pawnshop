@@ -24,6 +24,8 @@ var _receipt: TradeReceiptView
 var _receipt_run := ""
 var _receipt_id := ""
 var _receipt_followup := ""
+var _receipt_event := ""
+var _receipt_night := 0
 var _return_id := ""
 var _narrative: NarrativeScene
 var _feedback: TradeFeedbackView
@@ -294,19 +296,28 @@ func _departure_closed(_destination: String) -> void:
 
 func _show_receipt(receipt: Dictionary) -> void:
 	if receipt.is_empty(): return
-	for slot in _session.definition.customer_slots:
-		if not slot.tutorial.is_empty() and receipt.id == "purchase/%s/%d/%s" % [_session.definition.id, _session.read_state().current_night_index, slot.id]:
-			receipt.stamp = true
+	var key := String(_session._day.state.run_token) + "/" + String(receipt.id)
+	if _seen_feedback.has(key): return
+	_seen_feedback[key] = true
+	_reviewing = false
+	_remember_feedback(receipt)
+	_receipt_event = ""
+	# Acknowledge the existing first-account event through its receipt, once.
+	if receipt.kind == "acquisition" and _session.read_state().pending_event_id == "evt_intro_first_trade":
+		_receipt_event = "evt_intro_first_trade"
+		receipt = receipt.duplicate(true)
+		receipt.detail = "你看着纸上的红印，想起顾叔按住你手的那一刻。\n" + tr("opening.first_trade.continue.result")
+		receipt.can_inspect = _session.read_state().phase == "open" and _session.read_state().risk_pending.is_empty() and not _session.mirror_pending()
+		_narrative.hide()
 	_receipt_run = _session.read_state().run_token
+	_receipt_night = _session.read_state().current_night_index
 	_receipt_id = receipt.id
 	_receipt_followup = receipt.followup
-	if not receipt.get("stamp", false):
-		_start_feedback(receipt)
-		return
 	_close_menu()
 	_counter_view.dismiss_contexts()
 	%Drawer.hide()
 	_receipt.present(receipt)
+	_refresh_recent_visibility()
 	_status_view.release_cash()
 
 func _receipt_closed(destination: String) -> void:
@@ -320,6 +331,10 @@ func _receipt_closed(destination: String) -> void:
 		else: _close_drawer()
 		_refresh_recent_visibility()
 		return
+	var event := _receipt_event
+	_receipt_event = ""
+	if not event.is_empty() and _session.read_state().pending_event_id == event:
+		_session.event_command(event, "continue")
 	_counter_view.release_feedback()
 	_drain_departures.call_deferred()
 	var state := _session.read_state()
@@ -334,6 +349,7 @@ func _receipt_closed(destination: String) -> void:
 	elif state.phase != "open": _flow.show_panel(&"night")
 	elif _session.counter_model().trade.get("pawn_return", false): _flow.show_panel(&"trade")
 	else: _close_drawer()
+	_refresh_recent_visibility()
 
 func _sync_room() -> void:
 	var state := _session.read_state()
@@ -359,7 +375,8 @@ func _sync_room() -> void:
 		var still_present := false
 		for entry in state.ledger_entries:
 			if entry.transaction_id == _receipt_id: still_present = true
-		if state.run_token != _receipt_run or not still_present or state.phase != "open": _receipt.hide()
+		# A completed redemption can land exactly at sealing time.
+		if state.run_token != _receipt_run or not still_present or (not _reviewing and state.current_night_index != _receipt_night) or state.phase in ["dead", "bankrupt"]: _receipt.hide()
 	_counter_view.visible = not _room.visible
 	%MenuButton.visible = not _room.visible
 	_status_view.visible = not _room.visible
@@ -507,6 +524,7 @@ func _reset_reception() -> void:
 	_departure.hide()
 	_return_id = ""
 	_receipt_id = ""
+	_receipt_event = ""
 	_close_menu()
 	_close_drawer()
 	_counter_view.dismiss_contexts()
