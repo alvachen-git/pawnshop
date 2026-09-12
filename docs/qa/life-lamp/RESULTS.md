@@ -1,8 +1,10 @@
 # v22 命灯验收
 
-本地完成，未提交、推送或合并。基线 main：`5883ef3261e83d82a139f6e6f6eeb57f1121bbf9`。Godot 4.6.1，Windows，实际图形测试使用 NVIDIA RTX 3060 Laptop / OpenGL Compatibility。
+初次验收基线 main：`5883ef3261e83d82a139f6e6f6eeb57f1121bbf9`。Godot 4.6.1，Windows，实际图形测试使用 NVIDIA RTX 3060 Laptop / OpenGL Compatibility。
 
 ## 自动检查
+
+2026-09-12 经用户确认发布，已合入 main `60736d6` 的议价界面与柜台灯光更新，无冲突。合入后重新验证：个人风险 2364、跨进程读档 20、M0–M7 1800、寝屋 701、议价反应 18、议价实机 129、命灯实机两种分辨率各 84、营业死亡实机 20，全部通过。对应日志为 `.artifacts/merge-*.log`。下方灯态对照沿用初次验收画面，营业中死亡图更新为合入后的柜台表现。
 
 | 检查 | 结果 |
 |---|---|
