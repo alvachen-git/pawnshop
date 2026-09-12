@@ -7,6 +7,8 @@ var transaction_modes: Array = []
 var person: Dictionary = {}
 var pawn_terms_id := ""
 var voice: Dictionary = {}
+# Immediate departure feedback; never serialized separately from action history.
+var departure_reply := ""
 var visit_id: String
 var customer_id: String
 var arrival: int

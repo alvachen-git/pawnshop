@@ -33,6 +33,7 @@ func decode(data: Dictionary, run: RunDefinition, version: int, catalog: Content
 		var args: Array = row.args.duplicate(true)
 		for index in args.size():
 			if COMMANDS[row.method][index] == TYPE_INT: args[index] = int(args[index])
+		session._counter.quote_before_timeout = recorded_quote_first(data, row, session._day.state)
 		session.callv(row.method, args)
 	var state := session._day.state
 	var expected: Dictionary = JSON.parse_string(JSON.stringify(state.to_read_model()))
@@ -57,6 +58,15 @@ func decode(data: Dictionary, run: RunDefinition, version: int, catalog: Content
 	state.bankruptcy_archive.assign(data.bankruptcy_archive)
 	error_message = ""
 	return state
+
+static func recorded_quote_first(data: Dictionary, command: Dictionary, state: RunState) -> bool:
+	if command.method != "counter_command" or command.args[0] not in ["offer", "pawn"]: return true
+	for key in ["scenario_history", "bargaining_history"]:
+		if not data.get(key) is Array: continue
+		for row in data[key]:
+			if row is Dictionary and row.get("command") == command.args[0] and row.get("visit_id") == command.args[1] and row.get("night") == state.current_night_index and row.get("start") == state.game_minutes and row.get("ok") is bool:
+				return row.ok
+	return true
 
 static func valid_command(row: Variant) -> bool:
 	if not row is Dictionary or row.size() != 2 or not row.get("method") is String or not COMMANDS.has(row.method) or not row.get("args") is Array: return false

@@ -47,10 +47,12 @@ func _refresh() -> void:
 	var deferred := false
 	var reply_name := ""
 	var reply_style := ""
+	var quote_refused := false
 	for row in state.visit_history.slice(_cursor):
 		if not REASONS.has(row.outcome) or not _known.has(row.visit_id): continue
 		var visit: CustomerVisit = _known[row.visit_id].visit
 		var was_active: bool = _known[row.visit_id].was_active
+		if was_active and not visit.departure_reply.is_empty(): quote_refused = true
 		early_departed = early_departed or EarlyRedemption.is_visit(visit)
 		deferred = deferred or row.outcome == "redemption_deferred"
 		active_departed = active_departed or was_active
@@ -67,7 +69,7 @@ func _refresh() -> void:
 		var reason: String = REASONS[row.outcome]
 		if not was_active:
 			reason = "还没轮到柜台，等候期限已到，客人先走了。" if row.outcome == "timed_out" else "尚在排队，铺门已关，客人带着货物离开。"
-		lines.append(reason + "\n" + speech)
+		lines.append((visit.departure_reply + "\n" if was_active and not visit.departure_reply.is_empty() else "") + reason + "\n" + speech)
 		ids.append(row.visit_id)
 	var elapsed := maxi(0, state.game_minutes - _minute)
 	_capture()
@@ -87,6 +89,7 @@ func _refresh() -> void:
 	if ids.size() == 1 and early_departed: title = "已约定回访" if deferred else "提前取赎未办妥"
 	departed.emit({"id": "departure/" + "/".join(ids), "kind": "departure", "title": title, "item": subjects[0] if ids.size() == 1 else "%d位客人带着货物离开了" % ids.size(),
 		"reply_name": reply_name, "reply_style": reply_style if not early_departed else "",
+		"quote_refused": quote_refused,
 		"night": state.current_night_index, "active_departed": active_departed,
 		"clock": "第%d夜 · %s" % [state.current_night_index, TimeController.clock_text(_session.definition.opening_minute, state.game_minutes)],
 		"note": lines[0] if ids.size() == 1 else "离场缘由列在下方，可滚动查看。", "detail": detail,

@@ -7,6 +7,8 @@ var appraisal := AppraisalSystem.new()
 var trades := TradeController.new()
 var inventory := InventoryManager.new()
 var economy := EconomyManager.new()
+# Replay can retain the expiry-first outcome of a historical quote.
+var quote_before_timeout := true
 
 func _init(content: ContentCatalog) -> void:
 	catalog = content
@@ -14,7 +16,7 @@ func _init(content: ContentCatalog) -> void:
 func reason(day: DayController, command: String, visit_id: String, detail := "", amount := 0) -> String:
 	if not PawnReturnService.current(day.state).is_empty(): return "请先接待持票回访的原当户。"
 	var visit := customers.active(day.state)
-	if day.state.phase != &"open" or visit == null or visit.visit_id != visit_id:
+	if day.state.phase != &"open" or visit == null or visit.visit_id != visit_id or day.state.game_minutes >= visit.expires_at:
 		return "当前顾客已离开或柜台未营业。"
 	var late_error := NightMarketPlan.command_reason(visit, command)
 	if not late_error.is_empty(): return late_error
@@ -109,8 +111,9 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"belittle": cost = int(customer.belittle.minutes)
 		"reject": cost = customer.terms.reject_minutes
 	day.spend_action(cost)
-	customers.update(day.state)
-	# An action taking us to the customer's deadline or sealing time has no late effect.
+	# Resolve a quote begun in time before its speaker leaves. Other customers,
+	# inspections and shop closing retain their usual deadlines.
+	customers.update(day.state, visit_id if quote_before_timeout and command in ["offer", "pawn"] else "")
 	if visit.status != "active": return ActionResult.new(false, "消耗 %d 分钟，但顾客在完成前已离场；未取得证据或成交。" % cost + ("\n" + String(visit.voice.timed_out) if visit.voice.has("timed_out") else ""))
 	var message := ""
 	match command:
@@ -161,6 +164,10 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 				message = (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "成交：支付 %d，物品已入库。估值不等于现金，尚未出售。" % amount
 			else:
 				message = String(visit.voice.get("refused", "对方拒绝了报价，提出新的要价。"))
+				if day.state.game_minutes >= visit.expires_at:
+					visit.departure_reply = message
+					customers.finish(day.state, visit, "timed_out")
+					message += "\n" + String(visit.voice.get("timed_out", "他朝门外看了一眼，收好东西，匆匆离开。"))
 	message += NightMarketRisk.after_command(day.state, visit, command, detail)
 	if visit.status == "active":
 		if visit.trade.patience <= 0:
