@@ -4,6 +4,7 @@ extends RefCounted
 const PHASE_PRE_OPEN := &"pre_open"
 
 var personal_risk_enabled := false
+var room_photo_position := "" # Empty inherits the immutable opening choice.
 var personal_damage := 0
 var personal_risk_history: Array[Dictionary] = []
 var personal_death_phase := ""
@@ -126,6 +127,7 @@ func to_read_model() -> Dictionary:
 	}
 
 	if personal_risk_enabled:
+		data["room_photo_position"] = room_photo_position
 		data.merge({"pending_pawn_choices": pending_pawn_choices.duplicate(true), "personal_risk_enabled": true, "personal_damage": personal_damage, "personal_risk_history": personal_risk_history.duplicate(true), "personal_death_phase": personal_death_phase, "action_journal": action_journal.duplicate(true)})
 	if night_market_enabled:
 		data["night_market_history"] = night_market_history.duplicate(true)

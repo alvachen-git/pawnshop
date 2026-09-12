@@ -11,6 +11,7 @@ func bind(session: RunSession, view: PrivateRoomView) -> void:
 	_view = view
 	_view.command_requested.connect(_execute)
 	_session.changed.connect(refresh)
+	_session.restored.connect(_view.close_private_panels)
 	refresh()
 
 func _execute(command: String) -> void:
@@ -23,6 +24,7 @@ func _execute(command: String) -> void:
 			result = _session.execute("continue_run")
 	if not result.ok: _error = result.message
 	refresh()
+	if result.ok and command in RoomKeepsakes.COMMANDS: _view.close_private_panels()
 	if not result.ok and not _view.visible: _view.show_transition_error(result.message)
 
 func refresh() -> void:
@@ -54,4 +56,6 @@ func refresh() -> void:
 	if state.phase == "dead" and grade == 5: body = "柜下传来湿布展开的声音。窗纸透出一点白，屋里却已经没有自己的影子。"
 	if grade > 0: body += "\n\n" + lamp
 	var bedroom_death: bool = state.phase == "dead" and (state.get("personal_death_phase", "") in ["private_room", "sleep_resolution"] if state.get("personal_risk_enabled", false) else not state.room_history.is_empty() and state.room_history.back().action in ["personal_defy", "finish_sleep"])
-	_view.render({"lamp_state": lamp_state, "lamp_grade": grade, "visible": state.room_enabled and (state.phase in ["private_room", "sleep_resolution"] or bedroom_death), "phase": state.phase, "night": state.current_night_index, "body": body, "lamp": lamp, "haunting": haunting or grade > 0, "dead": state.phase == "dead", "pending": not state.risk_pending.is_empty(), "can_sleep": _session.can_execute("sleep"), "can_finish": _session.can_execute("finish_sleep"), "error": _error, "gu_letter": "INTRO_LETTER_STORED" in state.narrative_flags, "photo_placed": "INTRO_MANQING_PHOTO_PLACED" in state.narrative_flags})
+	var keepsakes := RoomKeepsakes.read_model(_session._day.state)
+	keepsakes.available = keepsakes.available and not _session.mirror_pending()
+	_view.render({"keepsakes": keepsakes, "lamp_state": lamp_state, "lamp_grade": grade, "visible": state.room_enabled and (state.phase in ["private_room", "sleep_resolution"] or bedroom_death), "phase": state.phase, "night": state.current_night_index, "body": body, "lamp": lamp, "haunting": haunting or grade > 0, "dead": state.phase == "dead", "pending": not state.risk_pending.is_empty(), "can_sleep": _session.can_execute("sleep"), "can_finish": _session.can_execute("finish_sleep"), "error": _error, "gu_letter": "INTRO_LETTER_STORED" in state.narrative_flags, "photo_placed": keepsakes.photo_placed})
