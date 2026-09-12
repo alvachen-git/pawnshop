@@ -9,17 +9,21 @@ var _pending := ""
 var _phase := ""
 var _intrusion := false
 var _attention := ""
+var _record_id := ""
 
 func bind(session: RunSession, view: RiskPanel) -> void:
 	_session = session
 	_view = view
 	_view.intent.connect(_choose)
+	_view.record_selected.connect(func(id: String) -> void: _record_id = id; refresh())
+	_session.restored.connect(func() -> void: _record_id = "")
 	_session.changed.connect(refresh)
 	_session.restored.connect(func() -> void: _pending = ""; _phase = ""; _attention = ""; _intrusion = false; _held.clear())
 	refresh()
 
 func refresh() -> void:
-	var model := _session.risk_model()
+	var model := _session.risk_model(_record_id)
+	_record_id = model.record_id
 	_view.render(model)
 	var phase: String = _session.read_state().phase
 	var intrusion: bool = model.get("intrusion", false)
@@ -31,8 +35,10 @@ func refresh() -> void:
 	_phase = phase
 	_intrusion = intrusion
 	if needs_attention and _session.read_state().pending_event_id.is_empty():
+		_view.show_notes(false)
 		_view.reset_reading_position()
 		route_requested.emit(&"risk")
 
 func _choose(command: String, id: String, _detail: String, _amount: int) -> void:
-	_session.risk_command(command, id, _detail)
+	var result := _session.risk_command(command, id, _detail)
+	_view.show_notes(command == "study" and result.ok)

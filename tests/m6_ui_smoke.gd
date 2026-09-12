@@ -47,7 +47,7 @@ func _run() -> void:
 	_find_trade(_main)._price.value = 20
 	await _click("正式报价并收购")
 	_check(_session.read_state().inventory_instances.size() == 2, "铜镜证据帮助真实议价收表")
-	await _click("鬼货与绝当录"); await _click("盖好红布 · 10分钟")
+	await _click("物品记事"); await _click("盖好红布 · 10分钟")
 	await _finish_m5()
 	_check(_session.read_state().summaries.back().outcome == "mirror_safe", "初窥后收手与覆镜可平安收尾")
 	await _capture("08_safe_summary")
@@ -70,7 +70,7 @@ func _run() -> void:
 	await create_timer(0.3).timeout
 	await _click_button(_find_dialog(_main).get_ok_button())
 	_check(_session.read_state().phase == "dead", "真实UI重载死亡终局")
-	await _click("鬼货与绝当录")
+	await _click("物品记事")
 	await _capture("12_history")
 	print("M6 UI SMOKE: %d assertions, %d failures" % [_assertions, _failures])
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(_save_path))
@@ -83,5 +83,5 @@ func _midnight_ui() -> void:
 		await _click("营业")
 		await _click("等待 · 60 分钟" if 360 - int(_session.read_state().game_minutes) >= 60 else "歇一歇 · 5 分钟")
 	await _resolve_events()
-	await _click("鬼货与绝当录")
+	await _click("物品记事")
 	_check(not _session.risk_model().attention_id.is_empty(), "子时来客的邀请可见")

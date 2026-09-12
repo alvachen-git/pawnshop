@@ -210,12 +210,12 @@ func render(model: Dictionary) -> void:
 	super.render(model)
 	var pawn_return := bool(model.get("pawn_return", false))
 	for control in _forms:
-		control.visible = not _visit_id.is_empty() and not pawn_return
+		control.visible = not _visit_id.is_empty() and not pawn_return and not model.get("exchange", false)
 	var visual: Dictionary = model.get("visual", {})
 	_metrics.visible = not visual.is_empty() and not pawn_return
 	_body.visible = visual.is_empty() or pawn_return
 	_render_reactions(model.get("reactions", []), visual, pawn_return)
-	if pawn_return:
+	if pawn_return or model.get("exchange", false):
 		_move_buttons_to(_column)
 		_buttons.show()
 		return

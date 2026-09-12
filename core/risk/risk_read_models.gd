@@ -1,9 +1,9 @@
 class_name RiskReadModels
 extends RefCounted
 
-static func build(day: DayController, manager: RiskManager, error_message: String) -> Dictionary:
+static func build(day: DayController, manager: RiskManager, error_message: String, item_id := "") -> Dictionary:
 	var state := day.state
-	var body := "鬼货存放\n柜里静得很，偶尔有木头受潮的轻响。\n"
+	var body := "柜里静得很，偶尔有木头受潮的轻响。\n"
 	var buttons: Array = []
 	var held: Array = []
 	var intrusion := false
@@ -17,6 +17,7 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 		if row.action == "close": closed.append(key)
 		if (row.action == "close" and not row.covered) or (row.action == "uncover" and key in closed): intrusion = true
 	for item in manager.ghosts(state):
+		if not item_id.is_empty() and item.definition_id != item_id: continue
 		if item.ownership_state not in ["owned", "pledged"]: continue
 		held.append(item.instance_id)
 		var definition := manager.catalog.get_definition("items", item.definition_id) as ItemDefinition
@@ -70,7 +71,7 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 			body = "空柜前的影子\n\n原物已经交出，柜前却还站着一道影子。它慢慢转过脸来，灯火随之矮了下去。\n\n「别应声，也别看它的眼睛。」"
 			for button in buttons:
 				if button.command in ["retreat", "defy"]: button.label = "垂下眼，护住灯火" if button.command == "retreat" else "抬眼看向那道影子"
-	var archive := "《绝当录》\n"
+	var archive := "" if state.death_archive.is_empty() else "《绝当录》\n"
 	if state.night_market_enabled and state.risk_pending.is_empty():
 		if state.phase == &"dead" and not state.summaries.is_empty() and state.summaries.back().outcome == "night_guest_death":
 			body = "灯芯烧尽了\n\n柜下传来湿布展开的声音。你想起身，屋里已经没有自己的影子。"
@@ -89,7 +90,6 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 		elif not state.personal_risk_history.is_empty():
 			var latest: Dictionary = state.personal_risk_history.back()
 			if latest.night == state.current_night_index and latest.minute == state.game_minutes and latest.phase == String(state.phase): body += "\n\n" + latest.cause
-	if state.death_archive.is_empty(): archive += "纸页尚空。"
 	for record in state.death_archive:
 		# IDs identify the recorded consequence; prose can be revised without rewriting history.
 		var record_rule := manager.catalog.get_definition("ghost_rules", record.rule_id) as GhostRuleDefinition
@@ -99,4 +99,18 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 			var encounter := MirrorEncounterService.find_definition(run, record.encounter_id) if run != null else null
 			cause = encounter.text("death_cause") if encounter != null else record.cause
 		archive += "第%d夜 · %s\n%s\n遗银%d · 现货成本%d · 在当本金%d\n\n" % [record.night, record.item_name, cause, record.cash, record.inventory_cost, record.pawn_principal]
-	return {"body": body + ("\n\n" + error_message if not error_message.is_empty() else ""), "buttons": buttons, "history": archive, "pending_id": state.risk_pending, "held_ids": held, "intrusion": intrusion}
+	return {"body": body + ("\n\n" + error_message if not error_message.is_empty() else ""), "buttons": buttons, "history": "", "archive": archive, "pending_id": state.risk_pending, "held_ids": held, "intrusion": intrusion}
+
+static func records(day: DayController, manager: RiskManager) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	var known: Array[String] = []
+	for item in manager.ghosts(day.state):
+		if item.definition_id not in known: known.append(item.definition_id)
+	# An old ticket can lead to the mirror's story even if it was never bought.
+	if day.state.narrative_flags.any(func(flag: String) -> bool: return flag.begins_with("wm_")) and "item_weeping_mirror" not in known:
+		known.append("item_weeping_mirror")
+	for id in known:
+		var definition := manager.catalog.get_definition("items", id) as ItemDefinition
+		result.append({"id": id, "label": definition.display_name})
+	if not day.state.death_archive.is_empty(): result.append({"id": "death_archive", "label": "《绝当录》"})
+	return result

@@ -5,6 +5,8 @@ signal departed(notice: Dictionary)
 signal reset
 
 const REASONS := {
+	"inspection_refused": "来客不许验货，这笔交易已经作罢。",
+	"swap_rejected": "你未答应调换，原当物仍在铺内保管。",
 	"redemption_deferred": "已约定按原票日期再来，赎金不变。",
 	"patience_exhausted": "耐心耗尽，客人不愿再谈价。",
 	"rounds_exhausted": "议价轮次已用尽，双方没有谈成。",
@@ -61,7 +63,7 @@ func _refresh() -> void:
 			reply_name = name
 			reply_style = "refused" if row.outcome in ["patience_exhausted", "rounds_exhausted"] else "timed_out" if row.outcome == "timed_out" else "rejected" if row.outcome == "shop_closed" else ""
 		subjects.append(name + " · " + item.display_name)
-		var speech: String = {"redemption_deferred": "姜素云收好当票：‘那就照票上的日子来，钱我留着。’", "patience_exhausted": "他把东西收回怀里：“这买卖，不谈了。”", "rounds_exhausted": "他重新扎好包袱：“价钱合不到一处，就到这里吧。”", "timed_out": "他朝门外看了一眼，收好东西，匆匆离开。", "shop_closed": "门板落下前，客人带着旧物离开了。"}[row.outcome]
+		var speech: String = {"inspection_refused": "你的手刚伸向包裹，那人便一把收回：‘说过了，不许验货。’他带着东西走了，未留下可核实的细节。", "swap_rejected": "他合上匣子，八十银元也带走了。","redemption_deferred": "姜素云收好当票：‘那就照票上的日子来，钱我留着。’", "patience_exhausted": "他把东西收回怀里：“这买卖，不谈了。”", "rounds_exhausted": "他重新扎好包袱：“价钱合不到一处，就到这里吧。”", "timed_out": "他朝门外看了一眼，收好东西，匆匆离开。", "shop_closed": "门板落下前，客人带着旧物离开了。"}[row.outcome]
 		if row.outcome == "timed_out" and visit.voice.has("timed_out"): speech = String(visit.voice.timed_out)
 		if EarlyRedemption.is_visit(visit) and row.outcome == "shop_closed": speech = visit.voice.timed_out
 		var reason: String = REASONS[row.outcome]

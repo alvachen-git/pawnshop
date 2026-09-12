@@ -486,7 +486,7 @@ text = "铺中记事"
 [node name="RiskButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
 unique_name_in_owner = true
 layout_mode = 2
-text = "鬼货与绝当录"
+text = "物品记事"
 
 [node name="NightButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
 unique_name_in_owner = true

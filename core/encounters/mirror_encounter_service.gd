@@ -85,6 +85,7 @@ func model(day: DayController) -> Dictionary:
 	if day.state.personal_risk_enabled and peeked: result.body += PersonalRisk.warning(day.state, "mirror/" + visit.visit_id, 1)
 	for command in (["stop", "pursue"] if peeked else ["peek", "decline"]):
 		var label: String = {"peek": "借镜照一照来客", "decline": "继续招呼柜前的客人", "stop": "收回视线", "pursue": "看清那张旧当票"}[command]
+		if LivingMirror.enabled(day.definition) and command == "peek": label = "看镜中旧事"
 		var cost := definition.peek_minutes if command == "peek" else (definition.pursue_minutes if command == "pursue" else 0)
 		var reason := ""
 		if cost > 0:

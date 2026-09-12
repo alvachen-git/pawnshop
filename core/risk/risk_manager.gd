@@ -63,7 +63,7 @@ func reason(day: DayController, id: String, command: String) -> String:
 	if command not in ["cover", "uncover"]: return "未知处理方式。"
 	if day.state.phase not in [&"open", &"closed_processing"]: return "只可在营业或关门处理时动手。"
 	var item := InventoryManager.new().find(day.state, id)
-	if item == null or rule_for(item) == null or item.ownership_state not in ["owned", "pledged"]: return "该鬼货不在铺中。"
+	if item == null or rule_for(item) == null or item.ownership_state not in ["owned", "pledged"]: return "该物品不在铺中。"
 	if covered(day.state, id) == (command == "cover"): return "物品已经处于该存放状态。"
 	var rule := rule_for(item)
 	var cost := action_minutes(day.definition, rule, command)

@@ -42,7 +42,7 @@ func _run() -> void:
 	await create_timer(0.3).timeout
 	await _click_button(_find_dialog(_main).get_ok_button())
 	_check(_session.read_state().phase == "dead", "真实UI读取死亡存档不能复活")
-	await _click("鬼货与绝当录")
+	await _click("物品记事")
 	var panel := _main.find_child("RiskPanel", true, false) as RiskPanel
 	var archive_label: Label = panel._history
 	var scroll := panel._column.get_parent() as ScrollContainer
@@ -51,7 +51,7 @@ func _run() -> void:
 	await _capture("07_archive")
 	await _new_m5()
 	_check(_session.read_state().death_archive.size() == 1, "真实UI新游戏保留绝当录")
-	await _click("鬼货与绝当录")
+	await _click("物品记事")
 	await _capture("08_new_run_archive")
 	print("M5 UI SMOKE: %d assertions, %d failures" % [_assertions, _failures])
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(_save_path))

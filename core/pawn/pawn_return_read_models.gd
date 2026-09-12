@@ -7,7 +7,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	if visit.is_empty(): return
 	var ticket := service.pawns.find(day.state, visit.ticket_id)
 	var customer := service.catalog.get_definition("customers", ticket.customer_id) as CustomerDefinition
-	var item := InventoryManager.new().find(day.state, ticket.item_instance_id)
+	var item := InventoryManager.new().find(day.state, ticket.collateral_id())
 	var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 	var terms := service.catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
 	var number := "%03d" % (day.state.pawn_tickets.find(ticket) + 1)
@@ -17,6 +17,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	if ticket.terms_id == FamiliarStories.TERMS: speech = FamiliarStoryVoice.redemption(ticket, day.state)
 	var description := "当票 %s · %s\n当户：%s\n本金 %d 银元 · 约定赎金 %d 银元\n办理 %d 分钟。原物仍在铺内，验票后交还。" % [number, definition.display_name, VarietyService.name_for(ticket.person, customer), ticket.principal, ticket.redemption_amount, visit.minutes]
 	if visit.command == "extend": description = "当票 %s · %s\n当户：%s\n续当费 %d 银元 · 延长 %d 夜\n办理 %d 分钟，原物继续留铺。" % [number, definition.display_name, VarietyService.name_for(ticket.person, customer), ceili(ticket.principal * terms.extension_fee_ratio), terms.extension_nights, visit.minutes]
+	if not ticket.replacement_instance_id.is_empty(): description = description.replace("原物", "替物") + "\n原物已在那笔八十银元的买卖中交出。"
 	var clues: Array[Dictionary] = []
 	for id in item.revealed_clue_ids: clues.append({"id": id, "text": definition.find_clue(id).text})
 	var bounds := AppraisalSystem.new().valuation(item, definition)
@@ -24,7 +25,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	model.customer = VarietyService.name_for(ticket.person, customer) + "\n持票回访"
 	model.item = definition.display_name
 	model.queue = "原当户优先接待 · 核妥当票后再迎新客"
-	model.context_actions = {"customer": [{"id": "dialogue", "label": "看当票", "enabled": true}, {"id": "trade", "label": "办理赎当" if visit.command == "redeem" else "办理续当", "enabled": true}], "item": [{"id": "appraisal", "label": "查看原物", "enabled": true}]}
+	model.context_actions = {"customer": [{"id": "dialogue", "label": "看当票", "enabled": true}, {"id": "trade", "label": "办理赎当" if visit.command == "redeem" else "办理续当", "enabled": true}], "item": [{"id": "appraisal", "label": "查看替物" if not ticket.replacement_instance_id.is_empty() else "查看原物", "enabled": true}]}
 	model.visual = {"pawn_return": true, "customer_name": VarietyService.name_for(ticket.person, customer), "portrait_asset": ticket.person.get("portrait", customer.portrait_asset_id),
 		"item_name": definition.display_name, "item_asset": definition.visual_asset_id, "item_description": definition.description,
 		"introduction": speech, "speech": [], "clues": clues, "estimate": "%d–%d" % [bounds.x, bounds.y],
@@ -38,4 +39,4 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	model.trade.can_offer = false
 	model.trade.can_pawn = false
 	var reason := service.pawns.reason(day, ticket, terms, visit.command)
-	model.trade.buttons = [{"command": visit.command, "detail": "", "label": "验票收赎，交还原物" if visit.command == "redeem" else "验票收息，续当留物", "enabled": reason.is_empty(), "reason": reason}]
+	model.trade.buttons = [{"command": visit.command, "detail": "", "label": ("验票收赎，交付替物" if not ticket.replacement_instance_id.is_empty() else "验票收赎，交还原物") if visit.command == "redeem" else "验票收息，续当留物", "enabled": reason.is_empty(), "reason": reason}]

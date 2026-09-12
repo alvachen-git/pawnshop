@@ -53,5 +53,6 @@ func render(model: Dictionary) -> void:
 	if not visual.is_empty():
 		_body.text = visual.introduction if speech.is_empty() else "最近答复 · " + speech.back().question + "\n\n" + speech.back().answer
 		_body.text += "\n\n口供须与实物核对。"
+		if not visual.get("soul_note", "").is_empty(): _body.text += "\n\n" + visual.soul_note
 		if not visual.message.is_empty() and not _body.text.contains(visual.message):
 			_body.text += "\n" + visual.message

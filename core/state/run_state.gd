@@ -9,6 +9,14 @@ var personal_risk_history: Array[Dictionary] = []
 var personal_death_phase := ""
 var pending_pawn_choices: Dictionary = {}
 var action_journal: Array[Dictionary] = []
+var ghost_version := 0
+var ghost_catalog: ContentCatalog
+var ghost_origin: Dictionary = {}
+var ghost_commands: Array[Dictionary] = []
+var soul_history: Array[Dictionary] = []
+var ghost_visits: Array[Dictionary] = []
+var exchange_history: Array[Dictionary] = []
+var person_deaths: Array[Dictionary] = []
 var run_definition_id: StringName
 var current_night_index: int = 1
 var phase: StringName = PHASE_PRE_OPEN
@@ -69,6 +77,7 @@ static func create(definition: RunDefinition) -> RunState:
 	state.run_definition_id = definition.id
 	state.personal_risk_enabled = PersonalRisk.enabled(definition)
 	state.night_market_enabled = NightMarketPlan.enabled(definition)
+	state.ghost_version = int(definition.variety.get("ghost_guests_version", 0))
 	state.goods_version = int(definition.variety.get("goods_expertise_version", 0))
 	state.preparation_version = int(definition.variety.get("preparation_version", 0))
 	state.room_enabled = definition.private_room
@@ -130,6 +139,8 @@ func to_read_model() -> Dictionary:
 	if night_market_enabled:
 		data["night_market_history"] = night_market_history.duplicate(true)
 		data["night_market_enabled"] = true
+	if ghost_version == 1:
+		for key in ["ghost_origin", "ghost_commands", "soul_history", "ghost_visits", "exchange_history", "person_deaths"]: data[key] = get(key).duplicate(true)
 	if goods_version == 1: data["expertise_history"] = expertise_history.duplicate(true)
 	if not familiar_plan.is_empty():
 		data["familiar_plan"] = familiar_plan.duplicate(true)
