@@ -12,6 +12,7 @@ var definition: RunDefinition
 var content_version: int
 # Transient feedback ownership; never serialized into the player's save.
 var _message_visit_id := ""
+var _negotiation_reactions := NegotiationReactions.new()
 var message := "开铺前准备。查看面板不耗时；开铺后可接待顾客。":
 	set(value):
 		message = value
@@ -222,7 +223,10 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 	var ledger_size := _day.state.ledger_entries.size()
 	var feedback_before := _feedback_snapshot()
 	if _counter != null:
+		var negotiating_visit := _counter.customers.active(_day.state)
+		var asking_before := negotiating_visit.trade.asking_price if negotiating_visit != null else 0
 		result = _counter.execute(_day, command, visit_id, detail, amount)
+		_negotiation_reactions.record(_day, negotiating_visit, asking_before, command, detail, result)
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
@@ -235,6 +239,7 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 
 func counter_model() -> Dictionary:
 	var model := CounterReadModels.build(_day, _counter, message, _message_visit_id)
+	model.trade.reactions = _negotiation_reactions.for_visit(_day.state, model.active_id)
 	PawnReturnReadModels.enrich(model, _day, _commerce)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
 	if not _day.state.pending_event_id.is_empty() or mirror_pending() or _day.state.phase in [&"dead", &"bankrupt"]:

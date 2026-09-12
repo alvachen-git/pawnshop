@@ -12,11 +12,17 @@ var _metrics: HBoxContainer
 var _ask_value: Label
 var _estimate_value: Label
 var _feedback: Label
+var _feedback_heading: Label
+var _price_change: Label
+var _reaction_history: VBoxContainer
+const PRICE_DOWN := Color("315f48")
+const PRICE_UP := Color("8d2a24")
+const PRICE_UNCHANGED := Color("302a24")
 var _forms: Array[Control] = []
 var _purchase_mode: Button
 var _pawn_mode: Button
 var _bargain_toggle: Button
-var _bargain_popup: PanelContainer
+var _bargain_popup: BargainDialog
 var _bargain_scroll: ScrollContainer
 var _reject: Button
 var _mode := "offer"
@@ -41,9 +47,21 @@ func _ready() -> void:
 
 	_feedback = Label.new()
 	_feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_feedback.add_theme_font_size_override("font_size", 15)
+	_feedback.add_theme_font_size_override("font_size", 17)
 	_column.add_child(_feedback)
-	_column.move_child(_feedback, 2)
+	_column.move_child(_feedback, 0)
+	_feedback_heading = Label.new()
+	_feedback_heading.add_theme_font_size_override("font_size", 14)
+	_column.add_child(_feedback_heading)
+	_column.move_child(_feedback_heading, 0)
+	_price_change = Label.new()
+	_price_change.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_price_change.add_theme_font_size_override("font_size", 17)
+	_column.add_child(_price_change)
+	_column.move_child(_price_change, 2)
+	_reaction_history = VBoxContainer.new()
+	_reaction_history.add_theme_constant_override("separation", 8)
+	_column.add_child(_reaction_history)
 
 	var separator := HSeparator.new()
 	_column.add_child(separator)
@@ -102,7 +120,7 @@ func _ready() -> void:
 	_forms.assign([separator, mode_row, _terms, _availability, _bargain_toggle, amount_caption, amount_row, action_row])
 	_price.value_changed.connect(func(_value: float) -> void: _refresh_amount_availability())
 	_pawn_price.value_changed.connect(func(_value: float) -> void: _refresh_amount_availability())
-	# Evidence and replies scroll independently of the transaction controls.
+	# Replies scroll independently of the transaction controls.
 	_content_scroll = _column.get_parent() as ScrollContainer
 	var margin := _content_scroll.get_parent()
 	margin.remove_child(_content_scroll)
@@ -117,14 +135,19 @@ func _ready() -> void:
 	for control in [separator, mode_row, _terms, _bargain_toggle, amount_caption, amount_row, action_row]:
 		control.reparent(form)
 	_sync_mode()
+	visibility_changed.connect(func() -> void:
+		if not is_visible_in_tree(): _bargain_popup.hide()
+	)
 
 
 func _metric(title: String) -> Label:
-	var column := VBoxContainer.new()
+	var column := HBoxContainer.new()
+	column.add_theme_constant_override("separation", 8)
 	column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_metrics.add_child(column)
 	var caption := Label.new()
 	caption.text = title
+	caption.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	caption.add_theme_font_size_override("font_size", 14)
 	column.add_child(caption)
 	var value := Label.new()
@@ -165,23 +188,20 @@ func _primary_button(title: String, action: Callable) -> Button:
 
 func _build_bargain_popup() -> void:
 	_column.remove_child(_buttons)
-	_bargain_popup = PanelContainer.new()
+	var layer := CanvasLayer.new()
+	layer.layer = 25
+	add_child(layer)
+	_bargain_popup = BargainDialog.new()
 	_bargain_popup.name = "BargainPopup"
-	_bargain_popup.visible = false
-	_bargain_popup.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_bargain_popup.add_theme_stylebox_override("panel", CounterTheme.painted_paper())
-	_column.add_child(_bargain_popup)
-	var margin := MarginContainer.new()
-	for side in ["left", "right", "top", "bottom"]:
-		margin.add_theme_constant_override("margin_" + side, 8)
-	_bargain_popup.add_child(margin)
-	_bargain_scroll = ScrollContainer.new()
-	_bargain_scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	_bargain_scroll.follow_focus = true
-	margin.add_child(_bargain_scroll)
+	layer.add_child(_bargain_popup)
+	_bargain_scroll = _bargain_popup.scroll
 	_buttons.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_buttons.add_theme_constant_override("separation", 6)
+	_buttons.add_theme_constant_override("separation", 10)
 	_bargain_scroll.add_child(_buttons)
+	_bargain_popup.choices = _buttons
+	_bargain_popup.dismissed.connect(func() -> void:
+		if _bargain_toggle.is_visible_in_tree(): _bargain_toggle.grab_focus()
+	)
 
 
 func render(model: Dictionary) -> void:
@@ -193,8 +213,8 @@ func render(model: Dictionary) -> void:
 		control.visible = not _visit_id.is_empty() and not pawn_return
 	var visual: Dictionary = model.get("visual", {})
 	_metrics.visible = not visual.is_empty() and not pawn_return
-	_feedback.text = _player_feedback(String(visual.get("message", "")))
-	_feedback.visible = not _feedback.text.is_empty()
+	_body.visible = visual.is_empty() or pawn_return
+	_render_reactions(model.get("reactions", []), visual, pawn_return)
 	if pawn_return:
 		_move_buttons_to(_column)
 		_buttons.show()
@@ -211,9 +231,15 @@ func render(model: Dictionary) -> void:
 		_mode = "offer"
 	_ask_value.text = str(visual.asking)
 	_estimate_value.text = visual.estimate
-	_body.text = _trade_summary(visual)
-	if _feedback.visible and _body.text.contains(_feedback.text.strip_edges()):
-		_feedback.hide()
+	# Keep actionable pawn context and supernatural warnings from current main,
+	# without bringing back the duplicated ordinary item/appraisal summary.
+	var context_lines: PackedStringArray = []
+	var pawn_background := String(visual.get("pawn_background", "")).strip_edges()
+	if not pawn_background.is_empty(): context_lines.append(pawn_background)
+	if not String(model.get("night_policy", "")).is_empty():
+		context_lines.append(String(visual.get("visit_constraint", "")).strip_edges())
+	_body.text = "\n".join(context_lines)
+	_body.visible = not _body.text.is_empty()
 	_style_bargaining(model)
 
 	_pawn_price.max_value = model.max_input
@@ -268,19 +294,51 @@ func _refresh_amount_availability() -> void:
 	_availability.visible = not lines.is_empty()
 
 
-func _trade_summary(visual: Dictionary) -> String:
-	var evidence: Array[String] = []
-	for clue in visual.get("clues", []):
-		var text := String(clue.get("text", "")).strip_edges()
-		if not text.is_empty() and text not in evidence:
-			evidence.append(text)
-	if evidence.is_empty():
-		evidence.append("尚未掌到足够线索。")
-	var summary := "%s · %s · %s\n掌眼所见\n%s" % [visual.item_name, visual.get("intent", ""), visual.attitude, "\n".join(evidence)]
-	for key in ["pawn_background", "visit_constraint"]:
-		var detail := String(visual.get(key, "")).strip_edges()
-		if not detail.is_empty(): summary += "\n" + detail
-	return summary
+func _render_reactions(rows: Array, visual: Dictionary, pawn_return: bool) -> void:
+	for child in _reaction_history.get_children():
+		_reaction_history.remove_child(child)
+		child.queue_free()
+	var active := not visual.is_empty() and not pawn_return
+	_feedback.visible = active
+	_feedback_heading.visible = active
+	_price_change.visible = active and not rows.is_empty()
+	_reaction_history.visible = active and rows.size() > 1
+	_ask_value.add_theme_color_override("font_color", PRICE_UNCHANGED)
+	if not active: return
+	_feedback_heading.text = "刚才的回应" if not rows.is_empty() else "客人态度"
+	_feedback.text = _reaction_text(rows[0]) if not rows.is_empty() else String(visual.get("attitude", "尚愿意交谈"))
+	if rows.is_empty(): return
+	_style_price_change(_price_change, rows[0])
+	_ask_value.add_theme_color_override("font_color", _change_color(rows[0]))
+	if rows.size() <= 1: return
+	_reaction_history.add_child(HSeparator.new())
+	var heading := Label.new()
+	heading.text = "先前的回应"
+	heading.add_theme_font_size_override("font_size", 14)
+	_reaction_history.add_child(heading)
+	for index in range(1, rows.size()):
+		var reply := Label.new()
+		reply.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		reply.add_theme_font_size_override("font_size", 15)
+		reply.text = _reaction_text(rows[index])
+		_reaction_history.add_child(reply)
+		var change := Label.new()
+		change.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		change.add_theme_font_size_override("font_size", 15)
+		_style_price_change(change, rows[index])
+		_reaction_history.add_child(change)
+
+func _reaction_text(row: Dictionary) -> String:
+	var text := _player_feedback(String(row.message))
+	# The public price transition gets its own accessible, color-coded line.
+	return text.replace("要价 %d → %d 银元。" % [row.before, row.after], "").strip_edges()
+
+func _change_color(row: Dictionary) -> Color:
+	return PRICE_DOWN if row.after < row.before else PRICE_UP if row.after > row.before else PRICE_UNCHANGED
+
+func _style_price_change(label: Label, row: Dictionary) -> void:
+	label.text = "要价未变 · %d 银元" % row.after if row.before == row.after else "%s · %d → %d 银元" % ["要价调低" if row.after < row.before else "要价调高", row.before, row.after]
+	label.add_theme_color_override("font_color", _change_color(row))
 
 
 func _player_feedback(message: String) -> String:
@@ -302,7 +360,7 @@ func _style_bargaining(model: Dictionary) -> void:
 		button.set_meta("trade_detail", entry.detail)
 		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		button.text_overrun_behavior = TextServer.OVERRUN_NO_TRIMMING
-		button.custom_minimum_size.y = 42
+		button.custom_minimum_size.y = 52
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.text = _compact_action_label(String(entry.label))
 		if entry.command == "reject":
@@ -320,7 +378,7 @@ func _style_bargaining(model: Dictionary) -> void:
 			evidence.name = "Evidence_" + String(entry.detail)
 			evidence.text = "已知线索：" + String(entry.evidence)
 			evidence.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-			evidence.add_theme_font_size_override("font_size", 14)
+			evidence.add_theme_font_size_override("font_size", 16)
 			evidence.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			_buttons.add_child(evidence)
 			_buttons.move_child(evidence, button.get_index() + 1)
@@ -361,30 +419,13 @@ func _toggle_bargain_menu() -> void:
 func open_bargain_menu() -> void:
 	if not _bargain_toggle.is_visible_in_tree() or _bargain_toggle.disabled:
 		return
-	var popup_height := _bargain_menu_height()
-	_bargain_popup.custom_minimum_size.y = popup_height
-	_bargain_scroll.custom_minimum_size.y = maxf(0.0, popup_height - 16.0)
-	_bargain_popup.show()
-	_reveal_bargain_menu.call_deferred()
+	var visual: Dictionary = _availability_model.get("visual", {})
+	_bargain_popup.present("%s · 顾客要价 %s 银元 · 证据估值 %s" % [visual.get("item_name", ""), _ask_value.text, _estimate_value.text])
 
 
-func _reveal_bargain_menu() -> void:
-	await get_tree().process_frame
-	if _bargain_popup.visible:
-		_content_scroll.ensure_control_visible(_bargain_popup)
-
-
-func _bargain_menu_height() -> float:
-	var height := 16.0
-	var separation := float(_buttons.get_theme_constant("separation"))
-	var visible_count := 0
-	for child in _buttons.get_children():
-		if child is Control and child.visible:
-			height += 42.0 if child is Button else 34.0
-			visible_count += 1
-	if visible_count > 1:
-		height += separation * float(visible_count - 1)
-	return clampf(height, 64.0, maxf(64.0, minf(220.0, _content_scroll.size.y)))
+func _emit_intent(command: String, visit_id: String, detail: String) -> void:
+	_bargain_popup.hide()
+	super._emit_intent(command, visit_id, detail)
 
 
 func _move_buttons_to(parent: Control) -> void:
