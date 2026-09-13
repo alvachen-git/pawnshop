@@ -2,7 +2,7 @@ class_name BedroomMirror
 extends Control
 
 const DEFAULT_REFLECTION := preload("res://assets/bedroom/mirror/reflection-normal.png")
-const MODES := [&"normal", &"ripple", &"fog", &"delayed"]
+const MODES := [&"normal", &"ripple", &"fog", &"delayed", &"shadow"]
 @onready var reflection: TextureRect = $Glass/Reflection
 @onready var phenomena: TextureRect = $Glass/Phenomena
 @onready var frame: TextureRect = $Frame
@@ -33,6 +33,7 @@ func set_state(request: Dictionary) -> void:
 		"overlay_texture": request.get("overlay_texture") as Texture2D,
 		"overlay_opacity": clampf(float(request.get("overlay_opacity", 1.0)), 0.0, 1.0),
 		"description": str(request.get("description", "")),
+		"event_instance": str(request.get("event_instance", "")),
 	}
 	if next == _target: return
 	_target = next
@@ -53,6 +54,7 @@ func _commit(state: Dictionary) -> void:
 	(frame.material as ShaderMaterial).set_shader_parameter("lamp_light", state.lamp_light)
 	_surface.set_shader_parameter("ripple", state.strength if state.mode == &"ripple" else 0.0)
 	_surface.set_shader_parameter("fog", state.strength if state.mode == &"fog" else 0.0)
+	_surface.set_shader_parameter("wall_shadow", state.strength if state.mode == &"shadow" else 0.0)
 	phenomena.texture = state.overlay_texture
 	phenomena.modulate.a = state.overlay_opacity
 	phenomena.visible = state.overlay_texture != null and state.overlay_opacity > 0.0
