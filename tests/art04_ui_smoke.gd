@@ -26,7 +26,7 @@ func _run() -> void:
 	screen._close_drawer()
 	await _frames()
 	var view := screen.get_node("CounterView") as CounterView
-	_check(view._portrait.texture.resource_path.ends_with("neighbor.png"), "妇人使用独立妇人立绘")
+	_check(view._portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT, "妇人使用独立妇人立绘")
 	_check(view._item_image.texture.resource_path.ends_with("hairpin_front.png"), "正式首客显示银簪")
 	await _clean_capture("01_opening")
 	var before := _session.read_state()
