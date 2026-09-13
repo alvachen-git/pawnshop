@@ -6,6 +6,8 @@ var persona: Dictionary = {}
 var id: String
 var name_key: String
 var portrait_asset_id: String
+var life_status := "living"
+var guest_rule := ""
 var identity_tags: Array
 var wealth_band: String
 var urgency_range: Array
@@ -31,6 +33,8 @@ static func from_source(source: Dictionary) -> CustomerDTO:
 	dto.name_key = source.name_key
 	dto.portrait_asset_id = source.portrait_asset_id
 	dto.identity_tags = source.identity_tags.duplicate(true)
+	dto.life_status = source.get("life_status", "living")
+	dto.guest_rule = source.get("guest_rule", "")
 	dto.wealth_band = source.wealth_band
 	dto.urgency_range = source.urgency_range.duplicate(true)
 	dto.honesty_profile = source.honesty_profile

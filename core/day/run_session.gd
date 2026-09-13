@@ -8,6 +8,7 @@ signal changed
 signal transaction_completed(receipt: Dictionary)
 signal operation_completed(feedback: Dictionary)
 
+var _ghost_depth := 0
 var definition: RunDefinition
 var content_version: int
 # Transient feedback ownership; never serialized into the player's save.
@@ -38,8 +39,13 @@ func _init(run_definition: RunDefinition, version: int, save_manager: SaveManage
 	content_version = version
 	_save = save_manager
 	_day = DayController.new(definition, RunState.create(definition))
-	_day.state.death_archive = _save.read_archive()
-	_day.state.bankruptcy_archive = _save.read_bankruptcy_archive()
+	_day.state.ghost_catalog = catalog
+	if _save is GhostReplayStore:
+		_day.state.run_seed = int(_save.origin.seed)
+		_day.state.run_token = _save.origin.run_token
+	_day.state.ghost_origin = {"seed": _day.state.run_seed, "run_token": _day.state.run_token}
+	_day.state.death_archive.assign(_save.read_archive())
+	_day.state.bankruptcy_archive.assign(_save.read_bankruptcy_archive())
 	if catalog != null:
 		_counter = CounterService.new(catalog)
 		_commerce = CommerceService.new(catalog)
@@ -57,7 +63,7 @@ func read_state() -> Dictionary:
 func seven_notice() -> String:
 	if not SevenNightPlan.enabled(definition): return ""
 	var introductions := {1: "借据压在柜上：本金500银元，日息按剩余本金1%向上取整，另付铺费5银元。第21夜首期200银元可整笔延期；已付首期则第49夜还余款300，延期则届时还本金500及延期费100。日常短款只宽限至次夜夜末。\n旧掌柜留话：先看货，再听人说；现银交出去，便压在货里了。", 2: "杂货商常收旧物，瓷器收藏客19:00–22:00来收。出门交货往返20分钟，店里的客人可不会替你停住钟。", 3: "今夜起可办活当：期限3夜，赎金为本金加10%固定息费，息费向上取整。在当旧物须替原主保管。", 7: "七夜的账即将合拢。未卖的货、未到期的票与借据都照实留着，本金今夜不催收。"}
-	return String(introductions.get(_day.state.current_night_index, "")) + PreparationService.notice(_day.state, _counter.catalog) + MirrorChapterService.summary(_day.state, definition) + FamiliarStories.note(_day.state) + ("\n" + NightMarketRisk.note(_day.state) if NightMarketPlan.enabled(definition) else "")
+	return String(introductions.get(_day.state.current_night_index, "")) + PreparationService.notice(_day.state, _counter.catalog) + MirrorChapterService.summary(_day.state, definition) + FamiliarStories.note(_day.state) + ("\n" + NightMarketRisk.note(_day.state) if NightMarketPlan.enabled(definition) else "") + GhostGuests.notice(_day.state, _counter.catalog)
 
 func has_save() -> bool:
 	return _save.exists()
@@ -72,6 +78,9 @@ func can_execute(command: String) -> bool:
 	return _day.state.risk_pending.is_empty() and _day.state.phase not in [&"dead", &"bankrupt"] and _day.state.pending_event_id.is_empty() and not mirror_pending() and (_day.can_execute(command) or RoomFlow.can_execute(_day.state, command))
 
 func execute(command: String, detail := "") -> ActionResult:
+	if LivingMirror.enabled(definition) and _ghost_depth == 0 and command == "open_shop" and can_execute(command) and _day.state.current_night_index >= 2 and not PreparationService.used(_day.state, "finish", _day.state.current_night_index):
+		var prepared := execute("prep_finish")
+		if not prepared.ok: return prepared
 	# Invalid or repeated placement must not grow the transcript or write a save.
 	if command in RoomKeepsakes.COMMANDS and (not detail.is_empty() or not can_execute(command)):
 		return ActionResult.new(false, "现在不能挪动照片。")
@@ -141,6 +150,7 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 	if result.ok and (command == "finish_sleep" or (command == "resolve_night" and not definition.private_room)): FeeService.finish(_day.state, definition)
 	if result.ok and _counter != null:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
+			GhostGuests.dawn(_day.state)
 			_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 		_counter.customers.update(_day.state)
 	if result.ok and prior_visitor != null and prior_visitor.status == "timed_out" and prior_visitor.voice.has("timed_out"): result.message += "\n" + String(prior_visitor.voice.timed_out)
@@ -202,6 +212,8 @@ func new_run() -> void:
 	var archive := _day.state.death_archive.duplicate(true)
 	var bankruptcies := _day.state.bankruptcy_archive.duplicate(true)
 	_day.state = RunState.create(definition)
+	_day.state.ghost_catalog = _counter.catalog if _counter != null else null
+	_day.state.ghost_origin = {"seed": _day.state.run_seed, "run_token": _day.state.run_token}
 	if _save.library != null:
 		archive = _save.library.archive("death_archive", String(definition.id))
 		bankruptcies = _save.library.archive("bankruptcy_archive", String(definition.id))
@@ -222,6 +234,19 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	return _journal_call("counter_command", [command, visit_id, detail, amount])
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	if command == "soul_inspect": return inspect_customer(visit_id)
+	if command in ["swap_accept", "swap_reject"]:
+		if not detail.is_empty() or amount != 0: return ActionResult.new(false, "这笔换物只按约定的八十银元办理。")
+		var before := _day.state.ledger_entries.size()
+		var swapped := GhostGuests.exchange(_day, _counter.catalog, visit_id, command == "swap_accept")
+		if _risk != null: _risk.capture_close(_day.state)
+		if _events != null: _events.poll(_day.state, definition)
+		MarketService.sync(_day.state, definition)
+		message = swapped.message
+		_message_visit_id = visit_id
+		changed.emit()
+		_emit_receipt(before)
+		return swapped
 	if command in ["redeem", "extend"]:
 		var visit := PawnReturnService.current(_day.state)
 		if visit.is_empty() or visit.id != visit_id: return _return_blocked()
@@ -260,6 +285,16 @@ func counter_model() -> Dictionary:
 			for button in model[key].get("buttons", []):
 				button.enabled = false
 				button.reason = "请先处理眼前的事情。"
+	GhostGuests.decorate(model, _day, _counter.catalog)
+	if LivingMirror.enabled(definition):
+		var mirror_view := {"buttons": [], "history": "", "body": ""}
+		LivingMirror.decorate(mirror_view, _day, _counter.catalog)
+		model.dialogue.buttons.append_array(mirror_view.buttons)
+		model.dialogue.body += "\n\n" + mirror_view.history
+		if model.dialogue.has("visual"):
+			var target := LivingMirror.customer(_day, _counter.catalog)
+			for row in _day.state.soul_history:
+				if row.visit_id == target.get("id", "") and row.result != "expired": model.dialogue.visual["soul_note"] = LivingMirror.describe(row)
 	return model
 
 func commerce_command(command: String, target: String, detail := "") -> ActionResult:
@@ -376,9 +411,28 @@ func _event_blocked() -> ActionResult:
 	_emit_changed()
 	return ActionResult.new(false, message)
 
-func risk_model() -> Dictionary:
-	var model := RiskReadModels.build(_day, _risk, _risk_error) if _risk != null else {"body": "柜里暂无异物。", "buttons": [], "history": "", "pending_id": "", "held_ids": [], "intrusion": false}
+func risk_model(record_id := "") -> Dictionary:
+	var records: Array = RiskReadModels.records(_day, _risk) if _risk != null else []
+	if not _day.state.risk_pending.is_empty():
+		record_id = InventoryManager.new().find(_day.state, _day.state.risk_pending).definition_id
+	elif mirror_pending(): record_id = "item_weeping_mirror"
+	elif _day.state.phase == &"dead": record_id = "death_archive"
+	if not records.any(func(row: Dictionary) -> bool: return row.id == record_id):
+		record_id = records[0].id if not records.is_empty() else ""
+	var model := RiskReadModels.build(_day, _risk, _risk_error, record_id) if _risk != null else {"body": "尚无物品记事。", "buttons": [], "history": "", "pending_id": "", "held_ids": [], "intrusion": false}
+	model.records = records
+	model.record_id = record_id
+	model.requires_response = not _day.state.risk_pending.is_empty() or mirror_pending()
 	model.attention_id = ""
+	if record_id == "death_archive":
+		if _day.state.phase != &"dead": model.body = "旧页上的字迹仍在。"
+		model.history = model.get("archive", "")
+		model.buttons = []
+		return model
+	if record_id.is_empty():
+		model.body = "尚无物品记事。经手物品后，相关见闻会记在各自名下。"
+		return model
+	if record_id != "item_weeping_mirror": return model
 	if _mirror != null:
 		var encounter := _mirror.model(_day)
 		model.attention_id = encounter.attention_id
@@ -396,17 +450,19 @@ func risk_model() -> Dictionary:
 				var encounter_def := MirrorEncounterService.find_definition(definition, row.encounter_id)
 				model.history = "铺中旧事\n" + encounter_def.text("pursue_text") + "\n\n" + model.history
 	MirrorChapterService.decorate(model, _day, _events)
+	LivingMirror.decorate(model, _day, _counter.catalog)
 	return model
 
 func risk_command(command: String, id: String, detail := "") -> ActionResult:
 	return _journal_call("risk_command", [command, id, detail])
 
 func _impl_risk_command(command: String, id: String, detail := "") -> ActionResult:
+	if command == "soul_inspect": return inspect_customer(id)
 	if command == "study": return study_command(id, detail)
-	if command in ["cover", "uncover"] and not PawnReturnService.current(_day.state).is_empty(): return _return_blocked()
+	if command in ["cover", "uncover"] and not LivingMirror.enabled(definition) and not PawnReturnService.current(_day.state).is_empty(): return _return_blocked()
 	if command.begins_with("mirror_"): return mirror_command(id, command.trim_prefix("mirror_"))
 	if _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
-	if _risk == null: return ActionResult.new(false, "本运行未启用鬼货。")
+	if _risk == null: return ActionResult.new(false, "暂无可查看的物品记录。")
 	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
 	var result: ActionResult
@@ -429,7 +485,7 @@ func _impl_risk_command(command: String, id: String, detail := "") -> ActionResu
 	return result
 
 func _risk_blocked() -> ActionResult:
-	message = "铺门上了封条，柜前再无人等候。" if _day.state.phase == &"bankrupt" else ("灯已冷了，铺中再没有人应声。" if _day.state.phase == &"dead" else "请先在「鬼货与绝当录」应对镜中来客。")
+	message = "铺门上了封条，柜前再无人等候。" if _day.state.phase == &"bankrupt" else ("灯已冷了，铺中再没有人应声。" if _day.state.phase == &"dead" else "请先在「物品记事」应对镜中来客。")
 	MarketService.sync(_day.state, definition)
 	_emit_changed()
 	return ActionResult.new(false, message)
@@ -469,7 +525,7 @@ func pawn_disposal_model() -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	if _commerce == null or _day.state.phase != &"night_resolution": return rows
 	for ticket in _commerce.pawns.maturities(_day.state):
-		var item := InventoryManager.new().find(_day.state, ticket.item_instance_id)
+		var item := InventoryManager.new().find(_day.state, ticket.collateral_id())
 		var terms := _commerce.catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
 		rows.append({"id": ticket.ticket_id, "number": "%03d" % (_day.state.pawn_tickets.find(ticket) + 1), "item": (_commerce.catalog.get_definition("items", item.definition_id) as ItemDefinition).display_name,
 			"customer": VarietyService.name_for(ticket.person, _commerce.catalog.get_definition("customers", ticket.customer_id)),
@@ -565,6 +621,7 @@ func _persist() -> bool:
 	return _save.save_state(_day.state, definition, content_version)
 
 func _journal_call(method: String, args: Array) -> ActionResult:
+	if LivingMirror.enabled(definition): return _ghost_call(method, args)
 	if not _day.state.personal_risk_enabled or _journal_depth > 0: return callv("_impl_" + method, args)
 	if _day.state.action_journal.size() >= 4096: return ActionResult.new(false, "本局操作记录已满，请读取较早的存档。")
 	var previous: RunState = _copy_state(_day.state) if not replaying else null
@@ -612,3 +669,29 @@ func _emit_operation(payload: Dictionary) -> void:
 	if replaying: return
 	if _journal_depth > 0: _pending_notifications.append({"signal_name": "operation_completed", "payload": payload})
 	else: operation_completed.emit(payload)
+func inspect_customer(visit_id: String) -> ActionResult:
+	return _ghost_call("inspect_customer", [visit_id])
+
+func _impl_inspect_customer(visit_id: String) -> ActionResult:
+	var result := LivingMirror.inspect(_day, _counter.catalog, visit_id)
+	if _risk != null: _risk.capture_close(_day.state)
+	if _events != null: _events.poll(_day.state, definition)
+	message = result.message
+	_message_visit_id = visit_id
+	changed.emit()
+	return result
+
+func _ghost_call(method: String, args: Array) -> ActionResult:
+	if not LivingMirror.enabled(definition) or _ghost_depth > 0: return callv("_impl_" + method, args)
+	var before := read_state()
+	before.erase("ghost_commands")
+	var choices := _pawn_choices.duplicate(true)
+	_day.state.ghost_commands.append({"method": method, "args": args.duplicate(true)})
+	_ghost_depth += 1
+	var result: ActionResult = callv("_impl_" + method, args)
+	_ghost_depth -= 1
+	var after := read_state()
+	after.erase("ghost_commands")
+	if GhostSaveCodec.same(before, after) and choices == _pawn_choices:
+		_day.state.ghost_commands.pop_back()
+	return result

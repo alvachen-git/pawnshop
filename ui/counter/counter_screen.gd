@@ -38,7 +38,7 @@ var _feedback_state_id := 0
 var _review_panel: StringName = &""
 var _reviewing := false
 var _seen_feedback: Dictionary = {}
-const PANEL_TITLES := {"day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "鬼货与绝当录", "night": "夜间结算"}
+const PANEL_TITLES := {"day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "物品记事", "night": "夜间结算"}
 
 
 func _ready() -> void:

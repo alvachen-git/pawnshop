@@ -35,6 +35,7 @@ static func prepare(state: RunState, catalog: ContentCatalog) -> int:
 	var rows := plan(state.pawn_tickets.map(func(t: PawnTicket) -> Dictionary: return t.to_data()), state.current_night_index, catalog, FamiliarStories.history_data(state))
 	var delay := 0
 	for row in rows:
+		if state.ghost_version == 1 and state.person_deaths.any(func(death: Dictionary) -> bool: return death.person_id == row.get("person", {}).get("id", "")): continue
 		delay += int(row.minutes)
 		if not state.pawn_returns.any(func(old: Dictionary) -> bool: return old.id == row.id): state.pawn_returns.append(row)
 	return delay

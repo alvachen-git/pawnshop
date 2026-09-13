@@ -66,7 +66,8 @@ func update(state: RunState, pending_quote_visit_id := "") -> void:
 		for visit in state.visits:
 			if visit.status == "waiting":
 				visit.status = "active"
-				break
+				GhostGuests.arrive(state, visit)
+				if visit.status == "active": break
 
 func active(state: RunState) -> CustomerVisit:
 	for visit in state.visits:

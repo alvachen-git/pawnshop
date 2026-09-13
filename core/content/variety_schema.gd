@@ -3,6 +3,9 @@ extends RefCounted
 
 static func validate(kind: String, row: Dictionary, path: String, at: String) -> Array:
 	var issues: Array = []
+	if kind == "customers":
+		if row.get("life_status", "living") not in ["living", "ghost"] or row.get("guest_rule", "") not in ["", "no_appraisal", "swap"]: CounterDomainValidator._error(issues, at, "来客生死或接待规则无效。")
+		if row.get("guest_rule", "") in ["no_appraisal", "swap"] and row.get("life_status") != "ghost": CounterDomainValidator._error(issues, at, "阴客规则须绑定亡魂身份。")
 	if kind == "customers" and row.has("pawn_redemption_chance"):
 		if not RunSchema.integer(row.pawn_redemption_chance) or int(row.pawn_redemption_chance) not in PawnRedemptionPolicy.CHANCES:
 			CounterDomainValidator._error(issues, at, "活当赎回概率须为20、50或80的整数。")
@@ -34,6 +37,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 							total += int(weight)
 						if total != 100: valid = false
 				if not valid: CounterDomainValidator._error(issues, at, "夜客配置需要有效价格、耗时与合计100的后果权重。")
+			if value.has("ghost_guests_version") and (not RunSchema.integer(value.ghost_guests_version) or value.ghost_guests_version != 1 or value.get("goods_expertise_version") != 1): CounterDomainValidator._error(issues, at, "辨生死版本须使用现有商品复核与有效规则版本。")
 			if value.has("goods_expertise_version") and (not RunSchema.integer(value.goods_expertise_version) or value.goods_expertise_version != 1 or value.get("pawn_redemption_version") != 1): CounterDomainValidator._error(issues, at, "新品须使用职业赎回版及有效规则版本。")
 			if value.has("pawn_redemption_version") and (not RunSchema.integer(value.pawn_redemption_version) or value.pawn_redemption_version != 1 or value.get("seven_version") != 1):
 				CounterDomainValidator._error(issues, at, "职业赎回概率须使用七夜配置与有效规则版本。")

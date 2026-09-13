@@ -5,6 +5,7 @@ static func build(state: RunState) -> Dictionary:
 	var result := {"realized_profit": 0, "pawn_transfer_receipts": 0, "sales_revenue": 0, "purchase_spend": 0, "pawn_disbursed": 0, "redemption_receipts": 0, "inventory_count": 0, "inventory_cost": 0, "pawn_principal": 0}
 	result.merge({"interest_expense": 0, "shop_expense": 0, "fees_paid": 0, "operating_profit": 0})
 	if state.night_market_enabled: result.inventory_loss = 0
+	if state.ghost_version == 1: result.exchange_receipts = 0
 	if state.goods_version == 1: result.expertise_expense = 0
 	if state.preparation_version == 1: result.preparation_expense = 0
 	if not state.ordinary_selections.is_empty(): result.provenance_expense = 0
@@ -20,6 +21,7 @@ static func build(state: RunState) -> Dictionary:
 			"inventory_loss":
 				var item := InventoryManager.new().find(state, entry.item_instance_id)
 				if item != null: result.inventory_loss += item.acquisition_price
+			"pawn_exchange": result.exchange_receipts += entry.amount
 			"expertise": result.expertise_expense = int(result.get("expertise_expense", 0)) - int(entry.amount)
 			"preparation": result.preparation_expense = int(result.get("preparation_expense", 0)) - int(entry.amount)
 			"provenance_inquiry": result.provenance_expense = int(result.get("provenance_expense", 0)) - int(entry.amount)

@@ -57,6 +57,7 @@ static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -
 	return OrdinarySamplePlan.apply(result, run, catalog, seed_value) if OrdinarySamplePlan.enabled(run) else result
 
 static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog, delay: int) -> void:
+	state.ghost_catalog = catalog
 	var rows: Array[Dictionary] = state.seven_plan if SevenNightPlan.enabled(run) and not state.seven_plan.is_empty() else plan(run, catalog, state.run_seed)
 	if SevenNightPlan.enabled(run): state.seven_plan.assign(rows)
 	if OpeningPreparation.enabled(run): rows = OpeningPreparation.plan(state, run, catalog)
@@ -96,6 +97,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 				break
 		var scenario := TradeScenarioService.for_slot(run, String(row.visit_id).get_slice("/", 2))
 		if scenario == null: scenario = TradeScenarioService.for_item(run, item.id)
+		if not customer.guest_rule.is_empty(): scenario = null
 		if scenario != null:
 			visit.scenario_id = scenario.id
 			visit.situation_id = row.situation

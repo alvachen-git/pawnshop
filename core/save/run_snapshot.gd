@@ -7,6 +7,7 @@ static func copy(source: RunState) -> RunState:
 	return _clone(source, {}) as RunState
 
 static func _clone(value: Variant, objects: Dictionary) -> Variant:
+	if value is ContentCatalog: return value
 	if value is Array:
 		var result: Array = value.duplicate()
 		for index in result.size(): result[index] = _clone(value[index], objects)

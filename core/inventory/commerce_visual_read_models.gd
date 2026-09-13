@@ -21,14 +21,14 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 				if service.sale_reason(day, item, buyer).is_empty() and not item.provenance.is_empty():
 					var base := maxi(1, roundi(GoodsExpertise.value(item, definition) * buyer.value_multiplier))
 					buyers[id] += "\n基础报价 %d · 来源溢价 %d 银元" % [base, ProvenanceService.premium(item, buyer, base)]
-		stock.append({"id": item.instance_id, "name": definition.display_name, "asset": definition.visual_asset_id,
+		stock.append({"id": item.instance_id, "name": definition.display_name + (" · 替物" if item.acquisition_type == "substitution" else ""), "asset": definition.visual_asset_id,
 			"state": item.ownership_state, "stamp": CommerceReadModels.STATES[item.ownership_state],
-			"cost": item.acquisition_price, "cost_label": "放款" if item.acquisition_type == "pawn" else "成本", "estimate": "%d–%d" % [bounds.x, bounds.y],
+			"cost": item.acquisition_price, "cost_label": "放款" if item.acquisition_type in ["pawn", "substitution"] else "成本", "estimate": "%d–%d" % [bounds.x, bounds.y],
 			"provenance": ("货面浮着湿灰；到营业页按旧规封存包布。\n" if NightMarketRisk.item_pending(day.state, item.source_visit_id) and item.ownership_state == "owned" else "") + ProvenanceService.known_text(item, definition, false), "clues": clues, "buyers": buyers, "night": item.acquired_night, "ghost": not definition.ghost_rule_id.is_empty()})
 	var tickets: Array = []
 	for index in day.state.pawn_tickets.size():
 		var ticket := day.state.pawn_tickets[index]
-		var item := InventoryManager.new().find(day.state, ticket.item_instance_id)
+		var item := InventoryManager.new().find(day.state, ticket.collateral_id())
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 		var customer := service.catalog.get_definition("customers", ticket.customer_id) as CustomerDefinition
 		var terms := service.catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
@@ -41,6 +41,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 			var visit := PawnReturnService.current(day.state)
 			if not visit.is_empty() and visit.ticket_id == ticket.ticket_id: request = "原当户已持票到店，请到柜台办理。"
 
+		if not ticket.replacement_instance_id.is_empty(): request = "原物已换出，票下保管的是替物。\n" + request.replace("原物", "替物")
 		tickets.append({"id": ticket.ticket_id, "number": "%03d" % (index + 1), "item": definition.display_name,
 			"customer": VarietyService.name_for(ticket.person, customer), "principal": ticket.principal, "redemption": ticket.redemption_amount,
 			"start": ticket.started_night, "due": ticket.due_night, "state": ticket.status,

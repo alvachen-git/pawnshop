@@ -28,6 +28,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		var q := scenario.find_question(detail)
 		if q != null and not q.pressure_clue.is_empty(): return "这位客人不接受另行压价，只听一次正式报价。"
 	var cost := 0
+	if customer.guest_rule == "swap" and command not in ["question", "judge"]: return "他只肯调换点名的当物，请到报价页决定。"
 	match command:
 		"verify_source":
 			var error := ProvenanceService.check_reason(day, visit, item)
@@ -115,6 +116,10 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	# inspections and shop closing retain their usual deadlines.
 	customers.update(day.state, visit_id if quote_before_timeout and command in ["offer", "pawn"] else "")
 	if visit.status != "active": return ActionResult.new(false, "消耗 %d 分钟，但顾客在完成前已离场；未取得证据或成交。" % cost + ("\n" + String(visit.voice.timed_out) if visit.voice.has("timed_out") else ""))
+	if customer.guest_rule == "no_appraisal" and command in ["appraise", "verify_source"]:
+		customers.finish(day.state, visit, "inspection_refused")
+		customers.update(day.state)
+		return ActionResult.new(true, "你的手刚伸向包裹，那人便一把收回：‘说过了，不许验货。’他带着东西走了，未留下可核实的细节。")
 	var message := ""
 	match command:
 		"verify_source":

@@ -115,7 +115,7 @@ func _click(label: String) -> void:
 			if not target_submit.is_visible_in_tree():
 				await _click_button(target_mode)
 	# Secondary entries and run lifecycle controls live in the grouped menu.
-	if label in ["铺中记事", "鬼货与绝当录", "夜间结算", "新游戏", "读取夜末存档"] and _find_button(_main, label) == null:
+	if label in ["铺中记事", "物品记事", "夜间结算", "新游戏", "读取夜末存档"] and _find_button(_main, label) == null:
 		await _click("菜单")
 	var button := _find_button(_main, label)
 	if button == null:

@@ -27,7 +27,7 @@ func _run() -> void:
 	var v := _session._counter.customers.active(_session._day.state)
 	_check(_session.counter_command("offer", v.visit_id, "", v.trade.asking_price).ok, "acquire mirror")
 	await receipts()
-	await _click("鬼货与绝当录")
+	await _click("物品记事")
 	var before_cloth := _session._day.state.game_minutes
 	var before_actions := _session._day.state.action_count
 	await _click("盖好红布")
@@ -39,7 +39,7 @@ func _run() -> void:
 	await _capture("01_usage_notes")
 	_check(_session.bell_command("wait").ok, "next guest")
 	await receipts()
-	await _click("鬼货与绝当录")
+	await _click("物品记事")
 	await _click("借镜照一照来客 · 5分钟")
 	_check(not _session.mirror_pending() and _session.risk_model().body.contains("取药单"), "ordinary vision readable")
 	await _capture("02_medicine_glimpse")
@@ -58,7 +58,7 @@ func _run() -> void:
 			_check(_session.counter_command("pawn" if role == "pawn" else "reject", v.visit_id, "", 40 if role == "pawn" else 0).ok, "serve guest")
 		else: _session.bell_command("wait")
 	await receipts()
-	await _click("鬼货与绝当录")
+	await _click("物品记事")
 	await _capture("04_husband_limit")
 	_check(not _session.mirror_command("midnight_old_ticket", "peek").ok, "single night limit enforced")
 	await work_tail()
@@ -68,7 +68,7 @@ func _run() -> void:
 		if night == 4: await work_tail()
 		else: driver.work(_session, "covered")
 		await receipts()
-		await _click("鬼货与绝当录")
+		await _click("物品记事")
 		if night == 4:
 			await _click("按典物号查旧当存根 · 10分钟")
 			await _capture("05_old_ticket")
