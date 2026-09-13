@@ -1,0 +1,4 @@
+/appdata/
+/before/
+*.stderr
+*.log
