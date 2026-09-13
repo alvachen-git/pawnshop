@@ -89,6 +89,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		service.customers.update(day.state)
 		var replay_history: Array = day.state.get(history_key)
 		var prior_count := replay_history.size()
+		# Old expired quotes recorded failure before negotiation ran.
+		service.quote_before_timeout = raw.ok
 		service.execute(day, raw.command, raw.visit_id, raw.detail, int(raw.amount))
 		if replay_history.size() != prior_count + 1: return "交易情境行动不满足条件或重复使用优惠。"
 		var normalized: Dictionary = raw.duplicate(true)

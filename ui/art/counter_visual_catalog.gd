@@ -2,6 +2,7 @@ class_name CounterVisualCatalog
 extends RefCounted
 
 const ROOT := "res://assets/art02/"
+const NEIGHBOR_PORTRAIT := "res://assets/art04/customers/neighbor_v2.png"
 const ITEMS := {
 	"asset.item_blue_bowl": "bowl", "asset.item_brass_holder": "holder", "asset.weeping_mirror": "mirror",
 }
@@ -18,8 +19,8 @@ const DETAILS := {
 }
 
 static func portrait(asset: String, customer_id := "") -> Texture2D:
-	if customer_id == "intro_neighbor" and ResourceLoader.exists("res://assets/art04/customers/neighbor.png"):
-		return load("res://assets/art04/customers/neighbor.png") as Texture2D
+	if customer_id == "intro_neighbor" and ResourceLoader.exists(NEIGHBOR_PORTRAIT):
+		return load(NEIGHBOR_PORTRAIT) as Texture2D
 	if asset == "asset.customer_citizen" and ResourceLoader.exists("res://assets/art04/customers/citizen.png"):
 		return load("res://assets/art04/customers/citizen.png") as Texture2D
 	if not PORTRAITS.has(asset): return null
@@ -29,7 +30,8 @@ static func portrait_material(texture: Texture2D) -> ShaderMaterial:
 	if texture == null or not texture.resource_path.begins_with("res://assets/art04/"): return null
 	var material := ShaderMaterial.new()
 	material.shader = preload("res://ui/art/counter_cutout.gdshader")
-	material.set_shader_parameter("chroma_key", texture.resource_path.get_file() in ["citizen.png", "neighbor.png"])
+	material.set_shader_parameter("chroma_key", texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
+	material.set_shader_parameter("clean_chroma_edges", texture.resource_path == NEIGHBOR_PORTRAIT)
 	return material
 
 static func _painted_front(asset: String) -> String:

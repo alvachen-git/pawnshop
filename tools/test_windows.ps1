@@ -97,6 +97,11 @@ try {
     Run-Test 'seven-night-core' 'run_seven_night.gd'
     Run-Test 'seven-edges' 'seven_edge_tests.gd'
     Run-Test 'departure-core' 'customer_departure_tests.gd'
+    Run-Test 'quote-deadline-core' 'quote_deadline_tests.gd'
+    Run-Test 'quote-deadline-process-write' 'quote_deadline_process.gd' @('write')
+    Run-Test 'quote-deadline-process-read' 'quote_deadline_process.gd' @('read')
+    Run-Test 'quote-deadline-1280x720' 'quote_deadline_ui_smoke.gd' @() $false
+    Run-Test 'quote-deadline-1600x900' 'quote_deadline_ui_smoke.gd' @('wide') $false
     Run-Test 'reception-feedback-core' 'reception_feedback_tests.gd'
     Run-Test 'manual-save-core' 'manual_save_tests.gd'
     Run-Test 'opening-core' 'run_opening.gd'
