@@ -65,6 +65,18 @@ func refresh() -> void:
 			description = "开铺前 · 现银%d大洋\n今夜准备剩余%d次；开铺后不可返回。" % [state.cash, 2 - PreparationService.count(_session._day.state)]
 			if state.current_night_index == 2: description += "\n开铺前可办两件事，也可直接开铺。消息可免费复看。"
 			if _category_picker: description += "\n选好收货类别才耗次数，返回不消耗。"
+	if state.phase in ["night_resolution", "shop_resolution"]:
+		description = "已封铺\n先核清今夜的当票与息费，再回房歇息。"
+		commands = [{"id": "read_night", "label": "查看夜间结算", "enabled": true}]
+		if state.phase == "shop_resolution":
+			description = "铺内收尾\n门闩已经落好，可以回房歇息了。"
+			commands = [{"id": "enter_room", "label": "回房", "enabled": _session.can_execute("enter_room"), "reason": "先处理眼前的事情，再回房。"}]
+		if not state.risk_pending.is_empty():
+			description = "已封铺\n铺里的异响还没停，先查看物品记事。"
+			commands.push_front({"id": "read_risk", "label": "查看物品记事", "enabled": true})
+		elif not state.pending_event_id.is_empty():
+			description = "已封铺\n铺里还有未办完的事，先查看铺中记事。"
+			commands.push_front({"id": "read_events", "label": "查看铺中记事", "enabled": true})
 	_view.render({"description": description, "message": _session.message, "commands": commands, "preparation": OpeningPreparation.enabled(definition) and state.current_night_index >= 2 and state.phase == "pre_open"})
 	_session_menu.render({"has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
 	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(definition.opening_minute, state.game_minutes), state.cash])
@@ -73,6 +85,10 @@ func refresh() -> void:
 		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")
 
 func _on_command(command: String) -> void:
+	var routes := {"read_night": &"night", "read_risk": &"risk", "read_events": &"events"}
+	if routes.has(command):
+		route_requested.emit(routes[command])
+		return
 	if command.begins_with("prep_seek/"):
 		var target := command.trim_prefix("prep_seek/")
 		var state := _session._day.state
