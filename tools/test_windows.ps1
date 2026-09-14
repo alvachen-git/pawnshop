@@ -122,6 +122,7 @@ try {
         Run-Test "market-seven-$size" 'market_seven_ui_smoke.gd' $sizeArgs $false
         Run-Test "early-$size" 'early_redemption_ui.gd' $sizeArgs $false
         Run-Test "manual-save-$size" 'manual_save_ui_smoke.gd' $sizeArgs $false
+        Run-Test "sealed-navigation-$size" 'sealed_navigation_ui.gd' $sizeArgs $false
         Run-Test "mirror-chapter-$size" 'mirror_chapter_ui_smoke.gd' $sizeArgs $false
         Run-Test "pawn-chance-$size" 'pawn_chance_ui.gd' $sizeArgs $false
         Run-Test "early-redemption-v20-$size" 'early_redemption_ui.gd' (@('chance') + $sizeArgs) $false

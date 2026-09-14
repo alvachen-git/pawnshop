@@ -71,6 +71,10 @@ func _run() -> void:
 	helper.third(_session)
 	helper.seal(_session)
 	await _frames()
+	await _click("营业")
+	var return_room := _find_button(_main, "回房")
+	_check(return_room != null and return_room.disabled, "铺内危机未解决时营业面板不能直接回房")
+	await _click("查看物品记事")
 	await _click("低头退开，将红布覆上")
 	await _click("回房")
 	_check(room.is_visible_in_tree(), "铺内应对后直接引导回房")
@@ -118,4 +122,3 @@ func _run() -> void:
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(_session._save.path))
 	print("ROOM UI TESTS: %d assertions, %d failures" % [_assertions, _failures])
 	quit(0 if _failures == 0 else 1)
-
