@@ -23,7 +23,7 @@ static func decorate(model: Dictionary, day: DayController, director: EventDirec
 	var latest := ""
 	for row in day.state.event_history:
 		var event := director.catalog.get_definition("events", row.event_id) as EventDefinition
-		if not event.presentation.get("manual", false): continue
+		if not event.presentation.get("manual", false) or event.phase != "open": continue
 		var result := event.find_choice(row.choice_id).result
 		notes += "\n\n" + event.title + "\n" + result
 		if row.night == day.state.current_night_index and row.minute == day.state.game_minutes: latest = result

@@ -1,0 +1,3 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+MANUAL SAVE TESTS: 1163 assertions, 0 failures

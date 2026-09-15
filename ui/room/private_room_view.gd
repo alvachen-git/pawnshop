@@ -2,9 +2,13 @@ class_name PrivateRoomView
 extends Control
 
 signal command_requested(command: String)
+signal observation_requested(id: String)
 signal menu_requested
 
 const ART_SIZE := Vector2(1672, 941)
+var _illustration: TextureRect
+var _paper_button: Button
+var _plan_button: Button
 var _bed: Button
 var _lamp: Button
 var _desk: Button
@@ -56,7 +60,11 @@ func _ready() -> void:
 	add_child(_night)
 	_place(_night, Rect2(37, 93, 220, 28))
 	var wardrobe := _hotspot("RoomWardrobe", "衣柜", Rect2(32, 215, 119, 580))
-	wardrobe.pressed.connect(func() -> void: _observe("旧衣挤在柜里，带着木头和皂角的气味。", wardrobe))
+	wardrobe.pressed.connect(func() -> void:
+		if _model.get("observations", {}).get("aq_coat", {}).get("available", false):
+			_inspect_source = wardrobe
+			observation_requested.emit("aq_coat")
+		else: _observe("旧衣挤在柜里，带着木头和皂角的气味。", wardrobe))
 	_lamp = _hotspot("RoomLamp", "命灯", Rect2(184, 306, 72, 150))
 	_lamp.pressed.connect(func() -> void: _observe(_model.lamp, _lamp))
 	_desk = _hotspot("RoomDesk", "书桌 · 旧信", Rect2(245, 448, 190, 48))
@@ -94,12 +102,27 @@ func _create_observation() -> void:
 	var column := VBoxContainer.new()
 	column.add_theme_constant_override("separation", 12)
 	_observation.add_child(column)
+	_illustration = TextureRect.new()
+	_illustration.name = "ObservationArt"
+	_illustration.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_illustration.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_illustration.custom_minimum_size.y = 220
+	_illustration.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	column.add_child(_illustration)
+	_illustration.hide()
 	_body = Label.new()
 	_body.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_body.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_body.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 	_body.add_theme_color_override("font_color", Color("e7d8ba"))
 	_body.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	column.add_child(_body)
+	var reading := ScrollContainer.new()
+	reading.name = "ObservationReading"
+	reading.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	reading.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	reading.custom_minimum_size.y = 100
+	column.add_child(reading)
+	reading.add_child(_body)
 	_close_observation = Button.new()
 	_close_observation.text = "收回目光"
 	_close_observation.size_flags_horizontal = Control.SIZE_SHRINK_END
@@ -109,12 +132,28 @@ func _create_observation() -> void:
 	_observation.hide()
 
 func _observe(text: String, source: Button) -> void:
+	_illustration.hide()
+	_place(_observation, Rect2(520, 128, 500, 310))
+	_layout()
 	_sleep_prompt = false
 	_close_observation.text = "收回目光"
 	_close_observation.disabled = false
 	_body.text = text
 	_inspect_source = source
 	_observation.show()
+
+func show_story_observation(model: Dictionary) -> void:
+	if _letter != null: _letter.hide()
+	_observe(model.body, _inspect_source)
+	_illustration.texture = AqiArt.texture(model.art)
+	_illustration.show()
+	_place(_observation, Rect2(480, 105, 660, 660))
+	_layout()
+	_close_observation.grab_focus()
+
+func _request_desk_observation(id: String) -> void:
+	_inspect_source = _desk
+	observation_requested.emit(id)
 
 func _observation_pressed() -> void:
 	if _sleep_prompt:
@@ -223,6 +262,10 @@ func render(model: Dictionary) -> void:
 	visible = model.visible
 	if not visible and _confirm != null: _confirm.hide()
 	_night.text = "第%d夜" % model.night
+	if phase_changed or not model.error.is_empty():
+		_illustration.hide()
+		_place(_observation, Rect2(520, 128, 500, 310))
+		_layout()
 	if phase_changed or finish_ready or not model.error.is_empty():
 		_body.text = model.body + ("\n\n" + model.error if not model.error.is_empty() else "")
 		_sleep_prompt = model.phase == "sleep_resolution" and not model.dead
@@ -267,6 +310,13 @@ func _read_letter() -> void:
 		text.text = tr("opening.letter.permanent")
 		_letter.add_child(text)
 		add_child(_letter)
+		_paper_button = _letter.add_button("看看夹纸", true, "paper")
+		_paper_button.name = "RoomPaper"
+		_plan_button = _letter.add_button("重看旧铺草图", true, "plan")
+		_plan_button.name = "RoomFloorplan"
+		_letter.custom_action.connect(func(action: StringName) -> void: _request_desk_observation("aq_paper" if action == &"paper" else "aq_floorplan"))
+	_paper_button.visible = _model.get("observations", {}).get("aq_paper", {}).get("available", false)
+	_plan_button.visible = _model.get("observations", {}).get("aq_floorplan", {}).get("available", false)
 	_letter.popup_centered(Vector2i(570, 490))
 
 func _create_confirmation() -> void:

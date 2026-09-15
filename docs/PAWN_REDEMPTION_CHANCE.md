@@ -1,6 +1,6 @@
 # 职业背景与活当赎回 · v20
 
-默认新游戏为 `pawn_chance_seven`。普通当户按职业配置决定是否到期返当；玩家在活当交易区看到生计背景，不显示概率，也不预报个人结果。
+本文描述v20独立运行 `pawn_chance_seven`。**当前标题页默认v21 `night_market` 未启用职业赎回策略，也未加载职业生计背景数据**；v20功能及旧档仍保留。整合缺口见 [当前开发规格](CURRENT_SPEC.md)。普通当户按职业配置决定是否到期返当；玩家在活当交易区看到生计背景，不显示概率，也不预报个人结果。
 
 发布前已合入线上 `958c7de`，保留库存周转提示、卖货预览与账本整理，并让v20使用这些提示；`complete_seven` v19定义和存档仍保留。补充验证见 [合并检查](qa/pawn-chance/MERGE_VALIDATION.md)。
 
@@ -23,18 +23,21 @@
 - `data/pawn_chance_manifest.json` 为v20入口，独立运行与客户内容在 `data/pawn_chance/`，继承v19的其他内容。
 - 客户新增可选整数 `pawn_redemption_chance`；新规则只接受20、50、80，旧客户缺省保持原规则。`persona.pawn_background` 提供不依赖抽签结果的生计线索。
 - 运行开关为 `variety.pawn_redemption_version: 1`。结果复用现有返当／候赎当约，沿用来访记录、当票及重放校验，不新增第二份结果状态。
-- 默认自动位置 `auto/pawn_chance_seven`，共用 `user://save_library/library_v1.json`，独立路径 `user://pawn_chance_seven/autosave_v20.json`。
-- v19及更早内容与旧票据不迁移、不重抽。旧档可继续，返回标题再开新游戏仍进入v20。
+- v20独立运行的自动位置 `auto/pawn_chance_seven`，共用 `user://save_library/library_v1.json`，独立路径 `user://pawn_chance_seven/autosave_v20.json`。
+- v19及更早内容与旧票据不迁移、不重抽。旧档可继续；当前默认标题页返回后新开进入v21，仓库保留v20 Manifest、旧档读取和专用测试入口，没有单独的v20启动场景。
 
-## 本地试玩
+## 本地试玩与复测
 
-在工程目录运行：
+当前标题页新游戏进入v21，不能用它验收职业概率。已有v20进度可从档案库读取，仍按v20规则继续；没有v20进度时，使用专项测试加载 `data/pawn_chance_manifest.json`。仓库没有 `scenes/pawn_chance_seven.tscn`，不提供该场景启动命令。
 
-```powershell
-& .\.tools\godot-4.6.1\Godot_v4.6.1-stable_win64.exe --path .
+在源码根目录完成Godot导入后，运行领域测试生成隔离夹具，再运行界面复测：
+
+```sh
+godot --headless --path . --script res://tests/run_pawn_chance.gd
+godot --path . --script res://tests/pawn_chance_ui.gd
 ```
 
-选择“新游戏”使用新规则；读取旧档仍按对应旧规则。普通活当从第三夜起开放。
+界面套件主动覆盖测试场景的Manifest并使用生成的v20夹具，执行检查后退出，不是供自由开局的入口。普通活当第三夜起开放。
 
 试玩重点：放款前能看到客人的生计线索及三夜期限、息费；界面不出现概率或提前透露结果；到期收赎、留货和转当金额正确；姜素云和指定返当仍按原约定运作。1280×720下交易区可滚动到活当报价，生计线索与放款按钮可以同时看到。
 

@@ -1,19 +1,23 @@
 # 深夜经营首版（v21）
 
-基于线上 main `958c7def34a32baa3cb2936f57d163815e1948fe`，开发分支 `codex/night-market-risk`。默认新局为 `night_market`；v20 留给已有任务，旧内容、旧自动存档及六个手动槽保留。这里的改动未推送，也未制作试玩包。
+> 2026-09-11 v22补充：当前默认新游戏为 `aqi_seven`，在v21基础上增加寝屋观察与第七夜柜台收尾。下文原专项范围和历史验证保留；新增内容、版本隔离及本批验收见 [阿七与七夜收尾](AQI_SEVEN.md)。
+
+本文夜客内容基线为v21 `night_market`；夜客与四档灯光已随 `81c407d`（#23）进入main，当前核对基线为 `6b87295`。旧内容、自动位及六个手动槽保留。本页没有交付当前v21的新试玩包。
+
+职业赎回策略仅在v20独立运行启用，v21未加载该配置，详见 [当前开发规格](CURRENT_SPEC.md)。原开发基线为 `958c7de`，下列启动命令在当前源码根目录运行，默认进入v22；夜客专项回归脚本仍加载v21。
 
 ## 本地启动
 
-在原项目目录 `C:\Users\alvachen\Documents\ChatGPT\pawnbroker` 的 PowerShell 中运行：
+在包含 `project.godot` 的当前源码根目录打开 PowerShell，运行：
 
 ```powershell
-& ./.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe --path ./.artifacts/night-market-risk
+& ./.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe --path .
 ```
 
 默认每次新开局随机。复现种子 0：
 
 ```powershell
-& ./.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe --path ./.artifacts/night-market-risk -- --seed=0
+& ./.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe --path . -- --seed=0
 ```
 
 这是直接启动游戏，无需执行 PowerShell 脚本或修改系统执行策略。导入本工作树的 `project.godot` 后按 F5 也进入同一版本。读取旧档仍按旧版本运行；要测试新增内容，请在此入口开启新游戏。

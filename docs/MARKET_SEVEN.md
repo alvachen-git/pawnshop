@@ -1,6 +1,8 @@
 # 七夜销路整合（v19发布，含v17验收记录）
 
-发布合并说明：远端 main 已包含 v18 熟客故事与提前赎当，因此默认新游戏改为 **v19 `market_familiar`**，同时保留两边功能；自动位置为 `auto/market_familiar`，独立路径 `user://market_familiar/autosave_v19.json`。下文 v17 `market_seven` 仍保留为原验收版本和旧档入口。96局对照仅代表 v17，不作为 v19 的经营数值结论。
+> 2026-09-11：当前默认为v21 `night_market`，继承本文销路。以下v19发布说明、v17验收入口和自动位属于历史版本；当前启动与存档以 [当前开发规格](CURRENT_SPEC.md) 为准。
+
+当时的v19发布合并说明：远端 main 已包含 v18 熟客故事与提前赎当，因此默认新游戏改为 **v19 `market_familiar`**，同时保留两边功能；自动位置为 `auto/market_familiar`，独立路径 `user://market_familiar/autosave_v19.json`。下文 v17 `market_seven` 仍保留为原验收版本和旧档入口。96局对照仅代表 v17，不作为 v19 的经营数值结论。
 
 以 `b1b82e8` 的七夜铜镜第一章为基础，新增 `market_seven`。该版作为原验收与旧档入口保留；不新增四夜入口，不改剧情、准备次数、客流、铜镜能力、红布耗时、收购价格或债务数值。
 

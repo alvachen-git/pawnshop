@@ -1,0 +1,20 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+NIGHT MARKET EXAMPLES: {"fright":1,"haunt":0,"item":0}
+ROUTE careful seed=0 cash=154 lamp=0 phase=run_ended
+ASSETS careful seed=0 {"fees_paid":10,"interest_expense":5,"inventory_cost":76,"inventory_count":2,"inventory_loss":0,"operating_profit":-10,"pawn_disbursed":0,"pawn_principal":0,"pawn_transfer_receipts":0,"preparation_expense":0,"provenance_expense":0,"purchase_spend":0,"realized_profit":0,"redemption_receipts":0,"sales_revenue":0,"shop_expense":5}
+ROUTE ignore seed=0 cash=154 lamp=4 phase=run_ended
+ASSETS ignore seed=0 {"fees_paid":10,"interest_expense":5,"inventory_cost":38,"inventory_count":1,"inventory_loss":0,"operating_profit":-10,"pawn_disbursed":0,"pawn_principal":0,"pawn_transfer_receipts":0,"preparation_expense":0,"provenance_expense":0,"purchase_spend":0,"realized_profit":0,"redemption_receipts":0,"sales_revenue":0,"shop_expense":5}
+ROUTE careful seed=0 cash=154 lamp=0 phase=run_ended
+ASSETS careful seed=0 {"fees_paid":10,"interest_expense":5,"inventory_cost":76,"inventory_count":2,"inventory_loss":0,"operating_profit":-10,"pawn_disbursed":0,"pawn_principal":0,"pawn_transfer_receipts":0,"preparation_expense":0,"provenance_expense":0,"purchase_spend":0,"realized_profit":0,"redemption_receipts":0,"sales_revenue":0,"shop_expense":5}
+ROUTE ignore seed=0 cash=154 lamp=4 phase=run_ended
+ASSETS ignore seed=0 {"fees_paid":10,"interest_expense":5,"inventory_cost":38,"inventory_count":1,"inventory_loss":0,"operating_profit":-10,"pawn_disbursed":0,"pawn_principal":0,"pawn_transfer_receipts":0,"preparation_expense":0,"provenance_expense":0,"purchase_spend":0,"realized_profit":0,"redemption_receipts":0,"sales_revenue":0,"shop_expense":5}
+ROUTE careful seed=1 cash=147 lamp=0 phase=run_ended
+ASSETS careful seed=1 {"fees_paid":10,"interest_expense":5,"inventory_cost":83,"inventory_count":2,"inventory_loss":0,"operating_profit":-10,"pawn_disbursed":0,"pawn_principal":0,"pawn_transfer_receipts":0,"preparation_expense":0,"provenance_expense":0,"purchase_spend":0,"realized_profit":0,"redemption_receipts":0,"sales_revenue":0,"shop_expense":5}
+ROUTE ignore seed=1 cash=147 lamp=0 phase=run_ended
+ASSETS ignore seed=1 {"fees_paid":10,"interest_expense":5,"inventory_cost":45,"inventory_count":1,"inventory_loss":0,"operating_profit":-10,"pawn_disbursed":0,"pawn_principal":0,"pawn_transfer_receipts":0,"preparation_expense":0,"provenance_expense":0,"purchase_spend":0,"realized_profit":0,"redemption_receipts":0,"sales_revenue":0,"shop_expense":5}
+ROUTE taboo seed=42 cash=147 lamp=4 phase=run_ended
+ASSETS taboo seed=42 {"fees_paid":10,"interest_expense":5,"inventory_cost":38,"inventory_count":1,"inventory_loss":45,"operating_profit":-55,"pawn_disbursed":0,"pawn_principal":0,"pawn_transfer_receipts":0,"preparation_expense":0,"provenance_expense":0,"purchase_spend":45,"realized_profit":0,"redemption_receipts":0,"sales_revenue":0,"shop_expense":5}
+ROUTE taboo seed=4 cash=140 lamp=5 phase=dead
+ASSETS taboo seed=4 {"fees_paid":10,"interest_expense":5,"inventory_cost":90,"inventory_count":2,"inventory_loss":0,"operating_profit":-10,"pawn_disbursed":0,"pawn_principal":0,"pawn_transfer_receipts":0,"preparation_expense":0,"provenance_expense":0,"purchase_spend":0,"realized_profit":0,"redemption_receipts":0,"sales_revenue":0,"shop_expense":5}
+NIGHT MARKET TESTS: 38610 passes, 0 failures

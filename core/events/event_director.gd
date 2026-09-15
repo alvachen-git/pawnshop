@@ -73,6 +73,10 @@ func investigate(day: DayController, event_id: String, choice_id: String) -> Act
 	return choose(day, event_id, choice_id)
 
 func poll(state: RunState, run: RunDefinition) -> void:
+	if state.phase in [&"dead", &"bankrupt", &"run_ended"]:
+		state.pending_event_id = ""
+		state.pending_event_minute = -1
+		return
 	if not state.pending_event_id.is_empty(): return
 	state.pending_event_id = select_next(state, run)
 	state.pending_event_minute = state.game_minutes if not state.pending_event_id.is_empty() else -1

@@ -1,6 +1,7 @@
 class_name CounterView
 extends Control
 
+signal story_choice_requested(event_id: String, choice_id: String)
 signal bell_requested(mode: String, target_id: String)
 signal shop_requested
 signal customer_action_requested(panel_id: StringName)
@@ -10,6 +11,10 @@ signal ledger_requested
 signal background_requested
 signal context_opened(kind: StringName)
 
+var story: CounterStoryView
+var story_active := false
+var _story_actor := false
+var _story_contact_shadow: TextureRect
 var _portrait: TextureRect
 var _item_image: TextureRect
 var _speech: Label
@@ -42,6 +47,17 @@ func _ready() -> void:
 	backdrop.pressed.connect(_on_background_pressed)
 	backdrop.z_index = 1
 
+	_story_contact_shadow = TextureRect.new()
+	_story_contact_shadow.name = "AqiContactShadow"
+	_story_contact_shadow.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_story_contact_shadow.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_story_contact_shadow.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_story_contact_shadow.z_index = 2
+	var contact_material := ShaderMaterial.new()
+	contact_material.shader = preload("res://ui/art/aqi_contact_shadow.gdshader")
+	_story_contact_shadow.material = contact_material
+	add_child(_story_contact_shadow)
+	_story_contact_shadow.hide()
 	_portrait = TextureRect.new()
 	_portrait.name = "CustomerPortrait"
 	_portrait.unique_name_in_owner = true
@@ -105,6 +121,12 @@ func _ready() -> void:
 	_speech.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_speech.add_theme_font_size_override("font_size", 19)
 	margin.add_child(_speech)
+	story = CounterStoryView.new()
+	add_child(story)
+	_bounds(story, 0.60, 0.095, 0.98, 0.96)
+	story.choice_requested.connect(story_choice_requested.emit)
+	story.opened.connect(func() -> void: context_opened.emit(&"customer" if _story_actor else &"item"))
+	story.closed.connect(func() -> void: focus_hotspot(&"customer" if _story_actor else &"item"))
 	_build_painted_controls()
 	move_child(bell, get_child_count() - 1)
 
@@ -184,6 +206,13 @@ func render(model: Dictionary) -> void:
 	if feedback_held:
 		_pending_model = model
 		return
+	_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
+	_bounds(_customer_hotspot, 0.325, 0.025, 0.665, 0.57)
+	_story_contact_shadow.hide()
+	%ItemText.show()
+	$CustomerPanel.show()
+	_customer_hotspot.tooltip_text = "与当前客人交谈或交易 · 不耗时"
+	_item_hotspot.tooltip_text = "选择柜台货物 · 不耗时"
 	%CustomerText.text = model.customer
 	%ItemText.text = model.item
 	%CounterMessage.text = ""
@@ -212,6 +241,7 @@ func render(model: Dictionary) -> void:
 	_portrait.material = CounterVisualCatalog.portrait_material(_portrait.texture)
 	_portrait.visible = active and _portrait.texture != null
 	_item_image.texture = CounterVisualCatalog.front(visual.get("item_asset", ""), model.appraisal.get("images", []))
+	_item_image.material = null
 	_item_image.visible = active and _item_image.texture != null
 	_speech_panel.visible = active and not visual.is_empty()
 	if not visual.is_empty():
@@ -240,6 +270,48 @@ func render(model: Dictionary) -> void:
 		_arrival.tween_property(_portrait, "modulate:a", 1.0, 0.18)
 		_arrival.tween_property(_item_image, "modulate:a", 1.0, 0.18)
 		_arrival.tween_property(_item_image, "position:y", end_y, 0.18)
+
+func render_story(model: Dictionary, state: Dictionary) -> void:
+	story_active = not model.is_empty()
+	if not story_active:
+		story.render({}, "")
+		return
+	var art: String = model.presentation.get("art", "aqi")
+	_story_actor = art in ["aqi", "bent", "fixed"]
+	if _arrival != null: _arrival.kill()
+	_customer_context.hide()
+	_item_context.hide()
+	# The complete resting forearms reach forward onto the counter surface.
+	_bounds(_portrait, 0.37, 0.19, 0.625, 0.63)
+	_bounds(_story_contact_shadow, 0.37, 0.194, 0.625, 0.634)
+	_bounds(_customer_hotspot, 0.385, 0.19, 0.61, 0.62)
+	_story_contact_shadow.texture = AqiArt.counter_texture("aqi")
+	_story_contact_shadow.visible = _story_actor
+	_portrait.texture = AqiArt.counter_texture("aqi") if _story_actor else null
+	_portrait.material = AqiArt.counter_material("aqi")
+	_portrait.visible = _story_actor
+	_portrait.modulate.a = 1.0
+	var item_art: String = art
+	if art == "aqi": item_art = "fixed" if "aq_helped" in state.narrative_flags else "bent"
+	_item_image.texture = AqiArt.counter_texture(item_art)
+	_item_image.material = AqiArt.counter_material(item_art)
+	_item_image.visible = true
+	_item_image.modulate.a = 1.0
+	_bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
+	_item_image.offset_top = 0
+	_item_image.offset_bottom = 0
+	_speech_panel.hide()
+	$CustomerPanel.visible = _story_actor
+	%CustomerText.text = "阿七" if "aq_name_known" in state.narrative_flags else "柜台边的小女孩"
+	%ItemText.text = "纸风车" if _story_actor else ("半张旧铺草图" if art == "plan" else "旧《阴账》")
+	_customer_hotspot.visible = _story_actor
+	_customer_hotspot.tooltip_text = "继续交谈 · 不耗时"
+	_item_hotspot.visible = true
+	_item_hotspot.tooltip_text = "看看风车" if _story_actor else "继续翻看"
+	$Room.has_customer = false
+	$Room.has_item = false
+	$Room.queue_redraw()
+	story.render(model, state.run_token + "/" + model.pending_id + "/" + str(state.event_history.size()))
 
 func release_feedback() -> void:
 	feedback_held = false
@@ -276,6 +348,9 @@ func _apply_action(button: Button, actions: Array, action_id: StringName) -> voi
 
 
 func _toggle_customer_context() -> void:
+	if story_active:
+		story.show_dialogue()
+		return
 	if not _customer_hotspot.visible:
 		return
 	var show_context := not _customer_context.visible
@@ -287,6 +362,9 @@ func _toggle_customer_context() -> void:
 
 
 func _toggle_item_context() -> void:
+	if story_active:
+		story.show_dialogue()
+		return
 	if not _item_hotspot.visible:
 		return
 	var show_context := not _item_context.visible
@@ -359,5 +437,7 @@ func set_night_lighting(band: int) -> void:
 	if band < 0: return
 	# Only scene sprites dim; appraisal evidence, dialogue and money stay readable.
 	_portrait.modulate = Color([Color.WHITE, Color("8e8271"), Color("655f55"), Color("4b4944")][band], _portrait.modulate.a)
+	# Aqi sits beside the counter lamp; keep her face readable after closing.
+	if story_active and _story_actor and band == 3: _portrait.modulate = Color("8e8271")
 	_item_image.modulate = Color([Color.WHITE, Color("ead8b5"), Color("d3c7aa"), Color("b8b09b")][band], _item_image.modulate.a)
 	%AtmosphereLabel.text = ["人声尚近", "灯下做买卖", "街外无光", "只剩一盏灯"][band]
