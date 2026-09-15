@@ -40,5 +40,6 @@ func refresh() -> void:
 		route_requested.emit(&"risk")
 
 func _choose(command: String, id: String, _detail: String, _amount: int) -> void:
+	if command == "open_investigation": route_requested.emit(&"investigation"); return
 	var result := _session.risk_command(command, id, _detail)
 	_view.show_notes(command == "study" and result.ok)

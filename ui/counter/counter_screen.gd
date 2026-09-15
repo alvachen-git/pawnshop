@@ -92,6 +92,15 @@ func _ready() -> void:
 
 func bind_session(session: RunSession) -> void:
 	_session = session
+	if InvestigationService.enabled(session.definition):
+		var panel := InvestigationPanel.new()
+		panel.panel_id = &"investigation"
+		panel.name = "InvestigationPanel"
+		%DayFlowPanel.get_parent().add_child(panel)
+		panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		panel.hide()
+		_flow.register_panel(panel)
+		panel.bind(session)
 	_counter_view.bell_requested.connect(session.bell_command)
 	_counter_view.bell.blocked = _bell_blocked
 	session.restored.connect(_reset_reception)
@@ -247,6 +256,10 @@ func bind_session(session: RunSession) -> void:
 	_narrative.visibility_changed.connect(func() -> void:
 		if not _narrative.visible and _session.read_state().phase == "open": _close_drawer()
 	)
+
+	var inventory_event_notice := preload("res://ui/inventory/inventory_event_notice.gd").new()
+	add_child(inventory_event_notice)
+	inventory_event_notice.bind(session, self)
 
 func focus_active_screen() -> void:
 	if _narrative != null and _narrative.visible and _narrative._choices.get_child_count() > 0:
@@ -437,7 +450,7 @@ func _open_drawer(panel_id: StringName) -> void:
 	_close_menu()
 	_counter_view.dismiss_contexts()
 	%Drawer.show()
-	%DrawerTitle.text = "  " + PANEL_TITLES[String(panel_id)]
+	%DrawerTitle.text = "  " + ("托人查访" if panel_id == &"investigation" else PANEL_TITLES[String(panel_id)])
 	%CloseDrawerButton.grab_focus()
 	_refresh_recent_visibility()
 

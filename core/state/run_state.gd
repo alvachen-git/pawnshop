@@ -3,6 +3,8 @@ extends RefCounted
 
 const PHASE_PRE_OPEN := &"pre_open"
 
+var investigation_enabled := false
+var investigation: Dictionary = {}
 var personal_risk_enabled := false
 var room_photo_position := "" # Empty inherits the immutable opening choice.
 var personal_damage := 0
@@ -76,6 +78,7 @@ var visits: Array[CustomerVisit] = []
 static func create(definition: RunDefinition) -> RunState:
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.investigation_enabled = InvestigationService.enabled(definition)
 	state.personal_risk_enabled = PersonalRisk.enabled(definition)
 	state.night_market_enabled = NightMarketPlan.enabled(definition)
 	state.ghost_version = int(definition.variety.get("ghost_guests_version", 0))
@@ -135,6 +138,7 @@ func to_read_model() -> Dictionary:
 		"visit_history": visit_history.duplicate(true),
 	}
 
+	if investigation_enabled: data["investigation"] = investigation.duplicate(true)
 	if personal_risk_enabled:
 		data["room_photo_position"] = room_photo_position
 		data.merge({"pending_pawn_choices": pending_pawn_choices.duplicate(true), "personal_risk_enabled": true, "personal_damage": personal_damage, "personal_risk_history": personal_risk_history.duplicate(true), "personal_death_phase": personal_death_phase, "action_journal": action_journal.duplicate(true)})

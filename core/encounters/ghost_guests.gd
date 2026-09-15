@@ -21,6 +21,7 @@ static func eligible(state: RunState) -> Array[PawnTicket]:
 # Called only when a waiting visitor takes the counter, never by a read model.
 static func arrive(state: RunState, visit: CustomerVisit) -> void:
 	if state.ghost_version != 1 or state.ghost_catalog == null: return
+	if not visit.purpose.is_empty() or not visit.night_policy.is_empty(): return
 	if state.person_deaths.any(func(row: Dictionary) -> bool: return row.person_id == visit.person.get("id", "")):
 		CustomerManager.new().finish(state, visit, "person_deceased")
 		return

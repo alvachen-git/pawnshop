@@ -50,6 +50,12 @@ func refresh() -> void:
 		account["fee_enabled"] = _session.definition.fee_policy.enabled
 		account["debt"] = _session.economy_model().description if account.fee_enabled else ""
 		account["familiar_notes"] = FamiliarStories.note(_session._day.state)
+		if InvestigationService.enabled(_session.definition):
+			account.familiar_notes += MirrorChapterService.summary(_session._day.state, _session.definition)
+			var order: Dictionary = _session._day.state.investigation
+			if not order.is_empty() and not order.delivered: account.familiar_notes += "\n查访回报约在第%d夜送到，尚待回信。" % order.report_night
+			var appointment := InvestigationService.appointment(_session._day.state)
+			if appointment.get("status", "") == "booked": account.familiar_notes += "\n已约第%d夜20:00来铺，尚待会面。" % appointment.night
 		account["pawn_results"] = []
 		for ticket in state.pawn_tickets:
 			if ticket.closed_night != state.current_night_index or ticket.status not in ["defaulted", "transferred"]: continue

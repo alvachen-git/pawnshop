@@ -8,6 +8,7 @@ signal load_requested
 signal panel_requested(panel_id: StringName)
 
 var _save_button: Button
+var _investigation_button: Button
 var _leave_buttons: Array[Button] = []
 var _manual_storage := false
 var _confirmation: ConfirmationDialog
@@ -16,6 +17,10 @@ var _error_dialog: AcceptDialog
 
 
 func _ready() -> void:
+	_investigation_button = Button.new()
+	_investigation_button.text = "托人查访"
+	%RiskButton.get_parent().add_child(_investigation_button)
+	_investigation_button.pressed.connect(_route.bind(&"investigation"))
 	%NewRunButton.pressed.connect(_confirm.bind("new"))
 	%LoadRunButton.pressed.connect(func() -> void:
 		if _manual_storage: hide(); load_requested.emit()
@@ -45,6 +50,7 @@ func _ready() -> void:
 
 
 func render(model: Dictionary) -> void:
+	_investigation_button.visible = model.get("investigation", false) and not model.get("in_room", false)
 	_manual_storage = model.get("manual_storage", false)
 	_save_button.visible = _manual_storage
 	_save_button.disabled = not model.get("save_reason", "").is_empty()

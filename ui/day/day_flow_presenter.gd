@@ -11,6 +11,7 @@ var _session_menu: SessionMenuView
 var _last_phase := ""
 var _category_picker := false
 var _picker_night := 0
+var _wait_picker := false
 
 func bind(session: RunSession, view: DayFlowPanel, session_menu: SessionMenuView) -> void:
 	_session = session
@@ -22,29 +23,29 @@ func bind(session: RunSession, view: DayFlowPanel, session_menu: SessionMenuView
 	_session_menu.save_requested.connect(func() -> void: _session.storage_requested.emit("save"))
 	_session_menu.leave_requested.connect(func(destination: String) -> void: _session.leave_requested.emit(destination))
 	_session.changed.connect(refresh)
-	_session.restored.connect(func() -> void: _last_phase = "")
+	_session.restored.connect(func() -> void: _last_phase = ""; _wait_picker = false)
 	refresh()
 
 func refresh() -> void:
 	var state := _session.read_state()
 	var definition := _session.definition
+	if state.phase not in ["open", "closed_processing"]: _wait_picker = false
 	if state.phase != "pre_open" or _picker_night != state.current_night_index: _category_picker = false
 	var commands: Array = []
 	for entry in [{"id": "open_shop", "label": "开铺"}, {"id": "close_shop", "label": "关门（本夜不可重开）"}]:
 		entry.enabled = _session.can_execute(entry.id)
 		commands.append(entry)
-	for action in definition.actions:
-		commands.append({"id": action.id, "label": "%s · %d 分钟" % [action.label, action.minutes], "enabled": _session.can_execute(action.id)})
+	var remaining := maxi(0, definition.night_minutes - int(state.game_minutes))
+	commands.append({"id": "wait_until_seal", "label": "等到封铺 · %d分钟" % remaining, "enabled": _session.can_execute("wait_until_seal"), "visible": state.phase in ["open", "closed_processing"]})
+	commands.append({"id": "choose_wait", "label": "等待", "enabled": _wait_commands().any(func(entry: Dictionary) -> bool: return entry.enabled), "visible": state.phase in ["open", "closed_processing"]})
 	if NightMarketPlan.enabled(definition):
 		for id in NightMarketRisk.unresolved(_session._day.state):
 			var command := "seal_cloth/" + id
 			var n := int(NightMarketRisk.selection(_session._day.state, id).get("night", 0))
 			commands.append({"id": command, "label": "按旧规封存包布（第%d夜） · 20分钟" % n, "enabled": _session.can_execute(command), "reason": NightMarketRisk.treatment_reason(_session._day, id)})
-	commands.append({"id": "wait_until_seal", "label": "等到封铺（消耗全部剩余时间）", "enabled": _session.can_execute("wait_until_seal")})
 	if SevenNightPlan.enabled(definition) and not OpeningPreparation.enabled(definition):
 		for entry in commands:
 			if state.phase == "pre_open" and entry.id != "open_shop": entry.visible = false
-		commands.append({"id": "read_seven_notes", "label": "查看已知消息 · 不耗次数", "enabled": true, "visible": state.current_night_index >= 4})
 		for entry in [{"id": "prep_investigate", "label": "调查收货消息 · 准备1次"}, {"id": "prep_contact", "label": "联系收货人 · 准备1次"}, {"id": "prep_visitors", "label": "打听今晚来客 · 准备1次"}, {"id": "prep_finish", "label": "结束准备"}]:
 			entry.enabled = _session.can_execute(entry.id)
 			entry.visible = state.current_night_index >= 4 and state.phase == "pre_open"
@@ -59,7 +60,6 @@ func refresh() -> void:
 	if SevenNightPlan.enabled(definition) and state.phase == "pre_open" and state.current_night_index >= 4:
 		description = "开铺前\n今夜准备剩余%d次，开铺后不可返回。\n收货与来客消息可免费复看。" % (2 - PreparationService.count(_session._day.state))
 	if OpeningPreparation.enabled(definition) and state.current_night_index >= 2:
-		commands.append({"id": "read_seven_notes", "label": "查看已知消息 · 不耗次数", "enabled": true})
 		if state.phase == "pre_open":
 			commands = _preparation_commands()
 			description = "开铺前 · 现银%d大洋\n今夜准备剩余%d次；开铺后不可返回。" % [state.cash, 2 - PreparationService.count(_session._day.state)]
@@ -77,14 +77,32 @@ func refresh() -> void:
 		elif not state.pending_event_id.is_empty():
 			description = "已封铺\n铺里还有未办完的事，先查看铺中记事。"
 			commands.push_front({"id": "read_events", "label": "查看铺中记事", "enabled": true})
+	if state.phase == "open": description = "营业中"
+	if _wait_picker:
+		description = "等待多久？"
+		commands = _wait_commands()
+		commands.append({"id": "cancel_wait", "label": "返回", "enabled": true})
 	_view.render({"description": description, "message": _session.message, "commands": commands, "preparation": OpeningPreparation.enabled(definition) and state.current_night_index >= 2 and state.phase == "pre_open"})
-	_session_menu.render({"has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
+	_session_menu.render({"investigation": InvestigationService.enabled(definition), "has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
 	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(definition.opening_minute, state.game_minutes), state.cash])
 	if state.phase != _last_phase:
 		_last_phase = state.phase
 		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")
 
 func _on_command(command: String) -> void:
+	if command == "choose_wait":
+		_wait_picker = true
+		refresh()
+		return
+	if command == "cancel_wait":
+		_wait_picker = false
+		refresh()
+		return
+	if command.begins_with("wait_option/"):
+		_wait_picker = false
+		_session.execute(command.trim_prefix("wait_option/"))
+		refresh()
+		return
 	var routes := {"read_night": &"night", "read_risk": &"risk", "read_events": &"events"}
 	if routes.has(command):
 		route_requested.emit(routes[command])
@@ -121,6 +139,12 @@ func _on_command(command: String) -> void:
 		return
 	_session.execute(command)
 
+func _wait_commands() -> Array:
+	var choices: Array = []
+	for action in _session.definition.actions:
+		choices.append({"id": "wait_option/" + action.id, "label": "%d分钟" % action.minutes, "enabled": _session.can_execute(action.id)})
+	return choices
+
 func _preparation_commands() -> Array:
 	var commands: Array = []
 	var state := _session._day.state
@@ -148,7 +172,6 @@ func _preparation_commands() -> Array:
 			if item.definition_id != GoodsExpertise.CUP or item.ownership_state != "owned" or "form" not in item.revealed_clue_ids: continue
 			var error := OpeningPreparation.reason(state, "seek", item.instance_id)
 			commands.append({"id": "prep_seek/" + item.instance_id, "label": "寻配茶盏 · 货签%d · 3银元 / 准备1次" % (state.inventory_instances.find(item) + 1), "enabled": error.is_empty(), "reason": error, "tooltip": GoodsExpertise.description(item, _session._counter.catalog.get_definition("items", item.definition_id))})
-	commands.append({"id": "read_seven_notes", "label": "查看已知消息 · 不耗次数", "enabled": true})
 	return commands
 
 func _on_load() -> void:

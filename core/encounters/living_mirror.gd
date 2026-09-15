@@ -16,7 +16,9 @@ static func customer(day: DayController, catalog: ContentCatalog) -> Dictionary:
 	var visit := CustomerManager.new().active(day.state)
 	if visit == null: return {}
 	var definition := catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
-	return {"id": visit.visit_id, "customer_id": visit.customer_id, "name": VarietyService.name_for(visit.person, definition), "life": definition.life_status}
+	var life := definition.life_status
+	if day.state.investigation_enabled and not visit.night_policy.is_empty(): life = "ghost" if visit.night_policy == "wet_cloth" else "living"
+	return {"id": visit.visit_id, "customer_id": visit.customer_id, "name": VarietyService.name_for(visit.person, definition), "life": life}
 
 static func reason(day: DayController, catalog: ContentCatalog, id: String) -> String:
 	if not enabled(day.definition) or day.state.phase != &"open": return "开铺接客时才能借镜照人。"

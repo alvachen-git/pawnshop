@@ -6,6 +6,8 @@ static func enabled(run: RunDefinition) -> bool:
 
 static func summary(state: RunState, run: RunDefinition) -> String:
 	if not enabled(run): return ""
+	if state.investigation_enabled and state.investigation.get("answers", []).size() == 3:
+		return "\n镜中旧事：丈夫承认早已恢复营生，也有办法联络妻儿，却一直回避。事实已经问清，镜中的等待尚未了结。" + ("\n你准备把事实带到镜前。" if state.investigation.attitude == "prepare_mirror" else "\n材料暂时收起。" if state.investigation.attitude == "put_away" else "")
 	var flags := state.narrative_flags
 	if "wm_motive" in flags:
 		var ending := "西平码头的地址已记下，离家经过还须继续核实。"
