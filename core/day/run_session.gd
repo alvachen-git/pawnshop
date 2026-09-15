@@ -468,6 +468,7 @@ func risk_model(record_id := "") -> Dictionary:
 	if InvestigationService.enabled(definition):
 		model.history += InvestigationService.notes(_day.state)
 		model.buttons.append({"command": "open_investigation", "target_id": "", "detail": "", "label": "托人查访", "enabled": not model.requires_response, "reason": ""})
+	model.note_sections = preload("res://ui/risk/mirror_journal.gd").build(_day, _counter.catalog)
 	return model
 
 func investigation_command(command: String, detail := "") -> ActionResult:

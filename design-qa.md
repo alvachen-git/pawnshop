@@ -55,3 +55,7 @@ final result: passed。反射校正与组件验证见 [镜面 QA](docs/qa/bedroo
 final result: passed
 
 保留上方原有验收记录。本次库存事件提醒的交互、双分辨率截图与检查结果见 [库存事件提醒验收](docs/qa/inventory-event-notice/design-qa.md)。
+
+## 铜镜物品记事排版 · 2026-09-15
+
+final result: passed。分类、独立记录与双尺寸交互验收见 [铜镜记事 QA](docs/qa/mirror-journal/design-qa.md)。
