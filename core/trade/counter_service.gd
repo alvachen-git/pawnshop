@@ -18,6 +18,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	var visit := customers.active(day.state)
 	if day.state.phase != &"open" or visit == null or visit.visit_id != visit_id or day.state.game_minutes >= visit.expires_at:
 		return "当前顾客已离开或柜台未营业。"
+	if visit.purpose == "husband_meeting": return "这次只谈旧事，请到对话页问话或送客。"
 	var late_error := NightMarketPlan.command_reason(visit, command)
 	if not late_error.is_empty(): return late_error
 	if EarlyRedemption.is_visit(visit): return EarlyRedemption.reason(day, visit, command, detail, amount)

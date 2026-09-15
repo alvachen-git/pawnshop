@@ -1,6 +1,7 @@
 class_name CustomerVisit
 extends RefCounted
 
+var purpose := ""
 var night_policy := ""
 var night_aftermath := ""
 var transaction_modes: Array = []

@@ -6,7 +6,7 @@ const DESCRIPTIONS := ["火稳，色暖。灯芯上没有杂音。", "火苗短�
 const LIGHT := [1.0, 0.70, 0.40, 0.14, 0.0]
 
 static func enabled(run: RunDefinition) -> bool:
-	return run.id == RUN_ID
+	return run.variety.get("personal_risk_version", 0) == 1 or run.id == RUN_ID
 
 static func lamp_state(state: RunState) -> Dictionary:
 	var damage := clampi(state.personal_damage, 0, 4)

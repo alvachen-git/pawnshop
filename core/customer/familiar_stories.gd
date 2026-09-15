@@ -19,9 +19,9 @@ static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -
 	for id in selected:
 		var prefix: String = "familiar/" + id
 		var gaps: Array = [2, 3] if id == "bookkeeper" else [1, 2]
-		var nights: Array = range(2 if id == "bookkeeper" else 3, 7).filter(func(n: int) -> bool: return not available(base, occupied, n).is_empty() and gaps.any(func(g: int) -> bool: return n + g > 7 or not available(base, occupied, n + g).is_empty()))
+		var nights: Array = range(2 if id == "bookkeeper" else 3, 7).filter(func(n: int) -> bool: return not available(base, occupied, n).is_empty() and gaps.any(func(g: int) -> bool: return n + g > run.total_nights or not available(base, occupied, n + g).is_empty()))
 		var first := int(VarietyService.pick(nights, seed_value, prefix + "/night"))
-		var valid_gaps: Array = gaps.filter(func(g: int) -> bool: return first + g > 7 or not available(base, occupied, first + g).is_empty())
+		var valid_gaps: Array = gaps.filter(func(g: int) -> bool: return first + g > run.total_nights or not available(base, occupied, first + g).is_empty())
 		var follow := first + int(VarietyService.pick(valid_gaps, seed_value, prefix + "/gap"))
 		var person := {"id": "familiar/" + id, "name": NAMES[0 if id == "bookkeeper" else 1], "portrait": "asset.customer_" + id}
 		var story := {"id": id, "person": person, "first_night": first, "follow_night": follow, "due_night": first + 3 if id == "seamstress" else 0,
@@ -29,7 +29,7 @@ static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -
 		for stage in ["first", "follow"]:
 			var night: int = first if stage == "first" else follow
 			var row: Dictionary = {}
-			if night <= 7:
+			if night <= run.total_nights:
 				var candidates := available(base, occupied, night)
 				assert(not candidates.is_empty(), "Familiar visit needs an unprotected ordinary seat")
 				row = VarietyService.pick(candidates, seed_value, prefix + "/" + stage + "/seat").duplicate(true)
@@ -95,7 +95,7 @@ static func overlay(state: RunState, run: RunDefinition, catalog: ContentCatalog
 	for story in state.familiar_plan.stories:
 		for stage in ["first", "follow"]:
 			var scheduled: Dictionary = story[stage]
-			if scheduled.night > 7: continue
+			if scheduled.night > run.total_nights: continue
 			var route := "first" if stage == "first" else branch(story, data, catalog)
 			for index in rows.size():
 				if rows[index].visit_id != scheduled.visit_id: continue

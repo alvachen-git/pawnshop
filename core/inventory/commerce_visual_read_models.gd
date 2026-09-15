@@ -51,6 +51,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 		var subject := "铺面息费"
 		if entry.kind == "preparation": subject = {"attract": "招揽客人", "tea": "备茶候客", "seek": "寻配茶盏"}.get(entry.transaction_id.get_slice("/", entry.transaction_id.get_slice_count("/") - 1), "开铺准备")
 		if entry.kind == "expertise": subject = "行家复核"
+		if entry.kind == "investigation": subject = "核查丈夫离家后的经历"
 		var item := InventoryManager.new().find(day.state, entry.item_instance_id)
 		if item != null: subject = (service.catalog.get_definition("items", item.definition_id) as ItemDefinition).display_name
 		var receipt_id := String(entry.transaction_id) if entry.kind in ["acquisition", "pawn_loan", "sale", "redemption", "extension", "provenance_inquiry"] else ""

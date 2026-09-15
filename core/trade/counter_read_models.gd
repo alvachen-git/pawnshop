@@ -30,7 +30,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 				who = String(ended.person.get("name", ended_customer.terms.display_name))
 				break
 		if int(last.night) == state.current_night_index and not who.is_empty():
-			model.queue += "\n%s · %s：%s" % [TimeController.clock_text(day.definition.opening_minute, int(last.minute)), who, OUTCOMES[last.outcome]]
+			model.queue += "\n%s · %s：%s" % [TimeController.clock_text(day.definition.opening_minute, int(last.minute)), who, OUTCOMES.get(last.outcome, "会面结束")]
 	var visit := service.customers.active(state)
 	# A completed action may have moved the queue to another customer already.
 	# Keep its result in the departure/receipt flow, not in the new reception.
@@ -39,6 +39,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		for feature in ["appraisal", "dialogue", "trade"]: model[feature].body += "\n\n" + message
 		return model
 	var customer := service.catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
+	if visit.purpose == "husband_meeting": return InvestigationCounterModel.build(model, day, service.catalog, visit, message)
 	var item := service.catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
 	model.active_id = visit.visit_id
 	model.context_actions.customer = [

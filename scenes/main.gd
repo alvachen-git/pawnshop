@@ -9,6 +9,11 @@ var storage: SaveLibraryView
 
 
 func _ready() -> void:
+	if OS.is_debug_build():
+		for argument in OS.get_cmdline_user_args():
+			if argument.begins_with("--investigation-preview=") and argument.trim_prefix("--investigation-preview=") in ["commission", "report", "meeting"]:
+				_bootstrap.preview_stage = argument.trim_prefix("--investigation-preview=")
+				start_at_title = false
 	if start_at_title:
 		_counter_screen.hide()
 		_counter_screen.process_mode = Node.PROCESS_MODE_DISABLED
@@ -26,6 +31,8 @@ func _ready() -> void:
 		get_tree().auto_accept_quit = false
 	if start_at_title:
 		_show_title()
+	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null:
+		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
 
 func _show_title() -> void:
 		title_menu = TitleMenuView.new()

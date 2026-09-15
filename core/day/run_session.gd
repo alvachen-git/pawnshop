@@ -63,7 +63,10 @@ func read_state() -> Dictionary:
 func seven_notice() -> String:
 	if not SevenNightPlan.enabled(definition): return ""
 	var introductions := {1: "借据压在柜上：本金500银元，日息按剩余本金1%向上取整，另付铺费5银元。第21夜首期200银元可整笔延期；已付首期则第49夜还余款300，延期则届时还本金500及延期费100。日常短款只宽限至次夜夜末。\n旧掌柜留话：先看货，再听人说；现银交出去，便压在货里了。", 2: "杂货商常收旧物，瓷器收藏客19:00–22:00来收。出门交货往返20分钟，店里的客人可不会替你停住钟。", 3: "今夜起可办活当：期限3夜，赎金为本金加10%固定息费，息费向上取整。在当旧物须替原主保管。", 7: "七夜的账即将合拢。未卖的货、未到期的票与借据都照实留着，本金今夜不催收。"}
-	return String(introductions.get(_day.state.current_night_index, "")) + PreparationService.notice(_day.state, _counter.catalog) + MirrorChapterService.summary(_day.state, definition) + FamiliarStories.note(_day.state) + ("\n" + NightMarketRisk.note(_day.state) if NightMarketPlan.enabled(definition) else "") + GhostGuests.notice(_day.state, _counter.catalog)
+	if InvestigationService.enabled(definition):
+		introductions[7] = "七夜的账暂结一页。铺子照常开，未办完的旧事仍可接着查。"
+		introductions[10] = "十夜的账将合拢。未到期的票、托出的口信与未回的委托，照实留在账上。"
+	return String(introductions.get(_day.state.current_night_index, "")) + PreparationService.notice(_day.state, _counter.catalog) + MirrorChapterService.summary(_day.state, definition) + FamiliarStories.note(_day.state) + ("\n" + NightMarketRisk.note(_day.state) if NightMarketPlan.enabled(definition) else "") + GhostGuests.notice(_day.state, _counter.catalog) + ("\n查访回报已送到，可去「托人查访」拆阅。" if _day.state.investigation.get("delivered", false) and not _day.state.investigation.get("read", false) else "")
 
 func has_save() -> bool:
 	return _save.exists()
@@ -151,6 +154,7 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 	if result.ok and _counter != null:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
 			GhostGuests.dawn(_day.state)
+			InvestigationService.dawn(_day.state)
 			_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 		_counter.customers.update(_day.state)
 	if result.ok and prior_visitor != null and prior_visitor.status == "timed_out" and prior_visitor.voice.has("timed_out"): result.message += "\n" + String(prior_visitor.voice.timed_out)
@@ -235,6 +239,9 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
 	if command == "soul_inspect": return inspect_customer(visit_id)
+	if command in ["meeting_question", "meeting_end"]:
+		if amount != 0: return ActionResult.new(false, "这次只谈旧事。")
+		return investigation_command(command, visit_id + ("|" + detail if command == "meeting_question" else ""))
 	if command in ["swap_accept", "swap_reject"]:
 		if not detail.is_empty() or amount != 0: return ActionResult.new(false, "这笔换物只按约定的八十银元办理。")
 		var before := _day.state.ledger_entries.size()
@@ -244,7 +251,7 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 		MarketService.sync(_day.state, definition)
 		message = swapped.message
 		_message_visit_id = visit_id
-		changed.emit()
+		_emit_changed()
 		_emit_receipt(before)
 		return swapped
 	if command in ["redeem", "extend"]:
@@ -451,7 +458,27 @@ func risk_model(record_id := "") -> Dictionary:
 				model.history = "铺中旧事\n" + encounter_def.text("pursue_text") + "\n\n" + model.history
 	MirrorChapterService.decorate(model, _day, _events)
 	LivingMirror.decorate(model, _day, _counter.catalog)
+	if InvestigationService.enabled(definition):
+		model.history += InvestigationService.notes(_day.state)
+		model.buttons.append({"command": "open_investigation", "target_id": "", "detail": "", "label": "托人查访", "enabled": not model.requires_response, "reason": ""})
 	return model
+
+func investigation_command(command: String, detail := "") -> ActionResult:
+	return _journal_call("investigation_command", [command, detail])
+
+func _impl_investigation_command(command: String, detail := "") -> ActionResult:
+	var start := _day.state.game_minutes
+	var result := InvestigationService.perform(_day, _counter.catalog, command, detail)
+	if not result.ok and start == _day.state.game_minutes:
+		message = result.message
+		_emit_changed()
+		return result
+	if _risk != null: _risk.capture_close(_day.state)
+	if _events != null: _events.poll(_day.state, definition)
+	MarketService.sync(_day.state, definition)
+	message = result.message
+	_emit_changed()
+	return result
 
 func risk_command(command: String, id: String, detail := "") -> ActionResult:
 	return _journal_call("risk_command", [command, id, detail])
@@ -621,7 +648,7 @@ func _persist() -> bool:
 	return _save.save_state(_day.state, definition, content_version)
 
 func _journal_call(method: String, args: Array) -> ActionResult:
-	if LivingMirror.enabled(definition): return _ghost_call(method, args)
+	if LivingMirror.enabled(definition) and not InvestigationService.enabled(definition): return _ghost_call(method, args)
 	if not _day.state.personal_risk_enabled or _journal_depth > 0: return callv("_impl_" + method, args)
 	if _day.state.action_journal.size() >= 4096: return ActionResult.new(false, "本局操作记录已满，请读取较早的存档。")
 	var previous: RunState = _copy_state(_day.state) if not replaying else null
@@ -670,7 +697,7 @@ func _emit_operation(payload: Dictionary) -> void:
 	if _journal_depth > 0: _pending_notifications.append({"signal_name": "operation_completed", "payload": payload})
 	else: operation_completed.emit(payload)
 func inspect_customer(visit_id: String) -> ActionResult:
-	return _ghost_call("inspect_customer", [visit_id])
+	return _journal_call("inspect_customer", [visit_id]) if InvestigationService.enabled(definition) else _ghost_call("inspect_customer", [visit_id])
 
 func _impl_inspect_customer(visit_id: String) -> ActionResult:
 	var result := LivingMirror.inspect(_day, _counter.catalog, visit_id)
@@ -678,7 +705,7 @@ func _impl_inspect_customer(visit_id: String) -> ActionResult:
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
 	_message_visit_id = visit_id
-	changed.emit()
+	_emit_changed()
 	return result
 
 func _ghost_call(method: String, args: Array) -> ActionResult:

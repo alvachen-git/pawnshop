@@ -53,6 +53,7 @@ func _refresh() -> void:
 	for row in state.visit_history.slice(_cursor):
 		if not REASONS.has(row.outcome) or not _known.has(row.visit_id): continue
 		var visit: CustomerVisit = _known[row.visit_id].visit
+		if visit.purpose == "husband_meeting": continue
 		var was_active: bool = _known[row.visit_id].was_active
 		if was_active and not visit.departure_reply.is_empty(): quote_refused = true
 		early_departed = early_departed or EarlyRedemption.is_visit(visit)

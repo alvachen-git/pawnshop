@@ -17,6 +17,8 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 	var value: Dictionary = row[field]
 	match kind:
 		"runs":
+			for feature in ["investigation_version", "personal_risk_version"]:
+				if value.has(feature) and (not RunSchema.integer(value[feature]) or value[feature] != 1): CounterDomainValidator._error(issues, at, "功能版本无效。")
 			if value.has("night_market"):
 				var late: Variant = value.night_market
 				var valid: bool = late is Dictionary and late.get("version") == 1 and value.get("seven_version") == 1 and row.get("private_room") == true
@@ -62,7 +64,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 				else:
 					for night in value.fixed_arrivals:
 						var times: Variant = value.fixed_arrivals[night]
-						if not night is String or not night.is_valid_int() or int(night) < 1 or int(night) > 7 or not times is Array or times.size() != 6:
+						if not night is String or not night.is_valid_int() or int(night) < 1 or int(night) > int(row.get("total_nights", 7)) or not times is Array or times.size() != 6:
 							CounterDomainValidator._error(issues, at, "固定夜次须有六个时刻。")
 							continue
 						var previous := -15
@@ -101,7 +103,7 @@ static func domain(catalog: ContentCatalog) -> Array:
 		if run.variety.is_empty(): continue
 		if SevenNightPlan.enabled(run):
 			issues.append_array(story_domain(run, catalog))
-			if run.total_nights != 7 or run.customer_slots.size() != 42 or not run.batch_selling: CounterDomainValidator._error(issues, run.id, "七夜运行配置不一致。")
+			if run.total_nights != (10 if InvestigationService.enabled(run) else 7) or run.customer_slots.size() != run.total_nights * 6 or not run.batch_selling: CounterDomainValidator._error(issues, run.id, "七夜运行配置不一致。")
 			for id in run.variety.customer_ids:
 				if run.variety.contexts.filter(func(c: Dictionary) -> bool: return c.customer_id == id).size() != 2: CounterDomainValidator._error(issues, run.id, "每类人物须有两种处境。")
 			for c in run.variety.contexts:
@@ -154,7 +156,7 @@ static func story_domain(run: RunDefinition, catalog: ContentCatalog) -> Array:
 		var slot: VisitSlotDefinition
 		for candidate in run.customer_slots:
 			if candidate.id == anchor.slot_id: slot = candidate
-		if index >= 42 or index in occupied or anchor.slot_id in used_ids or slot == null:
+		if index >= run.total_nights * 6 or index in occupied or anchor.slot_id in used_ids or slot == null:
 			CounterDomainValidator._error(issues, run.id, "剧情位置越界、重复或未定义。")
 			continue
 		occupied.append(index)
