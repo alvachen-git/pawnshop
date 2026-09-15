@@ -57,6 +57,9 @@ try {
         return
     }
     Run-Test 'core' 'run_all.gd'
+    Run-Test 'aqi-core' 'run_aqi.gd'
+    Run-Test 'aqi-durability' 'aqi_save_durability.gd'
+    Run-Test 'aqi-process' 'run_aqi.gd' @('process-read')
     Run-Test 'night-market-core' 'run_night_market.gd'
     Run-Test 'night-market-process' 'run_night_market.gd' @('process-read')
     Run-Test 'free-cloth' 'free_cloth_tests.gd'
@@ -114,6 +117,7 @@ try {
     foreach ($wide in @($false,$true)) {
         $size = if ($wide) { '1600x900' } else { '1280x720' }
         $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "aqi-$size" 'aqi_ui_smoke.gd' $sizeArgs $false
         Run-Test "night-lighting-$size" 'night_lighting_ui.gd' $sizeArgs $false
         Run-Test "incense-smoke-$size" 'incense_smoke_ui.gd' $sizeArgs $false
         Run-Test "night-market-$size" 'night_market_ui.gd' $sizeArgs $false

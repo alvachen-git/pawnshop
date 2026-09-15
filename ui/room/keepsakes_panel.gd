@@ -2,6 +2,7 @@ class_name KeepsakesPanel
 extends Control
 
 signal photo_requested(command: String)
+signal observation_requested(id: String)
 signal dismissed
 
 var paper: PanelContainer
@@ -148,6 +149,14 @@ func _render_page() -> void:
 				body.text = tr(letter.body_key)
 				found = true
 		if not found: page = "desk"; _render_page(); return
+		if _letter_id == "gu_jingtang":
+			for row in [["aq_paper", "看看夹纸"], ["aq_floorplan", "重看旧铺草图"]]:
+				if not _model.get("observations", {}).get(row[0], {}).get("available", false): continue
+				var button := _button(row[1])
+				button.name = "RoomPaper" if row[0] == "aq_paper" else "RoomFloorplan"
+				button.pressed.connect(func() -> void: observation_requested.emit(row[0]))
+				contents.add_child(button)
+				letter_buttons.append(button)
 		back.text = "放回抽屉"
 	_layout()
 	_layout.call_deferred()

@@ -23,14 +23,18 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			var closed: int = SaveTimeline.closing(state, int(row.night))
 			if row.phase == "open" and row.minute > closed: return "营业事件发生在关门后。"
 			if row.phase == "closed_processing" and row.offered_minute < closed: return "关门事件发生在营业时。"
-		var rank: int = {"pre_open": 0, "open": 1, "closed_processing": 2, "private_room": 3, "sleep_resolution": 4}[row.phase]
-		if row.phase in ["private_room", "sleep_resolution"]:
+		var rank: int = {"pre_open": 0, "open": 1, "closed_processing": 2, "shop_resolution": 3, "private_room": 4, "sleep_resolution": 5}.get(row.phase, -1)
+		if rank < 0: return "事件阶段无效。"
+		if row.phase in ["shop_resolution", "private_room", "sleep_resolution"]:
 			if row.minute != run.night_minutes or not run.private_room: return "房间事件时刻无效。"
-			var action := "enter_room" if row.phase == "private_room" else "sleep"
+			var action: String = {"shop_resolution": "seal", "private_room": "enter_room", "sleep_resolution": "sleep"}[row.phase]
 			var occurred := false
 			for step in data.get("room_history", []):
 				if step is Dictionary and step.get("night") == row.night and step.get("action") == action: occurred = true
 			if not occurred: return "房间事件缺少阶段记录。"
+			if row.phase == "shop_resolution":
+				if data.get("room_history", []).any(func(step: Variant) -> bool: return step is Dictionary and step.get("night") == row.night and step.get("action") == "shop_defy"): return "铺内死亡后不能发生剧情。"
+				if row.night == state.current_night_index and state.phase == &"shop_resolution" and not str(data.get("risk_pending", "")).is_empty(): return "铺内危机未决时不能完成剧情。"
 		var offered_stamp := _stamp(int(row.night), int(row.offered_minute), rank, run)
 		if offered_stamp < last_stamp: return "事件历史时间倒序。"
 		last_stamp = _stamp(int(row.night), int(row.minute), rank, run)
@@ -83,7 +87,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	return ""
 
 static func _stamp(night: int, minute: int, phase: int, run: RunDefinition) -> int:
-	return (night * (run.night_minutes + 1) + minute) * 5 + phase
+	return (night * (run.night_minutes + 1) + minute) * 6 + phase
 
 static func _inventory_at(state: RunState, night: int, minute: int) -> Array[ItemInstance]:
 	var items: Array[ItemInstance] = []

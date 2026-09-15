@@ -1,0 +1,29 @@
+{
+  "date": "2026-09-14",
+  "godot": "4.6.1",
+  "platform": "macOS Apple M4 Compatibility OpenGL",
+  "results": {
+    "ui1280": {
+      "assertions": 163,
+      "failures": 0
+    },
+    "ui1600": {
+      "assertions": 163,
+      "failures": 0
+    },
+    "ordinary_navigation": {
+      "assertions": 77,
+      "failures": 0
+    },
+    "cross_process": {
+      "passes": 398,
+      "failures": 0
+    },
+    "durability": {
+      "passes": 23,
+      "failures": 0
+    }
+  },
+  "release": false,
+  "player_playtest": "pending"
+}

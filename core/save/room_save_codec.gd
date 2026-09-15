@@ -39,7 +39,22 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 				if not action.begins_with(RoomFlow.scope(sample) + "_"): return "危机发生位置不符。"
 				result = RoomFlow.respond(sample, manager, sample.risk_pending, action.get_slice("_", 1))
 				if result.ok: replayed_responses.append(sample.risk_history.back())
-			else: result = RoomFlow.execute(sample, manager, action)
+			else:
+				if action == "enter_room":
+					var gate := RunState.create(run)
+					gate.phase = &"shop_resolution"
+					gate.current_night_index = night
+					gate.game_minutes = run.night_minutes
+					gate.inventory_instances = sample.inventory_instances
+					gate.ledger_entries = sample.ledger_entries
+					for entry in state.event_history:
+						if entry.night < night or (entry.night == night and entry.phase not in ["private_room", "sleep_resolution"]):
+							gate.event_history.append(entry)
+							var e := catalog.get_definition("events", entry.event_id) as EventDefinition
+							for flag in e.find_choice(entry.choice_id).grant_flags:
+								if flag not in gate.narrative_flags: gate.narrative_flags.append(flag)
+					if not EventDirector.new(catalog).select_next(gate, run).is_empty(): return "回房前缺少铺内剧情。"
+				result = RoomFlow.execute(sample, manager, action)
 			if not result.ok: return "房间阶段被跳过或重复提交。"
 			cursor += 1
 		if sample.summaries.back().outcome != state.summaries[night - 1].outcome: return "房间风险结果与历史不符。"

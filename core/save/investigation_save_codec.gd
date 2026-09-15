@@ -48,7 +48,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	error_message = "十夜存档与实际办理记录不符，原档已保留。"
 	replayed_actions = 0
 	if not data is Dictionary or catalog == null or not InvestigationService.enabled(run): return null
-	if data.get("content_version") != 23 or data.get("save_version") != 23 or data.get("run_definition_id") != String(run.id): return null
+	if data.get("content_version") != catalog.content_version or data.get("save_version") != catalog.content_version or data.get("run_definition_id") != String(run.id): return null
 	if not data.get("action_journal") is Array or data.action_journal.size() > 4096: return null
 	if not data.get("ghost_origin") is Dictionary: return null
 	var origin: Dictionary = data.ghost_origin
@@ -60,7 +60,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	store.origin = origin.duplicate(true)
 	store.prior_deaths = data.death_archive.filter(func(row: Dictionary) -> bool: return row.run_token != origin.run_token)
 	store.prior_bankruptcies = data.bankruptcy_archive.filter(func(row: Dictionary) -> bool: return row.run_token != origin.run_token)
-	var session := RunSession.new(run, 23, store, catalog)
+	var session := RunSession.new(run, catalog.content_version, store, catalog)
 	session.replaying = true
 	# Include actual content, not just a run id: editor/test changes invalidate the
 	# prefix too. Prior attempts affect archives even when the current seed matches.
@@ -76,6 +76,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 			start = verified.action_journal.size()
 	var commands := GhostSaveCodec.COMMANDS.duplicate(true)
 	commands["investigation_command"] = [2, 2]
+	if "aq_coat" in run.event_ids: commands["observe_room"] = [1, 1]
 	for index in range(start, data.action_journal.size()):
 		var row: Variant = data.action_journal[index]
 		if not row is Dictionary or row.size() != 2 or not row.get("method") is String or not commands.has(row.method) or not row.get("args") is Array: return null

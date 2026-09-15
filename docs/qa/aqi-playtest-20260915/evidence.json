@@ -1,0 +1,24 @@
+{
+  "date": "2026-09-15",
+  "content_version": 22,
+  "run": "aqi_seven",
+  "asset": "assets/aqi/counter-aqi-resting.png",
+  "asset_sha256": "84dbda9750fcc86eb14d89864e06480d3078156b651e3bbf2364bbc622ff803e",
+  "results": {
+    "aqi_core": [
+      4553,
+      0
+    ],
+    "ui_1280": [
+      167,
+      0
+    ],
+    "ui_1600": [
+      167,
+      0
+    ]
+  },
+  "capture": "Godot real graphical window viewport",
+  "save_scope": "isolated .godot/qa/aqi",
+  "source_changes": false
+}

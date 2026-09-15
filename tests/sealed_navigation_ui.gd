@@ -31,7 +31,7 @@ func _run() -> void:
 	await _click("开铺营业")
 	driver.drain(_session)
 	await _click("营业")
-	await _click("等到封铺（消耗全部剩余时间）")
+	await _click_button((_main.find_child("DayFlowPanel", true, false) as DayFlowPanel)._buttons["wait_until_seal"])
 	_check(_session.read_state().phase == "night_resolution", "wait seals second night")
 	var sealed := _session.read_state()
 	await _open_storage("save")

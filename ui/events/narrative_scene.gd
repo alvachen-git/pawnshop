@@ -78,7 +78,7 @@ func bind(session: RunSession) -> void:
 
 func refresh() -> void:
 	_model = _session.event_model()
-	visible = not _model.presentation.is_empty()
+	visible = not _model.presentation.is_empty() and _model.presentation.get("scene", "") != "aqi_counter"
 	if not visible:
 		_signature = ""
 		return
@@ -120,7 +120,8 @@ func refresh() -> void:
 	queue_redraw()
 
 func _unhandled_key_input(event: InputEvent) -> void:
-	if visible and event.is_action_pressed("ui_cancel"): get_viewport().set_input_as_handled()
+	if visible and event.is_action_pressed("ui_cancel"):
+		get_viewport().set_input_as_handled()
 
 func _choose(id: String, choice: String) -> void:
 	var result := _session.event_command(id, choice)

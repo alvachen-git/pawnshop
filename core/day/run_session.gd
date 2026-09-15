@@ -386,6 +386,13 @@ func receipt_for(transaction_id: String) -> Dictionary:
 
 func event_model() -> Dictionary:
 	var model: Dictionary = _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}
+	if not _day.state.risk_pending.is_empty():
+		model.presentation = {}
+		model.body = "柜前的动静还没有停，先处理眼前的事情。"
+		model.text = ""
+		model.title = ""
+		model.pending_id = ""
+		model.buttons = []
 	if SevenNightPlan.enabled(definition): model.body += "\n\n" + seven_notice()
 	return model
 
@@ -490,13 +497,14 @@ func _impl_risk_command(command: String, id: String, detail := "") -> ActionResu
 	if command.begins_with("mirror_"): return mirror_command(id, command.trim_prefix("mirror_"))
 	if _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	if _risk == null: return ActionResult.new(false, "暂无可查看的物品记录。")
-	if not _day.state.pending_event_id.is_empty(): return _event_blocked()
+	if not _day.state.pending_event_id.is_empty() and command not in ["retreat", "defy"]: return _event_blocked()
 	if mirror_pending(): return _mirror_blocked()
 	var result: ActionResult
 	if command in ["retreat", "defy"]:
 		var previous := _copy_state(_day.state)
 		result = RoomFlow.respond(_day.state, _risk, id, command) if definition.private_room else _risk.respond(_day.state, id, command)
 		if result.ok and not definition.private_room: FeeService.finish(_day.state, definition)
+		if result.ok and _events != null: _events.poll(_day.state, definition)
 		if result.ok and not _persist():
 			_day.state = previous
 			result = ActionResult.new(false, "应对未提交，请重试。" + _save.error_message)
@@ -721,4 +729,29 @@ func _ghost_call(method: String, args: Array) -> ActionResult:
 	after.erase("ghost_commands")
 	if GhostSaveCodec.same(before, after) and choices == _pawn_choices:
 		_day.state.ghost_commands.pop_back()
+	return result
+
+# Room discoveries use the same event history as the chapter, never a UI-only unlock.
+func room_observation_model(id: String) -> Dictionary:
+	if id not in ["aq_coat", "aq_paper", "aq_floorplan"] or id not in definition.event_ids: return {}
+	var event := _counter.catalog.get_definition("events", id) as EventDefinition
+	var seen_flag: String = {"aq_coat": "aq_coat_seen", "aq_paper": "aq_paper_seen", "aq_floorplan": "aq_plan_seen"}[id]
+	var known: bool = seen_flag in _day.state.narrative_flags
+	var available: bool = _day.state.phase == &"private_room" and _day.state.risk_pending.is_empty() and _day.state.pending_event_id.is_empty() and (known or (event.presentation.get("manual", false) and _events.eligible(_day.state, event)))
+	return {"available": available, "known": known, "title": event.title, "body": event.body, "art": event.presentation.get("art", "")}
+
+func observe_room(id: String) -> ActionResult:
+	return _journal_call("observe_room", [id])
+
+func _impl_observe_room(id: String) -> ActionResult:
+	var model := room_observation_model(id)
+	if model.is_empty() or not model.available: return ActionResult.new(false, "眼下没有可看的东西。")
+	if model.known: return ActionResult.new(true, model.body)
+	var previous := _copy_state(_day.state)
+	var result := _events.investigate(_day, id, "look")
+	if result.ok and not _persist():
+		_day.state = previous
+		result = ActionResult.new(false, "未能记下，请重试。" + _save.error_message)
+	message = result.message
+	_emit_changed()
 	return result

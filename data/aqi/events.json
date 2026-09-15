@@ -1,0 +1,568 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "aq_coat",
+      "title": "衣柜里的小夹袄",
+      "speaker": "铺中旧物",
+      "body": "旧衣下面压着一件小号夹袄。袖口补过不止一次，新旧布头颜色各异，针脚却收得很密。\n\n你翻了翻衣领，没有姓名。衣襟还叠得整整齐齐。",
+      "kind": "anchor",
+      "phase": "private_room",
+      "night_min": 2,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "aq_coat_seen"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "look",
+          "label": "看看夹袄",
+          "result": "旧衣下面的小夹袄，袖口补过好几层，衣领上没有名字。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_coat_seen"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_observation",
+        "checkpoint": true,
+        "manual": true,
+        "art": "coat"
+      }
+    },
+    {
+      "id": "aq_paper",
+      "title": "旧信里的夹纸",
+      "speaker": "铺中旧物",
+      "body": "信封底下夹着一张旧纸。上面画了一只歪歪斜斜的风车，一边画得大，一边小，竹签却描了好几遍。\n\n纸角有几道试折的痕迹。摊平之后，还会慢慢翘起来。",
+      "kind": "anchor",
+      "phase": "private_room",
+      "night_min": 5,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "aq_paper_seen"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "look",
+          "label": "看看夹纸",
+          "result": "夹纸上画着一只歪斜的风车，纸角留着试折的痕迹。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_paper_seen"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_observation",
+        "checkpoint": true,
+        "manual": true,
+        "art": "paper"
+      }
+    },
+    {
+      "id": "aq_arrival",
+      "title": "柜台边的风车",
+      "speaker": "柜台边的小女孩",
+      "body": "账上的数目已经核妥。你正要收起算盘，柜台边传来一声很轻的招呼。\n\n一个小女孩坐在矮凳上，两只手护着纸风车。她吹了一下，纸翼只颤了颤。\n\n“掌柜，能替我看看吗？它方才还会转的。”\n\n她把竹签往前递了一点，避开柜沿上翘起的木刺。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "aq_met"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "inspect",
+          "label": "接过风车看看",
+          "result": "你接过了纸风车。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_met",
+            "aq_inspecting",
+            "aq_name_known"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "name",
+          "label": "先问她叫什么",
+          "result": "你放下算盘，问起她的名字。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_met",
+            "aq_named_first",
+            "aq_name_known"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_name",
+      "title": "阿七",
+      "speaker": "柜台边的小女孩",
+      "body": "“阿七。”\n\n她把这两个字说得很清楚，又低头拨了拨纸翼。\n\n“是不是吹得太用力了？我越想叫它转，它越不肯动。”\n\n竹签在她指间转了一圈，纸翼仍贴着中间的轴。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_named_first"
+      ],
+      "excluded_flags": [
+        "aq_inspecting",
+        "aq_declined"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "help",
+          "label": "把风车递给我吧",
+          "result": "你伸手接过她的风车。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_inspecting"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "decline",
+          "label": "今夜晚了，改日再看吧",
+          "result": "你把手从柜沿收回来。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_declined"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_inspect",
+      "title": "被压住的纸翼",
+      "speaker": "柜台边的小女孩",
+      "body": "“我叫阿七。”她两只手搭在柜沿，望着你手里的东西。\n\n纸没有破，只是一片纸翼被挤歪了，紧紧贴着转轴。竹签磨得光滑，绑线却绕得很仔细。\n\n你将风车侧过来，灯光从纸翼之间透过去；她也跟着歪了歪脑袋。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_inspecting"
+      ],
+      "excluded_flags": [
+        "aq_helped"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "repair",
+          "label": "把纸翼理开",
+          "result": "你沿着旧折痕理开纸翼，松出一点空隙。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_helped"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "bent"
+      }
+    },
+    {
+      "id": "aq_repaired",
+      "title": "又转起来了",
+      "speaker": "柜台边的小女孩",
+      "body": "你托住竹签，把压在轴上的纸翼轻轻理开。没有补新纸，只顺着原来的折痕留出一点空隙。\n\n阿七接过去，先不敢使劲，只轻轻吹了一口。\n\n风车转起来了。她等它停下，又吹了一口，眼睛一直跟着那一点褪色的红。\n\n“原来不用很用力。”",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_helped"
+      ],
+      "excluded_flags": [
+        "aq_paper_asked",
+        "aq_ready_leave"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "paper",
+          "label": "我见过一张画着风车的纸",
+          "result": "你说起楼上旧信里的夹纸。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_paper_asked"
+          ],
+          "required_flags": [
+            "aq_paper_seen"
+          ],
+          "excluded_flags": []
+        },
+        {
+          "id": "bye",
+          "label": "拿稳些，别再压着了",
+          "result": "你将风车交回她手里。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ready_leave"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "fixed"
+      }
+    },
+    {
+      "id": "aq_paper_reply",
+      "title": "纸上的风车",
+      "speaker": "柜台边的小女孩",
+      "body": "“画的时候容易，折的时候就歪了。”\n\n阿七捏着竹签，在空中比了一个小小的方形。\n\n“先把两边碰齐，别急着压。压下去，就很难改啦。”\n\n她又吹了吹风车，没有问那张纸放在哪里。柜上的灯影随着纸翼晃了一下。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_paper_asked"
+      ],
+      "excluded_flags": [
+        "aq_ready_leave"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "bye",
+          "label": "我记住了，拿好你的风车",
+          "result": "你记住了她说的折法。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ready_leave"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "fixed"
+      }
+    },
+    {
+      "id": "aq_declined",
+      "title": "收起风车",
+      "speaker": "柜台边的小女孩",
+      "body": "阿七把风车收回胸前，先用手护好压弯的那一片。\n\n“那我不吹了，省得更坏。”\n\n她从凳子上下来，将矮凳推回柜边。没有催你，也没有再提别的要求。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_declined"
+      ],
+      "excluded_flags": [
+        "aq_ready_leave"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "bye",
+          "label": "夜深了，慢些走",
+          "result": "你看着她护好了风车。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ready_leave"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_departure",
+      "title": "小凳归了位",
+      "speaker": "柜台边的小女孩",
+      "body": "阿七离开柜边时，回头看了一眼。\n\n“你明天还在这里吧？”\n\n你应了一声。她点点头，护着风车往门边去了。\n\n柜边那张小凳被推得很正，恰好避开地板上一道深缝。你收回目光，才发现算盘还搁在手边。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_ready_leave"
+      ],
+      "excluded_flags": [
+        "aq_departed"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "watch",
+          "label": "目送她离开",
+          "result": "阿七带着风车离开了柜台。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_departed"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_ledger",
+      "title": "另一册账",
+      "speaker": "铺中旧物",
+      "body": "现银与息费已经核过。你收好明账，手边那册旧《阴账》却没能合严。\n\n一页纸夹在其中，边缘平整得像刚刚翻过。灯照过去，纸上有几道很淡的墨痕。\n\n你记得接铺时看过这里，那时还辨不出字。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_departed"
+      ],
+      "excluded_flags": [
+        "aq_ledger_open"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "open",
+          "label": "翻开旧《阴账》",
+          "result": "你重新翻开了旧《阴账》。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ledger_open"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "ledger"
+      }
+    },
+    {
+      "id": "aq_drawer",
+      "title": "尚欠七账",
+      "speaker": "铺中旧物",
+      "body": "纸上只有四个字：\n\n尚欠七账\n\n没有金额，也没有收讫的印记。你再看明账，今夜核过的数字并没有变。\n\n柜下一声轻响。那只旧抽屉松开一道缝，一角发黄的纸探了出来。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_ledger_open"
+      ],
+      "excluded_flags": [
+        "aq_plan_seen",
+        "aq_chapter_done"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "look",
+          "label": "拉开看看",
+          "result": "你拉开抽屉，取出半张旧铺草图。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_plan_seen"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "skip",
+          "label": "先收好账本",
+          "result": "你合起旧账，将抽屉轻轻推回。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_chapter_done"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "ledger"
+      }
+    },
+    {
+      "id": "aq_floorplan",
+      "title": "半张旧铺草图",
+      "speaker": "铺中旧物",
+      "body": "抽屉里是半张旧铺平面草图，纸边被撕去了。\n\n柜台、楼梯，位置大致对得上。可一条墙线越过了你熟悉的墙面，在纸边继续伸出去。\n\n余下的部分已经没有了。你将草图夹回旧账，留待细看。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_plan_seen"
+      ],
+      "excluded_flags": [
+        "aq_chapter_done"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "put_away",
+          "label": "夹好草图，收起账本",
+          "result": "旧铺草图已经夹进旧账。图上的墙线，与眼前铺面并不完全相符。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_chapter_done"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "plan"
+      }
+    }
+  ]
+}

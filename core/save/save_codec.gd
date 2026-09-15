@@ -15,6 +15,7 @@ func encode(state: RunState, content_version: int) -> Dictionary:
 func decode(data: Variant, definition: RunDefinition, content_version: int, catalog: ContentCatalog = null, extended := false) -> RunState:
 	error_message = "存档结构损坏或状态不一致。"
 	if InvestigationService.enabled(definition):
+		if catalog == null or content_version != catalog.content_version: return null
 		var verifier := InvestigationSaveCodec.new()
 		var restored := verifier.restore(data, definition, catalog, extended)
 		error_message = verifier.error_message

@@ -10,9 +10,19 @@ func bind(session: RunSession, view: PrivateRoomView) -> void:
 	_session = session
 	_view = view
 	_view.command_requested.connect(_execute)
+	_view.observation_requested.connect(_observe)
 	_session.changed.connect(refresh)
 	_session.restored.connect(_view.close_private_panels)
 	refresh()
+
+func _observe(id: String) -> void:
+	_error = ""
+	var result := _session.observe_room(id)
+	if result.ok:
+		_view.show_story_observation(_session.room_observation_model(id))
+	else:
+		_error = result.message
+		refresh()
 
 func _execute(command: String) -> void:
 	_error = ""
@@ -55,7 +65,13 @@ func refresh() -> void:
 		elif state.phase == "sleep_resolution" and RoomFlow.response(_session._day.state, int(state.current_night_index), "personal") == "defy": body = "你捂着胸口喘了许久。床边那道影子退开了，寒意却还留在骨头里。"
 	if state.phase == "dead" and grade == 5: body = "柜下传来湿布展开的声音。窗纸透出一点白，屋里却已经没有自己的影子。"
 	if grade > 0: body += "\n\n" + lamp
+	var observations := {}
+	for id in ["aq_coat", "aq_paper", "aq_floorplan"]:
+		observations[id] = _session.room_observation_model(id)
 	var bedroom_death: bool = state.phase == "dead" and (state.get("personal_death_phase", "") in ["private_room", "sleep_resolution"] if state.get("personal_risk_enabled", false) else not state.room_history.is_empty() and state.room_history.back().action in ["personal_defy", "finish_sleep"])
 	var keepsakes := RoomKeepsakes.read_model(_session._day.state)
 	keepsakes.available = keepsakes.available and not _session.mirror_pending()
-	_view.render({"mirror": BedroomMirrorFeedback.build(_session._day.state), "keepsakes": keepsakes, "lamp_state": lamp_state, "lamp_grade": grade, "visible": state.room_enabled and (state.phase in ["private_room", "sleep_resolution"] or bedroom_death), "phase": state.phase, "night": state.current_night_index, "body": body, "lamp": lamp, "haunting": haunting or grade > 0, "dead": state.phase == "dead", "pending": not state.risk_pending.is_empty(), "can_sleep": _session.can_execute("sleep"), "can_finish": _session.can_execute("finish_sleep"), "error": _error, "gu_letter": "INTRO_LETTER_STORED" in state.narrative_flags, "photo_placed": keepsakes.photo_placed})
+	keepsakes.observations = observations
+	var mirror := BedroomMirrorFeedback.build(_session._day.state)
+	if state.current_night_index == 7 and "aq_met" in state.narrative_flags: mirror = {}
+	_view.render({"observations": observations, "mirror": mirror, "keepsakes": keepsakes, "lamp_state": lamp_state, "lamp_grade": grade, "visible": state.room_enabled and (state.phase in ["private_room", "sleep_resolution"] or bedroom_death), "phase": state.phase, "night": state.current_night_index, "body": body, "lamp": lamp, "haunting": haunting or grade > 0, "dead": state.phase == "dead", "pending": not state.risk_pending.is_empty(), "can_sleep": _session.can_execute("sleep"), "can_finish": _session.can_execute("finish_sleep"), "error": _error, "gu_letter": "INTRO_LETTER_STORED" in state.narrative_flags, "photo_placed": keepsakes.photo_placed})

@@ -27,6 +27,8 @@ var _receipt_followup := ""
 var _receipt_event := ""
 var _receipt_night := 0
 var _return_id := ""
+var _counter_story_active := false
+var _counter_story_signature := ""
 var _narrative: NarrativeScene
 var _feedback: TradeFeedbackView
 var _recent_bar: HBoxContainer
@@ -255,6 +257,7 @@ func bind_session(session: RunSession) -> void:
 	_narrative.bind(session)
 	_narrative.visibility_changed.connect(func() -> void:
 		if not _narrative.visible and _session.read_state().phase == "open": _close_drawer()
+		if not _narrative.visible and _session.read_state().phase == "shop_resolution" and _session.read_state().risk_pending.is_empty(): _flow.show_panel(&"night")
 	)
 
 	var inventory_event_notice := preload("res://ui/inventory/inventory_event_notice.gd").new()
@@ -262,6 +265,9 @@ func bind_session(session: RunSession) -> void:
 	inventory_event_notice.bind(session, self)
 
 func focus_active_screen() -> void:
+	if _counter_view.story_active:
+		_counter_view.story.show_dialogue()
+		return
 	if _narrative != null and _narrative.visible and _narrative._choices.get_child_count() > 0:
 		_narrative._choices.get_child(0).grab_focus()
 	else: _active_menu_button().grab_focus()
@@ -401,8 +407,17 @@ func _sync_room() -> void:
 			%Drawer.hide()
 			_close_menu()
 			_room.get_node("RoomBed").grab_focus()
-		elif state.phase == "shop_resolution" and state.risk_pending.is_empty(): _flow.show_panel(&"night")
-		elif state.phase == "sleep_resolution" and not state.risk_pending.is_empty(): _flow.show_panel(&"risk")
+		elif state.phase == "shop_resolution" and state.risk_pending.is_empty() and not _counter_view.story_active: _flow.show_panel(&"night")
+		elif state.phase in ["shop_resolution", "sleep_resolution"] and not state.risk_pending.is_empty(): _flow.show_panel(&"risk")
+	var previous_story := _counter_story_active
+	_counter_story_active = _counter_view.story_active
+	if _counter_story_active:
+		if _counter_story_signature != _counter_view.story._signature:
+			_counter_story_signature = _counter_view.story._signature
+			_counter_view.story.show_dialogue()
+	else:
+		_counter_story_signature = ""
+	if not _counter_story_active and previous_story and state.phase == "shop_resolution" and state.risk_pending.is_empty(): _flow.show_panel(&"night")
 
 
 func _refresh_notice_visibility() -> void:
@@ -419,6 +434,7 @@ func _open_market_notice() -> void:
 
 
 func _route_from_counter(panel_id: StringName, hotspot: StringName) -> void:
+	if _counter_view.story_active: _counter_view.story.hide()
 	_return_focus = _counter_view.get_hotspot(hotspot)
 	_flow.show_panel(panel_id)
 
@@ -446,6 +462,7 @@ func _on_context_opened(kind: StringName) -> void:
 
 
 func _open_drawer(panel_id: StringName) -> void:
+	if _counter_view.story_active: _counter_view.story.hide()
 	if _feedback != null and _feedback.visible: _cancel_feedback(false)
 	_close_menu()
 	_counter_view.dismiss_contexts()
@@ -466,6 +483,7 @@ func _close_drawer() -> void:
 
 
 func _toggle_menu() -> void:
+	if _counter_view.story_active: _counter_view.story.hide()
 	_counter_view.dismiss_contexts()
 	%Drawer.hide()
 	if _session_menu.visible:
@@ -477,6 +495,7 @@ func _toggle_menu() -> void:
 
 
 func _active_menu_button() -> Button:
+	if _narrative != null and _narrative.visible: return _narrative._menu_button
 	return _room._menu if _room != null and _room.visible else %MenuButton
 
 
@@ -508,6 +527,11 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if _session_menu.visible:
 		_close_menu()
 		_active_menu_button().grab_focus()
+		get_viewport().set_input_as_handled()
+		return
+	if _counter_view.story_active and _counter_view.story.visible:
+		_counter_view.story.hide()
+		_counter_view.get_hotspot(&"customer" if _counter_view._story_actor else &"item").grab_focus()
 		get_viewport().set_input_as_handled()
 		return
 	if _room != null and _room.visible and _room.dismiss_observation():
