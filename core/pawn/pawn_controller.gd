@@ -48,7 +48,7 @@ func execute(day: DayController, ticket: PawnTicket, terms: PawnTermsDefinition,
 	day.spend_action(terms.redeem_minutes if command == "redeem" else terms.extend_minutes)
 	visit.minute = day.state.game_minutes
 	visit.status = "completed"
-	var item := InventoryManager.new().find(day.state, ticket.item_instance_id)
+	var item := InventoryManager.new().find(day.state, ticket.collateral_id())
 	if command == "redeem":
 		EconomyManager.new().commit(day.state, ticket.redemption_amount, item.instance_id, "redeem/" + ticket.ticket_id, "redemption", ticket.redemption_amount - ticket.principal)
 		ticket.status = "redeemed"
@@ -56,7 +56,7 @@ func execute(day: DayController, ticket: PawnTicket, terms: PawnTermsDefinition,
 		ticket.closed_minute = day.state.game_minutes
 		item.ownership_state = "redeemed"
 		var speech := FamiliarStoryVoice.redemption(ticket, day.state)
-		return ActionResult.new(true, (speech + "\n" if not speech.is_empty() else "") + "收取赎金 %d，原物已交还当户。" % ticket.redemption_amount)
+		return ActionResult.new(true, (speech + "\n" if not speech.is_empty() else "") + ("收取赎金 %d，替物已交给当户。" if not ticket.replacement_instance_id.is_empty() else "收取赎金 %d，原物已交还当户。") % ticket.redemption_amount)
 	var fee := ceili(ticket.principal * terms.extension_fee_ratio)
 	EconomyManager.new().commit(day.state, fee, item.instance_id, "extend/" + ticket.ticket_id, "extension", fee)
 	ticket.extensions.append({"night": day.state.current_night_index, "minute": day.state.game_minutes, "fee": fee, "previous_due": ticket.due_night, "new_due": ticket.due_night + terms.extension_nights})
@@ -84,7 +84,7 @@ func disposal_reason(state: RunState, catalog: ContentCatalog, choices: Dictiona
 
 func resolve_maturities(state: RunState, night_minutes: int, catalog: ContentCatalog, choices: Dictionary) -> void:
 	for ticket in maturities(state):
-		var item := InventoryManager.new().find(state, ticket.item_instance_id)
+		var item := InventoryManager.new().find(state, ticket.collateral_id())
 		ticket.closed_night = state.current_night_index
 		ticket.closed_minute = night_minutes
 		if choices[ticket.ticket_id] == "keep":

@@ -17,6 +17,9 @@ var lamp_dead := false
 var show_life_lamp := true
 var _paint: TextureRect
 var _paint_material: ShaderMaterial
+var _smoke: TextureRect
+var _smoke_material: ShaderMaterial
+var _smoke_drift := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -34,8 +37,28 @@ func _ready() -> void:
 	_paint.anchor_bottom = 1.0 / 0.9
 	_paint_material = ShaderMaterial.new()
 	_paint_material.shader = preload("res://ui/art/counter_room.gdshader")
+	_paint_material.set_shader_parameter("lamp_off_texture", preload("res://assets/lighting/counter-lamp-off.png"))
+	_paint_material.set_shader_parameter("incense_lit_texture", preload("res://assets/lighting/counter-incense-lit.png"))
 	_paint.material = _paint_material
+	_smoke = TextureRect.new()
+	_smoke.name = "IncenseSmoke"
+	_smoke.texture = preload("res://assets/lighting/incense-smoke.png")
+	_smoke.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_smoke.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_smoke_material = ShaderMaterial.new()
+	_smoke_material.shader = preload("res://ui/art/incense_smoke.gdshader")
+	_smoke_material.set_shader_parameter("smoke_texture", _smoke.texture)
+	_smoke.material = _smoke_material
+	add_child(_smoke)
+	_smoke.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_smoke.anchor_bottom = _paint.anchor_bottom
 	resized.connect(queue_redraw)
+
+func _process(delta: float) -> void:
+	if _smoke_material == null: return
+	var target := 1.0 if smoke_wrong else 0.0
+	_smoke_drift = move_toward(_smoke_drift, target, delta * 0.8)
+	_smoke_material.set_shader_parameter("drift", _smoke_drift)
 
 func _draw() -> void:
 	if size.x <= 0 or size.y <= 0: return
@@ -45,11 +68,6 @@ func _draw() -> void:
 		_paint_material.set_shader_parameter("lamp_wrong", lamp_wrong and show_life_lamp)
 		_paint_material.set_shader_parameter("lamp_dead", lamp_dead and show_life_lamp)
 	draw_set_transform(Vector2.ZERO, 0, size / Vector2(1280, 648))
-	# Smoke is a quiet rule-feedback stroke, never baked into the painted room.
-	var smoke := PackedVector2Array([Vector2(105, 414), Vector2(108, 398), Vector2(102, 380), Vector2(105, 362)])
-	if smoke_wrong:
-		smoke = PackedVector2Array([Vector2(105, 414), Vector2(122, 409), Vector2(145, 410), Vector2(161, 407)])
-	draw_polyline(smoke, Color(0.72, 0.74, 0.69, 0.5), 1.25, true)
 	if has_customer:
 		draw_set_transform(Vector2(56, -34), 0, Vector2(1.0, 1.10) * size / Vector2(1280, 648))
 		_customer()

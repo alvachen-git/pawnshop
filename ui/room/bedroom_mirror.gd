@@ -2,7 +2,7 @@ class_name BedroomMirror
 extends Control
 
 const DEFAULT_REFLECTION := preload("res://assets/bedroom/mirror/reflection-normal.png")
-const MODES := [&"normal", &"ripple", &"fog", &"delayed"]
+const MODES := [&"normal", &"ripple", &"fog", &"delayed", &"shadow"]
 @onready var reflection: TextureRect = $Glass/Reflection
 @onready var phenomena: TextureRect = $Glass/Phenomena
 @onready var frame: TextureRect = $Frame
@@ -14,6 +14,7 @@ var _pending: Dictionary = {}
 var _remaining := 0.0
 
 func _ready() -> void:
+	frame.material = frame.material.duplicate()
 	_surface = reflection.material.duplicate() as ShaderMaterial
 	reflection.material = _surface
 	reset()
@@ -25,12 +26,14 @@ func set_state(request: Dictionary) -> void:
 	var next := {
 		"mode": mode,
 		"lamp_lit": bool(request.get("lamp_lit", true)),
+		"lamp_light": clampf(float(request.get("lamp_light", 1.0)), 0.0, 1.0),
 		"strength": clampf(float(request.get("strength", 0.0)), 0.0, 1.0),
 		"delay_seconds": clampf(float(request.get("delay_seconds", 0.65)), 0.0, 3.0),
 		"reflection_texture": request.get("reflection_texture") as Texture2D,
 		"overlay_texture": request.get("overlay_texture") as Texture2D,
 		"overlay_opacity": clampf(float(request.get("overlay_opacity", 1.0)), 0.0, 1.0),
 		"description": str(request.get("description", "")),
+		"event_instance": str(request.get("event_instance", "")),
 	}
 	if next == _target: return
 	_target = next
@@ -47,8 +50,11 @@ func _commit(state: Dictionary) -> void:
 	_state = state.duplicate()
 	reflection.texture = state.reflection_texture if state.reflection_texture != null else DEFAULT_REFLECTION
 	_surface.set_shader_parameter("lamp_lit", state.lamp_lit)
+	_surface.set_shader_parameter("lamp_light", state.lamp_light)
+	(frame.material as ShaderMaterial).set_shader_parameter("lamp_light", state.lamp_light)
 	_surface.set_shader_parameter("ripple", state.strength if state.mode == &"ripple" else 0.0)
 	_surface.set_shader_parameter("fog", state.strength if state.mode == &"fog" else 0.0)
+	_surface.set_shader_parameter("wall_shadow", state.strength if state.mode == &"shadow" else 0.0)
 	phenomena.texture = state.overlay_texture
 	phenomena.modulate.a = state.overlay_opacity
 	phenomena.visible = state.overlay_texture != null and state.overlay_opacity > 0.0

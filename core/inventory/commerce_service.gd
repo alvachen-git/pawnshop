@@ -9,8 +9,12 @@ func _init(content: ContentCatalog) -> void:
 
 func quote(item: ItemInstance, buyer: BuyerDefinition) -> int:
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
-	var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+	var base := base_quote(item, buyer)
 	return base + ProvenanceService.premium(item, buyer, base)
+
+func base_quote(item: ItemInstance, buyer: BuyerDefinition) -> int:
+	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
+	return maxi(1, roundi(GoodsExpertise.value(item, definition) * buyer.value_multiplier))
 
 func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition) -> String:
 	if day.definition.batch_selling:
@@ -34,6 +38,8 @@ func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	return ""
 
 func execute(day: DayController, command: String, target: String, detail: String) -> ActionResult:
+	if command == "expert_fan": return GoodsExpertise.perform(day, catalog, "fan", [target])
+	if command == "expert_pair": return GoodsExpertise.perform(day, catalog, "pair", [target, detail])
 	if command in ["redeem", "extend"]:
 		var ticket := pawns.find(day.state, target)
 		var terms: PawnTermsDefinition = null if ticket == null else catalog.get_definition("pawn_terms", ticket.terms_id)
@@ -83,12 +89,15 @@ func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
 	if day.state.game_minutes + buyer.action_minutes >= mini(buyer.window_end, day.definition.night_minutes): return "来不及在收货结束前往返20分钟。"
 	return ""
 
-func sell_batch(day: DayController, buyer_id: String, item_ids: Array) -> ActionResult:
+func sell_batch(day: DayController, buyer_id: String, item_ids: Array, pairs: Array = []) -> ActionResult:
 	if not day.definition.batch_selling: return ActionResult.new(false, "这局沿用逐件交货。")
 	var buyer := catalog.get_definition("buyers", buyer_id) as BuyerDefinition
 	var error := trip_reason(day, buyer)
 	if not error.is_empty(): return ActionResult.new(false, error)
 	if item_ids.is_empty(): return ActionResult.new(false, "请先选好要卖的货。")
+	if not pairs.is_empty() and not GoodsExpertise.enabled(day.definition): return ActionResult.new(false, "这局没有原配出货。")
+	var paired := GoodsExpertise.pair_bonus(day.state, catalog, buyer, item_ids, pairs)
+	if not paired.error.is_empty(): return ActionResult.new(false, paired.error)
 	var rows: Array[Dictionary] = []
 	var seen: Array = []
 	var income := 0
@@ -99,7 +108,7 @@ func sell_batch(day: DayController, buyer_id: String, item_ids: Array) -> Action
 		var item := InventoryManager.new().find(day.state, id)
 		error = item_reason(day, item, buyer)
 		if not error.is_empty(): return ActionResult.new(false, error)
-		var price := quote(item, buyer)
+		var price := quote(item, buyer) + int(paired.bonuses.get(id, 0))
 		income += price
 		cost += item.acquisition_price
 		rows.append({"item_instance_id": id, "price": price, "cost_basis": item.acquisition_price, "realized_profit": price - item.acquisition_price})
@@ -116,4 +125,5 @@ func sell_batch(day: DayController, buyer_id: String, item_ids: Array) -> Action
 		row.merge({"buyer_id": buyer_id, "night": day.state.current_night_index, "minute": day.state.game_minutes, "batch_id": batch_id})
 		day.state.sale_records.append(row)
 	day.state.sale_batches.append({"id": batch_id, "buyer_id": buyer_id, "item_ids": item_ids.duplicate(), "night": day.state.current_night_index, "start": start, "minute": day.state.game_minutes, "market_id": market.get("id", "fixed")})
+	if GoodsExpertise.enabled(day.definition): day.state.sale_batches.back().pairs = pairs.map(func(ids: Array) -> Array: return GoodsExpertise.pair_ids(ids[0], ids[1]))
 	return ActionResult.new(true, "交货%d件，收银%d；成本%d，交易毛利%+d。往返20分钟。" % [rows.size(), income, cost, income - cost])

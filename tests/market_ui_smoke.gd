@@ -47,7 +47,7 @@ func _run() -> void:
 	var before := _session.read_state()
 	await _click("完成交易 · 20分钟")
 	var screen := _main.get_node("CounterScreen") as CounterScreen
-	_check(screen._feedback.visible and screen._feedback.record.item.contains("交货3件"), "整批先播放一次自动交货反馈")
+	_check(not screen._feedback.visible and screen._feedback.record.item.contains("交货3件"), "整批保留一次结果，无交货弹窗")
 	await _settle_feedback()
 	await _click_button(screen._recent_button)
 	var receipt := _main.find_child("TradeReceipt", true, false) as TradeReceiptView

@@ -38,7 +38,7 @@ static func reason(day: DayController, visit: CustomerVisit, command: String, de
 	if not detail.is_empty() or amount != 0: return "提前取赎按原票结算，不能改填金额。"
 	var ticket := ticket_for(day.state)
 	if ticket == null or ticket.status != "active" or ticket.person != visit.person or day.state.current_night_index >= ticket.due_night: return "原票已办结或不在提前取赎期间。"
-	var item := InventoryManager.new().find(day.state, ticket.item_instance_id)
+	var item := InventoryManager.new().find(day.state, ticket.collateral_id())
 	if item == null or item.ownership_state != "pledged": return "原当物不在保管状态。"
 	if command == "early_redeem" and not TimeController.new().can_spend(day.state, day.definition, 10): return "剩余营业时间不足，不能开始办理。"
 	return ""
@@ -52,7 +52,7 @@ static func execute(day: DayController, service: CounterService, visit: Customer
 		service.customers.finish(day.state, visit, "redemption_deferred")
 		service.customers.update(day.state)
 		return ActionResult.new(true, "姜素云收好当票：‘那就照票上的日子来，钱我留着。’\n仍按第%d夜办理，赎金%d银元，原票未变。" % [ticket.due_night, ticket.redemption_amount])
-	var item := service.inventory.find(day.state, ticket.item_instance_id)
+	var item := service.inventory.find(day.state, ticket.collateral_id())
 	service.economy.commit(day.state, ticket.redemption_amount, item.instance_id, "redeem/" + ticket.ticket_id, "redemption", ticket.redemption_amount - ticket.principal)
 	ticket.status = "redeemed"
 	ticket.closed_night = day.state.current_night_index
@@ -60,7 +60,7 @@ static func execute(day: DayController, service: CounterService, visit: Customer
 	item.ownership_state = "redeemed"
 	service.customers.finish(day.state, visit, "redeemed_early")
 	service.customers.update(day.state)
-	return ActionResult.new(true, "姜素云接过银簪，在帕子上轻轻擦了擦：‘这回心里踏实了。’\n收取赎金%d银元，原票已结，银簪交还原主。" % ticket.redemption_amount)
+	return ActionResult.new(true, "姜素云接过银簪，在帕子上轻轻擦了擦：‘这回心里踏实了。’\n收取赎金%d银元，原票已结，%s交还原主。" % [ticket.redemption_amount, "替物" if not ticket.replacement_instance_id.is_empty() else "银簪"])
 
 # The counter replay owns private copies of the original collateral and ticket.
 static func prepare_replay(replay: RunState, validated: RunState, visit: CustomerVisit, data: Dictionary) -> void:
@@ -94,8 +94,11 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 	for action in [["early_redeem", "验票收赎，交还银簪 · 10分钟"], ["defer_redeem", "仍按票上的日子来 · 不耗时"]]:
 		var blocked := service.reason(day, action[0], visit.visit_id)
 		model.trade.buttons.append({"command": action[0], "detail": "", "label": action[1], "enabled": blocked.is_empty(), "reason": blocked})
+	if not ticket.replacement_instance_id.is_empty():
+		model.trade.body += "\n此票保管物已经调换，本次交出的是替物。"
+		model.trade.buttons[0].label = "验票收赎，交出替物 · 10分钟"
 	model.visual.introduction = visit.voice.introduction
 	model.visual.attitude = "持原票商议取赎"
 	model.visual.speech = []
 	model.visual.clues = []
-	model.visual.item_status = "银簪\n原物仍在铺内保管\n票面赎金%d银元" % ticket.redemption_amount
+	model.visual.item_status = "银簪\n%s仍在铺内保管\n票面赎金%d银元" % ["替物" if not ticket.replacement_instance_id.is_empty() else "原物", ticket.redemption_amount]

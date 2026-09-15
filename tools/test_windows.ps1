@@ -1,7 +1,8 @@
 param(
     [Parameter(Mandatory=$true)][string]$GodotPath,
     [Parameter(Mandatory=$true)][string]$OutputDir,
-    [string]$StartAt = ''
+    [string]$StartAt = '',
+    [switch]$GoodsOnly
 )
 . "$PSScriptRoot/windows_common.ps1"
 $root = Split-Path $PSScriptRoot -Parent
@@ -32,6 +33,29 @@ try {
     Invoke-GodotChecked $engine @('--headless','--editor','--path',$root,'--quit') (Join-Path $output 'import.log') | Out-Null
     Run-Test 'environment' 'm8a_environment.gd'
     Run-Test 'font' 'm8a_font.gd'
+    Run-Test 'goods-core' 'run_goods_expertise.gd'
+    Run-Test 'goods-edges' 'goods_edges.gd'
+    Run-Test 'goods-process-write' 'goods_checkpoint.gd'
+    Run-Test 'goods-process-read' 'goods_checkpoint.gd' @('read')
+    Run-Test 'goods-market' 'run_market_seven.gd' @('goods')
+    Run-Test 'goods-early-redemption' 'run_early_redemption.gd' @('goods')
+    Run-Test 'goods-ui-fixture' 'goods_ui_fixture.gd'
+    foreach ($wide in @($false,$true)) {
+        $size = if ($wide) { '1600x900' } else { '1280x720' }
+        $sizeArgs = @(if ($wide) { 'wide' })
+        Run-Test "goods-$size" 'goods_ui.gd' $sizeArgs $false
+        Run-Test "goods-appraisal-$size" 'goods_appraisal_ui.gd' $sizeArgs $false
+    }
+    Run-Test 'goods-pair-process' 'goods_pair_checkpoint.gd'
+    if ($GoodsOnly) {
+        Run-Test 'goods-legacy-core' 'run_all.gd'
+        Run-Test 'goods-legacy-v20' 'pawn_chance_merge.gd'
+        New-Item -ItemType Directory -Force -Path (Join-Path $output 'screenshots') | Out-Null
+        Get-ChildItem "$root/.godot/qa" -Filter 'goods*.png' | Copy-Item -Destination (Join-Path $output 'screenshots')
+        Write-Utf8 (Join-Path $output 'results.json') (ConvertTo-Json -InputObject @($results.ToArray()) -Depth 10)
+        Write-Host "WINDOWS GOODS VALIDATION PASSED: $output"
+        return
+    }
     Run-Test 'core' 'run_all.gd'
     Run-Test 'aqi-core' 'run_aqi.gd'
     Run-Test 'aqi-durability' 'aqi_save_durability.gd'
@@ -76,6 +100,11 @@ try {
     Run-Test 'seven-night-core' 'run_seven_night.gd'
     Run-Test 'seven-edges' 'seven_edge_tests.gd'
     Run-Test 'departure-core' 'customer_departure_tests.gd'
+    Run-Test 'quote-deadline-core' 'quote_deadline_tests.gd'
+    Run-Test 'quote-deadline-process-write' 'quote_deadline_process.gd' @('write')
+    Run-Test 'quote-deadline-process-read' 'quote_deadline_process.gd' @('read')
+    Run-Test 'quote-deadline-1280x720' 'quote_deadline_ui_smoke.gd' @() $false
+    Run-Test 'quote-deadline-1600x900' 'quote_deadline_ui_smoke.gd' @('wide') $false
     Run-Test 'reception-feedback-core' 'reception_feedback_tests.gd'
     Run-Test 'manual-save-core' 'manual_save_tests.gd'
     Run-Test 'opening-core' 'run_opening.gd'
@@ -90,12 +119,14 @@ try {
         $sizeArgs = @(if ($wide) { 'wide' })
         Run-Test "aqi-$size" 'aqi_ui_smoke.gd' $sizeArgs $false
         Run-Test "night-lighting-$size" 'night_lighting_ui.gd' $sizeArgs $false
+        Run-Test "incense-smoke-$size" 'incense_smoke_ui.gd' $sizeArgs $false
         Run-Test "night-market-$size" 'night_market_ui.gd' $sizeArgs $false
         Run-Test "complete-early-$size" 'complete_early_ui.gd' $sizeArgs $false
         Run-Test "complete-$size" 'complete_ui_smoke.gd' $sizeArgs $false
         Run-Test "market-seven-$size" 'market_seven_ui_smoke.gd' $sizeArgs $false
         Run-Test "early-$size" 'early_redemption_ui.gd' $sizeArgs $false
         Run-Test "manual-save-$size" 'manual_save_ui_smoke.gd' $sizeArgs $false
+        Run-Test "sealed-navigation-$size" 'sealed_navigation_ui.gd' $sizeArgs $false
         Run-Test "mirror-chapter-$size" 'mirror_chapter_ui_smoke.gd' $sizeArgs $false
         Run-Test "pawn-chance-$size" 'pawn_chance_ui.gd' $sizeArgs $false
         Run-Test "early-redemption-v20-$size" 'early_redemption_ui.gd' (@('chance') + $sizeArgs) $false
@@ -117,7 +148,9 @@ try {
         Run-Test "reception-feedback-$size" 'reception_feedback_ui_smoke.gd' $sizeArgs $false
         Run-Test "waiting-departure-$size" 'waiting_departure_ui_smoke.gd' $sizeArgs $false
         Run-Test "receipt-$size" 'receipt_ui_smoke.gd' $sizeArgs $false
+        Run-Test "receipt-consistency-$size" 'receipt_consistency_ui.gd' $sizeArgs $false
         Run-Test "trade-feedback-lifecycle-$size" 'trade_feedback_lifecycle_ui.gd' $sizeArgs $false
+        Run-Test "customer-reply-$size" 'customer_reply_ui.gd' $sizeArgs $false
         Run-Test "bargaining-$size" 'bargaining_ui_smoke.gd' $sizeArgs $false
         Run-Test "m7-$size" 'm7_ui_smoke.gd' $sizeArgs $false
         Run-Test "m6-production-$size" 'm6_ui_smoke.gd' (@('production') + $sizeArgs) $false

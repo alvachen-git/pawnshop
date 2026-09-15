@@ -2,7 +2,7 @@ class_name OpeningPreparation
 extends RefCounted
 
 const CATEGORIES := {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房", "textile": "绣品"}
-const COSTS := {"attract": 3, "target": 0, "tea": 5, "visitors": 0, "investigate": 0, "finish": 0}
+const COSTS := {"attract": 3, "target": 0, "seek": 3, "tea": 5, "visitors": 0, "investigate": 0, "finish": 0}
 
 static func enabled(run: RunDefinition) -> bool:
 	return run.variety.get("preparation_version", 0) == 1
@@ -17,11 +17,12 @@ static func plan(state: RunState, run: RunDefinition, catalog: ContentCatalog) -
 	if not enabled(run): return rows
 	for record in state.preparation_history:
 		if record.action == "attract": rows.append(record.change.duplicate(true))
-		elif record.action == "target":
+		elif record.action in ["target", "seek"]:
 			for index in rows.size():
 				if rows[index].visit_id == record.change.visit_id: rows[index] = record.change.duplicate(true); break
 	for row in rows:
 		if ordinary(row) and PreparationService.used(state, "tea", int(row.night)): row.wait_minutes = int(row.wait_minutes) + 20
+	GoodsExpertise.attach(rows, run, state.run_seed)
 	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.night < b.night if a.night != b.night else a.arrival < b.arrival)
 	return rows
 
@@ -41,6 +42,8 @@ static func reason(state: RunState, action: String, category := "") -> String:
 	if action == "investigate" and state.current_night_index not in [4, 5, 6]: return "眼下没有待调查的收货消息。"
 	if PreparationService.count(state) >= 2: return "今夜两次准备已经用完。"
 	if state.cash < int(COSTS[action]): return "现银不足，需要%d大洋。" % COSTS[action]
+	if action == "target" and PreparationService.used(state, "seek", state.current_night_index): return "今夜已经托人寻配茶盏。"
+	if action == "seek": return GoodsSeeking.reason(state, category)
 	if action == "target" and not category.is_empty() and not CATEGORIES.has(category): return "没有这类收货方向。"
 	return ""
 
@@ -86,7 +89,7 @@ static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog
 	var error := reason(state, action, category)
 	if not error.is_empty(): return ActionResult.new(false, error)
 	if action == "target" and category.is_empty(): return ActionResult.new(false, "请先选择收货类别。")
-	if action != "target" and not category.is_empty(): return ActionResult.new(false, "这项准备不需要选择类别。")
+	if action not in ["target", "seek"] and not category.is_empty(): return ActionResult.new(false, "这项准备不需要选择类别。")
 	var night := state.current_night_index
 	var rows: Array = plan(state, run, catalog).filter(func(row: Dictionary) -> bool: return row.night == night)
 	var record := {"night": night, "minute": 0, "action": action, "category": category, "cost": int(COSTS[action]), "visit_ids": [], "change": {}}
@@ -97,16 +100,16 @@ static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog
 			if rows.all(func(row: Dictionary) -> bool: return absi(int(row.arrival) - minute) >= 15): times.append(minute)
 		if times.is_empty(): return ActionResult.new(false, "今夜来客的时辰已排满，无法再招揽。")
 		record.change = make_row(state, run, catalog, "%s/%d/prep_extra" % [run.id, night], int(VarietyService.pick(times, state.run_seed, key)), "")
-	elif action == "target":
+	elif action in ["target", "seek"]:
 		var known := known_ids(state, night)
 		var candidates: Array = rows.filter(func(row: Dictionary) -> bool: return ordinary(row) and not row.has("seven_role") and not row.get("familiar_reserved", false) and not row.visit_id.ends_with("/prep_extra") and row.visit_id not in known)
 		if candidates.is_empty(): return ActionResult.new(false, "今夜没有可另约收货的普通来客。")
 		var selected: Dictionary = VarietyService.pick(candidates, state.run_seed, key)
-		record.change = make_row(state, run, catalog, selected.visit_id, int(selected.arrival), category)
+		record.change = GoodsSeeking.make(state, run, catalog, category, selected) if action == "seek" else make_row(state, run, catalog, selected.visit_id, int(selected.arrival), category)
 	elif action == "visitors":
 		var candidates: Array = rows.filter(ordinary)
 		for prior in state.preparation_history:
-			if prior.night == night and prior.action == "target": record.visit_ids.append(prior.change.visit_id)
+			if prior.night == night and prior.action in ["target", "seek"]: record.visit_ids.append(prior.change.visit_id)
 		if record.visit_ids.is_empty():
 			# Intel must leave an undisclosed ordinary position for a later targeted request.
 			var replaceable: Array = candidates.filter(func(row: Dictionary) -> bool: return not row.has("seven_role") and not row.get("familiar_reserved", false) and not row.visit_id.ends_with("/prep_extra"))
@@ -123,7 +126,7 @@ static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog
 	state.preparation_history.append(record)
 	if record.cost > 0:
 		EconomyManager.new().commit(state, -record.cost, "preparation", posting_id(record), "preparation", 0)
-	var messages := {"attract": "口信已经送出，今夜会多一位客人带货来。", "target": "已托人捎话，今夜有位客人带%s来。" % CATEGORIES.get(category, "旧物"), "tea": "茶水备好了，今夜普通来客会多等20分钟。", "visitors": "两位来客的口信已记在铺中记事里。", "investigate": PreparationService.DETAILS, "finish": "准备妥当，可以开铺了。"}
+	var messages := {"seek": "寻配口信已送出，今夜会有人带同纹样、相对式样的茶盏来。是否原配，还须验看；价钱另谈。", "attract": "口信已经送出，今夜会多一位客人带货来。", "target": "已托人捎话，今夜有位客人带%s来。" % CATEGORIES.get(category, "旧物"), "tea": "茶水备好了，今夜普通来客会多等20分钟。", "visitors": "两位来客的口信已记在铺中记事里。", "investigate": PreparationService.DETAILS, "finish": "准备妥当，可以开铺了。"}
 	return ActionResult.new(true, messages[action] + "\n现银%d大洋 · 今夜准备剩余%d次。" % [state.cash, 2 - PreparationService.count(state)])
 
 static func posting_id(record: Dictionary) -> String:
@@ -177,6 +180,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			normalized.change = changes[0]
 		simulator.current_night_index = int(row.night)
 		simulator.cash = 1000000 # Actual affordability is reconciled by the economic ledger.
+		if row.action == "seek" and not GoodsSeeking.replay_target(data, simulator, row.category): return "寻货目标缺失。"
 		var result := perform(simulator, run, catalog, row.action, row.category)
 		if not result.ok or simulator.preparation_history.back() != normalized: return "准备效果、费用或口信与实际行动不符。"
 		last = int(row.night)

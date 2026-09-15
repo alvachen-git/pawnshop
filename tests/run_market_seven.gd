@@ -3,7 +3,7 @@ extends "res://tests/run_mirror_chapter.gd"
 var combined := "combined" in OS.get_cmdline_user_args()
 
 func run() -> void:
-	var loaded := JsonContentProvider.new("res://data/pawn_chance_manifest.json" if "chance" in OS.get_cmdline_user_args() else "res://data/market_familiar_manifest.json" if combined else "res://data/market_seven_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new("res://data/goods_expertise_manifest.json" if "goods" in OS.get_cmdline_user_args() else "res://data/pawn_chance_manifest.json" if "chance" in OS.get_cmdline_user_args() else "res://data/market_familiar_manifest.json" if combined else "res://data/market_seven_manifest.json").load_catalog()
 	for issue in loaded.issues: print(issue.format_message())
 	check(loaded.is_success(), "v17 market seven catalog")
 	if not loaded.is_success(): quit(1); return
@@ -49,7 +49,7 @@ func contract() -> void:
 		for variant: ItemVariantDefinition in definition.possible_variants:
 			var item := ItemInstance.new()
 			item.definition_id = definition.id; item.selected_variant_id = variant.id
-			var base := maxi(1, roundi(variant.true_value * 1.4))
+			var base := maxi(1, roundi(GoodsExpertise.value(item, definition) * 1.4))
 			check(s._commerce.quote(item, lu) == base, "all variant price rounding")
 			item.provenance = {"status": "verified"}
 			check(s._commerce.quote(item, lu) == base + floori(base * 0.15), "verified source premium")

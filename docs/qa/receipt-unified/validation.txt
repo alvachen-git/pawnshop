@@ -1,0 +1,16 @@
+run_all-core.log: M0–M7 TESTS PASSED · 1800 assertions
+run_market-core.log: MARKET TESTS: 5931 passes, 0 failures
+run_opening-core.log: OPENING TESTS: 100 assertions, 0 failures
+run_early_redemption-core.log: EARLY REDEMPTION: 4736 passes, 0 failures
+run_goods_expertise-core.log: GOODS TESTS: 8544 passes, 0 failures
+run_negotiation_reactions-core.log: NEGOTIATION REACTIONS: 18 assertions, 0 failures
+receipt_consistency_ui-1280.log: RECEIPT CONSISTENCY: 323 assertions, 0 failures
+receipt_consistency_ui-1600.log: RECEIPT CONSISTENCY: 323 assertions, 0 failures
+receipt_ui_smoke-1280.log: RECEIPT UI TESTS: 94 assertions, 0 failures
+receipt_ui_smoke-1600.log: RECEIPT UI TESTS: 94 assertions, 0 failures
+reply-debug.log: CUSTOMER REPLY UI: 112 assertions, 0 failures
+customer_reply_ui-1600.log: CUSTOMER REPLY UI: 112 assertions, 0 failures
+trade_feedback_lifecycle_ui-1280.log: FEEDBACK LIFECYCLE UI: 33 assertions, 0 failures
+opening_ui_smoke-1280.log: OPENING UI: 87 assertions, 0 failures
+bargain_modal_production_ui-1280.log: BARGAIN MODAL PRODUCTION: 166 assertions, 0 failures
+night_market_ui-1280.log: NIGHT MARKET UI: 117 assertions, 0 failures

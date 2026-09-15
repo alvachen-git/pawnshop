@@ -2,7 +2,7 @@ class_name InventoryPanel
 extends IntentPanel
 
 signal panel_requested(panel: StringName)
-signal batch_submitted(buyer_id: String, item_ids: Array)
+signal batch_submitted(buyer_id: String, item_ids: Array, pairs: Array)
 var _sale_view: BatchSaleView
 var _cash_flow: VBoxContainer
 var _sheet: VBoxContainer
@@ -31,7 +31,7 @@ func _ready() -> void:
 	_sheet.add_theme_constant_override("separation", 12)
 	_column.add_child(_sheet)
 	_sale_view = BatchSaleView.new()
-	_sale_view.submitted.connect(func(buyer: String, ids: Array) -> void: batch_submitted.emit(buyer, ids))
+	_sale_view.submitted.connect(func(buyer: String, ids: Array, pairs: Array) -> void: batch_submitted.emit(buyer, ids, pairs))
 	_column.add_child(_sale_view)
 	_column.move_child(_body, _column.get_child_count() - 1)
 
@@ -68,6 +68,7 @@ func _draw() -> void:
 	AccountPaper.metrics(_sheet, [["现货 / 件", financial.inventory_count], ["现货占款 / 银元", financial.inventory_cost], ["在当本金 / 银元", financial.pawn_principal]])
 	AccountPaper.label(_sheet, "估值供判断，出售后才成为现银。在当货物须按当票办理。", 14)
 	var count := 0
+	var message_in_detail := false
 	for row in visual.stock:
 		var held: bool = row.state in ["owned", "pledged"]
 		if held != (_filter == 0): continue
@@ -83,12 +84,12 @@ func _draw() -> void:
 			picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			header.add_child(picture)
-		AccountPaper.label(header, row.name, 19)
+		AccountPaper.label(header, row.name + (" · 货签%d" % (visual.stock.find(row) + 1) if _model.has("goods_notes") else ""), 19)
 		AccountPaper.stamp(header, row.stamp, row.state != "pledged")
 		AccountPaper.label(column, "第%d夜入柜 · 原始%s %d 银元\n已知估值 %s 银元" % [row.night, row.cost_label, row.cost, row.estimate], 15)
 		var toggle := Button.new()
 		toggle.text = "查看货物 · " + row.name
-		toggle.tooltip_text = "展开已见物证、出售去向或当票入口；查看不耗时。"
+		toggle.tooltip_text = "展开品相要点、查验鉴赏或当票入口；查看不耗时。"
 		toggle.toggle_mode = true
 		column.add_child(toggle)
 		var detail := VBoxContainer.new()
@@ -102,19 +103,20 @@ func _draw() -> void:
 			detail.visible = open
 		)
 		if not row.get("provenance", "").is_empty(): AccountPaper.label(detail, row.provenance, 15)
-		var evidence := AccountPaper.label(detail, "已见物证\n" + ("尚无鉴定记录。" if row.clues.is_empty() else "\n".join(row.clues)), 15)
+		if not _model.get("goods_notes", {}).get(row.id, "").is_empty(): AccountPaper.label(detail, _model.goods_notes[row.id], 15)
+		if detail.visible and not visual.message.is_empty():
+			message_in_detail = message_in_detail or String(row.get("provenance", "")).contains(visual.message) or String(_model.get("goods_notes", {}).get(row.id, "")).contains(visual.message)
+		if not row.clues.is_empty():
+			AccountPaper.label(detail, ("已见物证\n" if row.ghost else "品相要点：") + "\n".join(row.clues), 15)
 		if row.state == "owned":
-			AccountPaper.rule(detail)
-			AccountPaper.label(detail, "出货去向", 17)
-			for entry in _model.buttons:
-				if entry.target_id == row.id and not (_model.has("sales") and entry.command == "sell"):
-					AccountPaper.action(detail, entry, _emit_intent)
-					AccountPaper.label(detail, row.buyers.get(entry.detail, ""), 14)
-			if _model.has("sales"):
-				var sell := Button.new()
-				sell.text = "选择买家卖货"
-				sell.pressed.connect(_select.bind(2))
-				detail.add_child(sell)
+			var actions: Array = _model.buttons.filter(func(entry: Dictionary) -> bool: return entry.target_id == row.id and not (_model.has("sales") and entry.command == "sell"))
+			if not actions.is_empty():
+				AccountPaper.rule(detail)
+				AccountPaper.label(detail, "可办事项" if _model.has("sales") else "出货去向", 17)
+			for entry in actions:
+				AccountPaper.action(detail, entry, _emit_intent)
+				var buyer_note: String = row.buyers.get(entry.detail, "")
+				if not buyer_note.is_empty(): AccountPaper.label(detail, buyer_note, 14)
 		elif row.state == "pledged":
 			var ticket := Button.new()
 			ticket.text = "查看当票"
@@ -125,15 +127,29 @@ func _draw() -> void:
 			risk.text = "查看存放与规矩"
 			risk.pressed.connect(panel_requested.emit.bind(&"risk"))
 			detail.add_child(risk)
-		detail.move_child(evidence, detail.get_child_count() - 1)
 	if count == 0: AccountPaper.label(_sheet, "柜中暂无货物。收购或活当后，货签会记在这里。" if _filter == 0 else "尚无出柜记录。", 17)
-	_body.text = visual.message
+	_body.text = "" if message_in_detail else visual.message
 
 func _emit_intent(command: String, target: String, detail: String) -> void:
+	if command.begins_with("expert_"):
+		var dialog := ConfirmationDialog.new()
+		dialog.title = "委托行家"
+		for entry in _model.buttons:
+			if entry.command == command and entry.target_id == target and entry.detail == detail:
+				var selected: Array = _model.visual.stock.filter(func(r: Dictionary) -> bool: return r.id == target or r.id == detail)
+				var objects: Array = selected.map(func(r: Dictionary) -> String: return "%s（货签%d）" % [r.name, _model.visual.stock.find(r) + 1])
+				var purpose := "辨别真作、临摹或后添名款，买家按鉴赏结论报价。" if command == "expert_fan" else "核对两盏是否原配；完好原配可向认配的买家争取加价。"
+				dialog.dialog_text = "、".join(objects) + "\n" + entry.label + "\n" + purpose + "\n结论可免费复看；办理期间客人照常等候。\n费用不计入货物成本。"
+		dialog.ok_button_text = "付费委托"; dialog.cancel_button_text = "暂不委托"
+		add_child(dialog)
+		dialog.confirmed.connect(func() -> void: _confirmed_inquiry(command, target, detail); dialog.queue_free())
+		dialog.canceled.connect(dialog.queue_free)
+		dialog.popup_centered(Vector2i(460, 230))
+		return
 	if command == "inquire":
 		for entry in _model.buttons:
 			if entry.command == command and entry.target_id == target:
-				ProvenanceConfirmation.show_for(self, _confirmed_inquiry, target, entry.label)
+				ProvenanceConfirmation.show_for(self, _confirmed_inquiry, target, entry.label, _model.has("goods_notes"))
 				return
 	else: super._emit_intent(command, target, detail)
 

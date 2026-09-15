@@ -60,6 +60,7 @@ func render(model: Dictionary) -> void:
 	AccountPaper.label(debt, "息费在夜末入账。实际付款可能包含以前的短款。", 14)
 	if v.financial.get("inventory_loss", 0) > 0: AccountPaper.label(debt, "本夜损货成本 %d 银元，已从经营净收益扣除。" % v.financial.inventory_loss, 16)
 	if v.financial.has("preparation_expense"):
+		if v.financial.has("investigation_expense"): AccountPaper.label(debt, "本夜查访支出 %d 银元" % v.financial.investigation_expense, 16)
 		AccountPaper.label(debt, "本夜准备支出 %d 大洋\n准备支出已从经营净收益扣除。" % v.financial.preparation_expense, 16)
 	if v.financial.has("provenance_expense"):
 		AccountPaper.label(debt, "本夜来源调查费 %d 银元\n调查费列为经营费用，已从经营净收益扣除。" % v.financial.provenance_expense, 16)

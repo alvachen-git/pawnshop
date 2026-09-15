@@ -1,0 +1,80 @@
+{
+  "domain": {
+    "results": [
+      "LIVING MIRROR TESTS: 2823 passes, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "edges": {
+    "results": [
+      "LIVING EDGES: 93 passes, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "jiang": {
+    "results": [
+      "LIVING PAWN ROUTES: 4764 passes, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "save": {
+    "results": [
+      "V22 pre-open write/read ms: 2123",
+      "LIVING SAVE CHECKPOINTS: 13 passes, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "ui1280": {
+    "results": [
+      "LIVING UI: 68 assertions, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "ui1600": {
+    "results": [
+      "LIVING UI: 68 assertions, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "run_goods_expertise": {
+    "results": [
+      "GOODS TESTS: 8544 passes, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "run_mirror_chapter": {
+    "results": [
+      "MIRROR CHAPTER TESTS: 4090 passes, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "run_complete_early": {
+    "results": [
+      "COMPLETE EARLY: 4738 passes, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "manual_save_tests": {
+    "results": [
+      "MANUAL SAVE TESTS: 1163 assertions, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  },
+  "departure": {
+    "results": [
+      "DEPARTURE TESTS: 78 assertions, 0 failures"
+    ],
+    "script_errors": 0,
+    "known_certificate_warning": 1
+  }
+}

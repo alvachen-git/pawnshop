@@ -44,7 +44,7 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 	roles[24 + VarietyService.rng(seed_value, "seven/pen5").randi_range(1 if roles.get(23, "") == "pen4" else 0, 5)] = "pen5"
 	var swapped := VarietyService.rng(seed_value, "seven/pen_variant").randi_range(0, 1) == 1
 	var names: Array = FamiliarStories.NAMES.duplicate() if FamiliarStories.enabled(run) else []
-	for night in range(1, 8):
+	for night in range(1, run.total_nights + 1):
 		var times: Array = []
 		for band in [[0, 120], [120, 300], [300, 450]]:
 			var random := VarietyService.rng(seed_value, "seven/arrival/%d/%d" % [night, band[0]])
@@ -58,7 +58,7 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 		for seat in 6:
 			var index := rows.size()
 			if anchors.has(index):
-				rows.append(story_row(run, catalog, anchors[index], night))
+				rows.append(story_row(run, catalog, anchors[index], night, seed_value))
 				continue
 			var role: String = roles.get(index, "")
 			var id := "%s/%d/n%d_visit%d" % [run.id, night, night, seat + 1]
@@ -133,11 +133,11 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 	return rows
 
 # Story positions use authored identities and truth; ordinary positions keep seeded variety.
-static func story_row(run: RunDefinition, catalog: ContentCatalog, slot: VisitSlotDefinition, night: int) -> Dictionary:
+static func story_row(run: RunDefinition, catalog: ContentCatalog, slot: VisitSlotDefinition, night: int, seed_value := 0) -> Dictionary:
 	var customer := catalog.get_definition("customers", slot.customer_id) as CustomerDefinition
 	var id := "%s/%d/%s" % [run.id, night, slot.id]
 	return {"visit_id": id, "night": night, "arrival": slot.arrival, "customer_id": customer.id,
-		"item_id": slot.item_id, "variant_id": slot.variant_id, "context_id": "", "source": "none" if not (catalog.get_definition("items", slot.item_id) as ItemDefinition).provenance.is_empty() else "",
+		"item_id": slot.item_id, "variant_id": (VarietyService.pick((catalog.get_definition("items", slot.item_id) as ItemDefinition).possible_variants, seed_value, id + "/variant").id if customer.guest_rule == "no_appraisal" else slot.variant_id), "context_id": "", "source": "none" if not (catalog.get_definition("items", slot.item_id) as ItemDefinition).provenance.is_empty() else "",
 		"situation": slot.tutorial.get("story_situation", "ordinary"), "reaction": "admit", "terms_id": customer.pawn_terms_id,
 		"wait_minutes": customer.terms.wait_minutes, "transaction_modes": ["sell"],
 		"person": {"id": "person/" + id, "name": customer.terms.display_name, "portrait": customer.portrait_asset_id}}

@@ -16,6 +16,10 @@ static func validate(row: Variant, path: String, at: String) -> Array:
 	if row.get("choices") is Array:
 		for choice in row.choices:
 			if choice is Dictionary:
+				for effect in ["personal_damage", "personal_recovery"]:
+					if choice.has(effect) and not (choice[effect] == true if choice[effect] is bool else RunSchema.integer(choice[effect]) and choice[effect] >= 1 and choice[effect] <= (2 if effect == "personal_damage" else 4)):
+						issues.append(ContentIssue.new("error", "invalid_field", path, at, "个人风险效果须为true或有效正整数。"))
+				if choice.has("personal_damage") and choice.has("personal_recovery"): issues.append(ContentIssue.new("error", "invalid_field", path, at, "同一选项不能同时伤害和治疗。"))
 				for key in ["required_flags", "excluded_flags", "required_items"]:
 					if choice.has(key): CounterSchema._fields(choice, {key: "strings"}, path, at, issues)
 	return issues

@@ -239,6 +239,12 @@ func render(model: Dictionary) -> void:
 
 	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""), visual.get("customer_id", ""))
 	_portrait.material = CounterVisualCatalog.portrait_material(_portrait.texture)
+	# The standing neighbor's torso ends at the back edge; both hands reach onto the top.
+	if _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT:
+		_bounds(_portrait, 0.315, 0.025, 0.68, 0.604)
+		(_portrait.material as ShaderMaterial).set_shader_parameter("hand_contact_shadow", true)
+	else:
+		_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
 	_portrait.visible = active and _portrait.texture != null
 	_item_image.texture = CounterVisualCatalog.front(visual.get("item_asset", ""), model.appraisal.get("images", []))
 	_item_image.material = null
@@ -255,7 +261,7 @@ func render(model: Dictionary) -> void:
 		%ItemText.text = "%s\n已知估值 %s 银元\n已见线索 %d 条" % [visual.item_name, visual.estimate, visual.clues.size()]
 		if visual.has("item_status"): %ItemText.text = visual.item_status
 	$Room.has_customer = active and _portrait.texture == null
-	$Room.has_item = active and _item_image.texture == null
+	$Room.has_item = active and _item_image.texture == null and not model.get("itemless", false)
 	$Room.queue_redraw()
 	if arrived:
 		if _arrival != null: _arrival.kill()

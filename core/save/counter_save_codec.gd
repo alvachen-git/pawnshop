@@ -36,7 +36,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var planned: CustomerVisit = expected_visits[entry.visit_id]
 		if entry.outcome in ["redeemed_early", "redemption_deferred"] and (not EarlyRedemption.enabled(run) or not EarlyRedemption.is_visit(planned)): return "提前取赎结果不属于这次来访。"
 		if planned.customer_id != entry.customer_id: return "来访人物与抽选结果不符。"
-		if entry.outcome in ["bought", "pawned"] and (entry.minute < planned.arrival or entry.minute >= mini(planned.expires_at, run.night_minutes)): return "成交不在来访窗口内。"
+		if entry.outcome in ["bought", "pawned"]:
+			var customer := catalog.get_definition("customers", planned.customer_id) as CustomerDefinition
+			var quote_start := int(entry.minute) - customer.terms.quote_minutes
+			if entry.minute < planned.arrival or entry.minute >= run.night_minutes: return "成交不在来访窗口内。"
+			if entry.minute >= planned.expires_at and (quote_start < planned.arrival or quote_start >= planned.expires_at): return "报价未在客人离场前开始。"
 		history_ids.append(entry.visit_id)
 		if entry.outcome in ["bought", "pawned"]: bought[entry.visit_id] = entry
 		state.visit_history.append({"visit_id": String(entry.visit_id), "customer_id": String(entry.customer_id), "night": int(entry.night), "minute": int(entry.minute), "outcome": String(entry.outcome)})
@@ -52,6 +56,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if entry.definition_id != planned.item.definition_id or entry.selected_variant_id != planned.item.selected_variant_id: return "库存与固定seed预生成物品不一致。"
 		var instance := ItemInstance.new()
 		if not entry.get("provenance", {}) is Dictionary: return "来源字段结构无效。"
+		if not entry.get("goods", {}) is Dictionary or not entry.get("expert_reviewed", false) is bool: return "商品复核字段无效。"
+		var normalized_goods: Dictionary = entry.duplicate(true)
+		if not VarietySaveCodec.normalize_goods(normalized_goods) or normalized_goods.get("goods", {}) != planned.item.goods: return "茶盏制式与来访不符。"
+		instance.goods = planned.item.goods.duplicate(true)
+		instance.expert_reviewed = entry.get("expert_reviewed", false)
 		instance.provenance = entry.get("provenance", {}).duplicate(true)
 		if run.variety.is_empty() and not instance.provenance.is_empty(): return "旧物不能混入新来源。"
 		instance.instance_id = entry.instance_id
@@ -76,6 +85,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	if acquired_visits.size() != bought.size(): return "成交后缺少库存。"
 	var source_error := VarietySaveCodec.restore_sources(data, state, run, catalog, expected_visits, bought)
 	if not source_error.is_empty(): return source_error
+	var goods_error := GoodsSaveCodec.restore(data, state, run, catalog, bought)
+	if not goods_error.is_empty(): return goods_error
 	return CommerceSaveCodec.restore(data, state, run, catalog, bought)
 
 static func _integers(data: Dictionary, keys: Array) -> bool:

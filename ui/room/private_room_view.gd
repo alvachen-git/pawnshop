@@ -19,6 +19,8 @@ var _heading: Label
 var _night: Label
 var _confirm: ConfirmationDialog
 var _letter: AcceptDialog
+var _keepsakes: KeepsakesPanel
+var _keepsake_source: Button
 var _observation: PanelContainer
 var _close_observation: Button
 var _background: TextureRect
@@ -70,7 +72,7 @@ func _ready() -> void:
 	_desk = _hotspot("RoomDesk", "书桌 · 旧信", Rect2(245, 448, 190, 48))
 	_desk.pressed.connect(_read_letter)
 	_photo = _hotspot("RoomPhoto", "姚曼卿的照片", Rect2(262, 362, 73, 83))
-	_photo.pressed.connect(func() -> void: _observe(tr("opening.room.photo"), _photo))
+	_photo.pressed.connect(_read_photo)
 	_mirror = preload("res://ui/room/bedroom_mirror.tscn").instantiate() as BedroomMirror
 	_mirror.name = "RoomMirror"
 	add_child(_mirror)
@@ -90,6 +92,12 @@ func _ready() -> void:
 	add_child(_prop_hint)
 	_prop_hint.hide()
 	_create_observation()
+	_keepsakes = KeepsakesPanel.new()
+	_keepsakes.name = "Keepsakes"
+	add_child(_keepsakes)
+	_keepsakes.observation_requested.connect(_request_desk_observation)
+	_keepsakes.photo_requested.connect(func(command: String) -> void: command_requested.emit(command))
+	_keepsakes.dismissed.connect(_restore_keepsake_focus)
 	resized.connect(_layout)
 	_layout()
 
@@ -132,6 +140,7 @@ func _create_observation() -> void:
 	_observation.hide()
 
 func _observe(text: String, source: Button) -> void:
+	close_private_panels()
 	_illustration.hide()
 	_place(_observation, Rect2(520, 128, 500, 310))
 	_layout()
@@ -171,6 +180,9 @@ func show_transition_error(message: String) -> void:
 	_transition_error.popup_centered(Vector2i(440, 180))
 
 func dismiss_observation() -> bool:
+	if _keepsakes != null and _keepsakes.visible:
+		_keepsakes.go_back()
+		return true
 	if not _observation.visible: return false
 	_observation.hide()
 	if is_instance_valid(_inspect_source) and not _inspect_source.disabled:
@@ -260,6 +272,9 @@ func render(model: Dictionary) -> void:
 	var finish_ready: bool = model.can_finish and not _model.get("can_finish", false)
 	_model = model
 	visible = model.visible
+	if _keepsakes != null:
+		if phase_changed or not visible: close_private_panels()
+		_keepsakes.update_model(model.get("keepsakes", {"available": false}), model.error)
 	if not visible and _confirm != null: _confirm.hide()
 	_night.text = "第%d夜" % model.night
 	if phase_changed or not model.error.is_empty():
@@ -272,6 +287,7 @@ func render(model: Dictionary) -> void:
 		_close_observation.text = "放松入眠" if _sleep_prompt else "收回目光"
 		_observation.visible = visible and not model.pending and (model.dead or model.phase == "sleep_resolution" or not model.error.is_empty())
 	_close_observation.disabled = _sleep_prompt and not model.can_finish
+	if _keepsakes != null and _keepsakes.visible: _observation.hide()
 	_bed.text = "就寝" if model.phase == "private_room" else "等到天明"
 	_bed.accessibility_name = "床 · 就寝" if model.phase == "private_room" else "等到天明"
 	if model.dead:
@@ -279,14 +295,22 @@ func render(model: Dictionary) -> void:
 		_bed.accessibility_name = "灯已熄"
 	_bed.disabled = not model.can_sleep and not model.can_finish
 	for prop in _props: prop.disabled = model.pending or model.dead
+	if model.get("keepsakes", {}).get("enabled", false):
+		_desk.disabled = not model.keepsakes.available
+		_photo.disabled = not model.keepsakes.available
+		_desk.text = "书桌 · 私人信件与物件"
 	if model.pending or model.dead: _prop_hint.hide()
 	_photo.visible = model.get("photo_placed", false)
 	_state_material.set_shader_parameter("photo_placed", model.get("photo_placed", false))
 	_state_material.set_shader_parameter("lamp_dead", model.dead)
 	_state_material.set_shader_parameter("haunting", model.haunting)
 	_state_material.set_shader_parameter("lamp_grade", int(model.get("lamp_grade", 0)))
+	var lamp_state: Dictionary = model.get("lamp_state", {})
+	_state_material.set_shader_parameter("personal_damage", int(lamp_state.get("damage", -1)))
+	_state_material.set_shader_parameter("lamp_light", float(lamp_state.get("light", 0.0 if model.dead else 1.0)))
 	var mirror_state: Dictionary = model.get("mirror", {}).duplicate()
 	mirror_state["lamp_lit"] = not model.dead
+	mirror_state["lamp_light"] = float(lamp_state.get("light", 0.0 if model.dead else 1.0))
 	if model.dead: mirror_state["mode"] = &"normal"
 	_mirror.set_state(mirror_state)
 	if not visible:
@@ -295,8 +319,11 @@ func render(model: Dictionary) -> void:
 		if _letter != null: _letter.hide()
 
 func _read_letter() -> void:
+	if _model.get("keepsakes", {}).get("enabled", false):
+		_open_keepsakes(false)
+		return
 	if not _model.get("gu_letter", false):
-		_observe("信纸压在砚台下面，折痕已经发白。\n\n「到了上海，先安顿住处。夜里潮，旧衣别急着扔。钱总能慢慢挣。」\n\n信尾没有再写别的话。", _desk)
+		_observe("抽屉里还没有收好的信。", _desk)
 		return
 	dismiss_observation()
 	if _letter == null:
@@ -319,6 +346,29 @@ func _read_letter() -> void:
 	_plan_button.visible = _model.get("observations", {}).get("aq_floorplan", {}).get("available", false)
 	_letter.popup_centered(Vector2i(570, 490))
 
+func _read_photo() -> void:
+	if _model.get("keepsakes", {}).get("enabled", false): _open_keepsakes(true)
+	else: _observe(tr("opening.room.photo"), _photo)
+
+func _open_keepsakes(photo: bool) -> void:
+	if not _model.keepsakes.available: return
+	_observation.hide()
+	if _letter != null: _letter.hide()
+	if _confirm != null: _confirm.hide()
+	_prop_hint.hide()
+	_keepsake_source = _photo if photo else _desk
+	_keepsakes.present(_model.keepsakes, photo)
+
+func close_private_panels() -> void:
+	if _keepsakes != null and _keepsakes.visible: _keepsakes.dismiss()
+	if _letter != null: _letter.hide()
+
+func _restore_keepsake_focus() -> void:
+	if not visible: return
+	var target := _keepsake_source
+	if not is_instance_valid(target) or not target.visible or target.disabled: target = _desk
+	if target.visible and not target.disabled: target.grab_focus()
+
 func _create_confirmation() -> void:
 	_confirm = ConfirmationDialog.new()
 	_confirm.title = "就寝"
@@ -329,6 +379,7 @@ func _create_confirmation() -> void:
 	add_child(_confirm)
 
 func _bed_pressed() -> void:
+	close_private_panels()
 	dismiss_observation()
 	if _model.can_sleep:
 		if _confirm == null: _create_confirmation()

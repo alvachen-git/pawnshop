@@ -7,6 +7,7 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 	var return_delay := PawnReturnService.prepare(state, catalog)
 	if not run.variety.is_empty():
 		VarietyService.prepare(state, run, catalog, return_delay)
+		InvestigationService.prepare(state, run)
 		return
 	var rng := RandomNumberGenerator.new()
 	rng.seed = state.run_seed + state.current_night_index * 104729
@@ -51,14 +52,14 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 		state.visits.append(visit)
 	state.visits.sort_custom(func(a: CustomerVisit, b: CustomerVisit) -> bool: return a.arrival < b.arrival)
 
-func update(state: RunState) -> void:
+func update(state: RunState, pending_quote_visit_id := "") -> void:
 	if state.phase == &"pre_open": return
 	PawnReturnService.arrive(state)
 	for visit in state.visits:
 		if visit.status not in ["scheduled", "waiting", "active"]: continue
 		if state.phase != &"open":
 			finish(state, visit, "shop_closed")
-		elif state.game_minutes >= visit.expires_at:
+		elif state.game_minutes >= visit.expires_at and visit.visit_id != pending_quote_visit_id:
 			finish(state, visit, "timed_out")
 		elif state.game_minutes >= visit.arrival and visit.status == "scheduled":
 			visit.status = "waiting"
@@ -66,7 +67,8 @@ func update(state: RunState) -> void:
 		for visit in state.visits:
 			if visit.status == "waiting":
 				visit.status = "active"
-				break
+				GhostGuests.arrive(state, visit)
+				if visit.status == "active": break
 
 func active(state: RunState) -> CustomerVisit:
 	for visit in state.visits:
@@ -75,5 +77,6 @@ func active(state: RunState) -> CustomerVisit:
 
 func finish(state: RunState, visit: CustomerVisit, outcome: String) -> void:
 	if visit.status not in ["scheduled", "waiting", "active"]: return
+	InvestigationService.departed(state, visit, outcome)
 	visit.status = outcome
 	state.visit_history.append({"visit_id": visit.visit_id, "customer_id": visit.customer_id, "night": state.current_night_index, "minute": state.game_minutes, "outcome": outcome})

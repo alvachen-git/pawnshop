@@ -1,0 +1,58 @@
+[
+  {
+    "passed": true,
+    "summary": [
+      "M0–M7 TESTS PASSED · 1800 assertions\r"
+    ],
+    "name": "run_all"
+  },
+  {
+    "passed": true,
+    "summary": [
+      "GOODS EDGES: 181 passes, 0 failures\r"
+    ],
+    "name": "goods_edges"
+  },
+  {
+    "passed": true,
+    "summary": [
+      "GOODS UI: 69 assertions, 0 failures\r"
+    ],
+    "name": "goods_ui-1280"
+  },
+  {
+    "passed": true,
+    "summary": [
+      "GOODS APPRAISAL UI: 210 assertions, 0 failures\r"
+    ],
+    "name": "goods_appraisal_ui-1280"
+  },
+  {
+    "passed": true,
+    "summary": [
+      "CUSTOMER REPLY UI: 108 assertions, 0 failures\r"
+    ],
+    "name": "customer_reply_ui-1280"
+  },
+  {
+    "passed": true,
+    "summary": [
+      "GOODS UI: 69 assertions, 0 failures\r"
+    ],
+    "name": "goods_ui-1600"
+  },
+  {
+    "passed": true,
+    "summary": [
+      "GOODS APPRAISAL UI: 210 assertions, 0 failures\r"
+    ],
+    "name": "goods_appraisal_ui-1600"
+  },
+  {
+    "passed": true,
+    "summary": [
+      "CUSTOMER REPLY UI: 108 assertions, 0 failures\r"
+    ],
+    "name": "customer_reply_ui-1600"
+  }
+]

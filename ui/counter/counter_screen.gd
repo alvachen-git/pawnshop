@@ -24,6 +24,8 @@ var _receipt: TradeReceiptView
 var _receipt_run := ""
 var _receipt_id := ""
 var _receipt_followup := ""
+var _receipt_event := ""
+var _receipt_night := 0
 var _return_id := ""
 var _counter_story_active := false
 var _counter_story_signature := ""
@@ -38,7 +40,7 @@ var _feedback_state_id := 0
 var _review_panel: StringName = &""
 var _reviewing := false
 var _seen_feedback: Dictionary = {}
-const PANEL_TITLES := {"day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "鬼货与绝当录", "night": "夜间结算"}
+const PANEL_TITLES := {"day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "物品记事", "night": "夜间结算"}
 
 
 func _ready() -> void:
@@ -92,6 +94,15 @@ func _ready() -> void:
 
 func bind_session(session: RunSession) -> void:
 	_session = session
+	if InvestigationService.enabled(session.definition):
+		var panel := InvestigationPanel.new()
+		panel.panel_id = &"investigation"
+		panel.name = "InvestigationPanel"
+		%DayFlowPanel.get_parent().add_child(panel)
+		panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		panel.hide()
+		_flow.register_panel(panel)
+		panel.bind(session)
 	_counter_view.bell_requested.connect(session.bell_command)
 	_counter_view.bell.blocked = _bell_blocked
 	session.restored.connect(_reset_reception)
@@ -190,8 +201,6 @@ func bind_session(session: RunSession) -> void:
 	_feedback = TradeFeedbackView.new()
 	_feedback.name = "TradeFeedback"
 	add_child(_feedback)
-	_feedback.finished.connect(_feedback_finished)
-	_feedback.money_revealed.connect(_status_view.release_cash)
 	_feedback_state_id = session._day.state.get_instance_id()
 	session.operation_completed.connect(_on_operation_feedback)
 	%LedgerPanel.receipt_requested.connect(_review_receipt)
@@ -204,10 +213,12 @@ func bind_session(session: RunSession) -> void:
 	_recent_bar.anchor_right = 0.78
 	_recent_bar.anchor_top = 0.89
 	_recent_bar.anchor_bottom = 0.89
-	_recent_bar.offset_top = -42
+	_recent_bar.offset_top = -64
 	_recent_button = Button.new()
 	_recent_button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_recent_button.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	_recent_button.add_theme_font_size_override("font_size", 17)
+	_recent_button.custom_minimum_size.y = 60
 	_recent_button.pressed.connect(func() -> void:
 		if _recent.get("kind", "") == "departure":
 			_review_panel = _flow.get_active_panel_id() if %Drawer.visible else &""
@@ -249,6 +260,10 @@ func bind_session(session: RunSession) -> void:
 		if not _narrative.visible and _session.read_state().phase == "shop_resolution" and _session.read_state().risk_pending.is_empty(): _flow.show_panel(&"night")
 	)
 
+	var inventory_event_notice := preload("res://ui/inventory/inventory_event_notice.gd").new()
+	add_child(inventory_event_notice)
+	inventory_event_notice.bind(session, self)
+
 func focus_active_screen() -> void:
 	if _counter_view.story_active:
 		_counter_view.story.show_dialogue()
@@ -278,12 +293,15 @@ func _drain_departures() -> void:
 	var notice: Dictionary = _departure_queue.pop_front()
 	if not notice.get("active_departed", true):
 		# Waiting customers only leave a notification; the current reception stays.
-		_remember_feedback(notice)
+		if _operation.get("paid", false) and _recent.get("kind", "") != "departure":
+			_recent.note += "\n" + String(notice.note)
+			_recent.detail += "\n\n" + String(notice.detail)
+			_recent_button.tooltip_text = _recent.note
+		else: _remember_feedback(notice)
 		_counter_view.release_feedback()
 		_drain_departures.call_deferred()
 		return
 	_start_feedback(notice)
-	_counter_view.depart_with_item()
 
 func _departure_closed(_destination: String) -> void:
 	if _session.read_state().phase != "open": _flow.show_panel(&"night")
@@ -297,19 +315,28 @@ func _departure_closed(_destination: String) -> void:
 
 func _show_receipt(receipt: Dictionary) -> void:
 	if receipt.is_empty(): return
-	for slot in _session.definition.customer_slots:
-		if not slot.tutorial.is_empty() and receipt.id == "purchase/%s/%d/%s" % [_session.definition.id, _session.read_state().current_night_index, slot.id]:
-			receipt.stamp = true
+	var key := String(_session._day.state.run_token) + "/" + String(receipt.id)
+	if _seen_feedback.has(key): return
+	_seen_feedback[key] = true
+	_reviewing = false
+	_remember_feedback(receipt)
+	_receipt_event = ""
+	# Acknowledge the existing first-account event through its receipt, once.
+	if receipt.kind == "acquisition" and _session.read_state().pending_event_id == "evt_intro_first_trade":
+		_receipt_event = "evt_intro_first_trade"
+		receipt = receipt.duplicate(true)
+		receipt.detail = "你看着纸上的红印，想起顾叔按住你手的那一刻。\n" + tr("opening.first_trade.continue.result")
+		receipt.can_inspect = _session.read_state().phase == "open" and _session.read_state().risk_pending.is_empty() and not _session.mirror_pending()
+		_narrative.hide()
 	_receipt_run = _session.read_state().run_token
+	_receipt_night = _session.read_state().current_night_index
 	_receipt_id = receipt.id
 	_receipt_followup = receipt.followup
-	if not receipt.get("stamp", false):
-		_start_feedback(receipt)
-		return
 	_close_menu()
 	_counter_view.dismiss_contexts()
 	%Drawer.hide()
 	_receipt.present(receipt)
+	_refresh_recent_visibility()
 	_status_view.release_cash()
 
 func _receipt_closed(destination: String) -> void:
@@ -323,6 +350,10 @@ func _receipt_closed(destination: String) -> void:
 		else: _close_drawer()
 		_refresh_recent_visibility()
 		return
+	var event := _receipt_event
+	_receipt_event = ""
+	if not event.is_empty() and _session.read_state().pending_event_id == event:
+		_session.event_command(event, "continue")
 	_counter_view.release_feedback()
 	_drain_departures.call_deferred()
 	var state := _session.read_state()
@@ -337,6 +368,7 @@ func _receipt_closed(destination: String) -> void:
 	elif state.phase != "open": _flow.show_panel(&"night")
 	elif _session.counter_model().trade.get("pawn_return", false): _flow.show_panel(&"trade")
 	else: _close_drawer()
+	_refresh_recent_visibility()
 
 func _sync_room() -> void:
 	var state := _session.read_state()
@@ -362,7 +394,8 @@ func _sync_room() -> void:
 		var still_present := false
 		for entry in state.ledger_entries:
 			if entry.transaction_id == _receipt_id: still_present = true
-		if state.run_token != _receipt_run or not still_present or state.phase != "open": _receipt.hide()
+		# A completed redemption can land exactly at sealing time.
+		if state.run_token != _receipt_run or not still_present or (not _reviewing and state.current_night_index != _receipt_night) or state.phase in ["dead", "bankrupt"]: _receipt.hide()
 	_counter_view.visible = not _room.visible
 	%MenuButton.visible = not _room.visible
 	_status_view.visible = not _room.visible
@@ -434,7 +467,7 @@ func _open_drawer(panel_id: StringName) -> void:
 	_close_menu()
 	_counter_view.dismiss_contexts()
 	%Drawer.show()
-	%DrawerTitle.text = "  " + PANEL_TITLES[String(panel_id)]
+	%DrawerTitle.text = "  " + ("托人查访" if panel_id == &"investigation" else PANEL_TITLES[String(panel_id)])
 	%CloseDrawerButton.grab_focus()
 	_refresh_recent_visibility()
 
@@ -528,6 +561,7 @@ func _reset_reception() -> void:
 	_departure.hide()
 	_return_id = ""
 	_receipt_id = ""
+	_receipt_event = ""
 	_close_menu()
 	_close_drawer()
 	_counter_view.dismiss_contexts()
@@ -550,18 +584,14 @@ func _on_operation_feedback(operation: Dictionary) -> void:
 	var before: Dictionary = operation.before.counter
 	var after: Dictionary = operation.after.counter
 	var left: bool = not String(before.active_id).is_empty() and before.active_id != after.active_id
-	if operation.paid or left:
-		_counter_view.feedback_held = true
-	if operation.paid and operation.command in ["offer", "pawn", "sell", "sell_batch", "redeem", "extend", "inquire"]:
-		_status_view.cash_held = true
 	if left and operation.command == "reject":
 		var visual: Dictionary = before.get("visual", {})
 		_start_feedback({"id": "reject/" + String(operation.before.run) + "/" + String(before.active_id),
+			"reply_style": "rejected", "reply_name": String(visual.get("customer_name", "客人")),
 			"kind": "departure", "title": "谢过，今夜不收", "item": String(visual.get("item_name", "旧物")),
 			"note": "客人收好东西，离开柜台。", "detail": operation.message, "clock": "",
 			"amount": 0, "before": operation.before.cash, "after": operation.after.cash,
 			"item_asset": "", "images": [], "destination": "", "can_inspect": false})
-		_counter_view.depart_with_item()
 
 func _start_feedback(receipt: Dictionary) -> void:
 	var key := String(_session._day.state.run_token) + "/" + String(receipt.id)
@@ -570,18 +600,22 @@ func _start_feedback(receipt: Dictionary) -> void:
 	_reviewing = false
 	_receipt_followup = receipt.get("followup", "")
 	_remember_feedback(receipt)
-	_recent_bar.hide()
 	_close_menu()
 	_counter_view.dismiss_contexts()
 	%Drawer.hide()
-	var visual: Dictionary = _operation.get("before", {}).get("counter", {}).get("visual", {})
-	_feedback.present(receipt, visual.get("customer_name", "") if receipt.kind in ["acquisition", "pawn_loan", "redemption", "extension"] else "")
-	if receipt.kind in ["acquisition", "pawn_loan", "redemption", "extension"]: _counter_view.hand_over_item()
+	_feedback.record = receipt.duplicate(true)
+	_status_view.release_cash()
+	_feedback_finished()
 
 func _remember_feedback(receipt: Dictionary) -> void:
 	_recent = receipt.duplicate(true)
 	_recent_collapsed = false
 	_recent_button.text = "%s · %s · 查看详情" % [receipt.title, receipt.item]
+	if receipt.get("due_night", 0) > 0:
+		_recent_button.text = "留铺保管 · 第%d夜到期 · %s · 查看详情" % [receipt.due_night, receipt.item]
+	var reply := CustomerReplyModel.build(receipt, _operation)
+	if not reply.text.is_empty(): _recent_button.text = String(reply.text) + "\n" + _recent_button.text
+	_recent_button.set_meta("reply_style", reply.style)
 	_recent_button.tooltip_text = receipt.note
 	_refresh_recent_visibility()
 

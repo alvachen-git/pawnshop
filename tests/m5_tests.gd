@@ -176,7 +176,7 @@ func _corrupt_saves() -> void:
 	_expect.call(restored != null and restored.phase == &"dead", "文案修订不使已验收M5死亡存档失效")
 	if restored != null:
 		var displayed := RiskReadModels.build(DayController.new(run_def, restored), RiskManager.new(catalog), "")
-		_expect.call(not displayed.history.contains("已知直视") and displayed.history.contains("影子出镜"), "旧绝当录按稳定规则显示新版叙事，仍保留原始记录")
+		_expect.call(not displayed.archive.contains("已知直视") and displayed.archive.contains("影子出镜"), "旧绝当录按稳定规则显示新版叙事，仍保留原始记录")
 	dead.phase = "day_summary"
 	dead.summaries.back().outcome = "mirror_pending"
 	dead.risk_pending = id

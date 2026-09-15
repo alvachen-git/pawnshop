@@ -53,7 +53,7 @@ func _run() -> void:
 		if current.status != "active": break
 		_session.counter_command("offer", current.visit_id, "", 1)
 	await _frames()
-	_check(page.visible and page.record.title == "未能成交" and page.record.item.contains("周绍安"), "real current failure identifies Zhou")
+	_check(not page.visible and screen._recent_bar.visible and page.record.title == "未能成交" and page.record.item.contains("周绍安"), "real current failure identifies Zhou without popup")
 	_check(current.status in ["patience_exhausted", "rounds_exhausted"], "current visitor really leaves after failed negotiation")
 	await _settle_feedback()
 	_check(_session.counter_model().active_id != current.visit_id, "departed customer cannot reappear on dismissal")

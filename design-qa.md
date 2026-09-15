@@ -48,3 +48,10 @@ final result: passed
 ## 独立寝屋镜面 · 2026-09-11
 
 final result: passed。反射校正与组件验证见 [镜面 QA](docs/qa/bedroom-mirror/design-qa.md)。
+
+
+# 库存事件提醒 · 2026-09-14
+
+final result: passed
+
+保留上方原有验收记录。本次库存事件提醒的交互、双分辨率截图与检查结果见 [库存事件提醒验收](docs/qa/inventory-event-notice/design-qa.md)。

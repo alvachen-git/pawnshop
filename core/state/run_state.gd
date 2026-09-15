@@ -3,6 +3,23 @@ extends RefCounted
 
 const PHASE_PRE_OPEN := &"pre_open"
 
+var investigation_enabled := false
+var investigation: Dictionary = {}
+var personal_risk_enabled := false
+var room_photo_position := "" # Empty inherits the immutable opening choice.
+var personal_damage := 0
+var personal_risk_history: Array[Dictionary] = []
+var personal_death_phase := ""
+var pending_pawn_choices: Dictionary = {}
+var action_journal: Array[Dictionary] = []
+var ghost_version := 0
+var ghost_catalog: ContentCatalog
+var ghost_origin: Dictionary = {}
+var ghost_commands: Array[Dictionary] = []
+var soul_history: Array[Dictionary] = []
+var ghost_visits: Array[Dictionary] = []
+var exchange_history: Array[Dictionary] = []
+var person_deaths: Array[Dictionary] = []
 var run_definition_id: StringName
 var current_night_index: int = 1
 var phase: StringName = PHASE_PRE_OPEN
@@ -18,6 +35,8 @@ var familiar_plan: Dictionary = {}
 var familiar_progress: Dictionary = {}
 # Read-only raw history context used during ordered validation; never serialized.
 var familiar_context: Dictionary = {}
+var expertise_history: Array[Dictionary] = []
+var goods_version := 0
 var preparation_history: Array[Dictionary] = []
 var preparation_version := 0
 var sample_plan: Array[Dictionary] = []
@@ -59,7 +78,11 @@ var visits: Array[CustomerVisit] = []
 static func create(definition: RunDefinition) -> RunState:
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.investigation_enabled = InvestigationService.enabled(definition)
+	state.personal_risk_enabled = PersonalRisk.enabled(definition)
 	state.night_market_enabled = NightMarketPlan.enabled(definition)
+	state.ghost_version = int(definition.variety.get("ghost_guests_version", 0))
+	state.goods_version = int(definition.variety.get("goods_expertise_version", 0))
 	state.preparation_version = int(definition.variety.get("preparation_version", 0))
 	state.room_enabled = definition.private_room
 	if not definition.ghost_rule_ids.is_empty() or definition.fee_policy.enabled: state.run_token = Crypto.new().generate_random_bytes(16).hex_encode()
@@ -115,9 +138,16 @@ func to_read_model() -> Dictionary:
 		"visit_history": visit_history.duplicate(true),
 	}
 
+	if investigation_enabled: data["investigation"] = investigation.duplicate(true)
+	if personal_risk_enabled:
+		data["room_photo_position"] = room_photo_position
+		data.merge({"pending_pawn_choices": pending_pawn_choices.duplicate(true), "personal_risk_enabled": true, "personal_damage": personal_damage, "personal_risk_history": personal_risk_history.duplicate(true), "personal_death_phase": personal_death_phase, "action_journal": action_journal.duplicate(true)})
 	if night_market_enabled:
 		data["night_market_history"] = night_market_history.duplicate(true)
 		data["night_market_enabled"] = true
+	if ghost_version == 1:
+		for key in ["ghost_origin", "ghost_commands", "soul_history", "ghost_visits", "exchange_history", "person_deaths"]: data[key] = get(key).duplicate(true)
+	if goods_version == 1: data["expertise_history"] = expertise_history.duplicate(true)
 	if not familiar_plan.is_empty():
 		data["familiar_plan"] = familiar_plan.duplicate(true)
 		familiar_progress = FamiliarStories.progress(data)

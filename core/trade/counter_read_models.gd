@@ -2,7 +2,7 @@ class_name CounterReadModels
 extends RefCounted
 
 const JUDGEMENTS := {"unknown": "暂不判断", "sound": "完好真品", "damaged": "有修补/瑕疵", "fake": "仿制/材质不符"}
-const OUTCOMES := {"redeemed_early": "提前赎回", "redemption_deferred": "约定到期再来", "bought": "成交", "pawned": "活当放款", "rejected": "拒收", "timed_out": "等候超时离场", "shop_closed": "关铺失去机会", "patience_exhausted": "耐心耗尽", "rounds_exhausted": "议价结束"}
+const OUTCOMES := {"inspection_refused": "收货离去", "swapped": "换物成交", "swap_rejected": "拒绝换物", "person_deceased": "当户已故", "redeemed_early": "提前赎回", "redemption_deferred": "约定到期再来", "bought": "成交", "pawned": "活当放款", "rejected": "拒收", "timed_out": "等候超时离场", "shop_closed": "关铺失去机会", "patience_exhausted": "耐心耗尽", "rounds_exhausted": "议价结束"}
 
 static func build(day: DayController, service: CounterService, message: String, message_visit_id := "") -> Dictionary:
 	var blank := {"body": "暂无正在接待的顾客。\n请在营业页开铺或等待来客。", "buttons": [], "visit_id": ""}
@@ -30,7 +30,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 				who = String(ended.person.get("name", ended_customer.terms.display_name))
 				break
 		if int(last.night) == state.current_night_index and not who.is_empty():
-			model.queue += "\n%s · %s：%s" % [TimeController.clock_text(day.definition.opening_minute, int(last.minute)), who, OUTCOMES[last.outcome]]
+			model.queue += "\n%s · %s：%s" % [TimeController.clock_text(day.definition.opening_minute, int(last.minute)), who, OUTCOMES.get(last.outcome, "会面结束")]
 	var visit := service.customers.active(state)
 	# A completed action may have moved the queue to another customer already.
 	# Keep its result in the departure/receipt flow, not in the new reception.
@@ -39,6 +39,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		for feature in ["appraisal", "dialogue", "trade"]: model[feature].body += "\n\n" + message
 		return model
 	var customer := service.catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
+	if visit.purpose == "husband_meeting": return InvestigationCounterModel.build(model, day, service.catalog, visit, message)
 	var item := service.catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
 	model.active_id = visit.visit_id
 	model.context_actions.customer = [
@@ -54,6 +55,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 	var bounds := service.appraisal.valuation(visit.item, item)
 	var evidence_lines: PackedStringArray = []
 	for clue_id in visit.item.revealed_clue_ids: evidence_lines.append("• " + item.find_clue(clue_id).text)
+	var goods_note := GoodsExpertise.description(visit.item, item)
 	model.appraisal.body = "%s\n证据估值：%d–%d（不是买家报价）\n你的判断：%s\n\n%s" % [item.display_name, bounds.x, bounds.y, JUDGEMENTS[visit.item.judgement], "\n".join(evidence_lines) if not evidence_lines.is_empty() else "尚未取得证据。卖家说法不能替代检查。"]
 	for action in item.appraisal_actions:
 		model.appraisal.buttons.append(_button(day, service, visit, "appraise", action.id, "%s · %d分钟" % [action.label, action.minutes]))
@@ -69,6 +71,8 @@ static func build(day: DayController, service: CounterService, message: String, 
 			model.dialogue.buttons.append(_button(day, service, visit, "question", question.id, "%s · %d分钟" % [question.prompt, question.minutes]))
 	else:
 		model.appraisal.images = TradeScenarioService.known_images(visit, scenario)
+		if visit.item.definition_id == GoodsExpertise.CUP and "form" in visit.item.revealed_clue_ids:
+			model.appraisal.images.append({"id": "cup_marks", "label": "纹样式样", "path": "res://assets/goods_v21/tea_cup_pattern%d_side%d.svg" % [int(visit.item.goods.pattern), int(visit.item.goods.side)], "requires_clues": ["form"]})
 		if model.appraisal.images.any(func(row: Dictionary) -> bool: return not row.path.is_empty()): model.appraisal.body += "\n\n翻看正背面、复看细节不耗时；取证另计时间。"
 		model.dialogue.body = String(visit.voice.get("introduction", scenario.introduction)) + "\n\n听来的话先记着，物品还须自己掌眼。无凭据地质疑，客人可能不悦。"
 		for question in scenario.questions:
@@ -105,6 +109,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		if EarlyRedemption.enabled(day.definition) and terms.id == FamiliarStories.TERMS: model.trade.body += "\n" + EarlyRedemption.AGREEMENT
 		var background := PawnRedemptionPolicy.background(day.definition, customer, VarietySaveCodec.selection(day.state, visit.visit_id))
 		if not background.is_empty(): model.trade.body += "\n" + background
+	if not goods_note.is_empty(): model.appraisal.body += "\n" + goods_note
 	for feature in ["appraisal", "dialogue", "trade"]:
 		model[feature].visit_id = visit.visit_id
 		model[feature].body += "\n\n" + message

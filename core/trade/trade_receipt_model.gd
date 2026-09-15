@@ -32,10 +32,13 @@ static func batch(day: DayController, catalog: ContentCatalog, first: int) -> Di
 		if item == null: return {}
 		var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 		if definition == null: return {}
-		var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+		var base := maxi(1, roundi(GoodsExpertise.value(item, definition) * buyer.value_multiplier))
 		total += row.amount
 		cost += item.acquisition_price
-		lines.append("%s · 收%d / 成本%d / 盈亏%+d\n基础报价%d · 来源溢价%d" % [definition.display_name, row.amount, item.acquisition_price, row.realized_profit, base, row.amount - base])
+		var source := ProvenanceService.premium(item, buyer, base)
+		var line := "%s · 收%d / 成本%d / 盈亏%+d\n基础报价%d · 来源溢价%d" % [definition.display_name, row.amount, item.acquisition_price, row.realized_profit, base, source]
+		if GoodsExpertise.enabled(day.definition): line += " · 原配加价%d" % (row.amount - base - source)
+		lines.append(line)
 	receipt.item = "%s · 交货%d件" % [buyer.display_name, trip.item_ids.size()]
 	receipt.item_asset = ""
 	receipt.images = []
@@ -43,30 +46,38 @@ static func batch(day: DayController, catalog: ContentCatalog, first: int) -> Di
 	receipt.before = entries[0].balance - entries[0].amount
 	receipt.after = entries.back().balance
 	receipt.note = "往返20分钟，货款已收妥。"
-	receipt.detail = "总成本%d · 已实现盈亏%+d 银元\n未扣来源调查费与每日息费。\n\n%s" % [cost, total - cost, "\n\n".join(lines)]
+	var expenses := "未扣调查、行家复核、寻货及每日费用。" if GoodsExpertise.enabled(day.definition) else "未扣来源调查费与每日息费。"
+	receipt.detail = "总成本%d · 已实现盈亏%+d 银元\n%s\n\n%s" % [cost, total - cost, expenses, "\n\n".join(lines)]
 	return receipt
 
 # Only committed, player-visible facts. No hidden variant, true value or margin
 # forecast is exposed by buying an item. This receipt is not a save checkpoint.
 static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary) -> Dictionary:
-	var titles := {"acquisition": "收购成交", "pawn_loan": "活当办妥", "sale": "出售成交", "redemption": "赎当办妥", "extension": "续当办妥", "provenance_inquiry": "来源调查结清"}
+	var titles := {"pawn_exchange": "换物办妥", "acquisition": "收购成交", "pawn_loan": "活当办妥", "sale": "出售成交", "redemption": "赎当办妥", "extension": "续当办妥", "provenance_inquiry": "来源调查结清", "expertise": "行家复核结清"}
 	if catalog == null or not titles.has(entry.kind): return {}
 	var item := InventoryManager.new().find(day.state, entry.item_instance_id)
 	if item == null: return {}
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
-	var note: String = {"acquisition": "货已收进库存，收购款已付清。", "pawn_loan": "当票已开，在当物品留铺保管。", "sale": "货已交给买家，货款收妥。", "redemption": "赎金收妥，原物已交还当户。", "extension": "续当费收妥，原物继续留铺。", "provenance_inquiry": ProvenanceService.describe(item)}[entry.kind]
+	var note: String = {"pawn_exchange": "原当物已交出，替物留在原票下保管。换物收入80银元，票面本金、赎金和期限未变。", "acquisition": "货已收进库存，收购款已付清。", "pawn_loan": "当票已开，在当物品留铺保管。", "sale": "货已交给买家，货款收妥。", "redemption": "赎金收妥，原物已交还当户。", "extension": "续当费收妥，原物继续留铺。", "provenance_inquiry": ProvenanceService.describe(item), "expertise": "复核费已付清，行家的结论已记在货签上。"}[entry.kind]
+	if item.acquisition_type == "substitution" and entry.kind in ["redemption", "extension"]: note = note.replace("原物", "替物")
 	var detail := "收购支出为进货成本，出售后再结盈亏。" if entry.kind == "acquisition" else ""
 	if entry.kind == "sale": detail = "进货成本 %d 银元 · 本笔已实现盈亏 %+d 银元" % [item.acquisition_price, entry.realized_profit]
 	if entry.kind == "provenance_inquiry": detail = ProvenanceService.result_text(item, definition) + "\n调查费记入经营费用，原始成本不变。"
+	if entry.kind == "expertise":
+		for record in day.state.expertise_history:
+			if record.id != entry.transaction_id: continue
+			detail = String(definition.expertise.results[record.result]) if record.action == "fan" else ("两盏原配：纹样相对，底足制式一致。" if record.result == "matched" else "两盏并非原配：纹样、左右式样或底足制式不合。")
+			detail += "\n复核费记入经营费用，原始成本不变。"
+			break
 	if entry.kind == "sale" and not item.provenance.is_empty():
 		var sale := _sale_for_entry(day, entry)
 		var buyer := catalog.get_definition("buyers", sale.get("buyer_id", "")) as BuyerDefinition
 		if buyer != null:
-			var base := maxi(1, roundi(definition.find_variant(item.selected_variant_id).true_value * buyer.value_multiplier))
+			var base := maxi(1, roundi(GoodsExpertise.value(item, definition) * buyer.value_multiplier))
 			detail += "\n基础报价 %d · 来源溢价 %d 银元" % [base, ProvenanceService.premium(item, buyer, base)]
 	var due_night := 0
 	for ticket in day.state.pawn_tickets:
-		if ticket.item_instance_id == item.instance_id and entry.kind in ["pawn_loan", "extension"]:
+		if ticket.collateral_id() == item.instance_id and entry.kind in ["pawn_loan", "extension", "pawn_exchange"]:
 			# Reconstruct the date on THIS receipt, not the ticket's later renewal.
 			due_night = ticket.due_night
 			if not ticket.extensions.is_empty():
@@ -78,7 +89,15 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 			if EarlyRedemption.enabled(day.definition) and ticket.terms_id == FamiliarStories.TERMS: detail += "\n" + EarlyRedemption.AGREEMENT
 	if SevenNightPlan.enabled(day.definition) and entry.kind in ["acquisition", "pawn_loan"]:
 		var row := VarietySaveCodec.selection(day.state, item.source_visit_id)
-		if not row.is_empty() and not row.context_id.is_empty() and not row.has("night_policy"): note += "\n" + String(SevenNightPlan.context(day.definition, row.context_id).voice.completed)
+		var matched := false
+		for visit in day.state.visits:
+			if visit.visit_id != item.source_visit_id: continue
+			matched = true
+			var voice: String = visit.voice.get("completed", "")
+			if not voice.is_empty(): note += "\n" + voice
+			break
+		# Older receipts may outlive their live visitor; retain the saved context.
+		if not matched and not row.is_empty() and not row.context_id.is_empty() and not row.has("night_policy"): note += "\n" + String(SevenNightPlan.context(day.definition, row.context_id).voice.completed)
 	var late := VarietySaveCodec.selection(day.state, item.source_visit_id)
 	if entry.kind == "acquisition" and late.get("night_policy") == "wet_cloth":
 		note += "\n那块湿包布留在了柜边。"
@@ -94,7 +113,7 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 		"item": definition.display_name, "item_asset": definition.visual_asset_id, "images": images,
 		"amount": entry.amount, "before": entry.balance - entry.amount, "after": entry.balance,
 		"clock": "第%d夜 · %s" % [entry.night, TimeController.clock_text(day.definition.opening_minute, entry.minute)],
-		"note": note, "detail": detail, "due_night": due_night, "destination": "ledger" if entry.kind in ["pawn_loan", "redemption", "extension"] else "inventory",
+		"note": note, "detail": detail, "due_night": due_night, "destination": "ledger" if entry.kind in ["pawn_loan", "redemption", "extension", "pawn_exchange"] else "inventory",
 		"followup": "risk" if not definition.ghost_rule_id.is_empty() and entry.kind in ["acquisition", "pawn_loan"] else "",
 		"can_inspect": day.state.phase == &"open" and day.state.pending_event_id.is_empty() and day.state.risk_pending.is_empty()}
 

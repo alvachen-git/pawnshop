@@ -1,7 +1,7 @@
 class_name RiskManager
 extends RefCounted
 
-const OUTCOMES := ["night_guest_death", "peaceful", "mirror_safe", "mirror_scar", "mirror_pending", "mirror_survived", "mirror_death"]
+const OUTCOMES := ["personal_lamp_death", "night_guest_death", "peaceful", "mirror_safe", "mirror_scar", "mirror_pending", "mirror_survived", "mirror_death"]
 const LABELS := {"night_guest_death": "命灯熄灭", "peaceful": "一夜无事", "mirror_safe": "红布无声", "mirror_scar": "余祟未散", "mirror_pending": "镜中来客", "mirror_survived": "灯火未歇", "mirror_death": "命灯熄灭"}
 var catalog: ContentCatalog
 
@@ -63,7 +63,7 @@ func reason(day: DayController, id: String, command: String) -> String:
 	if command not in ["cover", "uncover"]: return "未知处理方式。"
 	if day.state.phase not in [&"open", &"closed_processing"]: return "只可在营业或关门处理时动手。"
 	var item := InventoryManager.new().find(day.state, id)
-	if item == null or rule_for(item) == null or item.ownership_state not in ["owned", "pledged"]: return "该鬼货不在铺中。"
+	if item == null or rule_for(item) == null or item.ownership_state not in ["owned", "pledged"]: return "该物品不在铺中。"
 	if covered(day.state, id) == (command == "cover"): return "物品已经处于该存放状态。"
 	var rule := rule_for(item)
 	var cost := action_minutes(day.definition, rule, command)

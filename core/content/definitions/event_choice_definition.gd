@@ -1,6 +1,7 @@
 class_name EventChoiceDefinition
 extends RefCounted
 
+var personal_effect: Dictionary = {}
 var required_items: Array = []
 var required_flags: Array = []
 var excluded_flags: Array = []
@@ -35,6 +36,8 @@ static func from_source(source: Dictionary) -> EventChoiceDefinition:
 	value.required_flags = source.get("required_flags", []).duplicate()
 	value.excluded_flags = source.get("excluded_flags", []).duplicate()
 	value._id = source.id
+	for key in ["personal_damage", "personal_recovery"]:
+		if source.has(key): value.personal_effect[key] = 1 if source[key] is bool else int(source[key])
 	value._label = source.label
 	value._result = source.result
 	value._minutes = int(source.minutes)

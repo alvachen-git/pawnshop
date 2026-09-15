@@ -40,7 +40,7 @@ func _run() -> void:
 		var key := "appraisal" if page == "鉴定" else "trade"
 		_check(_session.counter_model()[key].visual.message.is_empty(), "old response absent from " + key)
 	await _click_button(_command_button("belittle", ""))
-	_check(_find_trade(_main)._feedback.text.contains(_session.message), "new customer's own bargaining response visible")
+	_check(_find_trade(_main)._feedback.text == _find_trade(_main)._reaction_text({"message": _session.message, "before": next.trade.opening_price, "after": next.trade.asking_price}), "new customer's own bargaining response visible")
 	await _click("对话")
 	_check(dialogue._body.text.contains(_session.message) and not dialogue._body.text.contains("耐心耗尽"), "switching panels keeps only this customer's feedback")
 	await _capture("02_own_response")

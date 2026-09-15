@@ -1,0 +1,1803 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+PASS · JSON Provider应加载有效目录。
+PASS · 目录应包含2件M2物品定义。
+PASS · 目录应包含2个M2顾客模板。
+PASS · 物品ID应可查询。
+PASS · 内存Provider应返回相同ContentCatalog契约。
+PASS · 两种Provider应暴露相同物品ID。
+PASS · Schema应拒绝缺少必填字段的记录。
+PASS · Schema应拒绝未知物品类型。
+PASS · 首次添加ID应成功。
+PASS · 重复ID应被目录拒绝。
+PASS · 领域校验应拒绝不存在的物品引用。
+PASS · 主场景应能被加载。
+PASS · 主场景应包含独立ScreenFlowCoordinator。
+PASS · 柜台启动时应显示营业Panel。
+PASS · 库存柜热点应能独立切换Panel。
+PASS · Panel切换应只改变表现层显隐。
+PASS · 定义不持有可变输入DTO。
+PASS · 独立构建的内存Provider通过领域校验。
+PASS · 运行配置失效引用在内存Provider同样被拒绝。
+PASS · 两种Provider驱动相同业务结果，不依赖JSON。
+PASS · 运行Schema拒绝：fraction
+PASS · 运行Schema拒绝：missing
+PASS · 运行Schema拒绝：phase
+PASS · 运行Schema拒绝：cost
+PASS · 运行Schema拒绝：duplicate
+PASS · 运行Schema拒绝：step
+PASS · 非三夜/非540分钟配置无需改业务。
+PASS · 开铺前不能消耗营业行动。
+PASS · 开铺只能执行一次。
+PASS · 非法耗时不修改状态：0
+PASS · 非法耗时不修改状态：-5
+PASS · 非法耗时不修改状态：1
+PASS · 非法耗时不修改状态：545
+PASS · 行动累计到23:00。
+PASS · 早关门记录时刻且不能重开。
+PASS · 跨午夜仍使用连续累计分钟。
+PASS · 03:00封铺，早关门记录不变。
+PASS · 封铺后禁止经营行动及重复关门。
+PASS · 日结不重复生成。
+PASS · 晚关门测试到达02:50。
+PASS · 剩余10分钟不能开始30分钟动作。
+PASS · 恰好用尽10分钟立即封铺。
+PASS · 下一夜从PRE_OPEN开始。
+PASS · 日结自动保存成功（包括替换旧存档）。
+PASS · 新Session精确恢复夜末检查点。
+PASS · 读档后不能重复结算。
+PASS · 进入下一夜/结束时持久化检查点。
+PASS · 夜次推进后的读档不会重复上一夜。
+PASS · 下一夜从PRE_OPEN开始。
+PASS · 日结自动保存成功（包括替换旧存档）。
+PASS · 新Session精确恢复夜末检查点。
+PASS · 读档后不能重复结算。
+PASS · 进入下一夜/结束时持久化检查点。
+PASS · 夜次推进后的读档不会重复上一夜。
+PASS · 下一夜从PRE_OPEN开始。
+PASS · 日结自动保存成功（包括替换旧存档）。
+PASS · 新Session精确恢复夜末检查点。
+PASS · 读档后不能重复结算。
+PASS · 进入下一夜/结束时持久化检查点。
+PASS · 夜次推进后的读档不会重复上一夜。
+PASS · 三夜结束，不生成第四夜。
+PASS · ReadModel不能修改权威状态。
+PASS · 新游戏不立即覆盖旧检查点。
+PASS · 拒绝损坏/不兼容存档：version
+PASS · 拒绝损坏/不兼容存档：content
+PASS · 拒绝损坏/不兼容存档：id
+PASS · 拒绝损坏/不兼容存档：fraction
+PASS · 拒绝损坏/不兼容存档：time
+PASS · 拒绝损坏/不兼容存档：phase
+PASS · 拒绝损坏/不兼容存档：summaries
+PASS · 拒绝损坏/不兼容存档：closed
+PASS · 拒绝损坏/不兼容存档：cash
+PASS · 拒绝损坏/不兼容存档：count
+PASS · 拒绝损坏/不兼容存档：early_end
+PASS · 损坏存档不替换当前运行也不删除原文件。
+PASS · 磁盘失败回滚日结，留在可重试阶段。
+PASS · 重复重试失败不会积累日结。
+PASS · 下一夜写入失败回滚夜次与阶段。
+PASS · 写入失败保留上次完整存档。
+PASS · 磁盘恢复后可重试进入下一夜。
+PASS · 缺失存档安全返回失败。
+PASS · 实际不可写目录失败可控。
+PASS · 开铺后第一位顾客入场。
+PASS · 免费查询不会推进时间或消耗耐心。
+PASS · 缺少前置证据不能跳过鉴定步骤。
+PASS · 确定性鉴定动作：observe
+PASS · 确定性鉴定动作：base
+PASS · 确定性鉴定动作：light
+PASS · 相同变体和行动得到相同证据，无成功率抽签。
+PASS · 物理证据揭示修补并收窄估值。
+PASS · 重复鉴定不产生新信息或重复耗时。
+PASS · 玩家错误判断不会改写证据估值。
+PASS · 卖家口供可询问。
+PASS · 同一问题不能无限试探。
+PASS · 卖家口供不会伪装为已验证证据。
+PASS · 没有放大镜时动作被领域层拒绝。
+PASS · 表现层读模型不泄露底价、真值、变体或精确耐心。
+PASS · 真实瑕疵施压降低要价并消耗一轮。
+PASS · 正式施压计入有限议价轮次。
+PASS · 同一瑕疵不可重复压价。
+PASS · 证据降低隐藏底价后可按18成交。
+PASS · 已成交顾客不能重复报价。
+PASS · 三轮低价试探耗时15分钟且不误扣现金。
+PASS · 轮次/耐心用尽即离场。
+PASS · 失败三轮后不能再接受底价成交。
+PASS · 非瑕疵证据不会降价，并损失隐藏耐心。
+PASS · 错误施压可在轮次用尽前惹怒顾客离场。
+PASS · 非法或现金不足报价不进入试价流程：-1
+PASS · 非法或现金不足报价不进入试价流程：0
+PASS · 非法或现金不足报价不进入试价流程：101
+PASS · 非法或现金不足报价不进入试价流程：1000001
+PASS · 玩家可以因误判而高价收货。
+PASS · 现金、库存、流水一次性提交。
+PASS · 错误判断真实支付60收得价值20的物品，形成40估值缺口。
+PASS · 收购流水和现金余额可对账。
+PASS · 重复成交/过期意图不能重复扣款入库。
+PASS · 库存显示成本且不冒充已实现盈亏。
+PASS · 库存表现层快照不能改写运行状态。
+PASS · 处理其他事务时第二位顾客排队。
+PASS · 排队顾客会按行动时间超时离场。
+PASS · 拒客送走顾客并消耗5分钟。
+PASS · 动作结束恰到顾客离场时限时，不进行迟到成交。
+PASS · 未及时完成仍消耗动作时间，并记录离场。
+PASS · 关门结束当前及后续来客机会，不能继续交易。
+PASS · 03:00封铺优先于迟到的柜台效果。
+PASS · 含收购物品的夜末检查点成功保存。
+PASS · 库存、现金、流水和顾客历史精确恢复。
+PASS · 跨夜保留收货成本和现金占款。
+PASS · 恢复后开铺前不凭空接待顾客。
+PASS · 拒绝无法对账/伪造的交易存档：duplicate
+PASS · 拒绝无法对账/伪造的交易存档：price
+PASS · 拒绝无法对账/伪造的交易存档：cash
+PASS · 拒绝无法对账/伪造的交易存档：balance
+PASS · 拒绝无法对账/伪造的交易存档：evidence
+PASS · 拒绝无法对账/伪造的交易存档：variant
+PASS · 拒绝无法对账/伪造的交易存档：reference
+PASS · 拒绝无法对账/伪造的交易存档：missing_history
+PASS · 拒绝无法对账/伪造的交易存档：version
+PASS · 嵌套Schema拒绝：missing
+PASS · 嵌套Schema拒绝：enum
+PASS · 嵌套Schema拒绝：fraction
+PASS · 嵌套Schema拒绝：duplicate
+PASS · 内存Provider也拒绝证据循环依赖。
+PASS · 独立DTO映射的内存目录通过校验。
+PASS · JSON与独立内存目录驱动等价的鉴定/议价/收购结果。
+PASS · 定义集合返回副本，运行时不能清空内容。
+PASS · 全新物品/顾客/运行ID只改数据即可通过校验。
+PASS · 业务不依赖青花碗或顾客具体ID。
+PASS · 交易后存档失败回滚结算但不丢失既有库存/现金。
+PASS · 重试只保存一次，不重复扣款或入库。
+PASS · 收货占用现金且成本不是利润
+PASS · 买家报价预览不耗时不占额度
+PASS · 未到收藏客窗口不可出售
+PASS · 当前买家机会可收货
+PASS · 18成本以12出售，真实亏损6
+PASS · 重复出售/过期按钮不可重复收款
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · 日结区分现金变化与已实现亏损
+PASS · M3 JSON存档精确往返：
+PASS · M3拒绝损坏/伪造存档：sale_price
+PASS · M3拒绝损坏/伪造存档：sale_duplicate
+PASS · M3拒绝损坏/伪造存档：sale_buyer
+PASS · M3拒绝损坏/伪造存档：ownership
+PASS · M3拒绝损坏/伪造存档：profit
+PASS · M3拒绝损坏/伪造存档：summary
+PASS · M3拒绝损坏/伪造存档：ledger_duplicate
+PASS · 相同物品卖给偏好买家24，利润6
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · M3 JSON存档精确往返：
+PASS · 错误估价高价收货最终兑现亏损48
+PASS · 买家每夜额度不能无限出货
+PASS · 偏好/窗口不匹配买家不可收货
+PASS · 现金不足不消耗轮次或生成当票
+PASS · 收购和活当共用有限议价轮次
+PASS · 有限轮次内可活当成交
+PASS · 当约驱动本金、赎金及到期夜
+PASS · 在当原物禁售且不耗时
+PASS · 当户未返店不能凭空收赎金
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · 未到期本金独立列示且非亏损
+PASS · M3 JSON存档精确往返：
+PASS · 次夜当户到访可办理赎回
+PASS · 赎金/原物/当票同步提交
+PASS · 赎回不能重复收款
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · 赎回利润只计息费6不计归还本金
+PASS · M3 JSON存档精确往返：
+PASS · M3拒绝损坏/伪造存档：principal
+PASS · M3拒绝损坏/伪造存档：due
+PASS · M3拒绝损坏/伪造存档：redemption
+PASS · M3拒绝损坏/伪造存档：ticket_duplicate
+PASS · M3拒绝损坏/伪造存档：ticket_reference
+PASS · M3拒绝损坏/伪造存档：fraction
+PASS · M3拒绝损坏/伪造存档：redeem_time
+PASS · M3拒绝损坏/伪造存档：loan_missing
+PASS · 第二类顾客的候赎当约可办理
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · 存档失败深度回滚绝当和物品权属
+PASS · 重复失败不会提前绝当
+PASS · 写入恢复后可重试结算
+PASS · 未赎绝当只转现货不凭空改现金
+PASS · M3 JSON存档精确往返：
+PASS · 绝当现货可在下一夜正常出售
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · M3 JSON存档精确往返：
+PASS · 含绝当出售记录的三夜完整运行
+PASS · M3 JSON存档精确往返：
+PASS · 销售动作恰到03:00封铺，不迟到成交
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · 原主到店后必须优先接待，不能拖延绝当
+PASS · 实际回访办理十分钟后收赎金
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · 原主已赎回，夜末不绝当
+PASS · M3 JSON存档精确往返：
+PASS · M3定义可通过内存Provider装配
+PASS · 销售/经济核心与内容Provider无关
+PASS · 只改当约配置启用一次续当请求
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · 续当请求不能当作赎回强收本金
+PASS · 续当收取3息费并延长一夜
+PASS · 复查开票保留原到期日，续当凭据显示新日期
+PASS · 不可重复续当刷现金
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · M3 JSON存档精确往返：
+PASS · 续当后到期赎回包含原本金和息费
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · M3 JSON存档精确往返：
+PASS · 买家Schema拒绝：missing
+PASS · 买家Schema拒绝：fraction
+PASS · 买家Schema拒绝：range
+PASS · 当约Schema拒绝非法返当枚举
+PASS · 内存Provider拒绝失效买家引用
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · M3夜末对账并存档：这一夜的账，记下了。
+PASS · 试玩结束不提前强制未到期当票绝当
+PASS · M3 JSON存档精确往返：
+PASS · M4生产Manifest通过源结构与领域校验
+PASS · M4生效内容为8物品、4顾客、7事件
+PASS · 每夜只加载本夜4个来访槽
+PASS · 每夜只加载本夜4个来访槽
+PASS · 每夜只加载本夜4个来访槽
+PASS · 三夜编排覆盖8种货且互不相同
+PASS · 证据覆盖并收窄估值：item_blue_bowl/sound
+PASS · 证据覆盖并收窄估值：item_blue_bowl/repaired
+PASS · 证据覆盖并收窄估值：item_brass_holder/brass
+PASS · 证据覆盖并收窄估值：item_brass_holder/plated
+PASS · 证据覆盖并收窄估值：item_silver_hairpin/sound
+PASS · 证据覆盖并收窄估值：item_silver_hairpin/flawed
+PASS · 证据覆盖并收窄估值：item_pocket_watch/sound
+PASS · 证据覆盖并收窄估值：item_pocket_watch/flawed
+PASS · 证据覆盖并收窄估值：item_inkstone/sound
+PASS · 证据覆盖并收窄估值：item_inkstone/flawed
+PASS · 证据覆盖并收窄估值：item_clay_teapot/sound
+PASS · 证据覆盖并收窄估值：item_clay_teapot/flawed
+PASS · 证据覆盖并收窄估值：item_silk_panel/sound
+PASS · 证据覆盖并收窄估值：item_silk_panel/flawed
+PASS · 证据覆盖并收窄估值：item_fountain_pen/sound
+PASS · 证据覆盖并收窄估值：item_fountain_pen/flawed
+PASS · 新增配置通过源校验：items
+PASS · 新增配置通过源校验：customers
+PASS · 新增配置通过源校验：events
+PASS · 新增配置通过源校验：runs
+PASS · 全新物品/顾客/事件/运行ID只改JSON即可通过领域校验
+PASS · 新事件由通用导演触发
+PASS · 配置事件可处理：extension_event
+PASS · 全新顾客由CustomerManager出现
+PASS · 全新物品使用既有鉴定核心：look
+PASS · 全新物品使用既有鉴定核心：inspect
+PASS · 全新商品成交扣款入库，无特定ID分支
+PASS · 查询所有ReadModel不改权威状态
+PASS · 事件定义不共享DTO或返回数组的可变状态
+PASS · 沈怀川锚点优先于随机闲谈
+PASS · 未处理锚点不能开铺或消耗时间
+PASS · 未知选项不产生状态变化
+PASS · 可选择自行经营
+PASS · 旧事件意图不能重复产生效果
+PASS · 查看事件不重新抽样
+PASS · 配置事件可处理：rain_news
+PASS · 锚点不占普通事件额度；一夜只选一个普通事件
+PASS · 第二夜锚点优先于符合条件的回信
+PASS · 相同seed与历史的事件选择确定性：0
+PASS · 相同seed与历史的事件选择确定性：1
+PASS · 相同seed与历史的事件选择确定性：2
+PASS · 相同seed与历史的事件选择确定性：3
+PASS · 相同seed与历史的事件选择确定性：4
+PASS · 相同seed与历史的事件选择确定性：5
+PASS · 相同seed与历史的事件选择确定性：6
+PASS · 相同seed与历史的事件选择确定性：7
+PASS · 相同seed与历史的事件选择确定性：8
+PASS · 相同seed与历史的事件选择确定性：9
+PASS · 相同seed与历史的事件选择确定性：10
+PASS · 相同seed与历史的事件选择确定性：11
+PASS · 相同seed与历史的事件选择确定性：12
+PASS · 相同seed与历史的事件选择确定性：13
+PASS · 相同seed与历史的事件选择确定性：14
+PASS · 相同seed与历史的事件选择确定性：15
+PASS · 相同seed与历史的事件选择确定性：16
+PASS · 相同seed与历史的事件选择确定性：17
+PASS · 相同seed与历史的事件选择确定性：18
+PASS · 相同seed与历史的事件选择确定性：19
+PASS · 相同seed与历史的事件选择确定性：20
+PASS · 相同seed与历史的事件选择确定性：21
+PASS · 相同seed与历史的事件选择确定性：22
+PASS · 相同seed与历史的事件选择确定性：23
+PASS · 相同seed与历史的事件选择确定性：24
+PASS · 相同seed与历史的事件选择确定性：25
+PASS · 相同seed与历史的事件选择确定性：26
+PASS · 相同seed与历史的事件选择确定性：27
+PASS · 相同seed与历史的事件选择确定性：28
+PASS · 相同seed与历史的事件选择确定性：29
+PASS · 相同seed与历史的事件选择确定性：30
+PASS · 相同seed与历史的事件选择确定性：31
+PASS · 相同seed与历史的事件选择确定性：32
+PASS · 相同seed与历史的事件选择确定性：33
+PASS · 相同seed与历史的事件选择确定性：34
+PASS · 相同seed与历史的事件选择确定性：35
+PASS · 相同seed与历史的事件选择确定性：36
+PASS · 相同seed与历史的事件选择确定性：37
+PASS · 相同seed与历史的事件选择确定性：38
+PASS · 相同seed与历史的事件选择确定性：39
+PASS · 不同seed可选中两种加权普通事件
+PASS · 事件冷却期不重复出现
+PASS · 冷却结束后可再次进入候选
+PASS · 当夜互斥事件不可共存
+PASS · 事件窗口开始前不可触发
+PASS · 事件窗口起点可触发
+PASS · 事件窗口终点不再触发
+PASS · 配置事件可处理：shen_opening
+PASS · 配置事件可处理：rain_news
+PASS · M4仍可活当放款27
+PASS · M4关门
+PASS · M4推进到封铺
+PASS · M4结算写档：这一夜的账，记下了。
+PASS · M4日结恢复事件历史、选择、资金和当票
+PASS · 下一夜检查点包含未处理锚点
+PASS · 配置事件可处理：cash_lesson
+PASS · 配置事件可处理：buyer_reply
+PASS · 前夜选择触发次夜回信并解锁买家
+PASS · 重读下一夜检查点恢复原待办，不保留夜内解锁
+PASS · 配置事件可处理：cash_lesson
+PASS · 配置事件可处理：buyer_reply
+PASS · M4事件不破坏到访赎回
+PASS · 第二夜收购怀表真实占用现金
+PASS · 介绍买家仍受19点营业窗口约束
+PASS · 事件介绍真实买家：80收货、100出售、利润20
+PASS · M4关门
+PASS · M4推进到封铺
+PASS · M4结算写档：这一夜的账，记下了。
+PASS · M4含事件与买家解锁的存档往返
+PASS · 拒绝损坏或不兼容M4事件存档：flag
+PASS · 拒绝损坏或不兼容M4事件存档：choice
+PASS · 拒绝损坏或不兼容M4事件存档：duplicate
+PASS · 拒绝损坏或不兼容M4事件存档：pending
+PASS · 拒绝损坏或不兼容M4事件存档：time
+PASS · 拒绝损坏或不兼容M4事件存档：anchor
+PASS · 拒绝损坏或不兼容M4事件存档：old_version
+PASS · 写档失败完整回滚新夜、待办与事件状态
+PASS · 写档失败完整回滚新夜、待办与事件状态
+PASS · 写档恢复后可继续第三夜
+PASS · 配置事件可处理：final_stock
+PASS · M4关门
+PASS · M4推进到封铺
+PASS · M4结算写档：这一夜的账，记下了。
+PASS · 含记事、交易与活当的三夜完整闭环
+PASS · 三夜结束检查点恢复
+PASS · 配置事件可处理：shen_opening
+PASS · 配置事件可处理：rain_news
+PASS · 第二类顾客带来的烛台可按配置收购
+PASS · M4关门
+PASS · M4推进到封铺
+PASS · M4结算写档：这一夜的账，记下了。
+PASS · 配置事件可处理：cash_lesson
+PASS · 自行经营分支不会收到介绍或解锁买家
+PASS · 持仓条件在下一夜关门后触发；前夜事件额度不污染后夜
+PASS · 待处理事件阻止过期柜台操作
+PASS · 关门后的正式事件选择消耗5分钟
+PASS · 提醒不凭空赠送鉴定证据
+PASS · 含持仓条件与关门事件的存档通过历史校验
+PASS · 持仓条件事件读档不重复执行
+PASS · 事件源校验拒绝：missing
+PASS · 事件源校验拒绝：weight
+PASS · 事件源校验拒绝：fraction
+PASS · 事件源校验拒绝：effects
+PASS · 内存Provider领域校验拒绝：anchor_window
+PASS · 内存Provider领域校验拒绝：unknown_flag
+PASS · 内存Provider领域校验拒绝：missing_item
+PASS · 内存Provider领域校验拒绝：choice_cost
+PASS · 内存Provider领域校验拒绝：missing_conflict
+PASS · M5生产内容通过结构与领域校验
+PASS · M5生效铜镜与单独规则目录
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 读取鬼货面板不耗时不改变状态
+PASS · 红布遮盖消耗配置的10分钟
+PASS · 重复遮盖意图不耗时
+PASS · 关门前可检查后重新覆盖
+PASS · 营业时查看再盖不虚构关门违规
+PASS · 盖好后关门
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 关门前遮盖获得依规存放结局
+PASS · 安全存放完整读档恢复
+PASS · 安全完成连续三夜
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 午夜前无法提前兑现鬼货高价
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 等待高价买家消耗营业时间
+PASS · 00点高价卖镜实现36利润
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 关门前售出铜镜不留下库存鬼货后果
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 第一次漏处理先给环境异常
+PASS · 关门后仍能及时补盖
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 晚补盖留下持久缠祟，不擦除入侵
+PASS · 读档保留晚补盖异常
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 第一次漏规则触发可挽救警告，不直接死亡
+PASS · 危险选择前给出世界内警告并阻止跳过
+PASS · 危机无法被过期意图或普通操作绕过
+PASS · 读取危机检查点不能重抽或跳过警告
+PASS · 明确保命选项可安全脱身
+PASS · 脱身留下缠祟但可结束试玩
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 明知致命仍直视触发永久死亡
+PASS · 死亡与死因一起写入绝当录
+PASS · 绝当录记录关键鬼货与真实资产占款
+PASS · 死亡终止所有推进与反悔
+PASS · 读档恢复死亡不能复活
+PASS · 死亡后新运行更换标识并保留绝当录
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 新一轮覆盖检查点后绝当录仍持久存在
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 关门后揭布失去原有遮护
+PASS · 主动违规则仍可重新遮盖
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 关门后揭开再盖不能消除异常
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 02:55关门只剩5分钟，10分钟处理不得透支
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 死亡写盘失败原子回滚，保留可重试警告与旧档
+PASS · 重试只产生一条死亡记录
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 02:50开始遮盖，恰好封铺时完成
+PASS · 同一动作先完成处理再自动封铺
+PASS · 提前来镜的跨夜夹具仍走内容校验
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 首夜测试夹具实际收购铜镜
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 带着鬼货进入第二夜
+PASS · 跨夜检查点保存红布，不凭空重置鬼货
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 跨夜存放仍逐夜检查违规
+PASS · 前夜缠祟在下一夜及读档后持续存在
+PASS · M5兼容事件：final_stock
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 后来遵守规则不会擦除已有缠祟
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 拒绝损坏鬼货存档：outcome
+PASS · 拒绝损坏鬼货存档：pending
+PASS · 拒绝损坏鬼货存档：cloth
+PASS · 拒绝损坏鬼货存档：history
+PASS · 拒绝损坏鬼货存档：token
+PASS · 拒绝损坏鬼货存档：archive
+PASS · 拒绝损坏鬼货存档：old_version
+PASS · 文案修订不使已验收M5死亡存档失效
+PASS · 旧绝当录按稳定规则显示新版叙事，仍保留原始记录
+PASS · 有死亡记录的同一运行不得修改成存活状态
+PASS · 鬼货规则缺少字段拒绝：warning
+PASS · 鬼货规则缺少字段拒绝：cover_minutes
+PASS · 鬼货规则缺少字段拒绝：mechanic
+PASS · 鬼货定义与DTO隔离
+PASS · 未实现的规则机制被领域校验拒绝
+PASS · M6生产内容通过校验
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 空店每日扣8且本金不变：92
+PASS · 交易毛利与当夜费用、净收益分列
+PASS · 重复结算不重复付款
+PASS · 息费日结可精确重载：账册翻回了上次合拢的那一页。
+PASS · 正常经营无需窥镜可推进
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 空店每日扣8且本金不变：84
+PASS · 交易毛利与当夜费用、净收益分列
+PASS · 重复结算不重复付款
+PASS · 息费日结可精确重载：账册翻回了上次合拢的那一页。
+PASS · 正常经营无需窥镜可推进
+PASS · M5兼容事件：final_stock
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 空店每日扣8且本金不变：76
+PASS · 交易毛利与当夜费用、净收益分列
+PASS · 重复结算不重复付款
+PASS · 息费日结可精确重载：账册翻回了上次合拢的那一页。
+PASS · 正常经营无需窥镜可推进
+PASS · 无交易也可完成三夜
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 短款只宽限一夜，现金零不立即失败
+PASS · 短款可进入次夜
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 旧欠未补齐经营失败，当夜费用也保留
+PASS · 破铺终局不能通过读档继续
+PASS · 新经营保留破铺录，重新记息费
+PASS · 旧欠优先与刚好还清边界：2
+PASS · 剩余短款准确：2
+PASS · 旧欠优先与刚好还清边界：3
+PASS · 剩余短款准确：3
+PASS · 旧欠优先与刚好还清边界：10
+PASS · 剩余短款准确：10
+PASS · 旧欠优先与刚好还清边界：11
+PASS · 剩余短款准确：11
+PASS · 昨日欠5、今晚10，只留下新欠3
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 第三夜新欠不提前判负
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 第三夜新欠不提前判负
+PASS · M5兼容事件：final_stock
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 第三夜新欠不提前判负
+PASS · 试玩结束保留第四夜到期欠款
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 第二夜欠款在第三夜仍然到期
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 通过真实买卖制造库存占款
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 到期前卖货筹齐现银
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 卖货脱困，旧欠还款不重复计费
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 有库存仍按到期现金判负，不自动变卖
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 窥镜邀请阅读不耗时
+PASS · 红布未揭不能窥镜
+PASS · 可放下好奇正常做生意
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 拒绝窥镜正常完成
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 揭布5、初窥5按动作计时
+PASS · 追看前已出现异常警告
+PASS · 待选择不可用别的操作跳过
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 初窥收回视线后覆镜可平安且可存档
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 追看后铜镜仍可合法出售
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 卖镜覆镜均不抹去追看纠缠，危机有二次预警
+PASS · 已售铜镜的人身纠缠可精确重载
+PASS · 追看仍有退出危机的机会
+PASS · 一夜只应对一次危机
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 窥看完成时客人离开，不给证据
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 超时窥镜记录可还原
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 子时前不出现能力邀请
+PASS · 先卖镜则无窥镜入口
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 取得铜镜来源证据
+PASS · 窥镜未伪造普通鉴定动作
+PASS · 铜镜损伤证据进入既有估值区间
+PASS · 铜镜证据可用于真实议价
+PASS · 证据不能重复压价
+PASS · 窥镜后可继续正常鉴定
+PASS · 依据证据议价后收表
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 外部证据先于普通鉴定的顺序可还原
+PASS · 删除铜镜来源不能保留库存证据
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 第二夜收表后余银7
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜卖表取得100银元
+PASS · 收镜占尽现银，旧欠尚未偿付
+PASS · 追看后覆镜仍留纠缠
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 真实交易造成欠款到期与镜中危机同夜
+PASS · 两种后果并存的待应对存档可还原
+PASS · 生还与破铺写盘失败同时回滚，不重复收费或记档
+PASS · 生还再进入经营失败并原子保存
+PASS · 生还后的破铺终局可重载
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 第二夜收表后余银7
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜卖表取得100银元
+PASS · 收镜占尽现银，旧欠尚未偿付
+PASS · 追看后覆镜仍留纠缠
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 死亡优先只记录一个终局
+PASS · 费用与死亡结果可一起精确重载
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费写盘失败全部回滚
+PASS · 重试只扣一次息费
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 篡改拒绝：fees
+PASS · 篡改拒绝：deadline
+PASS · 篡改拒绝：source
+PASS · 篡改拒绝：choice
+PASS · 篡改拒绝：time
+PASS · 篡改拒绝：cloth
+PASS · 篡改拒绝：pending
+PASS · 篡改拒绝：bankrupt
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 旧V5只导入有效绝当录，新经营不补扣
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 旧存档文件逐字节保持不变
+PASS · M7生产内容通过校验
+PASS · 相同种子还原同一情境：0
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：1
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：2
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：3
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：4
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：5
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：6
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：7
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：8
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：9
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：10
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：11
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：12
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：13
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：14
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：15
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：16
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：17
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：18
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：19
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：20
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：21
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：22
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：23
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：24
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：25
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：26
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：27
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：28
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：29
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：30
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：31
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：32
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：33
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：34
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：35
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：36
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：37
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：38
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：39
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：40
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：41
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：42
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：43
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：44
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：45
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：46
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：47
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：48
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：49
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：50
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：51
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：52
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：53
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：54
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：55
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：56
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：57
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：58
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：59
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：60
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：61
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：62
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 相同种子还原同一情境：63
+PASS · 急客60分钟、普通客140分钟
+PASS · 铜镜关联表保持故障
+PASS · 三件品相和四种怀表组合均出现
+PASS · 新经营产生新种子
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 样板开铺
+PASS · 只读界面不重抽、不耗时
+PASS · 拒绝报价不重抽
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 样板开铺
+PASS · 初见仅有共用正背面信息
+PASS · 无口供物证不能针对接缝追问
+PASS · 卖家说法不收窄估值
+PASS · 可以直接选择侧光，不必先看底足
+PASS · 细节与取证同时解锁，只有本局品相
+PASS · 完好碗不会出现不存在的裂缝追问
+PASS · 两种品相均可完成交易
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 碗问答、物证、成交能重载：账册翻回了上次合拢的那一页。
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：patient_buyer
+PASS · 样板开铺
+PASS · 初见仅有共用正背面信息
+PASS · 无口供物证不能针对接缝追问
+PASS · 卖家说法不收窄估值
+PASS · 可以直接选择侧光，不必先看底足
+PASS · 细节与取证同时解锁，只有本局品相
+PASS · 矛盾追问采用原40银元瑕疵让价
+PASS · 口供与实物不能重复折价、拒绝不耗时
+PASS · 两种品相均可完成交易
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 碗问答、物证、成交能重载：账册翻回了上次合拢的那一页。
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：patient_buyer
+PASS · 样板开铺
+PASS · 底足提供来历线索，不证明修补
+PASS · 先压价再追问，不重复让价或议价轮次
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 逆序压价保存成功
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：patient_buyer
+PASS · 样板开铺
+PASS · 空口怀疑消耗耐心、不生成物证
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 样板开铺
+PASS · 磁针可独立检查
+PASS · 磁针不能揭露尚未检查的划痕图
+PASS · 划痕提供独立可读物证
+PASS · 划痕图跟随取证解锁
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 烛台不同取证来源均可还原
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 样板开铺
+PASS · 磁针可独立检查
+PASS · 磁针不能揭露尚未检查的划痕图
+PASS · 划痕提供独立可读物证
+PASS · 划痕图跟随取证解锁
+PASS · 磁针与铁芯证据共用26银元收益组
+PASS · 镀铜让价保留原额度
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 烛台不同取证来源均可还原
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：patient_buyer
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 第二夜开铺前情境保存、重载不换表
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 样板开铺
+PASS · 未核实处境不可索要急售优惠
+PASS · 船票证据只说明处境，不证明机芯
+PASS · 处境让价独立于品相、普通客被催价损耐心
+PASS · 急售机会不能重复使用
+PASS · 怀表四种组合都可提前成交
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 怀表让价与证据逐步验证：账册翻回了上次合拢的那一页。
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 第二夜开铺前情境保存、重载不换表
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 样板开铺
+PASS · 未核实处境不可索要急售优惠
+PASS · 船票证据只说明处境，不证明机芯
+PASS · 处境让价独立于品相、普通客被催价损耐心
+PASS · 急售机会不能重复使用
+PASS · 怀表四种组合都可提前成交
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 怀表让价与证据逐步验证：账册翻回了上次合拢的那一页。
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 第二夜开铺前情境保存、重载不换表
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 样板开铺
+PASS · 未核实处境不可索要急售优惠
+PASS · 船票证据只说明处境，不证明机芯
+PASS · 处境让价独立于品相、普通客被催价损耐心
+PASS · 急售机会不能重复使用
+PASS · 怀表四种组合都可提前成交
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 怀表让价与证据逐步验证：账册翻回了上次合拢的那一页。
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 第二夜开铺前情境保存、重载不换表
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 样板开铺
+PASS · 未核实处境不可索要急售优惠
+PASS · 船票证据只说明处境，不证明机芯
+PASS · 处境让价独立于品相、普通客被催价损耐心
+PASS · 急售机会不能重复使用
+PASS · 怀表四种组合都可提前成交
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 怀表让价与证据逐步验证：账册翻回了上次合拢的那一页。
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 样板开铺
+PASS · 到点离店的询问不产生口供
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 超时行动保持可校验
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 样板开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 不同检查深度都能完成买卖与保存
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 样板开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 不同检查深度都能完成买卖与保存
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 样板开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 不同检查深度都能完成买卖与保存
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：patient_buyer
+PASS · 样板开铺
+PASS · 写入失败回滚情境与息费，无重复付款
+PASS · 恢复可写路径后正常结算
+PASS · 拒绝篡改情境：selection
+PASS · JSON写盘后仍拒绝篡改情境：selection
+PASS · 拒绝篡改情境：seed
+PASS · JSON写盘后仍拒绝篡改情境：seed
+PASS · 拒绝篡改情境：erase
+PASS · JSON写盘后仍拒绝篡改情境：erase
+PASS · 拒绝篡改情境：lie_as_evidence
+PASS · JSON写盘后仍拒绝篡改情境：lie_as_evidence
+PASS · 拒绝篡改情境：double_discount
+PASS · JSON写盘后仍拒绝篡改情境：double_discount
+PASS · 拒绝篡改情境：time
+PASS · JSON写盘后仍拒绝篡改情境：time
+PASS · 拒绝篡改情境：price
+PASS · JSON写盘后仍拒绝篡改情境：price
+PASS · 拒绝篡改情境：reorder
+PASS · JSON写盘后仍拒绝篡改情境：reorder
+PASS · JSON数字类型规范化后完整重建问答与物证历史
+PASS · 旧进度版本不静默重解释
+PASS · 情境内容结构拒绝：questions
+PASS · 情境内容结构拒绝：images
+PASS · 情境内容结构拒绝：benefit_groups
+PASS · 情境内容结构拒绝：situations
+PASS · 定义数据只读副本、待交付美术未加载
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：patient_buyer
+PASS · 样板开铺
+PASS · 表现层取证前不添加隐藏细节
+PASS · 交付图替换同一细节视图，不叠加旧占位图
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 样板开铺
+PASS · 仅用磁针也能针对整铜口供追问
+PASS · 再问划痕不重复消耗议价收益
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 磁针质疑与后续划痕口供均可写盘重载
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 空店每日扣8且本金不变：92
+PASS · 交易毛利与当夜费用、净收益分列
+PASS · 重复结算不重复付款
+PASS · 息费日结可精确重载：账册翻回了上次合拢的那一页。
+PASS · 正常经营无需窥镜可推进
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 空店每日扣8且本金不变：84
+PASS · 交易毛利与当夜费用、净收益分列
+PASS · 重复结算不重复付款
+PASS · 息费日结可精确重载：账册翻回了上次合拢的那一页。
+PASS · 正常经营无需窥镜可推进
+PASS · M5兼容事件：final_stock
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 空店每日扣8且本金不变：76
+PASS · 交易毛利与当夜费用、净收益分列
+PASS · 重复结算不重复付款
+PASS · 息费日结可精确重载：账册翻回了上次合拢的那一页。
+PASS · 正常经营无需窥镜可推进
+PASS · 无交易也可完成三夜
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 窥镜邀请阅读不耗时
+PASS · 红布未揭不能窥镜
+PASS · 可放下好奇正常做生意
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 拒绝窥镜正常完成
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：patient_buyer
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 揭布5、初窥5按动作计时
+PASS · 追看前已出现异常警告
+PASS · 待选择不可用别的操作跳过
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 初窥收回视线后覆镜可平安且可存档
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：patient_buyer
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 追看后铜镜仍可合法出售
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 卖镜覆镜均不抹去追看纠缠，危机有二次预警
+PASS · 已售铜镜的人身纠缠可精确重载
+PASS · 追看仍有退出危机的机会
+PASS · 一夜只应对一次危机
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：patient_buyer
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 窥看完成时客人离开，不给证据
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 超时窥镜记录可还原
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 子时前不出现能力邀请
+PASS · 先卖镜则无窥镜入口
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 三夜连续推进：open_shop 操作完成。
+PASS · 三夜连续推进：close_shop 操作完成。
+PASS · 三夜连续推进：wait_until_seal 消耗 540 分钟。
+PASS · 三夜连续推进：resolve_night 这一夜的账，记下了。
+PASS · 三夜连续推进：continue_run 这一夜的账，记下了。
+PASS · M5兼容事件：final_stock
+PASS · 第三夜开铺
+PASS · 铜镜通过原鉴定流程发现血痕和规矩
+PASS · 鉴定证据明示遮盖期限
+PASS · 铜镜按原经济入口成交
+PASS · 入库自动显示规则与物品状态
+PASS · 等客时覆镜
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 等待子时来客
+PASS · 子时怀表来客出现窥镜邀请
+PASS · 取得铜镜来源证据
+PASS · 窥镜未伪造普通鉴定动作
+PASS · 铜镜损伤证据进入既有估值区间
+PASS · 铜镜证据可用于真实议价
+PASS · 证据不能重复压价
+PASS · 窥镜后可继续正常鉴定
+PASS · 依据证据议价后收表
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 外部证据先于普通鉴定的顺序可还原
+PASS · 删除铜镜来源不能保留库存证据
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M5兼容事件：cash_lesson
+PASS · M5兼容事件：buyer_reply
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · 只导入旧破铺录，新经营不补扣费
+PASS · M5兼容事件：shen_opening
+PASS · M5兼容事件：rain_news
+PASS · 息费测试开铺
+PASS · M5封铺
+PASS · M5夜末原子保存：这一夜的账，记下了。
+PASS · M6旧存档逐字节保留
+M0–M7 TESTS PASSED · 1800 assertions

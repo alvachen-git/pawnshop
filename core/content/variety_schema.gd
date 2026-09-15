@@ -3,6 +3,9 @@ extends RefCounted
 
 static func validate(kind: String, row: Dictionary, path: String, at: String) -> Array:
 	var issues: Array = []
+	if kind == "customers":
+		if row.get("life_status", "living") not in ["living", "ghost"] or row.get("guest_rule", "") not in ["", "no_appraisal", "swap"]: CounterDomainValidator._error(issues, at, "来客生死或接待规则无效。")
+		if row.get("guest_rule", "") in ["no_appraisal", "swap"] and row.get("life_status") != "ghost": CounterDomainValidator._error(issues, at, "阴客规则须绑定亡魂身份。")
 	if kind == "customers" and row.has("pawn_redemption_chance"):
 		if not RunSchema.integer(row.pawn_redemption_chance) or int(row.pawn_redemption_chance) not in PawnRedemptionPolicy.CHANCES:
 			CounterDomainValidator._error(issues, at, "活当赎回概率须为20、50或80的整数。")
@@ -14,6 +17,8 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 	var value: Dictionary = row[field]
 	match kind:
 		"runs":
+			for feature in ["investigation_version", "personal_risk_version"]:
+				if value.has(feature) and (not RunSchema.integer(value[feature]) or value[feature] != 1): CounterDomainValidator._error(issues, at, "功能版本无效。")
 			if value.has("night_market"):
 				var late: Variant = value.night_market
 				var valid: bool = late is Dictionary and late.get("version") == 1 and value.get("seven_version") == 1 and row.get("private_room") == true
@@ -34,6 +39,8 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 							total += int(weight)
 						if total != 100: valid = false
 				if not valid: CounterDomainValidator._error(issues, at, "夜客配置需要有效价格、耗时与合计100的后果权重。")
+			if value.has("ghost_guests_version") and (not RunSchema.integer(value.ghost_guests_version) or value.ghost_guests_version != 1 or value.get("goods_expertise_version") != 1): CounterDomainValidator._error(issues, at, "辨生死版本须使用现有商品复核与有效规则版本。")
+			if value.has("goods_expertise_version") and (not RunSchema.integer(value.goods_expertise_version) or value.goods_expertise_version != 1 or value.get("pawn_redemption_version") != 1): CounterDomainValidator._error(issues, at, "新品须使用职业赎回版及有效规则版本。")
 			if value.has("pawn_redemption_version") and (not RunSchema.integer(value.pawn_redemption_version) or value.pawn_redemption_version != 1 or value.get("seven_version") != 1):
 				CounterDomainValidator._error(issues, at, "职业赎回概率须使用七夜配置与有效规则版本。")
 			if value.has("early_redemption") and (not value.early_redemption is bool or value.get("familiar_version") != 1): CounterDomainValidator._error(issues, at, "提前取赎须使用熟客配置与布尔开关。")
@@ -57,7 +64,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 				else:
 					for night in value.fixed_arrivals:
 						var times: Variant = value.fixed_arrivals[night]
-						if not night is String or not night.is_valid_int() or int(night) < 1 or int(night) > 7 or not times is Array or times.size() != 6:
+						if not night is String or not night.is_valid_int() or int(night) < 1 or int(night) > int(row.get("total_nights", 7)) or not times is Array or times.size() != 6:
 							CounterDomainValidator._error(issues, at, "固定夜次须有六个时刻。")
 							continue
 						var previous := -15
@@ -96,7 +103,7 @@ static func domain(catalog: ContentCatalog) -> Array:
 		if run.variety.is_empty(): continue
 		if SevenNightPlan.enabled(run):
 			issues.append_array(story_domain(run, catalog))
-			if run.total_nights != 7 or run.customer_slots.size() != 42 or not run.batch_selling: CounterDomainValidator._error(issues, run.id, "七夜运行配置不一致。")
+			if run.total_nights != (10 if InvestigationService.enabled(run) else 7) or run.customer_slots.size() != run.total_nights * 6 or not run.batch_selling: CounterDomainValidator._error(issues, run.id, "七夜运行配置不一致。")
 			for id in run.variety.customer_ids:
 				if run.variety.contexts.filter(func(c: Dictionary) -> bool: return c.customer_id == id).size() != 2: CounterDomainValidator._error(issues, run.id, "每类人物须有两种处境。")
 			for c in run.variety.contexts:
@@ -149,7 +156,7 @@ static func story_domain(run: RunDefinition, catalog: ContentCatalog) -> Array:
 		var slot: VisitSlotDefinition
 		for candidate in run.customer_slots:
 			if candidate.id == anchor.slot_id: slot = candidate
-		if index >= 42 or index in occupied or anchor.slot_id in used_ids or slot == null:
+		if index >= run.total_nights * 6 or index in occupied or anchor.slot_id in used_ids or slot == null:
 			CounterDomainValidator._error(issues, run.id, "剧情位置越界、重复或未定义。")
 			continue
 		occupied.append(index)

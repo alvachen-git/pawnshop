@@ -23,6 +23,8 @@ var name_key: String:
 var _portrait_asset_id: String
 var portrait_asset_id: String:
 	get: return _portrait_asset_id
+var life_status := "living"
+var guest_rule := ""
 var _identity_tags: Array
 var identity_tags: Array:
 	get: return _identity_tags.duplicate()
@@ -77,6 +79,8 @@ static func from_dto(dto: CustomerDTO) -> CustomerDefinition:
 	definition._name_key = dto.name_key
 	definition._portrait_asset_id = dto.portrait_asset_id
 	definition._identity_tags = dto.identity_tags.duplicate(true)
+	definition.life_status = dto.life_status
+	definition.guest_rule = dto.guest_rule
 	definition._wealth_band = dto.wealth_band
 	definition._urgency_range = dto.urgency_range.duplicate(true)
 	definition._honesty_profile = dto.honesty_profile

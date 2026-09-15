@@ -9,7 +9,7 @@ func _run() -> void:
 	width = 1600 if "wide" in OS.get_cmdline_user_args() else 1280
 	root.size = Vector2i(width, width * 9 / 16)
 	root.content_scale_size = root.size
-	shot_root = "res://docs/qa/bedroom/"
+	shot_root = _shot_directory()
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(shot_root))
 	scene = load("res://scenes/start.tscn").instantiate()
 	scene.get_node("Bootstrap").save_path = "user://tests/bedroom_review_%d.json" % Time.get_ticks_usec()
@@ -32,8 +32,7 @@ func _run() -> void:
 	await frames()
 	var receipt: TradeReceiptView = scene.get_node("CounterScreen/TradeReceipt")
 	await click(receipt._primary)
-	await click(receipt._primary)
-	await choice()
+	check(not receipt.visible and not view.visible, "统一凭据一次收好完成首单剧情")
 	for command in ["close_shop", "wait_until_seal", "resolve_night", "enter_room"]:
 		check(session.execute(command).ok, "首夜进入寝屋：" + command)
 	await frames()
@@ -47,6 +46,7 @@ func _run() -> void:
 	check(not scene.get_node("CounterScreen/ShopStatusView").visible, "寝室不叠加柜台底栏")
 	await _pointer(Vector2(1250, 100))
 	await shot("normal")
+	await _review_extra(room)
 	if _keep_open:
 		root.title = "鬼市当铺 · 寝室试玩（独立测试存档）"
 		print("BEDROOM REVIEW READY")
@@ -64,10 +64,12 @@ func _run() -> void:
 	check(not room._observation.visible, "Esc关闭观察")
 	check(before == session.read_state(), "看命灯不消耗时间或改变存档")
 	await click(room._desk)
-	check(room._letter != null and room._letter.visible, "新版遗信可回看")
-	room._letter.hide()
+	check(room._keepsakes.visible and room._keepsakes.page == "desk", "新版私人信件列表可回看")
+	await click(room._keepsakes.letter_buttons[0])
+	check(room._keepsakes.body.text == tr("opening.letter.permanent"), "遗信正文完整")
+	room.close_private_panels()
 	await click(room._photo)
-	check(room._body.text == tr("opening.room.photo"), "照片对应正式剧情")
+	check(room._keepsakes.body.text == tr("opening.room.photo"), "照片对应正式剧情")
 	room.dismiss_observation()
 	room._bed.grab_focus()
 	await _key(KEY_ENTER)
@@ -113,6 +115,12 @@ func _pointer(point: Vector2) -> void:
 	motion.position = point
 	root.push_input(motion, true)
 	await frames()
+
+func _review_extra(_room: PrivateRoomView) -> void:
+	pass
+
+func _shot_directory() -> String:
+	return "res://docs/qa/bedroom/"
 
 func _key(key: Key) -> void:
 	for down in [true, false]:

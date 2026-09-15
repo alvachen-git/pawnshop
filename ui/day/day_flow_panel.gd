@@ -7,6 +7,7 @@ var _description: Label
 var _message: Label
 var _commands: VBoxContainer
 var _buttons: Dictionary = {}
+var _scroll: ScrollContainer
 
 func _ready() -> void:
 	var margin := MarginContainer.new()
@@ -14,6 +15,7 @@ func _ready() -> void:
 		margin.add_theme_constant_override("margin_" + side, 12)
 	add_child(margin)
 	var scroll := ScrollContainer.new()
+	_scroll = scroll
 	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
 	margin.add_child(scroll)
 	var column := VBoxContainer.new()
@@ -34,6 +36,7 @@ func render(model: Dictionary) -> void:
 	_description.text = model.description
 	_message.text = model.message
 	if _buttons.keys() != model.commands.map(func(entry: Dictionary) -> String: return entry.id):
+		_scroll.set_deferred("scroll_vertical", 0)
 		for child in _commands.get_children(): _commands.remove_child(child); child.queue_free()
 		_buttons.clear()
 		for entry in model.commands:

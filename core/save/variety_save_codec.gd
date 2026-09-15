@@ -22,6 +22,7 @@ static func selections(data: Dictionary, state: RunState, run: RunDefinition, ca
 		var copy: Dictionary = row.duplicate(true)
 		copy.night = int(copy.night)
 		copy.arrival = int(copy.arrival)
+		if not normalize_goods(copy): return "茶盏制式结构无效。"
 		if copy.has("wait_minutes"):
 			if not RunSchema.integer(copy.wait_minutes): return "来客等待期限无效。"
 			copy.wait_minutes = int(copy.wait_minutes)
@@ -73,6 +74,7 @@ static func restore_sources(data: Dictionary, state: RunState, run: RunDefinitio
 			if not data.scenario_history.any(func(h: Dictionary) -> bool: return h.visit_id == visit_id and h.command == "verify_source" and h.start == row.start and h.minute == row.minute and h.ok): return "来源核验缺少柜台行动。"
 			if not data.scenario_history.any(func(h: Dictionary) -> bool: return h.visit_id == visit_id and h.command == "question" and h.detail == "origin" and h.minute <= row.start and h.ok): return "尚未询问来源就核验。"
 		elif row.action == "inquire":
+			if GoodsExpertise.enabled(run) and item.provenance.status == "unconfirmed": return "查无实据后重复调查。"
 			if not acquisitions.has(visit_id) or item.provenance.investigated or item.provenance.status in ["verified", "mismatch"] or row.minute != row.start + int(def.provenance.inquiry_minutes): return "来源调查重复或前提不足。"
 			var bought: Dictionary = acquisitions[visit_id]
 			if row.night < bought.night or (row.night == bought.night and row.start < bought.minute): return "先调查后收货。"
@@ -104,12 +106,21 @@ static func normalize_plan(value: Variant) -> Variant:
 	for raw in value:
 		if not raw is Dictionary: return null
 		var row: Dictionary = raw.duplicate(true)
+		if not normalize_goods(row): return null
 		for key in ["night", "arrival", "wait_minutes", "night_band"]:
 			if not row.has(key): continue
 			if not RunSchema.integer(row[key]): return null
 			row[key] = int(row[key])
 		result.append(row)
 	return result
+
+static func normalize_goods(row: Dictionary) -> bool:
+	if not row.has("goods"): return true
+	if not row.goods is Dictionary or row.goods.size() != 3: return false
+	for key in ["pattern", "side", "workshop"]:
+		if not RunSchema.integer(row.goods.get(key)) or int(row.goods[key]) not in [0, 1]: return false
+		row.goods[key] = int(row.goods[key])
+	return true
 
 static func normalize_appointment(value: Variant) -> Variant:
 	if not value is Dictionary: return null

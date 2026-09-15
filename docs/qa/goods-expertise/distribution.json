@@ -1,0 +1,53 @@
+{
+  "goods": {
+    "item_folding_fan": 1344,
+    "item_silver_lock": 1304,
+    "item_silver_ring": 1297,
+    "item_tea_cup": 1331
+  },
+  "natural_cup_traits": {
+    "0/0/0": 186,
+    "0/0/1": 155,
+    "0/1/0": 152,
+    "0/1/1": 186,
+    "1/0/0": 170,
+    "1/0/1": 151,
+    "1/1/0": 169,
+    "1/1/1": 162
+  },
+  "profession_goods": {
+    "item_folding_fan/customer_bookkeeper": 441,
+    "item_folding_fan/customer_house_agent": 404,
+    "item_folding_fan/customer_scholar": 499,
+    "item_silver_lock/customer_citizen": 410,
+    "item_silver_lock/customer_house_agent": 465,
+    "item_silver_lock/customer_seamstress": 429,
+    "item_silver_ring/customer_citizen": 384,
+    "item_silver_ring/customer_hawker": 457,
+    "item_silver_ring/customer_seamstress": 456,
+    "item_tea_cup/customer_citizen": 394,
+    "item_tea_cup/customer_hawker": 468,
+    "item_tea_cup/customer_teahouse": 469
+  },
+  "seeds": 512,
+  "seek_condition": {
+    "flawed": 195,
+    "mended": 169,
+    "sound": 148
+  },
+  "seek_matched": 252,
+  "states": {
+    "item_folding_fan/flawed": 431,
+    "item_folding_fan/mended": 455,
+    "item_folding_fan/sound": 458,
+    "item_silver_lock/flawed": 444,
+    "item_silver_lock/mended": 400,
+    "item_silver_lock/sound": 460,
+    "item_silver_ring/flawed": 400,
+    "item_silver_ring/mended": 422,
+    "item_silver_ring/sound": 475,
+    "item_tea_cup/flawed": 416,
+    "item_tea_cup/mended": 449,
+    "item_tea_cup/sound": 466
+  }
+}

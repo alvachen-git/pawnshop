@@ -4,16 +4,18 @@ extends RefCounted
 # Slots and append-only endings share one atomic publication boundary.
 const FORMAT := 1
 const DEFAULT_PATH := "user://save_library/library_v1.json"
-const MANIFESTS := ["res://data/aqi_manifest.json", "res://data/night_market_manifest.json", "res://data/pawn_chance_manifest.json", "res://data/complete_seven_manifest.json", "res://data/market_familiar_manifest.json", "res://data/market_seven_manifest.json", "res://data/familiar_early_manifest.json", "res://data/familiar_manifest.json", "res://data/mirror_chapter_manifest.json", "res://data/preparation_manifest.json", "res://data/integrated_manifest.json", "res://data/content_manifest.json", "res://data/four_night_manifest.json", "res://data/seven_night_manifest.json", "res://data/opening_manifest.json", "res://data/legacy/content_v9.json", "res://data/legacy/content_v10_released.json", "res://data/legacy/content_v10.json", "res://data/legacy/content_v10_100_300.json", "res://data/legacy/content_v11.json"]
-const LEGACY := {"aqi_seven": "user://aqi_seven/autosave_v22.json", "night_market": "user://night_market/autosave_v21.json", "complete_seven": "user://complete_seven/autosave_v19.json", "pawn_chance_seven": "user://pawn_chance_seven/autosave_v20.json", "market_familiar": "user://market_familiar/autosave_v19.json", "market_seven": "user://market_seven/autosave_v17.json", "familiar_early": "user://familiar_early/autosave_v18.json", "familiar_seven": "user://familiar_seven/autosave_v17.json", "mirror_chapter": "user://mirror_chapter/autosave_v16.json", "prepared_seven": "user://prepared_seven/autosave_v15.json", "integrated_seven": "user://integrated_seven/autosave_v14.json", "p0_variety": "user://p0/autosave_v12.json", "ordinary_four": "user://ordinary_four/autosave_v11.json", "ordinary_seven": "user://ordinary_seven/autosave_v13.json", "opening_v01": "user://p0/opening_v01.json", "old_v11": "user://p0/autosave_v11.json", "old_v10": "user://p0/autosave_v10.json", "old_v9": "user://p0/autosave_v9.json"}
-const NAMES := {"aqi_seven": "鬼市当铺 · 接铺", "night_market": "鬼市当铺 · 夜客", "complete_seven": "鬼市当铺 · 七夜经营整合版", "pawn_chance_seven": "鬼市当铺 · 当期与生计", "market_familiar": "鬼市当铺 · 生意与故人", "market_seven": "鬼市当铺 · 生意与旧事", "familiar_early": "鬼市当铺 · 熟客新约", "familiar_seven": "鬼市当铺 · 熟客往来", "mirror_chapter": "鬼市当铺 · 镜中旧事", "prepared_seven": "七夜 · 开铺准备", "integrated_seven": "鬼市当铺 · 七夜", "p0_variety": "三夜原型", "p0_room": "三夜原型（旧版）", "ordinary_four": "四夜经营", "ordinary_seven": "七夜经营", "opening_v01": "开场剧情"}
+const MANIFESTS := ["res://data/aqi_investigation_manifest.json", "res://data/aqi_manifest.json", "res://data/mirror_investigation_manifest.json", "res://data/mirror_living_manifest.json", "res://data/life_lamp_manifest.json", "res://data/goods_expertise_manifest.json", "res://data/night_market_manifest.json", "res://data/pawn_chance_manifest.json", "res://data/complete_seven_manifest.json", "res://data/market_familiar_manifest.json", "res://data/market_seven_manifest.json", "res://data/familiar_early_manifest.json", "res://data/familiar_manifest.json", "res://data/mirror_chapter_manifest.json", "res://data/preparation_manifest.json", "res://data/integrated_manifest.json", "res://data/content_manifest.json", "res://data/four_night_manifest.json", "res://data/seven_night_manifest.json", "res://data/opening_manifest.json", "res://data/legacy/content_v9.json", "res://data/legacy/content_v10_released.json", "res://data/legacy/content_v10.json", "res://data/legacy/content_v10_100_300.json", "res://data/legacy/content_v11.json"]
+const LEGACY := {"aqi_investigation_ten": "user://aqi_investigation_ten/autosave_v24.json", "aqi_seven": "user://aqi_seven/autosave_v22.json", "mirror_investigation_ten": "user://mirror_investigation_ten/autosave_v23.json", "mirror_living_seven": "user://mirror_living_seven/autosave_v22.json", "life_lamp_seven": "user://life_lamp_seven/autosave_v22.json", "goods_expertise_seven": "user://goods_expertise_seven/autosave_v21.json", "night_market": "user://night_market/autosave_v21.json", "complete_seven": "user://complete_seven/autosave_v19.json", "pawn_chance_seven": "user://pawn_chance_seven/autosave_v20.json", "market_familiar": "user://market_familiar/autosave_v19.json", "market_seven": "user://market_seven/autosave_v17.json", "familiar_early": "user://familiar_early/autosave_v18.json", "familiar_seven": "user://familiar_seven/autosave_v17.json", "mirror_chapter": "user://mirror_chapter/autosave_v16.json", "prepared_seven": "user://prepared_seven/autosave_v15.json", "integrated_seven": "user://integrated_seven/autosave_v14.json", "p0_variety": "user://p0/autosave_v12.json", "ordinary_four": "user://ordinary_four/autosave_v11.json", "ordinary_seven": "user://ordinary_seven/autosave_v13.json", "opening_v01": "user://p0/opening_v01.json", "old_v11": "user://p0/autosave_v11.json", "old_v10": "user://p0/autosave_v10.json", "old_v9": "user://p0/autosave_v9.json"}
+const NAMES := {"aqi_investigation_ten": "鬼市当铺 · 接铺与旧事", "aqi_seven": "鬼市当铺 · 接铺", "mirror_investigation_ten": "鬼市当铺 · 十夜旧事", "mirror_living_seven": "鬼市当铺 · 镜照生死", "life_lamp_seven": "鬼市当铺 · 命灯", "goods_expertise_seven": "鬼市当铺 · 识货与成双", "night_market": "鬼市当铺 · 夜客", "complete_seven": "鬼市当铺 · 七夜经营整合版", "pawn_chance_seven": "鬼市当铺 · 当期与生计", "market_familiar": "鬼市当铺 · 生意与故人", "market_seven": "鬼市当铺 · 生意与旧事", "familiar_early": "鬼市当铺 · 熟客新约", "familiar_seven": "鬼市当铺 · 熟客往来", "mirror_chapter": "鬼市当铺 · 镜中旧事", "prepared_seven": "七夜 · 开铺准备", "integrated_seven": "鬼市当铺 · 七夜", "p0_variety": "三夜原型", "p0_room": "三夜原型（旧版）", "ordinary_four": "四夜经营", "ordinary_seven": "七夜经营", "opening_v01": "开场剧情"}
 var path := DEFAULT_PATH
 var error_message := ""
 var busy := false
 var fail_write := false # Fault injection, never controlled by player save data.
 var last_fingerprint := ""
 var last_label := "尚未保存"
-var _catalogs: Array[ContentCatalog] = []
+var _catalogs: Dictionary = {}
+var _manifest_versions: Dictionary = {}
+var _summary_cache: Dictionary = {}
 
 func _init(location := DEFAULT_PATH) -> void:
 	path = location
@@ -86,7 +88,7 @@ func _publish(data: Dictionary) -> bool:
 
 func write_entry(key: String, state: RunState, run: RunDefinition, version: int, catalog: ContentCatalog) -> bool:
 	if busy: error_message = "正在保存，请稍候。"; return false
-	error_message = save_reason(state)
+	error_message = "" if key.begins_with("auto/") and state.personal_risk_enabled and state.phase == &"open" else save_reason(state)
 	if not error_message.is_empty(): return false
 	if not key.begins_with("auto/") and key not in ["manual/1", "manual/2", "manual/3", "manual/4", "manual/5", "manual/6"]:
 		error_message = "存档位无效。"; return false
@@ -114,12 +116,16 @@ func decode_entry(entry: Variant, extended := true) -> Dictionary:
 	error_message = "存档内容损坏或版本不兼容。"
 	if not entry is Dictionary or entry.get("format") != FORMAT or not entry.get("payload") is Dictionary or not entry.get("saved_at") is String: return {}
 	var payload: Dictionary = entry.payload
-	if _catalogs.is_empty():
-		for manifest in MANIFESTS:
-			if not FileAccess.file_exists(manifest): continue
+	for manifest in MANIFESTS:
+		if not _manifest_versions.has(manifest):
+			var metadata: Variant = JSON.parse_string(FileAccess.get_file_as_string(manifest)) if FileAccess.file_exists(manifest) else null
+			_manifest_versions[manifest] = metadata.get("content_version", -1) if metadata is Dictionary else -1
+		if _manifest_versions[manifest] != payload.get("content_version"): continue
+		if not _catalogs.has(manifest):
 			var result := JsonContentProvider.new(manifest).load_catalog()
-			if result.is_success(): _catalogs.append(result.catalog)
-	for catalog in _catalogs:
+			if not result.is_success(): continue
+			_catalogs[manifest] = result.catalog
+		var catalog: ContentCatalog = _catalogs[manifest]
 		if catalog.content_version != payload.get("content_version"): continue
 		var run := catalog.get_definition("runs", payload.get("run_definition_id", "")) as RunDefinition
 		if run == null: continue
@@ -165,13 +171,25 @@ func entries() -> Array[Dictionary]:
 func _summary(key: String, entry: Variant) -> Dictionary:
 	var row := {"key": key, "empty": entry == null, "run_id": "", "label": "存档位 " + key.get_slice("/", 1) if key.begins_with("manual/") else "自动存档", "detail": "空存档位", "valid": false}
 	if entry == null: return row
+	# Cache display-only results by full content, never by slot name or timestamp.
+	# read_entry and write_entry still validate the current payload in full.
+	var cache_key := JSON.stringify(entry).sha256_text() + ("/legacy" if key.begins_with("legacy/") else "/extended")
+	if _summary_cache.has(cache_key):
+		var cached: Dictionary = _summary_cache[cache_key]
+		row.merge(cached.row, true)
+		error_message = cached.error
+		return row
 	var decoded := decode_entry(entry, not key.begins_with("legacy/"))
-	if decoded.is_empty(): row.detail = error_message; return row
-	var state: RunState = decoded.state
-	row.run_id = String(state.run_definition_id)
-	row.valid = true
-	row.detail = "%s · 第%d夜 · %s\n%s · 现银%d银元\n%s" % [NAMES.get(row.run_id, row.run_id), state.current_night_index, TimeController.clock_text(decoded.run.opening_minute, state.game_minutes), DayFlowPresenter.PHASE_LABELS.get(String(state.phase), ""), state.cash, entry.saved_at]
-	if state.phase in [&"dead", &"bankrupt", &"run_ended"]: row.detail += " · 已结束"
+	if decoded.is_empty():
+		row.detail = error_message
+	else:
+		var state: RunState = decoded.state
+		row.run_id = String(state.run_definition_id)
+		row.valid = true
+		row.detail = "%s · 第%d夜 · %s\n%s · 现银%d银元\n%s" % [NAMES.get(row.run_id, row.run_id), state.current_night_index, TimeController.clock_text(decoded.run.opening_minute, state.game_minutes), DayFlowPresenter.PHASE_LABELS.get(String(state.phase), ""), state.cash, entry.saved_at]
+		if state.phase in [&"dead", &"bankrupt", &"run_ended"]: row.detail += " · 已结束"
+	if _summary_cache.size() >= 64: _summary_cache.erase(_summary_cache.keys()[0])
+	_summary_cache[cache_key] = {"row": {"run_id": row.run_id, "valid": row.valid, "detail": row.detail}, "error": error_message}
 	return row
 
 func archive(key: String, run_id: String) -> Array:
@@ -194,7 +212,8 @@ func adopt(decoded: Dictionary, session: RunSession) -> bool:
 		target.assign(records)
 	session._switch_content(decoded.run, decoded.catalog.content_version, decoded.catalog)
 	session._day.state = state
-	session._pawn_choices.clear()
+	session._pawn_choices = state.pending_pawn_choices.duplicate(true)
+	if state.ghost_version == 1: state.ghost_origin.run_token = state.run_token
 	session._risk_error = ""
 	if state.phase == &"pre_open": session._counter.customers.prepare_night(state, decoded.run, decoded.catalog)
 	MarketService.sync(state, decoded.run)

@@ -76,7 +76,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if row.night == item.acquired_night and row.minute < acquisitions[item.source_visit_id].minute + buyer.action_minutes: return "先出售后收货。"
 		if item.acquisition_type == "pawn" and (not tickets.has(item.instance_id) or tickets[item.instance_id].status != "defaulted" or row.night <= tickets[item.instance_id].closed_night): return "在当物品不可出售。"
 		if not OrdinarySamplePlan.buyer_reason(state, buyer.id, definition.category, int(row.night), int(row.minute) - buyer.action_minutes).is_empty(): return "销售不符合本局收货约定。"
-		if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels or row.price != CommerceService.new(catalog).quote(item, buyer) or row.cost_basis != item.acquisition_price or row.realized_profit != row.price - row.cost_basis: return "销售报价、偏好或成本不符。"
+		if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels or row.price != CommerceService.new(catalog).quote(item, buyer) + GoodsSaveCodec.sale_bonus(row, state, run, catalog) or row.cost_basis != item.acquisition_price or row.realized_profit != row.price - row.cost_basis: return "销售报价、偏好或成本不符。"
 		var quota := "%d/%s" % [int(row.night), buyer.id]
 		buyer_counts[quota] = buyer_counts.get(quota, 0) + 1
 		if buyer.capacity_per_night > 0 and buyer_counts[quota] > buyer.capacity_per_night: return "买家收货额度超限。"
@@ -84,6 +84,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			if not PreparationService.buyer_reason(state, buyer.id).is_empty() or not PreparationService.item_reason(item, buyer.id).is_empty(): return "预约销售缺少介绍或货物不符。"
 		var market_error := MarketSaveCodec.sale_reason(row, state, run, buyer, definition)
 		if not market_error.is_empty(): return market_error
+		if GoodsSaveCodec.sale_bonus(row, state, run, catalog) < 0: return "原配加价缺少有效验配。"
 		var normalized := {"item_instance_id": String(row.item_instance_id), "buyer_id": String(row.buyer_id)}
 		if run.batch_selling: normalized.batch_id = row.batch_id
 		for key in ["night", "minute", "price", "cost_basis", "realized_profit"]: normalized[key] = int(row[key])
@@ -98,6 +99,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			_post(expected, "night_loss/" + item.instance_id, item.instance_id, lost, run.night_minutes, 0, "inventory_loss", 0)
 		elif item.ownership_state == "lost": return "损货缺少对应夜客后果。"
 		if item.acquisition_type == "purchase" and item.ownership_state not in (["owned", "sold", "lost"] if state.night_market_enabled else ["owned", "sold"]): return "收购物品权属不符。"
+	for row in state.expertise_history:
+		_post(expected, row.id, row.item_ids[0], row.night, row.minute, -row.fee, "expertise", 0)
 	for row in state.provenance_history:
 		if row.action != "inquire": continue
 		var item := inventory.find(state, row.item_instance_id)
@@ -130,6 +133,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		var snapshot := RunState.new()
 		snapshot.current_night_index = summary.night
 		snapshot.night_market_enabled = state.night_market_enabled
+		snapshot.goods_version = state.goods_version
 		snapshot.preparation_version = state.preparation_version
 		snapshot.ledger_entries = state.ledger_entries
 		snapshot.fee_history = state.fee_history

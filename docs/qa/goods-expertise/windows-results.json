@@ -1,0 +1,108 @@
+[
+  {
+    "summary": [
+      "M8A ENV PASS: C:/Users/alvachen/Documents/ChatGPT/pawnbroker/.godot/goods-windows-final/appdata/Godot/app_userdata/鬼市当铺\r"
+    ],
+    "passed": true,
+    "name": "environment"
+  },
+  {
+    "summary": [
+      "M8A FONT TESTS PASSED: bundled glyphs; no system fallback; applied weight=400\r"
+    ],
+    "passed": true,
+    "name": "font"
+  },
+  {
+    "summary": [
+      "GOODS TESTS: 8544 passes, 0 failures\r"
+    ],
+    "passed": true,
+    "name": "goods-core"
+  },
+  {
+    "summary": [
+      "GOODS EDGES: 181 passes, 0 failures\r"
+    ],
+    "passed": true,
+    "name": "goods-edges"
+  },
+  {
+    "summary": [],
+    "passed": true,
+    "name": "goods-process-write"
+  },
+  {
+    "summary": [],
+    "passed": true,
+    "name": "goods-process-read"
+  },
+  {
+    "summary": [
+      "MARKET SEVEN TESTS: 7434 passes, 0 failures\r"
+    ],
+    "passed": true,
+    "name": "goods-market"
+  },
+  {
+    "summary": [
+      "EARLY REDEMPTION: 4736 passes, 0 failures\r"
+    ],
+    "passed": true,
+    "name": "goods-early-redemption"
+  },
+  {
+    "summary": [
+      "GOODS UI FIXTURE: 106 passes, 0 failures; seed 140\r"
+    ],
+    "passed": true,
+    "name": "goods-ui-fixture"
+  },
+  {
+    "summary": [
+      "GOODS UI: 70 assertions, 0 failures\r"
+    ],
+    "passed": true,
+    "name": "goods-1280x720"
+  },
+  {
+    "summary": [
+      "GOODS APPRAISAL UI: 210 assertions, 0 failures\r"
+    ],
+    "passed": true,
+    "name": "goods-appraisal-1280x720"
+  },
+  {
+    "summary": [
+      "GOODS UI: 70 assertions, 0 failures\r"
+    ],
+    "passed": true,
+    "name": "goods-1600x900"
+  },
+  {
+    "summary": [
+      "GOODS APPRAISAL UI: 210 assertions, 0 failures\r"
+    ],
+    "passed": true,
+    "name": "goods-appraisal-1600x900"
+  },
+  {
+    "summary": [],
+    "passed": true,
+    "name": "goods-pair-process"
+  },
+  {
+    "summary": [
+      "M0–M7 TESTS PASSED · 1799 assertions\r"
+    ],
+    "passed": true,
+    "name": "goods-legacy-core"
+  },
+  {
+    "summary": [
+      "PAWN CHANCE MERGE: 41 passes, 0 failures\r"
+    ],
+    "passed": true,
+    "name": "goods-legacy-v20"
+  }
+]

@@ -1,20 +1,22 @@
-# 阿七首次登场与七夜收尾 · v22
+# 阿七首次登场与七夜收尾
 
-2026-09-11，本地源码基于 `6b872957fa6e0b9d5cf44e999d211ee84190ba51`，工作分支 `codex/aqi-seven-v22`。本批交付可玩草图，不包含推送、合并或试玩包。原规格整理分支的20份文档成果保留；当前口径见 [CURRENT_SPEC](CURRENT_SPEC.md)。
+2026-09-15 发布整合：原 v22 七夜内容及规格整理文档保留，默认入口使用 v24 十夜 `aqi_investigation_ten`，继承线上 v23 的命灯、调查会面、经营、寝屋照片与信件。阿七仍在第七夜出现，完成后继续第八至十夜。原七夜独立入口在第七夜结束。
 
 ## 启动
 
-```sh
-/opt/homebrew/bin/godot --path /Users/alvachen/Documents/ChatGPT/pawn/.artifacts/aqi-seven
-```
-
-固定种子：
+在包含本次合并的源码目录运行：
 
 ```sh
-/opt/homebrew/bin/godot --path /Users/alvachen/Documents/ChatGPT/pawn/.artifacts/aqi-seven -- --seed=42
+godot --path . -- --seed=42
 ```
 
-选择“新游戏”进入 v22。`.artifacts/main` 仍是同步后的 v21 基线，尚无本批阿七内容。不同源码工作树共享正式用户档案库；自动位按运行隔离，六个手动槽仍共用。测试脚本使用 `.godot/qa/aqi` 等隔离目录。
+原七夜入口：
+
+```sh
+godot --path . res://scenes/aqi_seven_start.tscn -- --seed=42
+```
+
+选择“新游戏”体验新默认内容；已有 v23 及更早局仍按原内容恢复。不同工作树共享玩家档案库，测试脚本使用 `.godot/qa` 隔离位置。`aqi_seven` 自动位与新的 `aqi_investigation_ten` 自动位分开，六个手动槽共用。
 
 ## 玩家流程
 
@@ -24,13 +26,15 @@
 - 第七夜核票、息费结算和铺内危机处理后，阿七在柜台边请掌柜看看风车。先接过或先问名字；问名后可以帮忙或婉拒。帮助只需理开纸翼，无小游戏或失败判定。
 - 已看过夹纸的人在修好后可追问画纸；回答仅谈画法与折法。没有看过的人不会出现该选项，仍能自然完成初见。
 - 阿七带着风车离开。掌柜翻旧《阴账》，看见“尚欠七账”，再选择查看抽屉或收好账本。查看所得半张旧铺草图可从末夜寝屋书桌复查；略过不补发。
-- 完成后正常回房、就寝和结局。不生成第八夜，不强制通关。现有命灯或铜镜后果继续有效，墙镜没有新增剧情异象。
+- 完成后正常回房、就寝。原七夜入口到此收尾；新默认十夜入口继续第八至十夜，不强制通关。现有命灯或铜镜后果继续有效，墙镜没有新增剧情异象。
 
 帮助、婉拒均不增减钱、库存、债务或关系值。“尚欠七账”是文字线索，不生成七笔应付金额。本批不揭晓阿七身份、与顾敬堂的关系或留魂契；不新增婚讯转折、任务背包、好感面板或第二套剧情存储。
 
 ## 内容与阶段
 
-入口为 `scenes/start.tscn` → `data/aqi_manifest.json` → `aqi_seven`，`save_version=22 / content_version=22`。独立自动位 `auto/aqi_seven`，路径登记 `user://aqi_seven/autosave_v22.json`。v21及更早内容数据保持原样，按原运行继续；从旧局返回默认标题再新开进入v22。
+原七夜入口为 `scenes/aqi_seven_start.tscn` → `data/aqi_manifest.json` → `aqi_seven`，`save_version=22 / content_version=22`。独立自动位 `auto/aqi_seven`，路径登记 `user://aqi_seven/autosave_v22.json`。v21及更早内容数据保持原样，按原运行继续；从旧局返回默认标题再新开进入v24；独立七夜入口使用v22。
+
+新版入口 `scenes/start.tscn` → `data/aqi_investigation_manifest.json` → `aqi_investigation_ten`，保存及内容版本24。沿用 v23 的动作日志回放，新增 `observe_room` 指令的合法回放；已知状态仍来自同一事件历史，写盘失败连同日志一起回滚。旧 v23 的命令白名单与数据不增加阿七。
 
 数据位于 [events.json](../data/aqi/events.json)。流程为：
 
