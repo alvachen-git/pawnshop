@@ -1,3 +1,16 @@
+# 小悬牌与底栏 · 2026-09-16
+
+final result: passed
+
+最新检查：[小悬牌与底栏](docs/qa/shop-hud/README.md)。
+确认稿为 `docs/qa/shop-hud/approved-reference.png`（1672×941），已归一化至1280×720对照。
+实现为 `docs/qa/shop-hud/shop_hud_1280_01_counter.png` 和 `shop_hud_1600_01_counter.png`，原生1280×720及1600×900。
+相同状态：第三夜03:00，待处理铜镜事件，无客无货，290大洋。
+全图与局部证据：`docs/qa/shop-hud/comparison-full.png`、`comparison-controls.png`。
+基于远端main 28f3a43（v24十夜入口）重新执行三组234项检查，全部通过。五项视觉检查、已修复问题及残余P3差异见最新记录。
+
+以下保留此前检查记录。
+
 # 右下角信封入口 · 2026-09-10
 
 final result: passed
