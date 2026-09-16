@@ -55,6 +55,10 @@ func initialize() -> ContentLoadResult:
 			saves.legacy_archive_path = "user://p0/autosave.json"
 			saves.prior_version_path = "user://p0/autosave_v6.json"
 		saves.library = SaveLibrary.new() if not save_path.begins_with("user://tests/") else null
+		# Seed overrides mutate the runtime definition; keep save validation on the
+		# authored catalog in that debugging mode.
+		if saves.library != null and not Array(OS.get_cmdline_user_args()).any(func(arg: String) -> bool: return arg.begins_with("--seed=")):
+			saves.library.register_catalog(manifest_path, catalog)
 		saves.catalog = catalog
 		session = RunSession.new(definition, catalog.content_version, saves, catalog)
 		if not preview_stage.is_empty():

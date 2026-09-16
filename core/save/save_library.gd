@@ -20,6 +20,12 @@ var _summary_cache: Dictionary = {}
 func _init(location := DEFAULT_PATH) -> void:
 	path = location
 
+func register_catalog(manifest: String, catalog: ContentCatalog) -> void:
+	# The bootstrap catalog has already passed schema and domain validation.
+	if manifest not in MANIFESTS: return
+	_catalogs[manifest] = catalog
+	_manifest_versions[manifest] = catalog.content_version
+
 static func save_reason(state: RunState) -> String:
 	if state.phase == &"open": return "营业期间不能保存，请在关铺后保存。"
 	if String(state.phase) not in SaveCodec.CHECKPOINTS + SaveTimeline.UNSETTLED: return "当前操作尚未完成，请稍后保存。"
