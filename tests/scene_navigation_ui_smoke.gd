@@ -15,7 +15,7 @@ func _run() -> void:
 	var counter_view := screen.get_node("CounterView") as CounterView
 	var flow := screen.get_node("ScreenFlowCoordinator") as ScreenFlowCoordinator
 	_check(screen.get_node_or_null("Navigation") == null, "旧整排导航已移除")
-	_check(screen.get_node("%MenuButton").text.is_empty() and screen.get_node("%MenuButton").icon != null and screen.get_node("%MenuButton").accessibility_name == "菜单", "右上角菜单图标保留可访问名称")
+	_check(screen.get_node("%MenuButton").text.is_empty() and screen.get_node("%MenuButton").icon != null and screen.get_node("%MenuButton").accessibility_name == "菜单", "底栏菜单图标保留可访问名称")
 	_check(screen.get_node("SessionMenu/MenuMargin/MenuColumn/RunSectionLabel").text == "本局" and screen.get_node("SessionMenu/MenuMargin/MenuColumn/ShopSectionLabel").text == "铺务", "菜单按本局与铺务分组")
 	_check(screen.get_node("%LoadRunButton").disabled, "没有夜末存档时读档不可用")
 	_check(not counter_view.get_hotspot(&"customer").visible and not counter_view.get_hotspot(&"item").visible, "无客无货时隐藏情境热点")
@@ -28,7 +28,7 @@ func _run() -> void:
 	await _click("营业")
 	_check(flow.get_active_panel_id() == &"day", "点击铺面招牌打开营业")
 	await _click("菜单")
-	_check(screen.get_node("%SessionMenu").visible, "右上角菜单展开")
+	_check(screen.get_node("%SessionMenu").visible, "底栏菜单展开")
 	_check(_session.read_state() == before, "场景导航与菜单查看不修改运行状态")
 	await _capture("01_grouped_menu")
 	_push_escape()
@@ -77,6 +77,11 @@ func _run() -> void:
 		for kind in [&"shop", &"customer", &"item", &"inventory", &"ledger"]:
 			_check(viewport_rect.encloses(counter_view.get_hotspot(kind).get_global_rect()), "缩放后热点不溢出：%s/%s" % [dimensions, kind])
 		_check(viewport_rect.encloses((screen.get_node("%MenuButton") as Control).get_global_rect()), "缩放后菜单按钮不溢出：%s" % dimensions)
+		var menu_rect: Rect2 = screen.get_node("%MenuButton").get_global_rect()
+		_check(screen.get_node("%ShopStatusView").get_global_rect().encloses(menu_rect), "菜单按钮位于底栏内：%s" % dimensions)
+		for field in ["ClockStatus", "NightStatus", "CashStatus", "DebtStatus", "TicketStatus", "RiskStatus"]:
+			var value: Label = screen.get_node("%" + field)
+			_check(not value.text.contains("\n") and value.get_global_rect().end.x < menu_rect.position.x, "状态单行且不遮挡菜单：" + field)
 	print("SCENE NAVIGATION UI SMOKE: %d assertions, %d failures" % [_assertions, _failures])
 	DirAccess.remove_absolute(ProjectSettings.globalize_path(_save_path))
 	_main.queue_free()
