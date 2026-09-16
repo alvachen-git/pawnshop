@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "format": "RGB PNG with runtime chroma key",
+  "source_size": [
+    1254,
+    1254
+  ],
+  "counter_back_y": 0.5254457432990908,
+  "roles": [
+    {
+      "role": "citizen",
+      "path": "assets/art04/customers/ordinary/citizen.png",
+      "sha256": "4ac3bc3097f5f024c3308ff8d98d1ca06cfe8f7acbb631127d780f965ce69cf5",
+      "source": "artifacts/ordinary-customers-20260915/v2/citizen.png",
+      "height_in_counter_view": 0.5,
+      "source_hem_y": 1,
+      "center_x": 0.5,
+      "alpha": false
+    },
+    {
+      "role": "hawker",
+      "path": "assets/art04/customers/ordinary/hawker.png",
+      "sha256": "77887ecfc3af928f5cde9481095f5245efcb19060ada17802b03e48bc810b187",
+      "source": "artifacts/ordinary-customers-20260915/v2/hawker.png",
+      "height_in_counter_view": 0.51,
+      "source_hem_y": 1,
+      "center_x": 0.493,
+      "alpha": false
+    },
+    {
+      "role": "scholar",
+      "path": "assets/art04/customers/ordinary/scholar.png",
+      "sha256": "29dd5173e78decb28d0be3ade2dab173d909134ca8939f81f8d20abc247ef5e7",
+      "source": "artifacts/ordinary-customers-20260915/v2/scholar.png",
+      "height_in_counter_view": 0.495,
+      "source_hem_y": 1,
+      "center_x": 0.5,
+      "alpha": false
+    },
+    {
+      "role": "agent",
+      "path": "assets/art04/customers/ordinary/agent.png",
+      "sha256": "0dbf01eba282b14e3101a71e2bb64c8612eb0dae6aa0717ed729783c0e9b2aa5",
+      "source": "artifacts/ordinary-customers-20260915/v3/agent.png",
+      "height_in_counter_view": 0.5,
+      "source_hem_y": 1,
+      "center_x": 0.5,
+      "alpha": false
+    },
+    {
+      "role": "seamstress",
+      "path": "assets/art04/customers/ordinary/seamstress.png",
+      "sha256": "4896028de8c8467d42455de9b8d489e5c9222cd962d2a15d73173338f9111069",
+      "source": "artifacts/ordinary-customers-20260915/v2/seamstress.png",
+      "height_in_counter_view": 0.485,
+      "source_hem_y": 1,
+      "center_x": 0.5,
+      "alpha": false
+    },
+    {
+      "role": "watchmaker",
+      "path": "assets/art04/customers/ordinary/watchmaker.png",
+      "sha256": "a58e55cfe47735b5f74412d89b64682a2270c81ff360628f49cf299814961dc2",
+      "source": "artifacts/ordinary-customers-20260915/v2/watchmaker.png",
+      "height_in_counter_view": 0.515,
+      "source_hem_y": 0.993,
+      "center_x": 0.5,
+      "alpha": false
+    },
+    {
+      "role": "teahouse",
+      "path": "assets/art04/customers/ordinary/teahouse.png",
+      "sha256": "3ee411ea9528c704415551c609719db70418896f09dd8876bf460892f712b603",
+      "source": "artifacts/ordinary-customers-20260915/v2/teahouse.png",
+      "height_in_counter_view": 0.505,
+      "source_hem_y": 0.982,
+      "center_x": 0.495,
+      "alpha": false
+    },
+    {
+      "role": "bookkeeper",
+      "path": "assets/art04/customers/ordinary/bookkeeper.png",
+      "sha256": "ae0148e9d3850b13fbf4bfdbb920ccff3cc548001477eb970b88660e2fc7e801",
+      "source": "artifacts/ordinary-customers-20260915/v2/bookkeeper.png",
+      "height_in_counter_view": 0.5,
+      "source_hem_y": 1,
+      "center_x": 0.5,
+      "alpha": false
+    }
+  ],
+  "verification_base": "28f3a4382a51fe311755e1ccf9c4592ca0ab601b",
+  "verification": {
+    "ordinary_portraits": {
+      "assertions": 152,
+      "failures": 0
+    },
+    "aqi_investigation": {
+      "passes": 2711,
+      "failures": 0
+    }
+  }
+}

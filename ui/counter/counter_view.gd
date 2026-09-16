@@ -237,12 +237,15 @@ func render(model: Dictionary) -> void:
 	if not _item_hotspot.visible:
 		_item_context.hide()
 
-	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""), visual.get("customer_id", ""))
+	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""), visual.get("customer_id", ""), visual.get("person_id", ""))
 	_portrait.material = CounterVisualCatalog.portrait_material(_portrait.texture)
 	# The standing neighbor's torso ends at the back edge; both hands reach onto the top.
 	if _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT:
 		_bounds(_portrait, 0.315, 0.025, 0.68, 0.604)
 		(_portrait.material as ShaderMaterial).set_shader_parameter("hand_contact_shadow", true)
+	elif CounterVisualCatalog.is_ordinary_portrait(_portrait.texture):
+		var portrait_bounds := CounterVisualCatalog.ordinary_bounds(_portrait.texture)
+		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
 	else:
 		_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
 	_portrait.visible = active and _portrait.texture != null
