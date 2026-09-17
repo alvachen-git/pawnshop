@@ -11,6 +11,7 @@ signal ledger_requested
 signal background_requested
 signal context_opened(kind: StringName)
 
+var companion: AqiCompanionView
 var story: CounterStoryView
 var story_active := false
 var _story_actor := false
@@ -121,6 +122,13 @@ func _ready() -> void:
 	_speech.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	_speech.add_theme_font_size_override("font_size", 19)
 	margin.add_child(_speech)
+	companion = AqiCompanionView.new()
+	companion.z_index = 6
+	add_child(companion)
+	companion.opened.connect(func() -> void:
+		_customer_context.hide()
+		_item_context.hide()
+		context_opened.emit(&"companion"))
 	story = CounterStoryView.new()
 	add_child(story)
 	_bounds(story, 0.60, 0.095, 0.98, 0.96)
@@ -129,6 +137,9 @@ func _ready() -> void:
 	story.closed.connect(func() -> void: focus_hotspot(&"customer" if _story_actor else &"item"))
 	_build_painted_controls()
 	move_child(bell, get_child_count() - 1)
+	# GUI hit testing follows tree order, not the portrait/dialogue z_index.
+	move_child(companion, get_child_count() - 1)
+	move_child(story, get_child_count() - 1)
 
 
 
@@ -195,7 +206,7 @@ func _make_context_button(name_value: String, label: String, panel_id: StringNam
 	return button
 
 
-func _bounds(control: Control, left: float, top: float, right: float, bottom: float) -> void:
+static func _bounds(control: Control, left: float, top: float, right: float, bottom: float) -> void:
 	control.anchor_left = left
 	control.anchor_top = top
 	control.anchor_right = right
@@ -309,7 +320,7 @@ func render_story(model: Dictionary, state: Dictionary) -> void:
 	_speech_panel.hide()
 	$CustomerPanel.visible = _story_actor
 	%CustomerText.text = "阿七" if "aq_name_known" in state.narrative_flags else "柜台边的小女孩"
-	%ItemText.text = "纸风车" if _story_actor else ("半张旧铺草图" if art == "plan" else "旧《阴账》")
+	%ItemText.text = model.presentation.get("item_label", "纸风车" if _story_actor else ("半张旧铺草图" if art == "plan" else "旧《阴账》"))
 	_customer_hotspot.visible = _story_actor
 	_customer_hotspot.tooltip_text = "继续交谈 · 不耗时"
 	_item_hotspot.visible = true
@@ -398,6 +409,7 @@ func _on_background_pressed() -> void:
 
 func dismiss_contexts() -> bool:
 	var dismissed := _customer_context.visible or _item_context.visible
+	if companion != null and companion.collapse(): dismissed = true
 	_customer_context.hide()
 	_item_context.hide()
 	return dismissed
@@ -413,6 +425,7 @@ func get_hotspot(kind: StringName) -> Button:
 	var targets := {
 		&"shop": get_node("ShopSignHotspot"),
 		&"customer": _customer_hotspot,
+		&"companion": companion.hotspot,
 		&"item": _item_hotspot,
 		&"inventory": get_node("InventoryHotspot"),
 		&"ledger": get_node("LedgerHotspot"),
@@ -426,6 +439,7 @@ func set_counter_message(message: String) -> void:
 
 
 func set_atmosphere(mode: int, preview: bool, intrusion: bool, haunting: bool, dead: bool) -> void:
+	companion.set_lighting(-1, mode)
 	$Room.atmosphere = mode
 	bell.atmosphere = mode
 	$Room.smoke_wrong = intrusion or (preview and mode == 1)
@@ -441,6 +455,7 @@ func set_atmosphere(mode: int, preview: bool, intrusion: bool, haunting: bool, d
 
 func set_night_lighting(band: int) -> void:
 	if band < 0: return
+	companion.set_lighting(band)
 	# Only scene sprites dim; appraisal evidence, dialogue and money stay readable.
 	_portrait.modulate = Color([Color.WHITE, Color("8e8271"), Color("655f55"), Color("4b4944")][band], _portrait.modulate.a)
 	# Aqi sits beside the counter lamp; keep her face readable after closing.
