@@ -18,6 +18,8 @@ var _notification := false
 var _committing := false
 var _last_press := 0
 var _backdrop: TextureRect
+var _stage: MirrorReunionStage
+var _commit_error := ""
 
 func bind(session: RunSession, screen: CounterScreen) -> void:
 	_session = session
@@ -38,8 +40,12 @@ func bind(session: RunSession, screen: CounterScreen) -> void:
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	shade.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(shade)
-	_wife = actor("res://assets/art02/customers/mirror_wife.svg", 0.08, 0.43)
-	_husband = actor("res://assets/art02/customers/hawker.svg", 0.58, 0.91)
+	_stage = MirrorReunionStage.new()
+	_stage.name = "PerformanceStage"
+	add_child(_stage)
+	bounds(_stage, 0.025, 0.015, 0.975, 0.655)
+	_wife = _stage.wife
+	_husband = _stage.husband
 	var paper := PanelContainer.new()
 	add_child(paper)
 	bounds(paper, 0.06, 0.67, 0.94, 0.97)
@@ -96,29 +102,24 @@ func bind(session: RunSession, screen: CounterScreen) -> void:
 func bounds(control: Control, left: float, top: float, right: float, bottom: float) -> void:
 	control.anchor_left = left; control.anchor_top = top; control.anchor_right = right; control.anchor_bottom = bottom
 
-func actor(path: String, left: float, right: float) -> TextureRect:
-	var portrait := TextureRect.new()
-	portrait.texture = load(path)
-	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	add_child(portrait)
-	bounds(portrait, left, 0.025, right, 0.67)
-	return portrait
-
 func reset() -> void:
 	_key = ""; _pending = ""; _page = 0; _notification = false; _collapsed = false
+	_commit_error = ""
+	_stage.reset()
 	hide()
 	refresh.call_deferred()
 
 func collapse() -> void:
+	_stage.stop()
 	_collapsed = true
 	hide()
 	_screen._close_drawer()
 
 func reopen() -> void:
+	var was_collapsed := _collapsed
 	_collapsed = false
 	refresh()
+	if was_collapsed: _stage.stop()
 
 func refresh() -> void:
 	if _committing: return
@@ -130,7 +131,8 @@ func refresh() -> void:
 	var key: String = row.visit_id + "/" + str(row.step)
 	if key != _key:
 		_key = key; _pending = ""; _page = 0; _collapsed = false; _notification = false
-		_pages = [["", "铜镜摆在柜前。丈夫站在一旁，等你开口。"]] if row.history.is_empty() else MirrorReunionService.pages(row.history.back().action, state)
+		_commit_error = ""
+		_pages = [MirrorReunionScript.page("waiting", "", "铜镜摆在柜前。丈夫站在一旁，等你开口。", "waiting", "normal")] if row.history.is_empty() else MirrorReunionScript.pages(row.history.back().action, state)
 	if _collapsed: return
 	_screen._close_drawer()
 	show()
@@ -139,21 +141,15 @@ func refresh() -> void:
 func display_page() -> void:
 	for child in _choices.get_children():
 		_choices.remove_child(child); child.queue_free()
-	var line: Array = _pages[_page]
-	_speaker.text = "镜前" if line[0].is_empty() else line[0]
-	_text.text = line[1]
+	var line: Dictionary = _pages[_page]
+	_speaker.text = "镜前" if line.speaker.is_empty() else line.speaker
+	_text.text = line.text if _commit_error.is_empty() else _commit_error
 	_text.scroll_to_line(0)
-	_wife.modulate = Color.WHITE if line[0] == "女子" else Color(0.60, 0.65, 0.62)
-	_husband.modulate = Color.WHITE if line[0] == "丈夫" else Color(0.60, 0.60, 0.55)
-	_wife.visible = _session._day.state.mirror_resolution.get("step", 0) > 0
+	if not _notification: _stage.present(line)
 	var last := _page == _pages.size() - 1
-	_husband.visible = true
-	if _notification or (last and not _pending.is_empty()):
-		var ending: String = _session._day.state.mirror_resolution.ending if _notification else _pending
-		_wife.visible = ending == "resentment"
-		_husband.visible = ending != "resentment"
 	_next.visible = not last or not _pending.is_empty() or _notification
 	_next.text = "继续 ▸" if not last else ("收好记事" if _notification else "结束这段对话")
+	if not _commit_error.is_empty(): _next.text = "重试保存"
 	if _next.visible: _next.grab_focus()
 	if not last or not _pending.is_empty() or _notification: return
 	for action in MirrorReunionService.actions(_session._day.state): add_choice(action[0], action[1] + " · 5分钟")
@@ -182,6 +178,7 @@ func add_choice(command: String, label: String) -> void:
 	button.pressed.connect(func() -> void: choose(command))
 
 func choose(command: String) -> void:
+	if _stage.animating(): _stage.finish(); return
 	var id: String = _session._day.state.mirror_resolution.visit_id
 	var error := MirrorEndingService.reason(_session._day, _session._counter.catalog, command, id)
 	if not error.is_empty(): _text.text = error; return
@@ -189,7 +186,7 @@ func choose(command: String) -> void:
 		# Read the final scene before the single atomic domain commit. No preview
 		# changes the item, person, time, journal, resources or save file.
 		_pending = command; _page = 0
-		_pages = MirrorReunionService.pages(command, _session._day.state)
+		_pages = MirrorReunionScript.pages(command, _session._day.state)
 		display_page()
 		return
 	var result := _session.mirror_resolution_command(command, id)
@@ -200,6 +197,9 @@ func choose(command: String) -> void:
 func advance() -> void:
 	if Time.get_ticks_msec() - _last_press < 180: return
 	_last_press = Time.get_ticks_msec()
+	if _stage.animating():
+		_stage.finish()
+		return
 	if _page < _pages.size() - 1:
 		_page += 1; display_page(); return
 	if _notification:
@@ -208,10 +208,15 @@ func advance() -> void:
 	_committing = true
 	var result := _session.mirror_resolution_command(_pending, _session._day.state.mirror_resolution.visit_id)
 	_committing = false
-	if not result.ok: _text.text = result.message; return
+	if not result.ok:
+		_commit_error = result.message
+		_text.text = _commit_error
+		_next.text = "重试保存"
+		return
+	_commit_error = ""
 	_pending = ""; _notification = true; _page = 0
 	var notice := MirrorReunionService.note(_session._day.state).split("\n\n", false, 1)
-	_pages = [[notice[0], notice[1]]]
+	_pages = [MirrorReunionScript.page("result", notice[0], notice[1])]
 	display_page()
 	show()
 

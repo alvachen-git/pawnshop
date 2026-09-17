@@ -705,7 +705,8 @@ func _persist() -> bool:
 	return _save.save_state(_day.state, definition, content_version)
 
 func _journal_call(method: String, args: Array) -> ActionResult:
-	if MirrorEndingService.active(_day.state) and method != "mirror_resolution_command": return ActionResult.new(false, "镜前的话还未说完；若要先办别的事，请选择「暂且收起」。")
+	if MirrorEndingService.active(_day.state) and method != "mirror_resolution_command":
+		return ActionResult.new(false, "镜前的话还未说完，请从库存提醒回到镜前。" if MirrorReunionService.enabled(definition) else "镜前的话还未说完；若要先办别的事，请选择「暂且收起」。")
 	if LivingMirror.enabled(definition) and not InvestigationService.enabled(definition): return _ghost_call(method, args)
 	if not _day.state.personal_risk_enabled or _journal_depth > 0: return callv("_impl_" + method, args)
 	if _day.state.action_journal.size() >= 4096: return ActionResult.new(false, "本局操作记录已满，请读取较早的存档。")
