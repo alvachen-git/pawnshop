@@ -27,6 +27,8 @@ static func reason(day: DayController, catalog: ContentCatalog, id: String) -> S
 	if target.is_empty() or target.id != id: return "柜前已不是那位客人。"
 	var mirror := held(day.state)
 	if mirror == null: return "铜镜已不在铺中。"
+	if MirrorEndingService.released(day.state, mirror.instance_id): return "女主人已离去，铜镜不能再辨人生死。"
+	if MirrorEndingService.active(day.state): return "先谈完镜前旧事，或暂且收起。"
 	if RiskManager.new(catalog).covered(day.state, mirror.instance_id): return "请先揭开红布。"
 	if not TimeController.new().can_spend(day.state, day.definition, 5): return "余下时辰不够借镜。"
 	return ""
@@ -52,7 +54,7 @@ static func inspect(day: DayController, catalog: ContentCatalog, id: String) -> 
 static func decorate(model: Dictionary, day: DayController, catalog: ContentCatalog) -> void:
 	if not enabled(day.definition): return
 	var target := customer(day, catalog)
-	if held(day.state) != null and not target.is_empty():
+	if held(day.state) != null and not MirrorEndingService.released(day.state, held(day.state).instance_id) and not target.is_empty():
 		var error := reason(day, catalog, target.id)
 		model.buttons.push_front({"command": "soul_inspect", "target_id": target.id, "detail": "", "label": "借铜镜照看来客 · 5分钟", "enabled": error.is_empty(), "reason": error})
 	if not day.state.soul_history.is_empty():

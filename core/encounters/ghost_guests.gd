@@ -105,6 +105,7 @@ static func dawn(state: RunState) -> void:
 static func notice(state: RunState, catalog: ContentCatalog) -> String:
 	var lines := ""
 	for row in state.person_deaths:
+		if row.get("source", "pawn_exchange") != "pawn_exchange": continue
 		var replacement := InventoryManager.new().find(state, row.replacement_id)
 		var item := catalog.get_definition("items", replacement.definition_id) as ItemDefinition
 		lines += "\n\n第%d夜开铺前 · 街坊带来的消息\n%s昨夜赎回%s，今日便没了。家里人收拾遗物时，那件东西冰得握不住。\n你记得，那正是提匣人留下的替物。" % [row.delivered_night, row.name, item.display_name]

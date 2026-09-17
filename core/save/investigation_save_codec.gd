@@ -76,6 +76,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 			start = verified.action_journal.size()
 	var commands := GhostSaveCodec.COMMANDS.duplicate(true)
 	commands["investigation_command"] = [2, 2]
+	if MirrorEndingService.enabled(run): commands["mirror_resolution_command"] = [2, 2]
 	if "aq_coat" in run.event_ids: commands["observe_room"] = [1, 1]
 	for index in range(start, data.action_journal.size()):
 		var row: Variant = data.action_journal[index]

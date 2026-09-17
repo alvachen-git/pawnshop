@@ -38,7 +38,7 @@ func current(day: DayController) -> MirrorEncounterDefinition:
 
 func held_mirror(state: RunState, definition: MirrorEncounterDefinition) -> ItemInstance:
 	for item in state.inventory_instances:
-		if item.definition_id == definition.mirror_item_id and item.ownership_state in ["owned", "pledged"]: return item
+		if item.definition_id == definition.mirror_item_id and item.ownership_state in ["owned", "pledged"] and not MirrorEndingService.released(state, item.instance_id): return item
 	return null
 
 func pending(day: DayController) -> bool:
