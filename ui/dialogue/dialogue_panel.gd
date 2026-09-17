@@ -50,7 +50,7 @@ func render(model: Dictionary) -> void:
 	_history_toggle.text = "查看已问口供（%d）" % speech.size()
 	_history.text = "口供记录 · 尚须与实物核对\n"
 	for row in speech: _history.text += "\n" + row.question + "\n" + row.answer + "\n"
-	if not visual.is_empty():
+	if not visual.is_empty() and not model.get("preserve_ticket_body", false):
 		_body.text = visual.introduction if speech.is_empty() else "最近答复 · " + speech.back().question + "\n\n" + speech.back().answer
 		_body.text += "\n\n口供须与实物核对。"
 		if not visual.get("soul_note", "").is_empty(): _body.text += "\n\n" + visual.soul_note
