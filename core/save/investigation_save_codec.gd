@@ -55,7 +55,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	if origin.size() != 2 or not RunSchema.integer(origin.get("seed")) or origin.seed < 0 or origin.seed > 2147483647 or not origin.get("run_token") is String or origin.run_token.length() != 32 or not origin.run_token.is_valid_hex_number(): return null
 	if origin.seed != data.get("run_seed") or origin.run_token != data.get("run_token"): return null
 	if not RiskSaveCodec.valid_archive(data.get("death_archive")) or not FeeSaveCodec.valid_archive(data.get("bankruptcy_archive")): return null
-	if data.get("phase") not in SaveCodec.CHECKPOINTS + ["open"] + (SaveTimeline.UNSETTLED if extended else []): return null
+	if data.get("phase") not in SaveCodec.CHECKPOINTS + ["open"] + (SaveTimeline.UNSETTLED if extended or ShopGrowthService.enabled(run) else []): return null
 	var store := GhostReplayStore.new()
 	store.origin = origin.duplicate(true)
 	store.prior_deaths = data.death_archive.filter(func(row: Dictionary) -> bool: return row.run_token != origin.run_token)
@@ -78,6 +78,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	commands["investigation_command"] = [2, 2]
 	if MirrorEndingService.enabled(run): commands["mirror_resolution_command"] = [2, 2]
 	if "aq_coat" in run.event_ids: commands["observe_room"] = [1, 1]
+	if ShopGrowthService.enabled(run): commands["growth_command"] = [2, 2]
 	for index in range(start, data.action_journal.size()):
 		var row: Variant = data.action_journal[index]
 		if not row is Dictionary or row.size() != 2 or not row.get("method") is String or not commands.has(row.method) or not row.get("args") is Array: return null
@@ -85,7 +86,9 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 		if row.args.size() < limits[0] or row.args.size() > limits[1] or not GhostSaveCodec.valid_args(row.method, row.args): return null
 		var args: Array = row.args.duplicate(true)
 		if row.method == "counter_command" and args.size() == 4: args[3] = int(args[3])
-		session.callv(row.method, args)
+		var result: ActionResult = session.callv(row.method, args)
+		if row.method == "growth_command" and not result.ok: return null
+		if ShopGrowthService.enabled(run) and row.method == "counter_command" and row.args[0] in ["display_accept", "display_counter"] and not result.ok: return null
 		replayed_actions += 1
 	var expected: Dictionary = data.duplicate(true)
 	expected.erase("save_version"); expected.erase("content_version")

@@ -10,6 +10,7 @@ var _preview_index := 0
 var _return_focus: Control
 var _room: PrivateRoomView
 var _session: RunSession
+var facilities: FacilitiesNavigation
 var _room_phase := ""
 var _room_pending := ""
 var _market_notice: Button
@@ -40,7 +41,7 @@ var _feedback_state_id := 0
 var _review_panel: StringName = &""
 var _reviewing := false
 var _seen_feedback: Dictionary = {}
-const PANEL_TITLES := {"day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "物品记事", "night": "夜间结算"}
+const PANEL_TITLES := {"growth": "修缮与查铺", "day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "物品记事", "night": "夜间结算"}
 
 
 func _ready() -> void:
@@ -96,6 +97,14 @@ func _ready() -> void:
 
 func bind_session(session: RunSession) -> void:
 	_session = session
+	var growth_panel := ShopGrowthPanel.new()
+	growth_panel.panel_id = &"growth"
+	growth_panel.name = "ShopGrowthPanel"
+	%DayFlowPanel.get_parent().add_child(growth_panel)
+	growth_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	growth_panel.hide()
+	_flow.register_panel(growth_panel)
+	growth_panel.bind(session)
 	if InvestigationService.enabled(session.definition):
 		var panel := InvestigationPanel.new()
 		panel.panel_id = &"investigation"
@@ -265,6 +274,11 @@ func bind_session(session: RunSession) -> void:
 	var inventory_event_notice := preload("res://ui/inventory/inventory_event_notice.gd").new()
 	add_child(inventory_event_notice)
 	inventory_event_notice.bind(session, self)
+	if session._day.state.shop_growth_enabled:
+		facilities = FacilitiesNavigation.new()
+		facilities.name = "FacilitiesNavigation"
+		add_child(facilities)
+		facilities.bind(self, session)
 	if MirrorReunionService.enabled(session.definition):
 		var reunion := MirrorReunionView.new()
 		add_child(reunion)
@@ -473,6 +487,15 @@ func _on_context_opened(kind: StringName) -> void:
 
 func _open_drawer(panel_id: StringName) -> void:
 	if _counter_view.story_active: _counter_view.story.hide()
+	if facilities != null:
+		if panel_id == &"growth":
+			_close_menu()
+			%Drawer.hide()
+			_counter_view.dismiss_contexts()
+			facilities.enter()
+			return
+		elif facilities.in_room:
+			facilities.leave(false)
 	if _feedback != null and _feedback.visible: _cancel_feedback(false)
 	_close_menu()
 	_counter_view.dismiss_contexts()
@@ -549,6 +572,9 @@ func _unhandled_key_input(event: InputEvent) -> void:
 		return
 	if %Drawer.visible:
 		_close_drawer()
+		get_viewport().set_input_as_handled()
+		return
+	if facilities != null and facilities.cancel():
 		get_viewport().set_input_as_handled()
 
 

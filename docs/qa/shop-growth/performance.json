@@ -1,0 +1,41 @@
+[
+	{
+		"cold_ms": 130.709,
+		"journal_actions": 34,
+		"model_pair_average_ms": 5.5235,
+		"stage": "preparation",
+		"warm_ms": [
+			40.442,
+			34.512,
+			37.883,
+			41.377,
+			43.452
+		]
+	},
+	{
+		"cold_ms": 146.508,
+		"journal_actions": 43,
+		"model_pair_average_ms": 6.5175,
+		"stage": "buyer",
+		"warm_ms": [
+			35.947,
+			38.436,
+			43.555,
+			43.319,
+			53.001
+		]
+	},
+	{
+		"cold_ms": 559.243,
+		"journal_actions": 397,
+		"model_pair_average_ms": 5.33145,
+		"stage": "ending",
+		"warm_ms": [
+			69.685,
+			68.276,
+			75.219,
+			71.332,
+			85.138
+		]
+	}
+]

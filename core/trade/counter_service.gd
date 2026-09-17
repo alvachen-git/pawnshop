@@ -18,6 +18,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	var visit := customers.active(day.state)
 	if day.state.phase != &"open" or visit == null or visit.visit_id != visit_id or day.state.game_minutes >= visit.expires_at:
 		return "当前顾客已离开或柜台未营业。"
+	if visit.purpose == "display_buyer": return ShopGrowthService.trade_reason(day, command, visit_id, detail, amount)
 	if visit.purpose == "husband_meeting": return "这次只谈旧事，请到对话页问话或送客。"
 	var late_error := NightMarketPlan.command_reason(visit, command)
 	if not late_error.is_empty(): return late_error
@@ -37,7 +38,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 			cost = int(item.provenance.check_minutes)
 		"appraise":
 			if not appraisal.can_perform(visit.item, item, detail, day.definition.tools): return "动作已做过、工具缺失或前置证据不足。"
-			cost = item.find_action(detail).minutes
+			cost = ShopGrowthService.appraisal_minutes(day.state, item, detail)
 		"question":
 			if scenario != null:
 				var question := scenario.find_question(detail)
@@ -105,7 +106,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	var cost := 0
 	match command:
 		"verify_source": cost = int(item.provenance.check_minutes)
-		"appraise": cost = item.find_action(detail).minutes
+		"appraise": cost = ShopGrowthService.appraisal_minutes(day.state, item, detail)
 		"question": cost = scenario.find_question(detail).minutes if scenario != null else customer.find_question(detail).minutes
 		"concession": cost = scenario.concession_minutes
 		"offer", "pawn": cost = customer.terms.quote_minutes

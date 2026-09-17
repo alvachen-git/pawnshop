@@ -12,6 +12,9 @@ var _initial_run_ready := true
 func _ready() -> void:
 	if OS.is_debug_build():
 		for argument in OS.get_cmdline_user_args():
+			if argument.begins_with("--growth-preview=") and argument.trim_prefix("--growth-preview=") in ["preparation", "closed", "buyer"]:
+				_bootstrap.growth_preview = argument.trim_prefix("--growth-preview=")
+				start_at_title = false
 			if argument.begins_with("--mirror-reunion-preview=") and argument.trim_prefix("--mirror-reunion-preview=") in ["ready", "apology", "angry", "evasive"]:
 				_bootstrap.preview_stage = argument.trim_prefix("--mirror-reunion-preview=")
 				_bootstrap.preview_version = 26
@@ -45,6 +48,9 @@ func _ready() -> void:
 		_warm_counter.call_deferred()
 	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"risk" if _bootstrap.preview_version >= 25 else &"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
+	if not _bootstrap.growth_preview.is_empty() and _bootstrap.session != null:
+		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"trade" if _bootstrap.growth_preview == "buyer" else &"growth")
+		if _bootstrap.growth_preview == "closed": _counter_screen.facilities.room.select.call_deferred("archive")
 
 func _warm_counter() -> void:
 	# Draw once behind the opaque title to upload textures and cache font glyphs.

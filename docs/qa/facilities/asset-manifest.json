@@ -1,0 +1,47 @@
+[
+  {
+    "path": "assets/facilities/discovered-compartment.png",
+    "bytes": 1709952,
+    "dimensions": [
+      1024,
+      1536
+    ],
+    "sha256": "b27e1dd93d6d1b8a9cc22697af2bf64718dd9f0a91047737b32389af155ab29f"
+  },
+  {
+    "path": "assets/facilities/room-level0.png",
+    "bytes": 2509974,
+    "dimensions": [
+      1672,
+      941
+    ],
+    "sha256": "1134c73ea96c9c81467775378db53280a613747f06ff4b22eda83a381f314e80"
+  },
+  {
+    "path": "assets/facilities/room-level1.png",
+    "bytes": 2458946,
+    "dimensions": [
+      1672,
+      941
+    ],
+    "sha256": "658ea0df12730a2cc62b5ae1cc2378701bf703f7e305cb43a254311173f97692"
+  },
+  {
+    "path": "assets/facilities/room-level2.png",
+    "bytes": 2331368,
+    "dimensions": [
+      1672,
+      941
+    ],
+    "sha256": "45c09b802fa4d4ad45c59a9d9556e61e265abbd64132d3844d3b26e16da4634d"
+  },
+  {
+    "path": "assets/facilities/room-level3.png",
+    "bytes": 2344607,
+    "dimensions": [
+      1672,
+      941
+    ],
+    "sha256": "ecd91cc4547c717d2cd3903d3ab659c73565a1c733d3723089780abf0bf7917f"
+  }
+]

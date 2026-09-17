@@ -54,6 +54,7 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 
 func update(state: RunState, pending_quote_visit_id := "") -> void:
 	if state.phase == &"pre_open": return
+	ShopGrowthService.sync(state)
 	PawnReturnService.arrive(state)
 	for visit in state.visits:
 		if visit.status not in ["scheduled", "waiting", "active"]: continue
@@ -70,6 +71,7 @@ func update(state: RunState, pending_quote_visit_id := "") -> void:
 			if visit.status == "waiting":
 				visit.status = "active"
 				GhostGuests.arrive(state, visit)
+				ShopGrowthService.activate(state, visit)
 				if visit.status == "active": break
 
 func active(state: RunState) -> CustomerVisit:
@@ -80,5 +82,6 @@ func active(state: RunState) -> CustomerVisit:
 func finish(state: RunState, visit: CustomerVisit, outcome: String) -> void:
 	if visit.status not in ["scheduled", "waiting", "active"]: return
 	InvestigationService.departed(state, visit, outcome)
+	ShopGrowthService.departed(state, visit, outcome)
 	visit.status = outcome
 	state.visit_history.append({"visit_id": visit.visit_id, "customer_id": visit.customer_id, "night": state.current_night_index, "minute": state.game_minutes, "outcome": outcome})

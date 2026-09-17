@@ -3,6 +3,8 @@ extends RefCounted
 
 const PHASE_PRE_OPEN := &"pre_open"
 
+var shop_growth_enabled := false
+var shop_growth: Dictionary = {}
 var mirror_reunion_enabled := false
 var mirror_ending_enabled := false
 var mirror_resolution: Dictionary = {}
@@ -82,6 +84,8 @@ var visits: Array[CustomerVisit] = []
 static func create(definition: RunDefinition) -> RunState:
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.shop_growth_enabled = ShopGrowthService.enabled(definition)
+	if state.shop_growth_enabled: state.shop_growth = ShopGrowthService.initial()
 	state.mirror_reunion_enabled = MirrorReunionService.enabled(definition)
 	state.mirror_ending_enabled = MirrorEndingService.enabled(definition)
 	state.investigation_enabled = InvestigationService.enabled(definition)
@@ -144,6 +148,7 @@ func to_read_model() -> Dictionary:
 		"visit_history": visit_history.duplicate(true),
 	}
 
+	if shop_growth_enabled: data["shop_growth"] = shop_growth.duplicate(true)
 	if mirror_ending_enabled:
 		data["mirror_resolution"] = mirror_resolution.duplicate(true)
 		data["special_resources"] = special_resources.duplicate(true)

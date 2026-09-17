@@ -154,12 +154,14 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 			if definition.private_room: RoomFlow.seal(_day.state, _risk)
 			else: _risk.settle(_day.state)
 	if result.ok and (command == "finish_sleep" or (command == "resolve_night" and not definition.private_room)): FeeService.finish(_day.state, definition)
+	if result.ok and command == "open_shop": ShopGrowthService.lock_night(_day.state)
 	if result.ok and _counter != null:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
 			GhostGuests.dawn(_day.state)
 			InvestigationService.dawn(_day.state)
 			_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 		_counter.customers.update(_day.state)
+	if result.ok and command == "open_shop" and _day.state.shop_growth_enabled: _persist()
 	if result.ok and prior_visitor != null and prior_visitor.status == "timed_out" and prior_visitor.voice.has("timed_out"): result.message += "\n" + String(prior_visitor.voice.timed_out)
 	if result.ok and _events != null: _events.poll(_day.state, definition)
 	MarketService.sync(_day.state, definition)
@@ -243,6 +245,19 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
 	if command == "soul_inspect": return inspect_customer(visit_id)
+	var growth_visit := _counter.customers.active(_day.state)
+	if growth_visit != null and growth_visit.purpose == "display_buyer":
+		var ledger_start := _day.state.ledger_entries.size()
+		var result := ShopGrowthService.trade(_day, command, visit_id, detail, amount)
+		if result.ok:
+			if _risk != null: _risk.capture_close(_day.state)
+			_events.poll(_day.state, definition)
+			MarketService.sync(_day.state, definition)
+			_persist()
+			_emit_receipt(ledger_start)
+		message = result.message
+		_message_visit_id = visit_id
+		return result
 	if command in ["meeting_question", "meeting_end"]:
 		if amount != 0: return ActionResult.new(false, "这次只谈旧事。")
 		return investigation_command(command, visit_id + ("|" + detail if command == "meeting_question" else ""))
@@ -289,6 +304,7 @@ func counter_model() -> Dictionary:
 	model.trade.reactions = _negotiation_reactions.for_visit(_day.state, model.active_id)
 	PawnReturnReadModels.enrich(model, _day, _commerce)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
+	ShopGrowthReadModels.inventory(model, _day)
 	if not _day.state.pending_event_id.is_empty() or mirror_pending() or _day.state.phase in [&"dead", &"bankrupt"]:
 		model.trade.can_offer = false
 		model.trade.can_pawn = false
@@ -333,8 +349,10 @@ func _impl_commerce_command(command: String, target: String, detail := "") -> Ac
 
 func _emit_receipt(previous_size: int) -> void:
 	if definition.batch_selling and _day.state.ledger_entries.size() > previous_size and _day.state.ledger_entries[previous_size].kind == "sale":
-		_emit_transaction(TradeReceiptModel.batch(_day, _counter.catalog, previous_size))
-		return
+		var batch := TradeReceiptModel.batch(_day, _counter.catalog, previous_size)
+		if not batch.is_empty():
+			_emit_transaction(batch)
+			return
 	# A rejected quote can return ok=true. A new ledger posting, rather than
 	# ActionResult.ok or localized message matching, proves money changed hands.
 	if _counter == null or _day.state.ledger_entries.size() != previous_size + 1: return
@@ -617,7 +635,7 @@ func bell_model() -> Dictionary:
 		var reason := _counter.reason(_day, "reject", visit.visit_id)
 		var customer := _counter.catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 		model.merge({"mode": "dismiss", "target_id": visit.visit_id, "enabled": reason.is_empty(),
-			"hint": "长按1秒送客 · 耗时%d分钟；松开取消。" % customer.terms.reject_minutes if reason.is_empty() else reason}, true)
+			"hint": "长按1秒谢绝买家 · 不耗时；松开取消。" if visit.purpose == "display_buyer" else "长按1秒送客 · 耗时%d分钟；松开取消。" % customer.terms.reject_minutes if reason.is_empty() else reason}, true)
 		return model
 	model.mode = "wait"
 	model.enabled = _day.state.visits.any(func(v: CustomerVisit) -> bool: return v.status in ["scheduled", "waiting"] and v.arrival < definition.night_minutes and v.expires_at > _day.state.game_minutes)
@@ -690,6 +708,9 @@ func _journal_call(method: String, args: Array) -> ActionResult:
 	_journal_depth += 1
 	var result: ActionResult = callv("_impl_" + method, args)
 	_journal_depth -= 1
+	if _day.state.shop_growth_enabled:
+		ShopGrowthService.sync(_day.state)
+		if previous != null and previous.shop_growth != _day.state.shop_growth: _pending_checkpoint = true
 	if not replaying and not result.ok:
 		var before := previous.to_read_model()
 		var after := _day.state.to_read_model()
@@ -776,4 +797,17 @@ func _impl_observe_room(id: String) -> ActionResult:
 		result = ActionResult.new(false, "未能记下，请重试。" + _save.error_message)
 	message = result.message
 	_emit_changed()
+	return result
+
+func growth_command(command: String, detail := "") -> ActionResult:
+	return _journal_call("growth_command", [command, detail])
+
+func _impl_growth_command(command: String, detail := "") -> ActionResult:
+	var result := ShopGrowthService.perform(_day, command, detail)
+	if result.ok:
+		if _risk != null: _risk.capture_close(_day.state)
+		if _events != null: _events.poll(_day.state, definition)
+		MarketService.sync(_day.state, definition)
+		_persist()
+	message = result.message
 	return result

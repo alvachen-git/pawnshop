@@ -8,7 +8,7 @@ static func used(state: RunState, action: String, night := 0) -> bool:
 	return state.preparation_history.any(func(row: Dictionary) -> bool: return row.action == action and (night == 0 or row.night == night))
 
 static func count(state: RunState) -> int:
-	return state.preparation_history.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index and row.action != "finish").size()
+	return ShopGrowthService.preparation_count(state) + state.preparation_history.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index and row.action != "finish").size()
 
 static func reason(state: RunState, run: RunDefinition, action: String) -> String:
 	if OpeningPreparation.enabled(run): return OpeningPreparation.reason(state, action)

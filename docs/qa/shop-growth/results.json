@@ -1,0 +1,117 @@
+{
+  "date": "2026-09-15",
+  "runtime": "shop_growth_ten",
+  "version": 25,
+  "results": [
+    {
+      "name": "rules",
+      "log": "rules.log",
+      "passed": true,
+      "summary": "SHOP GROWTH: 1358 passes, 0 failures"
+    },
+    {
+      "name": "edges",
+      "log": "edges.log",
+      "passed": true,
+      "summary": "SHOP GROWTH EDGES: 1055 passes, 0 failures; 1000 seeded chances: 398 arrivals"
+    },
+    {
+      "name": "storage_write",
+      "log": "storage_write.log",
+      "passed": true,
+      "summary": "SHOP GROWTH STORAGE []: 25 passes, 0 failures"
+    },
+    {
+      "name": "storage_read",
+      "log": "storage_read.log",
+      "passed": true,
+      "summary": "SHOP GROWTH STORAGE [\"read\"]: 5 passes, 0 failures"
+    },
+    {
+      "name": "performance",
+      "log": "performance.log",
+      "passed": true,
+      "summary": "SHOP GROWTH PERFORMANCE: 25 passes, 0 failures; [{\"cold_ms\":160.725,\"journal_actions\":34,\"model_pair_average_ms\":7.1974,\"stage\":\"preparation\",\"warm_ms\":[60.471,46.195,50.931,60.717,54.792]},{\"cold_ms\":182.422,\"journal_actions\":43,\"model_pair_average_ms\":6.77585,\"stage\":\"buyer\",\"warm_ms\":[59.356,48.802,50.759,45.428,50.639]},{\"cold_ms\":583.017,\"journal_actions\":397,\"model_pair_average_ms\":5.82775,\"stage\":\"ending\",\"warm_ms\":[83.145,82.994,68.859,75.82,90.261]}]"
+    },
+    {
+      "name": "economy",
+      "log": "economy.log",
+      "passed": true,
+      "summary": "SHOP GROWTH ECONOMY: 23382 passes, 0 failures; {\"bench\":{\"bankrupt\":0,\"business_profit\":-5093,\"buyers\":0,\"cash_change\":-6373,\"chances\":0,\"facility_spend\":1280,\"inspection_minutes\":26785,\"inventory_cost\":0,\"missed\":54,\"peak_inventory_cost\":2245,\"runs\":32,\"sales\":0,\"sales_revenue\":4471},\"both\":{\"bankrupt\":0,\"business_profit\":-3949,\"buyers\":32,\"cash_change\":-7149,\"chances\":92,\"facility_spend\":3200,\"inspection_minutes\":26785,\"inventory_cost\":0,\"missed\":42,\"peak_inventory_cost\":2241,\"runs\":32,\"sales\":32,\"sales_revenue\":2849},\"display\":{\"bankrupt\":0,\"business_profit\":-4679,\"buyers\":34,\"cash_change\":-6599,\"chances\":95,\"facility_spend\":1920,\"inspection_minutes\":32835,\"inventory_cost\":0,\"missed\":211,\"peak_inventory_cost\":2359,\"runs\":32,\"sales\":34,\"sales_revenue\":3811},\"none\":{\"bankrupt\":0,\"business_profit\":-5760,\"buyers\":0,\"cash_change\":-5760,\"chances\":0,\"facility_spend\":0,\"inspection_minutes\":32815,\"inventory_cost\":0,\"missed\":300,\"peak_inventory_cost\":2277,\"runs\":32,\"sales\":0,\"sales_revenue\":5615}}"
+    },
+    {
+      "name": "ui_1280",
+      "log": "ui_1280.log",
+      "passed": true,
+      "summary": "SHOP GROWTH UI: 66 assertions, 0 failures"
+    },
+    {
+      "name": "ui_1600",
+      "log": "ui_1600.log",
+      "passed": true,
+      "summary": "SHOP GROWTH UI: 66 assertions, 0 failures"
+    },
+    {
+      "name": "v23_investigation",
+      "log": "v23_investigation.log",
+      "passed": true,
+      "summary": "INVESTIGATION: 2362 passes, 0 failures"
+    },
+    {
+      "name": "goods",
+      "log": "goods.log",
+      "passed": true,
+      "summary": "GOODS TESTS: 8544 passes, 0 failures"
+    },
+    {
+      "name": "manual_saves",
+      "log": "manual_saves.log",
+      "passed": true,
+      "summary": "MANUAL SAVE TESTS: 1163 assertions, 0 failures"
+    },
+    {
+      "name": "replay_cache",
+      "log": "replay_cache.log",
+      "passed": true,
+      "summary": "REPLAY CACHE: 100 checks, 0 failures"
+    },
+    {
+      "name": "hidden_drawers",
+      "log": "hidden_drawers.log",
+      "passed": true,
+      "summary": "HIDDEN DRAWERS: 6 checks, 0 failures"
+    },
+    {
+      "name": "save_list_cache",
+      "log": "save_list_cache.log",
+      "passed": true,
+      "summary": "SAVE LIST CACHE: 11 checks, 0 failures"
+    },
+    {
+      "name": "v25_mirror_routes",
+      "log": "v25_mirror_routes.log",
+      "passed": true,
+      "summary": "GROWTH MIRROR REGRESSION: 2373 passes, 0 failures"
+    },
+    {
+      "name": "launch_normal",
+      "passed": true,
+      "log": "launch-normal.log"
+    },
+    {
+      "name": "launch_preparation",
+      "passed": true,
+      "log": "launch-preparation.log"
+    },
+    {
+      "name": "launch_closed",
+      "passed": true,
+      "log": "launch-closed.log"
+    },
+    {
+      "name": "launch_buyer",
+      "passed": true,
+      "log": "launch-buyer.log"
+    }
+  ]
+}
