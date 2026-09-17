@@ -39,6 +39,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		for feature in ["appraisal", "dialogue", "trade"]: model[feature].body += "\n\n" + message
 		return model
 	var customer := service.catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
+	if visit.purpose == "display_buyer": return ShopGrowthReadModels.buyer(model, day, visit, message)
 	if visit.purpose == "husband_meeting": return InvestigationCounterModel.build(model, day, service.catalog, visit, message)
 	var item := service.catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
 	model.active_id = visit.visit_id
@@ -58,7 +59,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 	var goods_note := GoodsExpertise.description(visit.item, item)
 	model.appraisal.body = "%s\n证据估值：%d–%d（不是买家报价）\n你的判断：%s\n\n%s" % [item.display_name, bounds.x, bounds.y, JUDGEMENTS[visit.item.judgement], "\n".join(evidence_lines) if not evidence_lines.is_empty() else "尚未取得证据。卖家说法不能替代检查。"]
 	for action in item.appraisal_actions:
-		model.appraisal.buttons.append(_button(day, service, visit, "appraise", action.id, "%s · %d分钟" % [action.label, action.minutes]))
+		model.appraisal.buttons.append(_button(day, service, visit, "appraise", action.id, "%s · %d分钟" % [action.label, ShopGrowthService.appraisal_minutes(state, item, action.id)]))
 	if not item.provenance.is_empty():
 		model.appraisal.body += "\n" + ProvenanceService.describe(visit.item)
 		model.appraisal.buttons.append(_button(day, service, visit, "verify_source", "", "核对来源凭据与原物 · %d分钟" % int(item.provenance.check_minutes)))

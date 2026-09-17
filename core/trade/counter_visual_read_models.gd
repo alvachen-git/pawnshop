@@ -25,6 +25,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 	var pawns := "pawn" in modes and "pawn" in customer.transaction_modes and terms != null
 	var visual := {
 		"customer_id": visit.customer_id,
+		"person_id": String(visit.person.get("id", "")),
 		"item_name": item.display_name, "item_description": item.description,
 		"provenance": ProvenanceService.known_text(visit.item, item),
 		"item_asset": item.visual_asset_id, "customer_name": VarietyService.name_for(visit.person, customer),

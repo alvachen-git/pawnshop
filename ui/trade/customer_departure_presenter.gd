@@ -5,6 +5,9 @@ signal departed(notice: Dictionary)
 signal reset
 
 const REASONS := {
+	"display_failed": "这次回价没有谈拢。",
+	"display_rejected": "你谢绝了买家的报价。",
+	"display_cancelled": "陈列货已经撤下，问价就此作罢。",
 	"inspection_refused": "来客不许验货，这笔交易已经作罢。",
 	"swap_rejected": "你未答应调换，原当物仍在铺内保管。",
 	"redemption_deferred": "已约定按原票日期再来，赎金不变。",
@@ -50,11 +53,13 @@ func _refresh() -> void:
 	var reply_name := ""
 	var reply_style := ""
 	var quote_refused := false
+	var display_departed := false
 	for row in state.visit_history.slice(_cursor):
 		if not REASONS.has(row.outcome) or not _known.has(row.visit_id): continue
 		var visit: CustomerVisit = _known[row.visit_id].visit
 		if visit.purpose == "husband_meeting": continue
 		var was_active: bool = _known[row.visit_id].was_active
+		display_departed = display_departed or visit.purpose == "display_buyer"
 		if was_active and not visit.departure_reply.is_empty(): quote_refused = true
 		early_departed = early_departed or EarlyRedemption.is_visit(visit)
 		deferred = deferred or row.outcome == "redemption_deferred"
@@ -66,18 +71,22 @@ func _refresh() -> void:
 			reply_name = name
 			reply_style = "refused" if row.outcome in ["patience_exhausted", "rounds_exhausted"] else "timed_out" if row.outcome == "timed_out" else "rejected" if row.outcome == "shop_closed" else ""
 		subjects.append(name + " · " + item.display_name)
-		var speech: String = {"inspection_refused": "你的手刚伸向包裹，那人便一把收回：‘说过了，不许验货。’他带着东西走了，未留下可核实的细节。", "swap_rejected": "他合上匣子，八十银元也带走了。","redemption_deferred": "姜素云收好当票：‘那就照票上的日子来，钱我留着。’", "patience_exhausted": "他把东西收回怀里：“这买卖，不谈了。”", "rounds_exhausted": "他重新扎好包袱：“价钱合不到一处，就到这里吧。”", "timed_out": "他朝门外看了一眼，收好东西，匆匆离开。", "shop_closed": "门板落下前，客人带着旧物离开了。"}[row.outcome]
+		var speech: String = {"display_failed": "他拢起袖子：‘这个价，我接不住。’", "display_rejected": "客人将钱袋收回，告辞出门。", "display_cancelled": "客人收回目光，未再问价。", "inspection_refused": "你的手刚伸向包裹，那人便一把收回：‘说过了，不许验货。’他带着东西走了，未留下可核实的细节。", "swap_rejected": "他合上匣子，八十银元也带走了。","redemption_deferred": "姜素云收好当票：‘那就照票上的日子来，钱我留着。’", "patience_exhausted": "他把东西收回怀里：“这买卖，不谈了。”", "rounds_exhausted": "他重新扎好包袱：“价钱合不到一处，就到这里吧。”", "timed_out": "他朝门外看了一眼，收好东西，匆匆离开。", "shop_closed": "门板落下前，客人带着旧物离开了。"}[row.outcome]
 		if row.outcome == "timed_out" and visit.voice.has("timed_out"): speech = String(visit.voice.timed_out)
 		if EarlyRedemption.is_visit(visit) and row.outcome == "shop_closed": speech = visit.voice.timed_out
 		var reason: String = REASONS[row.outcome]
 		if not was_active:
 			reason = "还没轮到柜台，等候期限已到，客人先走了。" if row.outcome == "timed_out" else "尚在排队，铺门已关，客人带着货物离开。"
+		if visit.purpose == "display_buyer":
+			speech = String(visit.voice.get("timed_out", "客人告辞，陈列货仍由铺中保管。")) if row.outcome == "timed_out" else "客人告辞，陈列货仍由铺中保管。" if row.outcome == "shop_closed" else speech
+			reason = REASONS[row.outcome]
 		lines.append((visit.departure_reply + "\n" if was_active and not visit.departure_reply.is_empty() else "") + reason + "\n" + speech)
 		ids.append(row.visit_id)
 	var elapsed := maxi(0, state.game_minutes - _minute)
 	_capture()
 	if lines.is_empty(): return
 	var detail := "货物未收取，也未向这些客人付款。\n本次操作耗时%d分钟；查看这条消息不耗时。" % elapsed
+	if display_departed: detail = "离场者中有陈列买家：货款未成交，陈列货的去向以库存为准。其他当户带来的货亦未收取。\n本次操作耗时%d分钟；查看消息不耗时。" % elapsed
 	if early_departed: detail = "未办理收赎，银簪仍在铺内保管，原票与到期日不变。\n本次操作耗时%d分钟；查看这条消息不耗时。" % elapsed
 	if early_departed:
 		var ticket := EarlyRedemption.ticket_for(state)
@@ -90,7 +99,7 @@ func _refresh() -> void:
 		for index in ids.size(): detail += "\n\n" + subjects[index] + "\n" + lines[index]
 	var title := ("未能成交" if active_departed else "等候客人离场") if ids.size() == 1 else "来客离场"
 	if ids.size() == 1 and early_departed: title = "已约定回访" if deferred else "提前取赎未办妥"
-	departed.emit({"id": "departure/" + "/".join(ids), "kind": "departure", "title": title, "item": subjects[0] if ids.size() == 1 else "%d位客人带着货物离开了" % ids.size(),
+	departed.emit({"id": "departure/" + "/".join(ids), "kind": "departure", "title": title, "item": subjects[0] if ids.size() == 1 else "%d位客人离开了" % ids.size(),
 		"reply_name": reply_name, "reply_style": reply_style if not early_departed else "",
 		"quote_refused": quote_refused,
 		"night": state.current_night_index, "active_departed": active_departed,

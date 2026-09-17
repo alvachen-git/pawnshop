@@ -17,6 +17,7 @@ var mode := "load"
 var pending_key := ""
 var destination := ""
 var _return_focus: Control
+var _loading := false
 
 func bind(value: RunSession) -> void:
 	session = value
@@ -92,7 +93,7 @@ func bind(value: RunSession) -> void:
 	session.storage_requested.connect(open)
 	session.leave_requested.connect(request_leave)
 	session.changed.connect(func() -> void:
-		if overlay.visible: refresh()
+		if overlay.visible and not _loading: refresh()
 	)
 	overlay.hide()
 
@@ -164,7 +165,13 @@ func _commit() -> void:
 		if not destination.is_empty(): leave_confirmed.emit(destination)
 	else:
 		var restored := library.read_entry(key)
-		if restored.is_empty() or not library.adopt(restored, session): _error(library.error_message); return
+		if restored.is_empty(): _error(library.error_message); return
+		# adopt emits changed; rebuilding a list that is about to close repeats
+		# save parsing and validation on the critical path into the game.
+		_loading = true
+		var adopted := library.adopt(restored, session)
+		_loading = false
+		if not adopted: _error(library.error_message); return
 		close()
 		loaded.emit()
 

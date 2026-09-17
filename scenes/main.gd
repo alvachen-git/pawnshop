@@ -3,6 +3,7 @@ extends Node
 @export var start_at_title := false
 var title_menu: TitleMenuView
 var storage: SaveLibraryView
+var _initial_run_ready := true
 
 @onready var _bootstrap: Bootstrap = $Bootstrap
 @onready var _counter_screen: CounterScreen = $CounterScreen
@@ -11,9 +12,21 @@ var storage: SaveLibraryView
 func _ready() -> void:
 	if OS.is_debug_build():
 		for argument in OS.get_cmdline_user_args():
+			if argument.begins_with("--growth-preview=") and argument.trim_prefix("--growth-preview=") in ["preparation", "closed", "buyer"]:
+				_bootstrap.growth_preview = argument.trim_prefix("--growth-preview=")
+				start_at_title = false
+			if argument.begins_with("--mirror-reunion-preview=") and argument.trim_prefix("--mirror-reunion-preview=") in ["ready", "apology", "angry", "evasive"]:
+				_bootstrap.preview_stage = argument.trim_prefix("--mirror-reunion-preview=")
+				_bootstrap.preview_version = 26
+				start_at_title = false
+			if argument.begins_with("--mirror-ending-preview=") and argument.trim_prefix("--mirror-ending-preview=") in ["ready", "willing", "refused"]:
+				_bootstrap.preview_stage = argument.trim_prefix("--mirror-ending-preview=")
+				_bootstrap.preview_version = 25
+				start_at_title = false
 			if argument.begins_with("--investigation-preview=") and argument.trim_prefix("--investigation-preview=") in ["commission", "report", "meeting"]:
 				_bootstrap.preview_stage = argument.trim_prefix("--investigation-preview=")
 				start_at_title = false
+	_initial_run_ready = start_at_title
 	if start_at_title:
 		_counter_screen.hide()
 		_counter_screen.process_mode = Node.PROCESS_MODE_DISABLED
@@ -21,6 +34,7 @@ func _ready() -> void:
 	_bootstrap.content_failed.connect(_counter_screen.show_content_error)
 	_bootstrap.initialize()
 	if _bootstrap.session != null:
+		if start_at_title: _bootstrap.session.message = RunSession.NEW_RUN_MESSAGE
 		_counter_screen.bind_session(_bootstrap.session)
 	if _bootstrap.session != null and _bootstrap.session._save.library != null:
 		storage = SaveLibraryView.new()
@@ -31,8 +45,21 @@ func _ready() -> void:
 		get_tree().auto_accept_quit = false
 	if start_at_title:
 		_show_title()
+		_warm_counter.call_deferred()
 	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null:
-		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
+		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"risk" if _bootstrap.preview_version >= 25 else &"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
+	if not _bootstrap.growth_preview.is_empty() and _bootstrap.session != null:
+		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"trade" if _bootstrap.growth_preview == "buyer" else &"growth")
+		if _bootstrap.growth_preview == "closed": _counter_screen.facilities.room.select.call_deferred("archive")
+
+func _warm_counter() -> void:
+	# Draw once behind the opaque title to upload textures and cache font glyphs.
+	# Gameplay processing stays disabled throughout this first-frame warmup.
+	if DisplayServer.get_name() == "headless" or not is_instance_valid(title_menu): return
+	_counter_screen.show()
+	await RenderingServer.frame_post_draw
+	if is_instance_valid(title_menu) and title_menu.visible:
+		_counter_screen.hide()
 
 func _show_title() -> void:
 		title_menu = TitleMenuView.new()
@@ -46,7 +73,8 @@ func _show_title() -> void:
 
 func _start_new_game() -> void:
 	if _bootstrap.session == null: return
-	_bootstrap.session.new_run()
+	# Bootstrap already generated this untouched first night, including its seed.
+	if not _initial_run_ready: _bootstrap.session.new_run()
 	_enter_game()
 
 
@@ -61,6 +89,7 @@ func _load_game() -> void:
 
 
 func _enter_game() -> void:
+	_initial_run_ready = false
 	_counter_screen.process_mode = Node.PROCESS_MODE_INHERIT
 	_counter_screen.show()
 	if is_instance_valid(title_menu):

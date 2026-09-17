@@ -1,7 +1,10 @@
 extends "res://tests/run_integrated_seven.gd"
 
+var aqi_manifest := "res://data/aqi_companion_manifest.json"
+var aqi_fixture_dir := "res://.godot/qa/v25/"
+
 func run() -> void:
-	var loaded := JsonContentProvider.new("res://data/aqi_companion_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new(aqi_manifest).load_catalog()
 	for issue in loaded.issues: print(issue.format_message())
 	check(loaded.is_success(), "v25 catalog")
 	if not loaded.is_success(): quit(1); return
@@ -25,7 +28,7 @@ func run() -> void:
 func fresh23() -> RunSession:
 	var store := GhostReplayStore.new()
 	store.origin = {"seed": 42, "run_token": "0123456789abcdef0123456789abcdef"}
-	return RunSession.new(run_def, 25, store, catalog)
+	return RunSession.new(run_def, catalog.content_version, store, catalog)
 
 func act(s: RunSession, command: String) -> void:
 	var result := s.execute(command)
@@ -33,12 +36,12 @@ func act(s: RunSession, command: String) -> void:
 
 func verify(s: RunSession, label: String) -> void:
 	var codec := SaveCodec.new()
-	var data := codec.encode(s._day.state, 25)
-	var restored := codec.decode(data, run_def, 25, catalog, true)
+	var data := codec.encode(s._day.state, catalog.content_version)
+	var restored := codec.decode(data, run_def, catalog.content_version, catalog, true)
 	check(restored != null, "replay " + label + ": " + codec.error_message)
 	if restored != null: check(GhostSaveCodec.same(restored.to_read_model(), s.read_state()), "exact " + label)
 	var forged := data.duplicate(true); forged.cash += 30
-	check(codec.decode(forged, run_def, 25, catalog, true) == null, "cash forgery " + label)
+	check(codec.decode(forged, run_def, catalog.content_version, catalog, true) == null, "cash forgery " + label)
 
 func journey(route: String) -> void:
 	var s := fresh23()
@@ -144,9 +147,9 @@ func journey(route: String) -> void:
 	if route == "example": fixture(s, "ending")
 
 func fixture(s: RunSession, stage: String) -> void:
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://.godot/qa/v25"))
-	var file := FileAccess.open("res://.godot/qa/v25/" + stage + ".json", FileAccess.WRITE)
-	file.store_string(JSON.stringify(SaveCodec.new().encode(s._day.state, 25)))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(aqi_fixture_dir))
+	var file := FileAccess.open(aqi_fixture_dir + stage + ".json", FileAccess.WRITE)
+	file.store_string(JSON.stringify(SaveCodec.new().encode(s._day.state, catalog.content_version)))
 
 func opening_story(s: RunSession, route: String) -> void:
 	var n := s._day.state.current_night_index

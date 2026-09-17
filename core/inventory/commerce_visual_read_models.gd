@@ -11,6 +11,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 		var bounds := AppraisalSystem.new().valuation(item, definition)
 		var clues: Array = ValueNotes.build(item, definition)
+		if MirrorEndingService.released(day.state, item.instance_id): clues = ["镜缘红痕已干，镜面只映寻常光影。旧刻字仍在，存放禁忌已随她离去。"]
 		var buyers: Dictionary = {}
 		if item.ownership_state == "owned":
 			for id in day.definition.buyer_ids:
@@ -21,10 +22,11 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 				if service.sale_reason(day, item, buyer).is_empty() and not item.provenance.is_empty():
 					var base := maxi(1, roundi(GoodsExpertise.value(item, definition) * buyer.value_multiplier))
 					buyers[id] += "\n基础报价 %d · 来源溢价 %d 银元" % [base, ProvenanceService.premium(item, buyer, base)]
-		stock.append({"id": item.instance_id, "name": definition.display_name + (" · 替物" if item.acquisition_type == "substitution" else ""), "asset": definition.visual_asset_id,
+		stock.append({"id": item.instance_id, "name": definition.display_name + (" · 替物" if item.acquisition_type == "substitution" else ""), "asset": "asset.weeping_mirror_" + String(day.state.mirror_resolution.ability) if MirrorEndingService.finished(day.state) and item.instance_id == day.state.mirror_resolution.mirror_id else definition.visual_asset_id,
 			"state": item.ownership_state, "stamp": CommerceReadModels.STATES[item.ownership_state],
+			"mirror_status": MirrorEndingService.note(day.state).get_slice("\n特殊资源", 0) if MirrorEndingService.finished(day.state) and item.instance_id == day.state.mirror_resolution.mirror_id else "",
 			"cost": item.acquisition_price, "cost_label": "放款" if item.acquisition_type in ["pawn", "substitution"] else "成本", "estimate": "%d–%d" % [bounds.x, bounds.y],
-			"provenance": ("货面浮着湿灰；到营业页按旧规封存包布。\n" if NightMarketRisk.item_pending(day.state, item.source_visit_id) and item.ownership_state == "owned" else "") + ProvenanceService.known_text(item, definition, false), "clues": clues, "buyers": buyers, "night": item.acquired_night, "ghost": not definition.ghost_rule_id.is_empty()})
+			"provenance": ("货面浮着湿灰；到营业页按旧规封存包布。\n" if NightMarketRisk.item_pending(day.state, item.source_visit_id) and item.ownership_state == "owned" else "") + ProvenanceService.known_text(item, definition, false), "clues": clues, "buyers": buyers, "night": item.acquired_night, "ghost": not definition.ghost_rule_id.is_empty() and not MirrorEndingService.released(day.state, item.instance_id)})
 	var tickets: Array = []
 	for index in day.state.pawn_tickets.size():
 		var ticket := day.state.pawn_tickets[index]
@@ -49,6 +51,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	var entries: Array = []
 	for entry in day.state.ledger_entries:
 		var subject := "铺面息费"
+		if entry.kind == "facility_investment": subject = ShopGrowthService.NAMES.get(entry.transaction_id.trim_prefix("facility/"), "设施整修")
 		if entry.kind == "preparation": subject = {"attract": "招揽客人", "tea": "备茶候客", "seek": "寻配茶盏"}.get(entry.transaction_id.get_slice("/", entry.transaction_id.get_slice_count("/") - 1), "开铺准备")
 		if entry.kind == "expertise": subject = "行家复核"
 		if entry.kind == "investigation": subject = "核查丈夫离家后的经历"
@@ -66,7 +69,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 			"receipt_id": receipt_id, "batch": batch,
 			"kind": CommerceReadModels.KINDS[entry.kind], "item": subject, "amount": entry.amount, "balance": entry.balance,
 			"profit": entry.realized_profit})
-	model.inventory.visual = {"stock": stock, "financial": financial, "message": message}
+	model.inventory.visual = {"stock": stock, "financial": financial, "message": "" if MirrorEndingService.finished(day.state) and message == (MirrorReunionService.transcript(day.state.mirror_resolution.ending, day.state) if day.state.mirror_reunion_enabled else MirrorEndingService.TEXTS[day.state.mirror_resolution.ending]) else message, "resources": day.state.special_resources.duplicate(true)}
 	model.ledger.visual = {"cash": day.state.cash, "night": day.state.current_night_index, "financial": financial,
 		"tickets": tickets, "entries": entries, "message": message,
 		"debt": FeeService.describe(day.state, day.definition) if day.definition.fee_policy.enabled else "本局没有每日息费约定。",

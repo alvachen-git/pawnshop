@@ -11,6 +11,9 @@ const ANSWERS := [
 ]
 const REPORT := "码头往来结算抄件\n抄件列着他生意折本后替货栈理货的月结，连续数月领取工钱。首笔固定结算早于街坊所述母子去世的日子，账上姓名、旧住处与当票身份相合。它能说明恢复营生的时间，不能说明每笔钱去了哪里。\n\n旧联络人的证词\n那人曾替码头与家乡的商户带信，知道他的落脚处，也见过他领取工钱。‘那阵子路是通的，他要托我，我能捎到。我没替他送过家信。至于他有没有托旁人，我不能作保。’\n\n两份材料各有来处。为何没有回去、是否另托人联系，还须当面问他。"
 
+static func answer(state: RunState, index: int) -> String:
+	return MirrorReunionService.CONTACT if state.mirror_reunion_enabled and index == 2 else ANSWERS[index]
+
 static func enabled(run: RunDefinition) -> bool:
 	return run.variety.get("investigation_version", 0) == 1
 
@@ -39,7 +42,8 @@ static func reason(day: DayController, catalog: ContentCatalog, command: String,
 		"book":
 			if not state.investigation.get("read", false): return "先拆阅查访回报，再托人约他。"
 			if appointment(state).get("status", "") == "booked": return "已有约定，等他依约来铺。"
-			if state.investigation.get("answers", []).size() == 3: return "该问的话已经核清。"
+			if MirrorEndingService.finished(state): return "镜前旧事已经落定，不必再托口信。"
+			if state.investigation.get("answers", []).size() == 3 and not state.mirror_ending_enabled: return "该问的话已经核清。"
 		"meeting_question", "meeting_end":
 			var visit := CustomerManager.new().active(state)
 			if visit == null or visit.purpose != "husband_meeting" or visit.visit_id != detail.get_slice("|", 0): return "赴约的人眼下不在柜前。"
@@ -62,6 +66,7 @@ static func perform(day: DayController, catalog: ContentCatalog, command: String
 		state.investigation["read"] = true
 		return ActionResult.new(true, REPORT)
 	if command in ["prepare_mirror", "put_away"]:
+		if MirrorEndingService.finished(state): return ActionResult.new(false, "镜前旧事已经落定。")
 		state.investigation["attitude"] = command
 		return ActionResult.new(true, "你将两份材料与问答放在一起，准备带到镜前。" if command == "prepare_mirror" else "你将材料折好，暂时收进抽屉。")
 	var start := state.game_minutes
@@ -87,7 +92,7 @@ static func perform(day: DayController, catalog: ContentCatalog, command: String
 			var answers: Array = state.investigation.answers
 			var index := answers.size()
 			answers.append({"id": QUESTIONS[index], "visit_id": visit.visit_id, "night": state.current_night_index, "start": start, "minute": state.game_minutes})
-			return ActionResult.new(true, ANSWERS[index])
+			return ActionResult.new(true, answer(state, index))
 	return ActionResult.new(false, "事务未办妥。")
 
 static func dawn(state: RunState) -> void:
@@ -101,6 +106,7 @@ static func prepare(state: RunState, run: RunDefinition) -> void:
 	if not enabled(run): return
 	for visit in state.visits:
 		if visit.customer_id == "mirror_husband": visit.person["id"] = PERSON
+	if MirrorEndingService.finished(state): return
 	var row := appointment(state)
 	if row.get("status", "") != "booked" or row.night != state.current_night_index: return
 	var visit := CustomerVisit.new()
@@ -124,13 +130,14 @@ static func departed(state: RunState, visit: CustomerVisit, outcome: String) -> 
 static func notes(state: RunState) -> String:
 	var order := state.investigation
 	if order.is_empty(): return ""
+	if MirrorEndingService.finished(state): return "\n\n" + MirrorEndingService.note(state)
 	var lines := "\n\n丈夫查访\n"
 	if not order.delivered: return lines + "查访已托付，约定第%d夜收到回报。" % order.report_night
 	if not order.read: return lines + "查访回报已送到，尚未拆阅。"
 	lines += REPORT
 	for answer in order.answers:
 		var i := QUESTIONS.find(answer.id)
-		lines += "\n\n" + PROMPTS[i] + "\n" + ANSWERS[i]
+		lines += "\n\n" + PROMPTS[i] + "\n" + answer(state, i)
 	var row := appointment(state)
 	if row.get("status", "") == "booked": lines += "\n\n已约第%d夜20:00来铺，等到21:30。" % row.night
 	elif row.get("status", "") in ["partial", "missed"]: lines += "\n\n这次会面未谈完，可另托口信再约。"
@@ -146,8 +153,8 @@ static func model(day: DayController, catalog: ContentCatalog) -> Dictionary:
 	var order := day.state.investigation
 	if not order.is_empty(): model.body = "委托单 · 丈夫离家后的经历\n第%d夜受理 · 已付30银元\n" % order.accepted_night + notes(day.state)
 	var actions := [["commission", "托人核查 · 30银元 · 10分钟"]] if order.is_empty() else ([["read_report", "拆阅查访回报"]] if order.delivered else [])
-	if order.get("read", false): actions.append(["book", "重新约见 · 5分钟" if not appointment(day.state).is_empty() else "约丈夫来铺 · 5分钟"])
-	if order.get("answers", []).size() == 3: actions.append_array([["prepare_mirror", "记下：准备把事实带到镜前"], ["put_away", "暂时收起材料"]])
+	if order.get("read", false) and not MirrorEndingService.finished(day.state): actions.append(["book", "重新约见 · 5分钟" if not appointment(day.state).is_empty() else "约丈夫来铺 · 5分钟"])
+	if order.get("answers", []).size() == 3 and not MirrorEndingService.finished(day.state): actions.append_array([["prepare_mirror", "记下：准备把事实带到镜前"], ["put_away", "暂时收起材料"]])
 	for action in actions:
 		var error := reason(day, catalog, action[0])
 		model.buttons.append({"command": action[0], "detail": "", "label": action[1], "enabled": error.is_empty(), "reason": error})

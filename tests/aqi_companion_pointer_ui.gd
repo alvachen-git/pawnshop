@@ -6,6 +6,7 @@ func _run() -> void:
 	root.content_scale_size = root.size
 	_capture_prefix = "aqi_pointer_%d" % root.size.x
 	_main = load(ProjectSettings.get_setting("application/run/main_scene")).instantiate()
+	_main.get_node("Bootstrap").manifest_path = aqi_manifest
 	_main.get_node("Bootstrap").save_path = "res://.godot/qa/v25/pointer.json"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session

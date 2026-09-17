@@ -47,6 +47,7 @@ func bind(session: RunSession, screen: CounterScreen) -> void:
 func pending_panel() -> StringName:
 	var state := _session._day.state
 	if state.phase in [&"dead", &"bankrupt", &"run_ended", &"private_room", &"sleep_resolution"]: return &""
+	if MirrorEndingService.active(state): return &"risk"
 	# Only an event already triggered by an item can light the cabinet.
 	# Available investigations and historical records are not pending events.
 	if not state.pending_event_id.is_empty():
@@ -62,6 +63,9 @@ func refresh() -> void:
 func _open_pending() -> void:
 	refresh()
 	if _target.is_empty(): return
+	if MirrorReunionService.enabled(_session.definition) and MirrorEndingService.active(_session._day.state):
+		_screen.get_node("MirrorReunion").reopen()
+		return
 	_screen._return_focus = self
 	if _target == &"risk":
 		var panel := _screen.get_node("%RiskPanel") as RiskPanel

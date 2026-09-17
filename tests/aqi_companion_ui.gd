@@ -1,5 +1,9 @@
 extends "res://tests/aqi_investigation_ui.gd"
 
+var aqi_manifest := "res://data/aqi_companion_manifest.json"
+var aqi_version := 25
+var aqi_fixture_dir := "res://.godot/qa/v25/"
+
 func _run() -> void:
 	create_timer(180).timeout.connect(func() -> void: push_error("AQI V25 UI TIMEOUT"); quit(1))
 	_capture_prefix = "aqi_v25_1600" if "wide" in OS.get_cmdline_user_args() else "aqi_v25_1280"
@@ -7,6 +11,7 @@ func _run() -> void:
 	root.content_scale_size = root.size
 	root.title = "AQI v25 acceptance " + str(root.size)
 	_main = load(ProjectSettings.get_setting("application/run/main_scene")).instantiate()
+	_main.get_node("Bootstrap").manifest_path = aqi_manifest
 	_main.get_node("Bootstrap").save_path = "res://.godot/qa/v25/ui.json"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
@@ -21,7 +26,7 @@ func _run() -> void:
 	var companion: AqiCompanionView = counter.companion
 	await _frames()
 	await _click_button(_main.title_menu.buttons[0])
-	_check(_session.content_version == 25 and _session.definition.total_nights == 10, "default v25 ten nights")
+	_check(_session.content_version == aqi_version and _session.definition.total_nights == 10, "default v25 ten nights")
 	await restore_stage("pre-open-7")
 	_check(not counter._portrait.visible and not companion.visible, "preparation no Aqi")
 	await _capture("preparation")
@@ -118,14 +123,14 @@ func _run() -> void:
 	_main._leave("title"); _main.title_menu.configure(true, false)
 	await _frames()
 	await _click_button(_main.title_menu.buttons[0])
-	_check(_session.content_version == 25, "new default after old game")
+	_check(_session.content_version == aqi_version, "new default after old game")
 	print("AQI V25 UI: %d assertions, %d failures" % [_assertions, _failures])
 	quit(0 if _failures == 0 else 1)
 
 func restore_stage(stage: String) -> void:
-	var data = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/v25/" + stage + ".json"))
+	var data = JSON.parse_string(FileAccess.get_file_as_string(aqi_fixture_dir + stage + ".json"))
 	var codec := SaveCodec.new()
-	var state := codec.decode(data, _session.definition, 25, _session._counter.catalog, true)
+	var state := codec.decode(data, _session.definition, aqi_version, _session._counter.catalog, true)
 	_check(state != null, "stage restore " + stage + ": " + codec.error_message)
 	if state == null: return
 	_check(_session._save.library.adopt({"state": state, "run": _session.definition, "catalog": _session._counter.catalog}, _session), "adopt checkpoint")

@@ -29,7 +29,7 @@ func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	var appointment_error := OrdinarySamplePlan.buyer_reason(day.state, buyer.id, definition.category, day.state.current_night_index, day.state.game_minutes)
 	if not appointment_error.is_empty(): return appointment_error
-	if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
+	if ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
 	var count := 0
 	for sale in day.state.sale_records:
 		if sale.buyer_id == buyer.id and sale.night == day.state.current_night_index: count += 1
@@ -58,9 +58,7 @@ func execute(day: DayController, command: String, target: String, detail: String
 	day.spend_action(buyer.action_minutes)
 	if day.state.phase != &"open" or day.state.game_minutes >= buyer.window_end: return ActionResult.new(false, "交货耗时后错过买家窗口；货款未变动。")
 	var profit := price - item.acquisition_price
-	EconomyManager.new().commit(day.state, price, item.instance_id, "sale/" + item.instance_id, "sale", profit)
-	item.ownership_state = "sold"
-	day.state.sale_records.append({"item_instance_id": item.instance_id, "buyer_id": String(buyer.id), "night": day.state.current_night_index, "minute": day.state.game_minutes, "price": price, "cost_basis": item.acquisition_price, "realized_profit": profit})
+	commit_sale(day.state, item, String(buyer.id), price)
 	return ActionResult.new(true, "出售收银 %d；成本 %d，已实现盈亏 %+d。" % [price, item.acquisition_price, profit])
 
 func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition) -> String:
@@ -70,8 +68,8 @@ func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	if not appointment_error.is_empty(): return appointment_error
 	if item.ownership_state != "owned": return "只有铺中自有现货可以出售。"
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
-	if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
-	if MarketService.is_special(day.definition, buyer) and definition.category != MarketService.category(day): return "不合陆掌眼眼下的收货偏好。"
+	if ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
+	if MarketService.is_special(day.definition, buyer) and ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) != MarketService.category(day): return "不合陆掌眼眼下的收货偏好。"
 	return ""
 
 func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
@@ -120,10 +118,15 @@ func sell_batch(day: DayController, buyer_id: String, item_ids: Array, pairs: Ar
 	if not spent.ok: return spent
 	for row in rows:
 		var item := InventoryManager.new().find(day.state, row.item_instance_id)
-		EconomyManager.new().commit(day.state, row.price, item.instance_id, "sale/" + item.instance_id, "sale", row.realized_profit)
-		item.ownership_state = "sold"
-		row.merge({"buyer_id": buyer_id, "night": day.state.current_night_index, "minute": day.state.game_minutes, "batch_id": batch_id})
-		day.state.sale_records.append(row)
+		commit_sale(day.state, item, buyer_id, row.price, batch_id)
 	day.state.sale_batches.append({"id": batch_id, "buyer_id": buyer_id, "item_ids": item_ids.duplicate(), "night": day.state.current_night_index, "start": start, "minute": day.state.game_minutes, "market_id": market.get("id", "fixed")})
 	if GoodsExpertise.enabled(day.definition): day.state.sale_batches.back().pairs = pairs.map(func(ids: Array) -> Array: return GoodsExpertise.pair_ids(ids[0], ids[1]))
 	return ActionResult.new(true, "交货%d件，收银%d；成本%d，交易毛利%+d。往返20分钟。" % [rows.size(), income, cost, income - cost])
+
+static func commit_sale(state: RunState, item: ItemInstance, buyer_id: String, price: int, batch_id := "") -> void:
+	var profit := price - item.acquisition_price
+	EconomyManager.new().commit(state, price, item.instance_id, "sale/" + item.instance_id, "sale", profit)
+	item.ownership_state = "sold"
+	var row := {"item_instance_id": item.instance_id, "buyer_id": buyer_id, "night": state.current_night_index, "minute": state.game_minutes, "price": price, "cost_basis": item.acquisition_price, "realized_profit": profit}
+	if not batch_id.is_empty(): row["batch_id"] = batch_id
+	state.sale_records.append(row)

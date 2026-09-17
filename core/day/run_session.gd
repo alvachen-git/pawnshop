@@ -8,6 +8,8 @@ signal changed
 signal transaction_completed(receipt: Dictionary)
 signal operation_completed(feedback: Dictionary)
 
+const NEW_RUN_MESSAGE := "暮色又落到了铺门前。柜上的账册，翻开了第一页。"
+
 var _ghost_depth := 0
 var definition: RunDefinition
 var content_version: int
@@ -72,6 +74,7 @@ func has_save() -> bool:
 	return _save.exists()
 
 func can_execute(command: String) -> bool:
+	if MirrorEndingService.active(_day.state): return false
 	if command in RoomKeepsakes.COMMANDS: return not mirror_pending() and RoomKeepsakes.can_execute(_day.state, command)
 	if command.begins_with("seal_cloth/"): return not mirror_pending() and NightMarketRisk.treatment_reason(_day, command.trim_prefix("seal_cloth/")).is_empty()
 	if command.begins_with("prep_"): return PreparationService.reason(_day.state, definition, command.trim_prefix("prep_")).is_empty()
@@ -151,12 +154,14 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 			if definition.private_room: RoomFlow.seal(_day.state, _risk)
 			else: _risk.settle(_day.state)
 	if result.ok and (command == "finish_sleep" or (command == "resolve_night" and not definition.private_room)): FeeService.finish(_day.state, definition)
+	if result.ok and command == "open_shop": ShopGrowthService.lock_night(_day.state)
 	if result.ok and _counter != null:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
 			GhostGuests.dawn(_day.state)
 			InvestigationService.dawn(_day.state)
 			_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 		_counter.customers.update(_day.state)
+	if result.ok and command == "open_shop" and _day.state.shop_growth_enabled: _persist()
 	if result.ok and prior_visitor != null and prior_visitor.status == "timed_out" and prior_visitor.voice.has("timed_out"): result.message += "\n" + String(prior_visitor.voice.timed_out)
 	if result.ok and _events != null: _events.poll(_day.state, definition)
 	MarketService.sync(_day.state, definition)
@@ -226,7 +231,7 @@ func new_run() -> void:
 	if _counter != null:
 		_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 	if _events != null: _events.poll(_day.state, definition)
-	message = "暮色又落到了铺门前。柜上的账册，翻开了第一页。"
+	message = NEW_RUN_MESSAGE
 	MarketService.sync(_day.state, definition)
 	_emit_changed()
 
@@ -235,10 +240,24 @@ func _copy_state(source: RunState) -> RunState:
 	return RunSnapshot.copy(source)
 
 func counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	if command.begins_with("ending_"): return mirror_resolution_command(command.trim_prefix("ending_"), visit_id)
 	return _journal_call("counter_command", [command, visit_id, detail, amount])
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
 	if command == "soul_inspect": return inspect_customer(visit_id)
+	var growth_visit := _counter.customers.active(_day.state)
+	if growth_visit != null and growth_visit.purpose == "display_buyer":
+		var ledger_start := _day.state.ledger_entries.size()
+		var result := ShopGrowthService.trade(_day, command, visit_id, detail, amount)
+		if result.ok:
+			if _risk != null: _risk.capture_close(_day.state)
+			_events.poll(_day.state, definition)
+			MarketService.sync(_day.state, definition)
+			_persist()
+			_emit_receipt(ledger_start)
+		message = result.message
+		_message_visit_id = visit_id
+		return result
 	if command in ["meeting_question", "meeting_end"]:
 		if amount != 0: return ActionResult.new(false, "这次只谈旧事。")
 		return investigation_command(command, visit_id + ("|" + detail if command == "meeting_question" else ""))
@@ -285,6 +304,7 @@ func counter_model() -> Dictionary:
 	model.trade.reactions = _negotiation_reactions.for_visit(_day.state, model.active_id)
 	PawnReturnReadModels.enrich(model, _day, _commerce)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
+	ShopGrowthReadModels.inventory(model, _day)
 	if not _day.state.pending_event_id.is_empty() or mirror_pending() or _day.state.phase in [&"dead", &"bankrupt"]:
 		model.trade.can_offer = false
 		model.trade.can_pawn = false
@@ -329,8 +349,10 @@ func _impl_commerce_command(command: String, target: String, detail := "") -> Ac
 
 func _emit_receipt(previous_size: int) -> void:
 	if definition.batch_selling and _day.state.ledger_entries.size() > previous_size and _day.state.ledger_entries[previous_size].kind == "sale":
-		_emit_transaction(TradeReceiptModel.batch(_day, _counter.catalog, previous_size))
-		return
+		var batch := TradeReceiptModel.batch(_day, _counter.catalog, previous_size)
+		if not batch.is_empty():
+			_emit_transaction(batch)
+			return
 	# A rejected quote can return ok=true. A new ledger posting, rather than
 	# ActionResult.ok or localized message matching, proves money changed hands.
 	if _counter == null or _day.state.ledger_entries.size() != previous_size + 1: return
@@ -385,7 +407,7 @@ func receipt_for(transaction_id: String) -> Dictionary:
 	return {}
 
 func companion_model() -> Dictionary:
-	return AqiCompanion.model(_day, _events, _counter, mirror_pending())
+	return AqiCompanion.model(_day, _events, _counter, mirror_pending() or MirrorEndingService.active(_day.state))
 
 func old_debt_model() -> Dictionary:
 	return AqiCompanion.old_debt(_day, _events)
@@ -439,7 +461,7 @@ func risk_model(record_id := "") -> Dictionary:
 	var records: Array = RiskReadModels.records(_day, _risk) if _risk != null else []
 	if not _day.state.risk_pending.is_empty():
 		record_id = InventoryManager.new().find(_day.state, _day.state.risk_pending).definition_id
-	elif mirror_pending(): record_id = "item_weeping_mirror"
+	elif mirror_pending() or MirrorEndingService.active(_day.state): record_id = "item_weeping_mirror"
 	elif _day.state.phase == &"dead": record_id = "death_archive"
 	if not records.any(func(row: Dictionary) -> bool: return row.id == record_id):
 		record_id = records[0].id if not records.is_empty() else ""
@@ -478,7 +500,23 @@ func risk_model(record_id := "") -> Dictionary:
 	if InvestigationService.enabled(definition):
 		model.history += InvestigationService.notes(_day.state)
 		model.buttons.append({"command": "open_investigation", "target_id": "", "detail": "", "label": "托人查访", "enabled": not model.requires_response, "reason": ""})
+	MirrorEndingService.decorate(model, _day, _counter.catalog)
+	model.note_sections = preload("res://ui/risk/mirror_journal.gd").build(_day, _counter.catalog)
 	return model
+
+func mirror_resolution_command(command: String, visit_id: String) -> ActionResult:
+	return _journal_call("mirror_resolution_command", [command, visit_id])
+
+func _impl_mirror_resolution_command(command: String, visit_id: String) -> ActionResult:
+	var result := MirrorEndingService.perform(_day, _counter.catalog, command, visit_id)
+	if result.ok and (command in MirrorEndingService.ENDINGS or (MirrorReunionService.enabled(definition) and command in MirrorReunionService.ENDINGS)): _persist()
+	if result.ok and not MirrorEndingService.active(_day.state):
+		_risk.capture_close(_day.state)
+		_events.poll(_day.state, definition)
+		MarketService.sync(_day.state, definition)
+	message = result.message
+	_emit_changed()
+	return result
 
 func investigation_command(command: String, detail := "") -> ActionResult:
 	return _journal_call("investigation_command", [command, detail])
@@ -498,6 +536,7 @@ func _impl_investigation_command(command: String, detail := "") -> ActionResult:
 	return result
 
 func risk_command(command: String, id: String, detail := "") -> ActionResult:
+	if command.begins_with("ending_"): return mirror_resolution_command(command.trim_prefix("ending_"), id)
 	return _journal_call("risk_command", [command, id, detail])
 
 func _impl_risk_command(command: String, id: String, detail := "") -> ActionResult:
@@ -606,7 +645,7 @@ func bell_model() -> Dictionary:
 		var reason := _counter.reason(_day, "reject", visit.visit_id)
 		var customer := _counter.catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 		model.merge({"mode": "dismiss", "target_id": visit.visit_id, "enabled": reason.is_empty(),
-			"hint": "长按1秒送客 · 耗时%d分钟；松开取消。" % customer.terms.reject_minutes if reason.is_empty() else reason}, true)
+			"hint": "长按1秒谢绝买家 · 不耗时；松开取消。" if visit.purpose == "display_buyer" else "长按1秒送客 · 耗时%d分钟；松开取消。" % customer.terms.reject_minutes if reason.is_empty() else reason}, true)
 		return model
 	model.mode = "wait"
 	model.enabled = _day.state.visits.any(func(v: CustomerVisit) -> bool: return v.status in ["scheduled", "waiting"] and v.arrival < definition.night_minutes and v.expires_at > _day.state.game_minutes)
@@ -666,6 +705,7 @@ func _persist() -> bool:
 	return _save.save_state(_day.state, definition, content_version)
 
 func _journal_call(method: String, args: Array) -> ActionResult:
+	if MirrorEndingService.active(_day.state) and method != "mirror_resolution_command": return ActionResult.new(false, "镜前的话还未说完；若要先办别的事，请选择「暂且收起」。")
 	if LivingMirror.enabled(definition) and not InvestigationService.enabled(definition): return _ghost_call(method, args)
 	if not _day.state.personal_risk_enabled or _journal_depth > 0: return callv("_impl_" + method, args)
 	if _day.state.action_journal.size() >= 4096: return ActionResult.new(false, "本局操作记录已满，请读取较早的存档。")
@@ -678,6 +718,9 @@ func _journal_call(method: String, args: Array) -> ActionResult:
 	_journal_depth += 1
 	var result: ActionResult = callv("_impl_" + method, args)
 	_journal_depth -= 1
+	if _day.state.shop_growth_enabled:
+		ShopGrowthService.sync(_day.state)
+		if previous != null and previous.shop_growth != _day.state.shop_growth: _pending_checkpoint = true
 	if not replaying and not result.ok:
 		var before := previous.to_read_model()
 		var after := _day.state.to_read_model()
@@ -764,4 +807,17 @@ func _impl_observe_room(id: String) -> ActionResult:
 		result = ActionResult.new(false, "未能记下，请重试。" + _save.error_message)
 	message = result.message
 	_emit_changed()
+	return result
+
+func growth_command(command: String, detail := "") -> ActionResult:
+	return _journal_call("growth_command", [command, detail])
+
+func _impl_growth_command(command: String, detail := "") -> ActionResult:
+	var result := ShopGrowthService.perform(_day, command, detail)
+	if result.ok:
+		if _risk != null: _risk.capture_close(_day.state)
+		if _events != null: _events.poll(_day.state, definition)
+		MarketService.sync(_day.state, definition)
+		_persist()
+	message = result.message
 	return result

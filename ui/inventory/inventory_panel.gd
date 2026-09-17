@@ -67,6 +67,10 @@ func _draw() -> void:
 	if _sale_view.visible: return
 	AccountPaper.metrics(_sheet, [["现货 / 件", financial.inventory_count], ["现货占款 / 银元", financial.inventory_cost], ["在当本金 / 银元", financial.pawn_principal]])
 	AccountPaper.label(_sheet, "估值供判断，出售后才成为现银。在当货物须按当票办理。", 14)
+	for resource in visual.get("resources", []):
+		var card := AccountPaper.entry(_sheet)
+		AccountPaper.label(card, "%s ×%d" % [resource.name, resource.amount], 19)
+		AccountPaper.label(card, "特殊资源 · 第%d夜镜前旧事所得\n暂存铺中，尚无可用去处。" % resource.night, 14)
 	var count := 0
 	var message_in_detail := false
 	for row in visual.stock:
@@ -87,6 +91,7 @@ func _draw() -> void:
 		AccountPaper.label(header, row.name + (" · 货签%d" % (visual.stock.find(row) + 1) if _model.has("goods_notes") else ""), 19)
 		AccountPaper.stamp(header, row.stamp, row.state != "pledged")
 		AccountPaper.label(column, "第%d夜入柜 · 原始%s %d 银元\n已知估值 %s 银元" % [row.night, row.cost_label, row.cost, row.estimate], 15)
+		if not row.get("mirror_status", "").is_empty(): AccountPaper.label(column, row.mirror_status, 15)
 		var toggle := Button.new()
 		toggle.text = "查看货物 · " + row.name
 		toggle.tooltip_text = "展开品相要点、查验鉴赏或当票入口；查看不耗时。"

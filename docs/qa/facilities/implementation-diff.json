@@ -1,0 +1,68 @@
+{
+  "date": "2026-09-16",
+  "runtime": "shop_growth_ten",
+  "content_version": 25,
+  "files": [
+    {
+      "path": "ui/counter/counter_screen.gd",
+      "before_sha256": "6e07e20a848ad986ab764a75f23a851041d611bca6403594673a6771b6ab58c5",
+      "after_sha256": "147c0b4e7e8c8c1ac29ad256e64098cbd9ec0ec83a92d3df15cdcb03cd454bf1"
+    },
+    {
+      "path": "scenes/main.gd",
+      "before_sha256": "741477894c063cd90e84172d5bb73fa0dc526b9a0bd5bca7933c7eca4266ec73",
+      "after_sha256": "c355efed050efbb55290c0b018339d7f5689b55a44ec4330d6db6543ab107c6c"
+    },
+    {
+      "path": "tools/play_shop_growth.ps1",
+      "before_sha256": "740865c697ddd0d3e924ae180061bee57e33f4ba4c9e3c992a49ef9f2693d92a",
+      "after_sha256": "ab0215e393b831dd11c504d0c5a6d6f11197e8b34d92bafdae49c2c40cec8c20"
+    },
+    {
+      "path": "project.godot",
+      "before_sha256": "633a37588382d6ef2d9dbf1c0e9f1214106eb293f7e009e89378d2b1eb5b1cac",
+      "after_sha256": "b8017a4cc95a49a8d43c7ecae541ffef9c472e76f3ec6dbf2c8104e3258479f6"
+    },
+    {
+      "path": "ui/shop/facilities_navigation.gd",
+      "status": "added",
+      "after_sha256": "d69a8cb85d366ea74f9334d203d7514a5fbe0d5e52a40428ea5065eded1190c6"
+    },
+    {
+      "path": "ui/shop/facilities_room_view.gd",
+      "status": "added",
+      "after_sha256": "ea4c074bbf8e76fa9502bb9de83485e4e30d3f96501d22496c6d2584eca190a0"
+    },
+    {
+      "path": "ui/shop/facilities_room.gdshader",
+      "status": "added",
+      "after_sha256": "89fb6bf99ee07760ceb93601a349726cf49d0c86eaafbb49ab777b1f237feca9"
+    },
+    {
+      "path": "scenes/facilities_preview.gd",
+      "status": "added",
+      "after_sha256": "31a5037cd5e1ab815c9c5a9c57b71bcf96b1814b5bc08d1d90027ccba7d9ba76"
+    },
+    {
+      "path": "scenes/facilities_preview.tscn",
+      "status": "added",
+      "after_sha256": "d05b34a76be65354c9f6fb14005544730dc7f5292a914f516eff73d2385ea955"
+    },
+    {
+      "path": "tests/facilities_room_ui.gd",
+      "status": "added",
+      "after_sha256": "6bfd568692c721553cbf08bd806dca64c95a9783ac28a9c10996d2005a57d205"
+    },
+    {
+      "path": "快速试玩-设施外观.cmd",
+      "status": "added",
+      "after_sha256": "e777f26f0f5a28aa288c22a80835cf0eb48c8d31e1e79cd5b97567ab960bed6b"
+    }
+  ],
+  "also_updated": [
+    "tests/shop_growth_ui.gd",
+    "docs/SHOP_GROWTH_PLAYTEST.md",
+    "docs/SHOP_EXPLORATION_AND_UPGRADES.md",
+    "docs/SHOP_FACILITIES_ROOM_DESIGN.md"
+  ]
+}

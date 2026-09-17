@@ -1,0 +1,74 @@
+[
+  {
+    "test": "run_investigation",
+    "ok": true,
+    "exit": 0,
+    "summary": [
+      "INVESTIGATION: 2362 passes, 0 failures"
+    ]
+  },
+  {
+    "test": "investigation_replay_cache",
+    "ok": true,
+    "exit": 0,
+    "summary": [
+      "REPLAY CACHE: 100 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "save_list_cache",
+    "ok": true,
+    "exit": 0,
+    "summary": [
+      "SAVE LIST CACHE: 11 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "shop_growth_storage",
+    "ok": true,
+    "exit": 0,
+    "summary": [
+      "SHOP GROWTH STORAGE []: 25 passes, 0 failures"
+    ]
+  },
+  {
+    "test": "shop_growth_storage-read",
+    "ok": true,
+    "exit": 0,
+    "summary": [
+      "SHOP GROWTH STORAGE [\"read\"]: 5 passes, 0 failures"
+    ]
+  },
+  {
+    "test": "facilities_room_ui",
+    "ok": true,
+    "exit": 0,
+    "summary": [
+      "FACILITIES UI: 110 assertions, 0 failures"
+    ]
+  },
+  {
+    "test": "facilities_room_ui-wide",
+    "ok": true,
+    "exit": 0,
+    "summary": [
+      "FACILITIES UI: 110 assertions, 0 failures"
+    ]
+  },
+  {
+    "test": "title_entry_performance",
+    "ok": true,
+    "exit": 0,
+    "summary": [
+      "TITLE ENTRY: 23 checks, 0 failures"
+    ]
+  },
+  {
+    "test": "shop_hud_ui",
+    "ok": true,
+    "exit": 0,
+    "summary": [
+      "SHOP HUD UI: 110 assertions, 0 failures"
+    ]
+  }
+]
