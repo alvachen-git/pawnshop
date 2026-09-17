@@ -7,6 +7,7 @@ func _run() -> void:
 	root.content_scale_size = root.size
 	root.title = "AQI v24 acceptance " + str(root.size)
 	_main = load(ProjectSettings.get_setting("application/run/main_scene")).instantiate()
+	_main.get_node("Bootstrap").manifest_path = "res://data/aqi_investigation_manifest.json"
 	_main.get_node("Bootstrap").save_path = "res://.godot/qa/v24/ui.json"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session

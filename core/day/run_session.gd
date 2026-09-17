@@ -135,8 +135,8 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 		_publish_feedback(treatment_before, command, "", treated)
 		_emit_changed()
 		return treated
-	# Only these commands create checkpoints. Snapshot before mutation for rollback.
-	var checkpoint := command in ["resolve_night", "continue_run", "enter_room", "sleep", "finish_sleep"]
+	# Lifecycle checkpoints plus v25 opening story checkpoints roll back atomically.
+	var checkpoint := command in ["resolve_night", "continue_run", "enter_room", "sleep", "finish_sleep"] or (AqiCompanion.enabled(definition) and command == "open_shop")
 	var previous: RunState
 	if checkpoint:
 		previous = _copy_state(_day.state)
@@ -169,7 +169,7 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 		if not _persist():
 			_day.state = previous
 			result = ActionResult.new(false, "未推进；请重试。" + _save.error_message)
-		else:
+		elif command != "open_shop":
 			result.message = "这一夜的账，记下了。"
 	if result.ok and command == "resolve_night":
 		_pawn_choices.clear()
@@ -406,6 +406,12 @@ func receipt_for(transaction_id: String) -> Dictionary:
 		return TradeReceiptModel.build(_day, _counter.catalog, entry)
 	return {}
 
+func companion_model() -> Dictionary:
+	return AqiCompanion.model(_day, _events, _counter, mirror_pending() or MirrorEndingService.active(_day.state))
+
+func old_debt_model() -> Dictionary:
+	return AqiCompanion.old_debt(_day, _events)
+
 func event_model() -> Dictionary:
 	var model: Dictionary = _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}
 	if not _day.state.risk_pending.is_empty():
@@ -429,8 +435,12 @@ func _impl_event_command(event_id: String, choice_id: String) -> ActionResult:
 	var checkpoint := false
 	if _events != null:
 		var event := _events.catalog.get_definition("events", event_id) as EventDefinition
-		checkpoint = event != null and event.presentation.get("checkpoint", false) and String(_day.state.phase) in SaveCodec.CHECKPOINTS
-		result = _events.choose(_day, event_id, choice_id)
+		checkpoint = event != null and event.presentation.get("checkpoint", false) and (String(_day.state.phase) in SaveCodec.CHECKPOINTS or (AqiCompanion.enabled(definition) and _day.state.phase == &"open"))
+		if event != null and event.presentation.get("scene", "") == "aqi_companion":
+			if not companion_model().get("available", false): return ActionResult.new(false, "先招呼客人，等会儿再聊。")
+			result = _events.investigate(_day, event_id, choice_id)
+		else:
+			result = _events.choose(_day, event_id, choice_id)
 		if result.ok and _counter != null: _counter.customers.update(_day.state)
 	if _risk != null: _risk.capture_close(_day.state)
 	if result.ok and checkpoint and not _persist():

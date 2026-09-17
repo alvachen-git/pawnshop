@@ -605,6 +605,7 @@ func _reset_reception() -> void:
 func _bell_blocked() -> bool:
 	if not is_visible_in_tree() or process_mode == Node.PROCESS_MODE_DISABLED: return true
 	if %Drawer.visible or _session_menu.visible: return true
+	if _counter_view.companion.dialogue.visible or _counter_view.story.visible: return true
 	for overlay in [_receipt, _departure, _narrative, _feedback]:
 		if overlay != null and overlay.visible: return true
 	var main := get_parent()

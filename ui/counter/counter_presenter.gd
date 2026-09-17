@@ -8,6 +8,8 @@ func bind(session: RunSession, view: CounterView) -> void:
 	_session = session
 	_view = view
 	_view.story_choice_requested.connect(_choose_story)
+	_view.companion.choice_requested.connect(_choose_companion)
+	_session.restored.connect(_view.companion.reset)
 	_session.changed.connect(refresh)
 	refresh()
 
@@ -17,7 +19,12 @@ func refresh() -> void:
 	var story := _session.event_model()
 	var state := _session.read_state()
 	_view.render_story(story if story.get("presentation", {}).get("scene", "") == "aqi_counter" else {}, state)
+	_view.companion.render(_session.companion_model())
 
 func _choose_story(event_id: String, choice_id: String) -> void:
 	var result := _session.event_command(event_id, choice_id)
 	if not result.ok: _view.story.show_error(result.message)
+
+func _choose_companion(event_id: String, choice_id: String) -> void:
+	var result := _session.event_command(event_id, choice_id)
+	if not result.ok: _view.companion.dialogue.show_error(result.message)

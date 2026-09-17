@@ -1,0 +1,135 @@
+class_name AqiCompanionView
+extends Control
+
+signal choice_requested(event_id: String, choice_id: String)
+signal opened
+var hotspot: Button
+var portrait: TextureRect
+var foreground: Polygon2D
+var _portrait_light: ShaderMaterial
+var dialogue: CounterStoryView
+var hint: Label
+var _model: Dictionary = {}
+var _topic := ""
+var _hint_serial := 0
+
+func _ready() -> void:
+	name = "AqiCompanion"
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
+	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	portrait = TextureRect.new()
+	portrait.name = "SeatedAqi"
+	portrait.texture = preload("res://assets/aqi/companion-side.png")
+	portrait.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	portrait.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	portrait.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_portrait_light = ShaderMaterial.new()
+	_portrait_light.shader = preload("res://ui/art/aqi_companion_light.gdshader")
+	portrait.material = _portrait_light
+	add_child(portrait)
+	CounterView._bounds(portrait, 0.224, 0.363, 0.326, 0.572)
+	# The same painted wood is drawn in front of the body, registered to the
+	# room's full-canvas coordinates and sharing its live lighting material.
+	var room := get_parent().get_node("Room") as CounterStage
+	foreground = Polygon2D.new()
+	foreground.name = "PaintedCounterForeground"
+	foreground.texture = room._paint.texture
+	foreground.material = room._paint.material
+	add_child(foreground)
+	resized.connect(_register_counter_edge)
+	_register_counter_edge()
+	hotspot = Button.new()
+	hotspot.name = "AqiCompanionHotspot"
+	hotspot.flat = true
+	hotspot.tooltip_text = "阿七"
+	hotspot.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	for style in ["normal", "hover", "pressed", "disabled"]: hotspot.add_theme_stylebox_override(style, StyleBoxEmpty.new())
+	add_child(hotspot)
+	CounterView._bounds(hotspot, 0.225, 0.375, 0.325, 0.532)
+	hotspot.pressed.connect(_open)
+	hint = Label.new()
+	hint.text = "先招呼客人，等会儿再聊。"
+	hint.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hint.add_theme_font_size_override("font_size", 16)
+	hint.add_theme_color_override("font_color", Color("ead7a8"))
+	add_child(hint)
+	CounterView._bounds(hint, 0.19, 0.295, 0.43, 0.35)
+	hint.hide()
+	dialogue = CounterStoryView.new()
+	add_child(dialogue)
+	dialogue.name = "AqiSmallTalk"
+	CounterView._bounds(dialogue, 0.60, 0.095, 0.98, 0.73)
+	dialogue.opened.connect(opened.emit)
+	dialogue.closed.connect(func() -> void: hotspot.grab_focus())
+	dialogue.choice_requested.connect(_choose)
+	hide()
+
+func render(model: Dictionary) -> void:
+	var changed_run: bool = model.get("token", "") != _model.get("token", "") or model.get("night", 0) != _model.get("night", 0)
+	_model = model
+	visible = model.get("visible", false)
+	if changed_run or not visible or not model.get("available", false): collapse()
+	elif dialogue.visible: _show_page()
+
+func reset() -> void:
+	_model = {}
+	collapse()
+
+func collapse() -> bool:
+	var was_open := dialogue.visible
+	dialogue.hide()
+	hint.hide()
+	_topic = ""
+	if was_open and hotspot.is_visible_in_tree(): hotspot.grab_focus()
+	return was_open
+
+func _open() -> void:
+	if not _model.get("available", false):
+		_hint_serial += 1
+		var serial := _hint_serial
+		hint.show()
+		get_tree().create_timer(2.5).timeout.connect(func() -> void:
+			if serial == _hint_serial: hint.hide())
+		return
+	_topic = ""
+	_show_page()
+	dialogue.show_dialogue()
+
+func _show_page() -> void:
+	var page := {"title": "柜边的阿七", "text": "阿七抬起头，朝你笑了笑。", "buttons": []}
+	if _topic.is_empty():
+		for topic in _model.topics: page.buttons.append({"target_id": "topic", "detail": topic.id, "label": topic.label, "enabled": true})
+	else:
+		for topic in _model.topics:
+			if topic.id != _topic: continue
+			page.title = topic.title
+			page.text = topic.text
+			page.buttons = topic.buttons.duplicate(true)
+			if not topic.chosen.is_empty(): page.buttons = [{"target_id": "back", "detail": "back", "label": "接着忙", "enabled": true}]
+	dialogue.render(page, JSON.stringify(page))
+	dialogue.show()
+
+func _choose(event_id: String, choice_id: String) -> void:
+	if event_id == "topic":
+		_topic = choice_id
+		_show_page()
+	elif event_id == "back": collapse()
+	else: choice_requested.emit(event_id, choice_id)
+
+func set_lighting(band: int, atmosphere: int = 0) -> void:
+	_portrait_light.set_shader_parameter("night_band", band)
+	_portrait_light.set_shader_parameter("atmosphere", atmosphere)
+
+func _register_counter_edge() -> void:
+	# Trace the back edge of the existing 1672 x 941 painting, including its chips.
+	# CounterStage paints a full-height canvas behind a 90%-height CounterView.
+	var edge := PackedVector2Array([
+		Vector2(360, 447), Vector2(386, 446), Vector2(402, 445),
+		Vector2(419, 447), Vector2(441, 446), Vector2(458, 446),
+		Vector2(478, 448), Vector2(500, 447), Vector2(525, 446),
+		Vector2(548, 448), Vector2(570, 447),
+		Vector2(570, 510), Vector2(360, 510)])
+	foreground.uv = edge
+	var vertices := PackedVector2Array()
+	for point in edge: vertices.append(point * Vector2(size.x / 1672.0, size.y / 0.9 / 941.0))
+	foreground.polygon = vertices

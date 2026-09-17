@@ -1,0 +1,29 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 4.1 Metal - 89.4 - Compatibility - Using Device: Apple - Apple M4
+
+RUN SEED: 139213681
+POINTER chat overlap=[P: (0.0, 0.0), S: (0.0, 0.0)] minute=0
+AFTER minute=0 active=
+ERROR: UI FAIL: completed interaction preserves time money customers chat
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/ui_smoke.gd:242)
+       [1] _run (res://tests/aqi_companion_pointer_ui.gd:39)
+       [2] click_at (res://tests/aqi_companion_pointer_ui.gd:59)
+       [3] _frames (res://tests/ui_smoke.gd:236)
+ERROR: UI FAIL: interaction records exactly once chat
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/ui_smoke.gd:242)
+       [1] _run (res://tests/aqi_companion_pointer_ui.gd:40)
+       [2] click_at (res://tests/aqi_companion_pointer_ui.gd:59)
+       [3] _frames (res://tests/ui_smoke.gd:236)
+POINTER paper overlap=[P: (896.0, 361.56), S: (83.19995, 42.0)] minute=0
+AFTER minute=5 active=aqi_companion_ten/10/n10_visit1
+ERROR: UI FAIL: topic click never rings hidden bell paper
+   at: push_error (core/variant/variant_utility.cpp:1024)
+   GDScript backtrace (most recent call first):
+       [0] _check (res://tests/ui_smoke.gd:242)
+       [1] _run (res://tests/aqi_companion_pointer_ui.gd:29)
+       [2] click_at (res://tests/aqi_companion_pointer_ui.gd:59)
+       [3] _frames (res://tests/ui_smoke.gd:236)

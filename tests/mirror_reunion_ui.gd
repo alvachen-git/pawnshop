@@ -44,6 +44,7 @@ func run() -> void:
 	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://docs/qa/v26"))
 	var main = load("res://scenes/start.tscn").instantiate()
 	main.start_at_title = false
+	main.get_node("Bootstrap").manifest_path = "res://data/mirror_reunion_manifest.json"
 	main.get_node("Bootstrap").save_path = "user://tests/v26-ui-%d/auto.json" % root.size.x
 	root.add_child(main)
 	session = main.get_node("Bootstrap").session

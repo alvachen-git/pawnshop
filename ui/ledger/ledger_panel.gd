@@ -18,7 +18,7 @@ func _ready() -> void:
 	_tabs = HBoxContainer.new()
 	_column.add_child(_tabs)
 	_column.move_child(_tabs, 1)
-	for title in ["流水", "债务", "当票"]:
+	for title in ["流水", "债务", "当票", "旧事"]:
 		var button := Button.new()
 		button.text = title
 		button.toggle_mode = true
@@ -50,6 +50,10 @@ func render(model: Dictionary) -> void:
 	AccountPaper.metrics(_heading, [["现银 / 银元", v.cash], ["本夜交易毛利", "%+d" % v.financial.realized_profit], ["在当本金", v.financial.pawn_principal]])
 	for page in _pages: AccountPaper.clear(page)
 	_draw_entries()
+	var old: Dictionary = model.get("old_debt", {})
+	_tabs.get_child(3).visible = not old.is_empty()
+	if old.is_empty() and _selected == 3: _selected = 0
+	if not old.is_empty(): AccountPaper.label(_pages[3], old.text, 18)
 	var debt := AccountPaper.entry(_pages[1])
 	AccountPaper.label(debt, "借据与息费", 21)
 	AccountPaper.rule(debt)
