@@ -1,0 +1,14 @@
+[
+  {
+    "path": "assets/art04/counter_room.png",
+    "before": "350700ed8e7243c48c4c7623733ef617b02939042b542fc36f2b453bcd188e6f",
+    "after": "350700ed8e7243c48c4c7623733ef617b02939042b542fc36f2b453bcd188e6f",
+    "unchanged": true
+  },
+  {
+    "path": "assets/bedroom/room-normal.png",
+    "before": "1010f23e5e0e0aaa2b6e81a27adb1acfacc6581d2df522000f9f51f208cee610",
+    "after": "1010f23e5e0e0aaa2b6e81a27adb1acfacc6581d2df522000f9f51f208cee610",
+    "unchanged": true
+  }
+]

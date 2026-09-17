@@ -51,6 +51,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	var entries: Array = []
 	for entry in day.state.ledger_entries:
 		var subject := "铺面息费"
+		if entry.kind == "facility_investment": subject = ShopGrowthService.NAMES.get(entry.transaction_id.trim_prefix("facility/"), "设施整修")
 		if entry.kind == "preparation": subject = {"attract": "招揽客人", "tea": "备茶候客", "seek": "寻配茶盏"}.get(entry.transaction_id.get_slice("/", entry.transaction_id.get_slice_count("/") - 1), "开铺准备")
 		if entry.kind == "expertise": subject = "行家复核"
 		if entry.kind == "investigation": subject = "核查丈夫离家后的经历"

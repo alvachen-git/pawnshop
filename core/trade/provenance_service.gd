@@ -55,5 +55,8 @@ static func inquire(day: DayController, item: ItemInstance, definition: ItemDefi
 	return ActionResult.new(true, result_text(item, definition))
 
 static func premium(item: ItemInstance, buyer: BuyerDefinition, base: int) -> int:
+	return premium_at_rate(item, base, int(buyer.provenance.get("premium_bps", 0)))
+
+static func premium_at_rate(item: ItemInstance, base: int, premium_bps: int) -> int:
 	if item.provenance.is_empty() or item.provenance.status != "verified": return 0
-	return floori(base * int(buyer.provenance.get("premium_bps", 0)) / 10000.0)
+	return floori(base * premium_bps / 10000.0)

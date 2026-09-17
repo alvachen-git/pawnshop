@@ -33,6 +33,11 @@ var _terms: Label
 var _availability_model: Dictionary = {}
 var _amount_caption: Label
 var _content_scroll: ScrollContainer
+var _growth_form: VBoxContainer
+var _growth_amount: LineEdit
+var _growth_counter: Button
+var _growth_error: Label
+var _growth_visit := ""
 
 
 func _ready() -> void:
@@ -134,6 +139,26 @@ func _ready() -> void:
 	layout.add_child(form)
 	for control in [separator, mode_row, _terms, _bargain_toggle, amount_caption, amount_row, action_row]:
 		control.reparent(form)
+	_growth_form = VBoxContainer.new()
+	_growth_form.name = "DisplayBuyerForm"
+	layout.add_child(_growth_form)
+	AccountPaper.label(_growth_form, "回价一次（整数银元，须高于买家开价）", 15)
+	_growth_amount = LineEdit.new()
+	_growth_amount.name = "DisplayCounterAmount"
+	_growth_amount.placeholder_text = "输入回价"
+	_growth_amount.max_length = 7
+	_growth_amount.add_theme_color_override("font_color", Color("302a24"))
+	_growth_amount.add_theme_color_override("font_placeholder_color", Color("78674b"))
+	_growth_amount.add_theme_color_override("caret_color", Color("302a24"))
+	_growth_amount.custom_minimum_size.y = 44
+	_growth_form.add_child(_growth_amount)
+	_growth_error = AccountPaper.label(_growth_form, "", 14)
+	_growth_error.add_theme_color_override("font_color", Color("8d2a24"))
+	_growth_error.hide()
+	_growth_counter = _primary_button("报出这个价 · 5分钟", _counter_display)
+	_growth_counter.name = "DisplayCounterSubmit"
+	_growth_form.add_child(_growth_counter)
+	_growth_form.hide()
 	_sync_mode()
 	visibility_changed.connect(func() -> void:
 		if not is_visible_in_tree(): _bargain_popup.hide()
@@ -208,6 +233,19 @@ func render(model: Dictionary) -> void:
 	_bargain_popup.hide()
 	_content_scroll.scroll_vertical = 0
 	super.render(model)
+	_growth_form.visible = model.get("display_buyer", false)
+	if _growth_form.visible:
+		_availability_model = {}
+		for control in _forms: control.hide()
+		for control in [_metrics, _feedback, _feedback_heading, _price_change, _reaction_history]: control.hide()
+		_body.show()
+		_growth_error.hide()
+		_move_buttons_to(_column)
+		_buttons.show()
+		if _growth_visit != _visit_id: _growth_amount.text = ""; _growth_visit = _visit_id
+		_growth_counter.disabled = not model.get("can_counter", false)
+		_growth_counter.tooltip_text = model.get("counter_reason", "")
+		return
 	var pawn_return := bool(model.get("pawn_return", false))
 	for control in _forms:
 		control.visible = not _visit_id.is_empty() and not pawn_return and not model.get("exchange", false)
@@ -437,6 +475,15 @@ func _move_buttons_to(parent: Control) -> void:
 func _offer() -> void:
 	_price.apply()
 	intent.emit("offer", _visit_id, "", int(_price.value))
+
+func _counter_display() -> void:
+	var text := _growth_amount.text.strip_edges()
+	if not text.is_valid_int() or text.length() > 7:
+		_growth_error.text = "请输入有效整数银元。"
+		_growth_error.show()
+		_growth_amount.grab_focus()
+		return
+	intent.emit("display_counter", _visit_id, "", int(text))
 
 
 func _pawn() -> void:

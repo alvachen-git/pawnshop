@@ -56,6 +56,7 @@ func refresh() -> void:
 			if not order.is_empty() and not order.delivered: account.familiar_notes += "\n查访回报约在第%d夜送到，尚待回信。" % order.report_night
 			var appointment := InvestigationService.appointment(_session._day.state)
 			if appointment.get("status", "") == "booked": account.familiar_notes += "\n已约第%d夜20:00来铺，尚待会面。" % appointment.night
+		if _session._day.state.shop_growth_enabled: account.familiar_notes += "\n查铺记录：已完成%d处核查，材料仍收在修缮与查铺页。" % _session._day.state.shop_growth.exploration.size()
 		account["pawn_results"] = []
 		for ticket in state.pawn_tickets:
 			if ticket.closed_night != state.current_night_index or ticket.status not in ["defaulted", "transferred"]: continue
