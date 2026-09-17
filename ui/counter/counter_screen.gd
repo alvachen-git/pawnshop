@@ -48,6 +48,8 @@ func _ready() -> void:
 	CounterTheme.style_paper_button(%MenuButton)
 	%MenuButton.icon = preload("res://assets/ui/icons/menu-2.svg")
 	%MenuButton.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	%MenuButton.expand_icon = true
+	%MenuButton.add_theme_constant_override("icon_max_width", 32)
 	%MenuButton.add_theme_color_override("icon_normal_color", Color("302a24"))
 	%MenuButton.add_theme_color_override("icon_hover_color", Color("302a24"))
 	%MenuButton.add_theme_color_override("icon_pressed_color", Color("302a24"))

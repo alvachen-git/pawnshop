@@ -8,6 +8,8 @@ signal changed
 signal transaction_completed(receipt: Dictionary)
 signal operation_completed(feedback: Dictionary)
 
+const NEW_RUN_MESSAGE := "暮色又落到了铺门前。柜上的账册，翻开了第一页。"
+
 var _ghost_depth := 0
 var definition: RunDefinition
 var content_version: int
@@ -227,7 +229,7 @@ func new_run() -> void:
 	if _counter != null:
 		_counter.customers.prepare_night(_day.state, definition, _counter.catalog)
 	if _events != null: _events.poll(_day.state, definition)
-	message = "暮色又落到了铺门前。柜上的账册，翻开了第一页。"
+	message = NEW_RUN_MESSAGE
 	MarketService.sync(_day.state, definition)
 	_emit_changed()
 

@@ -3,6 +3,25 @@ extends RefCounted
 
 const ROOT := "res://assets/art02/"
 const NEIGHBOR_PORTRAIT := "res://assets/art04/customers/neighbor_v2.png"
+const ORDINARY_ROOT := "res://assets/art04/customers/ordinary/"
+# Identity, rather than the shared legacy asset ID, selects ordinary templates.
+const ORDINARY_CUSTOMERS := {
+	"customer_citizen": "citizen", "customer_hawker": "hawker",
+	"customer_scholar": "scholar", "customer_house_agent": "agent",
+	"customer_seamstress": "seamstress", "customer_watchmaker": "watchmaker",
+	"customer_teahouse": "teahouse", "customer_bookkeeper": "bookkeeper",
+}
+# Square-image height in CounterView coordinates, source hem, horizontal center.
+const ORDINARY_PLACEMENT := {
+	"citizen": Vector3(0.500, 1.000, 0.500),
+	"hawker": Vector3(0.510, 1.000, 0.493),
+	"scholar": Vector3(0.495, 1.000, 0.500),
+	"agent": Vector3(0.500, 1.000, 0.500),
+	"seamstress": Vector3(0.485, 1.000, 0.500),
+	"watchmaker": Vector3(0.515, 0.993, 0.500),
+	"teahouse": Vector3(0.505, 0.982, 0.495),
+	"bookkeeper": Vector3(0.500, 1.000, 0.500),
+}
 const ITEMS := {
 	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
 	"asset.item_blue_bowl": "bowl", "asset.item_brass_holder": "holder", "asset.weeping_mirror": "mirror",
@@ -19,9 +38,12 @@ const DETAILS := {
 	"mirror": {"blood": ["mirror_blood", "镜缘细看"], "inscription": ["mirror_inscription", "镜背刻痕"]},
 }
 
-static func portrait(asset: String, customer_id := "") -> Texture2D:
+static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
 	if customer_id == "intro_neighbor" and ResourceLoader.exists(NEIGHBOR_PORTRAIT):
 		return load(NEIGHBOR_PORTRAIT) as Texture2D
+	if ORDINARY_CUSTOMERS.has(customer_id) and not person_id.begins_with("familiar/"):
+		var ordinary_path: String = ORDINARY_ROOT + ORDINARY_CUSTOMERS[customer_id] + ".png"
+		if ResourceLoader.exists(ordinary_path): return load(ordinary_path) as Texture2D
 	if asset == "asset.customer_citizen" and ResourceLoader.exists("res://assets/art04/customers/citizen.png"):
 		return load("res://assets/art04/customers/citizen.png") as Texture2D
 	if not PORTRAITS.has(asset): return null
@@ -31,9 +53,19 @@ static func portrait_material(texture: Texture2D) -> ShaderMaterial:
 	if texture == null or not texture.resource_path.begins_with("res://assets/art04/"): return null
 	var material := ShaderMaterial.new()
 	material.shader = preload("res://ui/art/counter_cutout.gdshader")
-	material.set_shader_parameter("chroma_key", texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
-	material.set_shader_parameter("clean_chroma_edges", texture.resource_path == NEIGHBOR_PORTRAIT)
+	material.set_shader_parameter("chroma_key", is_ordinary_portrait(texture) or texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
+	material.set_shader_parameter("clean_chroma_edges", is_ordinary_portrait(texture) or texture.resource_path == NEIGHBOR_PORTRAIT)
 	return material
+
+static func is_ordinary_portrait(texture: Texture2D) -> bool:
+	return texture != null and texture.resource_path.begins_with(ORDINARY_ROOT)
+
+static func ordinary_bounds(texture: Texture2D) -> Vector4:
+	var placement: Vector3 = ORDINARY_PLACEMENT[texture.resource_path.get_file().get_basename()]
+	# The painting's back counter edge is at y=445 in its 941px-high full frame.
+	# CounterView occupies 90% of that frame; keep the source hem at this edge.
+	var top := 445.0 / 941.0 / 0.9 - placement.x * placement.y
+	return Vector4(placement.z - 0.1825, top, placement.z + 0.1825, top + placement.x)
 
 static func _painted_front(asset: String) -> String:
 	if asset.begins_with("goods."):

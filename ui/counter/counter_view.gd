@@ -78,7 +78,24 @@ func _ready() -> void:
 	add_child(_item_image)
 	_bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
 
-	var shop_hotspot := _make_hotspot("ShopSignHotspot", 0.012, 0.012, 0.167, 0.095, "查看营业安排 · 不耗时")
+	var shop_sign := TextureRect.new()
+	shop_sign.name = "PawnShopSign"
+	shop_sign.texture = preload("res://assets/ui/shop_sign/pawn_hanging.png")
+	shop_sign.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	shop_sign.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	shop_sign.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	shop_sign.self_modulate = Color(0.58, 0.58, 0.58)
+	shop_sign.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	shop_sign.z_index = 3
+	add_child(shop_sign)
+	_bounds(shop_sign, 0.004, 0.004, 0.094, 0.195)
+	var shop_hotspot := _make_hotspot("ShopSignHotspot", 0.004, 0.004, 0.094, 0.195, "查看营业安排 · 不耗时")
+	shop_hotspot.accessibility_name = "营业安排"
+	# Tint the physical sign on hover; reserve an outline for keyboard focus.
+	for state in ["hover", "pressed"]:
+		shop_hotspot.add_theme_stylebox_override(state, StyleBoxEmpty.new())
+	shop_hotspot.mouse_entered.connect(func() -> void: shop_sign.modulate = Color(1.18, 1.12, 1.02))
+	shop_hotspot.mouse_exited.connect(func() -> void: shop_sign.modulate = Color.WHITE)
 	shop_hotspot.pressed.connect(shop_requested.emit)
 	_customer_hotspot = _make_hotspot("CustomerHotspot", 0.325, 0.025, 0.665, 0.57, "与当前客人交谈或交易 · 不耗时")
 	_customer_hotspot.pressed.connect(_toggle_customer_context)
@@ -237,12 +254,15 @@ func render(model: Dictionary) -> void:
 	if not _item_hotspot.visible:
 		_item_context.hide()
 
-	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""), visual.get("customer_id", ""))
+	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""), visual.get("customer_id", ""), visual.get("person_id", ""))
 	_portrait.material = CounterVisualCatalog.portrait_material(_portrait.texture)
 	# The standing neighbor's torso ends at the back edge; both hands reach onto the top.
 	if _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT:
 		_bounds(_portrait, 0.315, 0.025, 0.68, 0.604)
 		(_portrait.material as ShaderMaterial).set_shader_parameter("hand_contact_shadow", true)
+	elif CounterVisualCatalog.is_ordinary_portrait(_portrait.texture):
+		var portrait_bounds := CounterVisualCatalog.ordinary_bounds(_portrait.texture)
+		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
 	else:
 		_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
 	_portrait.visible = active and _portrait.texture != null
