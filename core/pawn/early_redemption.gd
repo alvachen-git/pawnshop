@@ -102,3 +102,5 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 	model.visual.speech = []
 	model.visual.clues = []
 	model.visual.item_status = "银簪\n%s仍在铺内保管\n票面赎金%d银元" % ["替物" if not ticket.replacement_instance_id.is_empty() else "原物", ticket.redemption_amount]
+	model.dialogue.visual = model.visual.duplicate(true)
+	model.dialogue.preserve_ticket_body = true

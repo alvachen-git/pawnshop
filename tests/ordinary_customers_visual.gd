@@ -61,10 +61,10 @@ func _run() -> void:
 		view.set_atmosphere(0, false, false, false, false)
 	for special_id in ["mirror_husband", "mirror_medicine", "ghost_closed_bundle", "ghost_swap_guest"]:
 		var special := CounterVisualCatalog.portrait("asset.customer_hawker", special_id)
-		_check(special.resource_path == "res://assets/art02/customers/hawker.svg", "special identity is not replaced: " + special_id)
+		_check(CounterVisualCatalog.is_special_portrait(special), "special identity stays distinct from ordinary templates: " + special_id)
 	for familiar in ["bookkeeper", "seamstress"]:
 		var old := CounterVisualCatalog.portrait("asset.customer_" + familiar, "customer_" + familiar, "familiar/" + familiar)
-		_check(old.resource_path.ends_with(familiar + ".svg"), "familiar retains separate legacy appearance: " + familiar)
+		_check(CounterVisualCatalog.is_special_portrait(old), "familiar retains separate appearance: " + familiar)
 	view.render(opening)
 	_check(_session.read_state() == before, "portrait review does not change gameplay or saves")
 	await _shot("1600_opening_preserved")

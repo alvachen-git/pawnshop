@@ -260,6 +260,10 @@ func render(model: Dictionary) -> void:
 	if _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT:
 		_bounds(_portrait, 0.315, 0.025, 0.68, 0.604)
 		(_portrait.material as ShaderMaterial).set_shader_parameter("hand_contact_shadow", true)
+	elif CounterVisualCatalog.is_special_portrait(_portrait.texture):
+		var portrait_bounds := CounterVisualCatalog.special_bounds(_portrait.texture)
+		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
+		(_portrait.material as ShaderMaterial).set_shader_parameter("source_bottom", CounterVisualCatalog.special_placement(_portrait.texture).y)
 	elif CounterVisualCatalog.is_ordinary_portrait(_portrait.texture):
 		var portrait_bounds := CounterVisualCatalog.ordinary_bounds(_portrait.texture)
 		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)

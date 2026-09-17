@@ -4,6 +4,24 @@ extends RefCounted
 const ROOT := "res://assets/art02/"
 const NEIGHBOR_PORTRAIT := "res://assets/art04/customers/neighbor_v2.png"
 const ORDINARY_ROOT := "res://assets/art04/customers/ordinary/"
+const SPECIAL_ROOT := "res://assets/art04/customers/special/"
+const FAMILIAR_PORTRAITS := {
+	"familiar/bookkeeper": "xu_wenheng", "familiar/seamstress": "jiang_suyun",
+}
+const SPECIAL_CUSTOMERS := {
+	"mirror_husband": "mirror_husband", "mirror_medicine": "mirror_medicine",
+	"ghost_closed_bundle": "ghost_closed_bundle", "ghost_swap_guest": "ghost_swap_guest",
+}
+# Full source height, counter occlusion in source UV, horizontal center.
+# These tall sources need individual waist alignment, not the ordinary square framing.
+const SPECIAL_PLACEMENT := {
+	"xu_wenheng": Vector3(0.660, 0.760, 0.500),
+	"jiang_suyun": Vector3(0.650, 0.720, 0.500),
+	"mirror_husband": Vector3(0.690, 0.720, 0.500),
+	"mirror_medicine": Vector3(0.680, 0.720, 0.500),
+	"ghost_closed_bundle": Vector3(0.630, 0.730, 0.500),
+	"ghost_swap_guest": Vector3(0.740, 0.680, 0.500),
+}
 # Identity, rather than the shared legacy asset ID, selects ordinary templates.
 const ORDINARY_CUSTOMERS := {
 	"customer_citizen": "citizen", "customer_hawker": "hawker",
@@ -40,6 +58,10 @@ const DETAILS := {
 static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
 	if customer_id == "intro_neighbor" and ResourceLoader.exists(NEIGHBOR_PORTRAIT):
 		return load(NEIGHBOR_PORTRAIT) as Texture2D
+	var identity: String = FAMILIAR_PORTRAITS.get(person_id, SPECIAL_CUSTOMERS.get(customer_id, ""))
+	if not identity.is_empty():
+		var special_path := SPECIAL_ROOT + identity + ".png"
+		if ResourceLoader.exists(special_path): return load(special_path) as Texture2D
 	if ORDINARY_CUSTOMERS.has(customer_id) and not person_id.begins_with("familiar/"):
 		var ordinary_path: String = ORDINARY_ROOT + ORDINARY_CUSTOMERS[customer_id] + ".png"
 		if ResourceLoader.exists(ordinary_path): return load(ordinary_path) as Texture2D
@@ -52,12 +74,24 @@ static func portrait_material(texture: Texture2D) -> ShaderMaterial:
 	if texture == null or not texture.resource_path.begins_with("res://assets/art04/"): return null
 	var material := ShaderMaterial.new()
 	material.shader = preload("res://ui/art/counter_cutout.gdshader")
-	material.set_shader_parameter("chroma_key", is_ordinary_portrait(texture) or texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
-	material.set_shader_parameter("clean_chroma_edges", is_ordinary_portrait(texture) or texture.resource_path == NEIGHBOR_PORTRAIT)
+	material.set_shader_parameter("source_bottom", 1.0)
+	material.set_shader_parameter("chroma_key", is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
+	material.set_shader_parameter("clean_chroma_edges", is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path == NEIGHBOR_PORTRAIT)
 	return material
 
 static func is_ordinary_portrait(texture: Texture2D) -> bool:
 	return texture != null and texture.resource_path.begins_with(ORDINARY_ROOT)
+
+static func is_special_portrait(texture: Texture2D) -> bool:
+	return texture != null and texture.resource_path.begins_with(SPECIAL_ROOT)
+
+static func special_placement(texture: Texture2D) -> Vector3:
+	return SPECIAL_PLACEMENT[texture.resource_path.get_file().get_basename()]
+
+static func special_bounds(texture: Texture2D) -> Vector4:
+	var placement := special_placement(texture)
+	var top := 445.0 / 941.0 / 0.9 - placement.x * placement.y
+	return Vector4(placement.z - 0.1825, top, placement.z + 0.1825, top + placement.x)
 
 static func ordinary_bounds(texture: Texture2D) -> Vector4:
 	var placement: Vector3 = ORDINARY_PLACEMENT[texture.resource_path.get_file().get_basename()]

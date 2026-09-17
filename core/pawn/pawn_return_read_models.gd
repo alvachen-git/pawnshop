@@ -27,6 +27,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	model.queue = "原当户优先接待 · 核妥当票后再迎新客"
 	model.context_actions = {"customer": [{"id": "dialogue", "label": "看当票", "enabled": true}, {"id": "trade", "label": "办理赎当" if visit.command == "redeem" else "办理续当", "enabled": true}], "item": [{"id": "appraisal", "label": "查看替物" if not ticket.replacement_instance_id.is_empty() else "查看原物", "enabled": true}]}
 	model.visual = {"pawn_return": true, "customer_name": VarietyService.name_for(ticket.person, customer), "portrait_asset": ticket.person.get("portrait", customer.portrait_asset_id),
+		"customer_id": ticket.customer_id, "person_id": String(ticket.person.get("id", "")),
 		"item_name": definition.display_name, "item_asset": definition.visual_asset_id, "item_description": definition.description,
 		"introduction": speech, "speech": [], "clues": clues, "estimate": "%d–%d" % [bounds.x, bounds.y],
 		"attitude": "持票回访", "deadline": "验票办结", "judgement": CounterReadModels.JUDGEMENTS[item.judgement]}
@@ -35,6 +36,9 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 		model[feature].body = description if feature != "dialogue" else speech + "\n\n" + description
 		model[feature].buttons = []
 		model[feature].erase("visual")
+	# The return dialogue has its own ticket body, but keeps the customer's portrait.
+	model.dialogue.visual = model.visual.duplicate(true)
+	model.dialogue.preserve_ticket_body = true
 	model.trade.pawn_return = true
 	model.trade.can_offer = false
 	model.trade.can_pawn = false
