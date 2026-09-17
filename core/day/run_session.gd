@@ -74,6 +74,7 @@ func has_save() -> bool:
 	return _save.exists()
 
 func can_execute(command: String) -> bool:
+	if MirrorEndingService.active(_day.state): return false
 	if command in RoomKeepsakes.COMMANDS: return not mirror_pending() and RoomKeepsakes.can_execute(_day.state, command)
 	if command.begins_with("seal_cloth/"): return not mirror_pending() and NightMarketRisk.treatment_reason(_day, command.trim_prefix("seal_cloth/")).is_empty()
 	if command.begins_with("prep_"): return PreparationService.reason(_day.state, definition, command.trim_prefix("prep_")).is_empty()
@@ -237,6 +238,7 @@ func _copy_state(source: RunState) -> RunState:
 	return RunSnapshot.copy(source)
 
 func counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	if command.begins_with("ending_"): return mirror_resolution_command(command.trim_prefix("ending_"), visit_id)
 	return _journal_call("counter_command", [command, visit_id, detail, amount])
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
@@ -431,7 +433,7 @@ func risk_model(record_id := "") -> Dictionary:
 	var records: Array = RiskReadModels.records(_day, _risk) if _risk != null else []
 	if not _day.state.risk_pending.is_empty():
 		record_id = InventoryManager.new().find(_day.state, _day.state.risk_pending).definition_id
-	elif mirror_pending(): record_id = "item_weeping_mirror"
+	elif mirror_pending() or MirrorEndingService.active(_day.state): record_id = "item_weeping_mirror"
 	elif _day.state.phase == &"dead": record_id = "death_archive"
 	if not records.any(func(row: Dictionary) -> bool: return row.id == record_id):
 		record_id = records[0].id if not records.is_empty() else ""
@@ -470,8 +472,23 @@ func risk_model(record_id := "") -> Dictionary:
 	if InvestigationService.enabled(definition):
 		model.history += InvestigationService.notes(_day.state)
 		model.buttons.append({"command": "open_investigation", "target_id": "", "detail": "", "label": "托人查访", "enabled": not model.requires_response, "reason": ""})
+	MirrorEndingService.decorate(model, _day, _counter.catalog)
 	model.note_sections = preload("res://ui/risk/mirror_journal.gd").build(_day, _counter.catalog)
 	return model
+
+func mirror_resolution_command(command: String, visit_id: String) -> ActionResult:
+	return _journal_call("mirror_resolution_command", [command, visit_id])
+
+func _impl_mirror_resolution_command(command: String, visit_id: String) -> ActionResult:
+	var result := MirrorEndingService.perform(_day, _counter.catalog, command, visit_id)
+	if result.ok and (command in MirrorEndingService.ENDINGS or (MirrorReunionService.enabled(definition) and command in MirrorReunionService.ENDINGS)): _persist()
+	if result.ok and not MirrorEndingService.active(_day.state):
+		_risk.capture_close(_day.state)
+		_events.poll(_day.state, definition)
+		MarketService.sync(_day.state, definition)
+	message = result.message
+	_emit_changed()
+	return result
 
 func investigation_command(command: String, detail := "") -> ActionResult:
 	return _journal_call("investigation_command", [command, detail])
@@ -491,6 +508,7 @@ func _impl_investigation_command(command: String, detail := "") -> ActionResult:
 	return result
 
 func risk_command(command: String, id: String, detail := "") -> ActionResult:
+	if command.begins_with("ending_"): return mirror_resolution_command(command.trim_prefix("ending_"), id)
 	return _journal_call("risk_command", [command, id, detail])
 
 func _impl_risk_command(command: String, id: String, detail := "") -> ActionResult:
@@ -659,6 +677,7 @@ func _persist() -> bool:
 	return _save.save_state(_day.state, definition, content_version)
 
 func _journal_call(method: String, args: Array) -> ActionResult:
+	if MirrorEndingService.active(_day.state) and method != "mirror_resolution_command": return ActionResult.new(false, "镜前的话还未说完；若要先办别的事，请选择「暂且收起」。")
 	if LivingMirror.enabled(definition) and not InvestigationService.enabled(definition): return _ghost_call(method, args)
 	if not _day.state.personal_risk_enabled or _journal_depth > 0: return callv("_impl_" + method, args)
 	if _day.state.action_journal.size() >= 4096: return ActionResult.new(false, "本局操作记录已满，请读取较早的存档。")

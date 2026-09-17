@@ -35,7 +35,7 @@ static func build(day: DayController, catalog: ContentCatalog) -> Array:
 			for answer in order.answers:
 				var index := InvestigationService.QUESTIONS.find(answer.id)
 				if index < 0: continue
-				investigation.append(entry("answer_" + answer.id, ANSWER_TITLES[index], "第%d夜 · 当面问答" % answer.night, InvestigationService.ANSWERS[index]))
+				investigation.append(entry("answer_" + answer.id, ANSWER_TITLES[index], "第%d夜 · 当面问答" % answer.night, InvestigationService.answer(day.state, index)))
 			status = report[2]
 			var appointment := InvestigationService.appointment(day.state)
 			if appointment.get("status", "") == "booked": status = "已约第%d夜20:00来铺，等到21:30。" % appointment.night
@@ -43,7 +43,15 @@ static func build(day: DayController, catalog: ContentCatalog) -> Array:
 			if order.answers.size() == 3: status = "离家后的营生与回避已经问清。镜中的等待尚未了结。"
 			if order.attitude == "prepare_mirror": status += "\n你记下：准备将这些事实带到镜前。"
 			elif order.attitude == "put_away": status += "\n材料暂时收在抽屉里。"
+		if MirrorEndingService.finished(day.state): status = MirrorEndingService.note(day.state)
 		investigation.append(entry("commission_status", "查访进展", "第%d夜托付" % order.accepted_night, status))
+	for row in day.state.mirror_resolution.get("history", []):
+		if day.state.mirror_reunion_enabled:
+			var title: String = MirrorReunionService.ENDINGS.get(row.action, {"reveal": "夫妻重逢", "press": "当面追问", "mediate": "从中劝说"}.get(row.action, "镜前旧事"))
+			investigation.append(entry("resolution_" + row.action, title, "第%d夜 · 镜前旧事" % row.night, MirrorReunionService.transcript(row.action, day.state)))
+			continue
+		var title: String = MirrorEndingService.ENDINGS.get(row.action, {"gentle": "他愿意面对", "force": "他拒绝面对", "evidence": "她听见了当年的事实"}.get(row.action, "镜前旧事"))
+		investigation.append(entry("resolution_" + row.action, title, "第%d夜 · 镜前旧事" % row.night, MirrorEndingService.TEXTS[row.action]))
 	var sections: Array = []
 	for group in [["clues", "旧当线索", clues], ["memories", "镜中旧事", memories], ["investigation", "查访会面", investigation]]:
 		if not group[2].is_empty(): sections.append({"id": group[0], "title": group[1], "entries": group[2]})

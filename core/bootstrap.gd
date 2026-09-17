@@ -10,6 +10,7 @@ signal content_failed(issues: Array)
 var catalog: ContentCatalog
 var session: RunSession
 var preview_stage := ""
+var preview_version := 23
 
 
 func initialize() -> ContentLoadResult:
@@ -27,7 +28,7 @@ func initialize() -> ContentLoadResult:
 				if argument.begins_with("--seed=") and argument.trim_prefix("--seed=").is_valid_int():
 					definition._seed = int(argument.trim_prefix("--seed=")) & 0x7fffffff
 					definition._randomize_seed = false
-		if not preview_stage.is_empty(): save_path = "user://tests/v23_preview/" + preview_stage + ".json"
+		if not preview_stage.is_empty(): save_path = "user://tests/v%d_preview/" % preview_version + preview_stage + ".json"
 		var saves := SaveManager.new(save_path)
 		if save_path == "user://p0/autosave_v12.json":
 			for old_path in ["user://p0/autosave_v11.json", "user://p0/autosave_v10.json", "user://p0/autosave_v9.json"]:
@@ -62,11 +63,11 @@ func initialize() -> ContentLoadResult:
 		saves.catalog = catalog
 		session = RunSession.new(definition, catalog.content_version, saves, catalog)
 		if not preview_stage.is_empty():
-			var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/v23/" + preview_stage + ".json"))
+			var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/v%d/" % preview_version + preview_stage + ".json"))
 			var codec := SaveCodec.new()
 			var preview := codec.decode(data, definition, catalog.content_version, catalog, true)
 			if preview == null:
-				push_error("快速试玩资料无效，请先运行 tools/play_v23.ps1：" + codec.error_message)
+				push_error("快速试玩资料无效，请重新运行对应版本的试玩入口：" + codec.error_message)
 				session = null
 				return result
 			session._day.state = preview

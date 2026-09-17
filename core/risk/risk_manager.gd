@@ -15,7 +15,7 @@ func rule_for(item: ItemInstance) -> GhostRuleDefinition:
 func ghosts(state: RunState) -> Array[ItemInstance]:
 	var result: Array[ItemInstance] = []
 	for item in state.inventory_instances:
-		if rule_for(item) != null: result.append(item)
+		if rule_for(item) != null and not MirrorEndingService.released(state, item.instance_id): result.append(item)
 	return result
 
 func covered(state: RunState, id: String) -> bool:
@@ -60,6 +60,7 @@ static func recorded_minutes(run: RunDefinition, rule: GhostRuleDefinition, row:
 	return rule.cover_minutes if row.action == "cover" else rule.uncover_minutes
 
 func reason(day: DayController, id: String, command: String) -> String:
+	if MirrorEndingService.released(day.state, id): return "铜镜已是普通旧物，无须再覆红避祟。"
 	if command not in ["cover", "uncover"]: return "未知处理方式。"
 	if day.state.phase not in [&"open", &"closed_processing"]: return "只可在营业或关门处理时动手。"
 	var item := InventoryManager.new().find(day.state, id)

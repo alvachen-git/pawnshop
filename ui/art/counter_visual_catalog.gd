@@ -23,6 +23,7 @@ const ORDINARY_PLACEMENT := {
 	"bookkeeper": Vector3(0.500, 1.000, 0.500),
 }
 const ITEMS := {
+	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
 	"asset.item_blue_bowl": "bowl", "asset.item_brass_holder": "holder", "asset.weeping_mirror": "mirror",
 }
 const PORTRAITS := {

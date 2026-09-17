@@ -29,7 +29,7 @@ func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	var appointment_error := OrdinarySamplePlan.buyer_reason(day.state, buyer.id, definition.category, day.state.current_night_index, day.state.game_minutes)
 	if not appointment_error.is_empty(): return appointment_error
-	if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
+	if ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
 	var count := 0
 	for sale in day.state.sale_records:
 		if sale.buyer_id == buyer.id and sale.night == day.state.current_night_index: count += 1
@@ -70,8 +70,8 @@ func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	if not appointment_error.is_empty(): return appointment_error
 	if item.ownership_state != "owned": return "只有铺中自有现货可以出售。"
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
-	if definition.category not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
-	if MarketService.is_special(day.definition, buyer) and definition.category != MarketService.category(day): return "不合陆掌眼眼下的收货偏好。"
+	if ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
+	if MarketService.is_special(day.definition, buyer) and ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) != MarketService.category(day): return "不合陆掌眼眼下的收货偏好。"
 	return ""
 
 func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:

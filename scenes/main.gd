@@ -12,6 +12,14 @@ var _initial_run_ready := true
 func _ready() -> void:
 	if OS.is_debug_build():
 		for argument in OS.get_cmdline_user_args():
+			if argument.begins_with("--mirror-reunion-preview=") and argument.trim_prefix("--mirror-reunion-preview=") in ["ready", "apology", "angry", "evasive"]:
+				_bootstrap.preview_stage = argument.trim_prefix("--mirror-reunion-preview=")
+				_bootstrap.preview_version = 26
+				start_at_title = false
+			if argument.begins_with("--mirror-ending-preview=") and argument.trim_prefix("--mirror-ending-preview=") in ["ready", "willing", "refused"]:
+				_bootstrap.preview_stage = argument.trim_prefix("--mirror-ending-preview=")
+				_bootstrap.preview_version = 25
+				start_at_title = false
 			if argument.begins_with("--investigation-preview=") and argument.trim_prefix("--investigation-preview=") in ["commission", "report", "meeting"]:
 				_bootstrap.preview_stage = argument.trim_prefix("--investigation-preview=")
 				start_at_title = false
@@ -36,7 +44,7 @@ func _ready() -> void:
 		_show_title()
 		_warm_counter.call_deferred()
 	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null:
-		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
+		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"risk" if _bootstrap.preview_version >= 25 else &"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
 
 func _warm_counter() -> void:
 	# Draw once behind the opaque title to upload textures and cache font glyphs.

@@ -265,6 +265,14 @@ func bind_session(session: RunSession) -> void:
 	var inventory_event_notice := preload("res://ui/inventory/inventory_event_notice.gd").new()
 	add_child(inventory_event_notice)
 	inventory_event_notice.bind(session, self)
+	if MirrorReunionService.enabled(session.definition):
+		var reunion := MirrorReunionView.new()
+		add_child(reunion)
+		reunion.bind(session, self)
+	if MirrorEndingService.enabled(session.definition):
+		var ending_effect := preload("res://ui/risk/mirror_ending_effect.gd").new()
+		add_child(ending_effect)
+		ending_effect.bind(session)
 
 func focus_active_screen() -> void:
 	if _counter_view.story_active:

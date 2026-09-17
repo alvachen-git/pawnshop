@@ -73,6 +73,7 @@ func investigate(day: DayController, event_id: String, choice_id: String) -> Act
 	return choose(day, event_id, choice_id)
 
 func poll(state: RunState, run: RunDefinition) -> void:
+	if MirrorEndingService.active(state): return
 	if state.phase in [&"dead", &"bankrupt", &"run_ended"]:
 		state.pending_event_id = ""
 		state.pending_event_minute = -1
