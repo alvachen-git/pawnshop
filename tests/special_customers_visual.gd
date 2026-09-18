@@ -57,7 +57,8 @@ func _run() -> void:
 			await _frames()
 			var texture := view._portrait.texture
 			_check(texture.resource_path == CounterVisualCatalog.SPECIAL_ROOT + person[3] + ".png", "correct named identity: " + person[3])
-			_check(texture.get_size() == Vector2(1024, 1536), "approved source dimensions")
+			var source_size := Vector2(1254, 1254) if person[3] == "mirror_husband" else Vector2(1024, 1536)
+			_check(texture.get_size() == source_size, "approved source dimensions")
 			_check(dialogue._portrait.texture == texture, "dialogue and counter share identity")
 			_check(view._portrait.material.get_shader_parameter("chroma_key"), "magenta backing removed")
 			_check(view._portrait.material.get_shader_parameter("clean_chroma_edges"), "hair and sleeves have clean edges")
@@ -66,7 +67,7 @@ func _run() -> void:
 			_check(Rect2(Vector2.ZERO, view.size).encloses(view._portrait.get_rect()), "portrait in scene bounds")
 			var cut: float = view._portrait.material.get_shader_parameter("source_bottom")
 			_check(is_equal_approx((view._portrait.position.y + view._portrait.size.y * cut) / view.size.y, 445.0 / 941.0 / 0.9), "counter edge occludes lower body")
-			_check(view._portrait.size.x / view._portrait.size.y >= 2.0 / 3.0, "source fits height without stretching")
+			_check(view._portrait.size.x / view._portrait.size.y >= source_size.x / source_size.y, "source fits height without stretching")
 			await _shot("%d_%s" % [dimensions.x, person[3]])
 			screen._route_from_customer(&"dialogue")
 			await _frames()
@@ -95,6 +96,14 @@ func _run() -> void:
 		_check(dialogue._portrait.texture.resource_path.ends_with("jiang_suyun.png"), "return dialogue retains Jiang")
 		await _shot("%d_ticket_dialogue" % dimensions.x)
 		screen._close_drawer()
+	var husband := CounterVisualCatalog.portrait("asset.customer_hawker", "mirror_husband")
+	var hawker := CounterVisualCatalog.portrait("asset.customer_hawker", "customer_hawker")
+	_check(husband != hawker, "husband and ordinary hawker have separate faces")
+	var reunion := screen.get_node("MirrorReunion") as MirrorReunionView
+	_check(reunion._husband.texture == husband, "reunion and counter share the canonical husband")
+	_check(CounterVisualCatalog.portrait("asset.customer_hawker", "", InvestigationService.PERSON) == husband, "investigation person identity selects husband independently of profession")
+	_check(reunion._husband.material.get_shader_parameter("chroma_key"), "reunion removes husband's magenta backing")
+	_check(reunion._husband.material.get_shader_parameter("source_bottom") == 1.0, "reunion shows full husband source")
 	for profession in ["bookkeeper", "seamstress"]:
 		var ordinary := CounterVisualCatalog.portrait("asset.customer_" + profession, "customer_" + profession, "ordinary/review")
 		_check(CounterVisualCatalog.is_ordinary_portrait(ordinary), "ordinary profession remains separate")
