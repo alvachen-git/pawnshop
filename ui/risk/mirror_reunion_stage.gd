@@ -68,6 +68,7 @@ func _ready() -> void:
 	cutout.shader = preload("res://ui/art/counter_cutout.gdshader")
 	cutout.set_shader_parameter("chroma_key", true)
 	cutout.set_shader_parameter("clean_chroma_edges", true)
+	cutout.set_shader_parameter("source_bottom", 1.0)
 	for actor in [wife, husband, _previous_wife, _previous_husband]: actor.material = cutout
 	add_child(_sound)
 	_sound.volume_db = -24

@@ -4,7 +4,7 @@ extends RefCounted
 const ROOT := "res://assets/art02/"
 const NEIGHBOR_PORTRAIT := "res://assets/art04/customers/neighbor_v2.png"
 const ORDINARY_ROOT := "res://assets/art04/customers/ordinary/"
-const MIRROR_HUSBAND_PORTRAIT := preload("res://assets/art04/customers/ordinary/hawker.png")
+const MIRROR_HUSBAND_PORTRAIT := preload("res://assets/art04/customers/special/mirror_husband.png")
 const SPECIAL_ROOT := "res://assets/art04/customers/special/"
 const FAMILIAR_PORTRAITS := {
 	"familiar/bookkeeper": "xu_wenheng", "familiar/seamstress": "jiang_suyun",
@@ -14,11 +14,11 @@ const SPECIAL_CUSTOMERS := {
 	"ghost_closed_bundle": "ghost_closed_bundle", "ghost_swap_guest": "ghost_swap_guest",
 }
 # Full source height, counter occlusion in source UV, horizontal center.
-# These tall sources need individual waist alignment, not the ordinary square framing.
+# Align each source independently; the husband's canonical reference is square.
 const SPECIAL_PLACEMENT := {
 	"xu_wenheng": Vector3(0.660, 0.760, 0.500),
 	"jiang_suyun": Vector3(0.650, 0.720, 0.500),
-	"mirror_husband": Vector3(0.690, 0.720, 0.500),
+	"mirror_husband": Vector3(0.510, 1.000, 0.493),
 	"mirror_medicine": Vector3(0.680, 0.720, 0.500),
 	"ghost_closed_bundle": Vector3(0.630, 0.730, 0.500),
 	"ghost_swap_guest": Vector3(0.740, 0.680, 0.500),
