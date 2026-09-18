@@ -4,6 +4,7 @@ extends RefCounted
 const ROOT := "res://assets/art02/"
 const NEIGHBOR_PORTRAIT := "res://assets/art04/customers/neighbor_v2.png"
 const ORDINARY_ROOT := "res://assets/art04/customers/ordinary/"
+const MIRROR_HUSBAND_PORTRAIT := preload("res://assets/art04/customers/ordinary/hawker.png")
 const SPECIAL_ROOT := "res://assets/art04/customers/special/"
 const FAMILIAR_PORTRAITS := {
 	"familiar/bookkeeper": "xu_wenheng", "familiar/seamstress": "jiang_suyun",
@@ -57,6 +58,10 @@ const DETAILS := {
 }
 
 static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
+	# The chapter's hawker and every later appointment are the same man.
+	# Keep the approved cap, face and clothes used by the reunion expression set.
+	if customer_id == "mirror_husband" or person_id == InvestigationService.PERSON:
+		return MIRROR_HUSBAND_PORTRAIT
 	if customer_id == "intro_neighbor" and ResourceLoader.exists(NEIGHBOR_PORTRAIT):
 		return load(NEIGHBOR_PORTRAIT) as Texture2D
 	var identity: String = FAMILIAR_PORTRAITS.get(person_id, SPECIAL_CUSTOMERS.get(customer_id, ""))

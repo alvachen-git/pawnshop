@@ -120,3 +120,8 @@ M0–M7及原房间回归保留历史夹具/v9内容；`tests/run_variety.gd` �
 运行与验收说明见 [开铺准备](docs/OPENING_PREPARATION.md) 和 [七夜整合](docs/INTEGRATED_SEVEN.md)。
 
 默认新版已整合陆掌眼七夜动态收货、熟客故事与提前赎当。右下角信封可直接查看陆掌眼货单，菜单位于右上角；版本17卖货测试局及原熟客版本定义保留。经营规则与验证见 [七夜销路整合](docs/MARKET_SEVEN.md)。
+
+
+### 铜镜人物与告别演出（本地打磨）
+
+统一夫妻水粉立绘、六种人物状态与四幅结局插画，保留现有规则和存档。隔离测试完整启动命令、四路线与操作说明见 [铜镜演出试玩](docs/MIRROR_PERFORMANCE.md)，检查及截图见 [验收记录](docs/qa/mirror-performance/REPORT.md)。本批未推送或合并。

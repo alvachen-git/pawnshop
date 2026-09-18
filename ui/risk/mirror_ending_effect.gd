@@ -44,6 +44,8 @@ func _refresh() -> void:
 	if ending == _known: return
 	_known = ending
 	if ending.is_empty() or _session.replaying: return
+	# v26 and later already performed the scene before the atomic commit.
+	if MirrorReunionService.enabled(_session.definition): return
 	play_count += 1
 	var angry := ending == "resentment"
 	color = Color(0.34, 0.055, 0.04, 0.0) if angry else Color(0.86, 0.82, 0.67, 0.0)
