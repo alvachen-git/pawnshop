@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "familiar_three_funded",
+      "display_name": "短期返当约",
+      "loan_ratio": 0.5,
+      "transfer_ratio": 0.8,
+      "term_nights": 3,
+      "redemption_fee_ratio": 0.1,
+      "return_mode": "redeem",
+      "window_start": 0,
+      "window_end": 120,
+      "redeem_minutes": 10,
+      "extension_nights": 1,
+      "extension_fee_ratio": 0.1,
+      "extend_minutes": 5
+    }
+  ]
+}

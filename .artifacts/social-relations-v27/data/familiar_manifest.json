@@ -1,0 +1,54 @@
+{
+  "content_version": 17,
+  "default_run_id": "familiar_seven",
+  "sources": [
+    {
+      "kind": "runs",
+      "path": "res://data/familiar/run.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/items/items_v11.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/customers/customers_v11.json"
+    },
+    {
+      "kind": "buyers",
+      "path": "res://data/integrated/buyers.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/pawn_terms/terms_v11.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/integrated/events.json"
+    },
+    {
+      "kind": "ghost_rules",
+      "path": "res://data/ghost_rules/rules_m5.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/opening/items.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/opening/customers.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/mirror_chapter/customers.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/mirror_chapter/events.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/familiar/pawn_terms.json"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/main.tscn" id="1"]
+
+[node name="CounterReview" instance=ExtResource("1")]
+
+[node name="Bootstrap" parent="." index="0"]
+manifest_path = "res://tests/fixtures/m6_manifest.json"
+save_path = "user://tests/counter_art_review.json"

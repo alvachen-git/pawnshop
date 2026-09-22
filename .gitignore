@@ -1,6 +1,7 @@
 .godot/
 .tools/
-.artifacts/
+.artifacts/*
+!.artifacts/social-relations-v27/
 dist/
 *.tmp
 *.log
