@@ -3,7 +3,7 @@ extends "res://tests/run_integrated_seven.gd"
 var test_seed := 42
 
 func run() -> void:
-	var loaded := JsonContentProvider.new("res://data/mirror_reunion_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new(test_manifest()).load_catalog()
 	check(loaded.is_success(), "v26 catalog")
 	if not loaded.is_success(): quit(1); return
 	catalog = loaded.catalog
@@ -37,7 +37,7 @@ func run() -> void:
 func fresh23() -> RunSession:
 	var store := GhostReplayStore.new()
 	store.origin = {"seed": test_seed, "run_token": "0123456789abcdef0123456789abcdef"}
-	return RunSession.new(run_def, 26, store, catalog)
+	return RunSession.new(run_def, catalog.content_version, store, catalog)
 
 func act(s: RunSession, command: String) -> void:
 	var result := s.execute(command)
@@ -45,12 +45,12 @@ func act(s: RunSession, command: String) -> void:
 
 func verify(s: RunSession, label: String) -> void:
 	var codec := SaveCodec.new()
-	var data := codec.encode(s._day.state, 26)
-	var restored := codec.decode(data, run_def, 26, catalog, true)
+	var data := codec.encode(s._day.state, catalog.content_version)
+	var restored := codec.decode(data, run_def, catalog.content_version, catalog, true)
 	check(restored != null, "replay " + label + ": " + codec.error_message)
 	if restored != null: check(GhostSaveCodec.same(restored.to_read_model(), s.read_state()), "exact " + label)
 	var forged := data.duplicate(true); forged.cash += 30
-	check(codec.decode(forged, run_def, 26, catalog, true) == null, "cash forgery " + label)
+	check(codec.decode(forged, run_def, catalog.content_version, catalog, true) == null, "cash forgery " + label)
 
 func journey(route: String) -> void:
 	var s := fresh23()
@@ -146,9 +146,9 @@ func journey(route: String) -> void:
 	if route == "example": fixture(s, "ending")
 
 func fixture(s: RunSession, stage: String) -> void:
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://.godot/qa/v26"))
-	var file := FileAccess.open("res://.godot/qa/v26/" + stage + ".json", FileAccess.WRITE)
-	file.store_string(JSON.stringify(SaveCodec.new().encode(s._day.state, 26)))
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(fixture_root()))
+	var file := FileAccess.open(fixture_root() + "/" + stage + ".json", FileAccess.WRITE)
+	file.store_string(JSON.stringify(SaveCodec.new().encode(s._day.state, catalog.content_version)))
 
 func aqi_story(s: RunSession, route: String) -> void:
 	check(s._day.state.pending_event_id == "aq_arrival", "seventh night arrival " + route)
@@ -174,9 +174,9 @@ func aqi_story(s: RunSession, route: String) -> void:
 	check("aq_met" in s._day.state.narrative_flags, "met flag")
 	check(("aq_helped" in s._day.state.narrative_flags) == (route != "partial"), "help versus decline")
 	var codec := SaveCodec.new()
-	var forged := codec.encode(s._day.state, 26)
+	var forged := codec.encode(s._day.state, catalog.content_version)
 	forged.narrative_flags.append("aq_forged")
-	check(codec.decode(forged, run_def, 26, catalog, true) == null, "reject unjournaled flag")
+	check(codec.decode(forged, run_def, catalog.content_version, catalog, true) == null, "reject unjournaled flag")
 
 class FailingStore extends GhostReplayStore:
 	var writes := 0
@@ -188,7 +188,7 @@ class FailingStore extends GhostReplayStore:
 func load_ready(stage := "ready") -> RunSession:
 	var s := fresh23()
 	var codec := SaveCodec.new()
-	s._day.state = codec.decode(JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/v26/" + stage + ".json")), run_def, 26, catalog, true)
+	s._day.state = codec.decode(JSON.parse_string(FileAccess.get_file_as_string(fixture_root() + "/" + stage + ".json")), run_def, catalog.content_version, catalog, true)
 	check(s._day.state != null, "load fixture " + codec.error_message)
 	return s
 
@@ -223,9 +223,9 @@ func endings() -> void:
 		verify(s, "fixed reaction")
 		var before := s.read_state()
 		for key in ["roll", "husband", "step", "approach"]:
-			var data := SaveCodec.new().encode(s._day.state, 26)
+			var data := SaveCodec.new().encode(s._day.state, catalog.content_version)
 			data.mirror_resolution[key] = 99 if key in ["roll", "step"] else "forged"
-			check(SaveCodec.new().decode(data, run_def, 26, catalog, true) == null, "reject " + key)
+			check(SaveCodec.new().decode(data, run_def, catalog.content_version, catalog, true) == null, "reject " + key)
 		for wrong in MirrorReunionService.ENDINGS:
 			if wrong in ["released", "resentment"] and ending in ["released", "resentment"]: continue
 			if wrong != ending: check(not end_act(s, wrong).ok and s.read_state() == before, "reject wrong branch")
@@ -246,13 +246,13 @@ func endings() -> void:
 		check(not s.mirror_resolution_command(ending, id).ok and s.read_state() == terminal, "no duplicate final or rewards")
 		verify(s, ending)
 		for field in ["ending", "ability", "notification_delivered"]:
-			var forged := SaveCodec.new().encode(s._day.state, 26)
+			var forged := SaveCodec.new().encode(s._day.state, catalog.content_version)
 			forged.mirror_resolution[field] = false if field == "notification_delivered" else "forged"
-			check(SaveCodec.new().decode(forged, run_def, 26, catalog, true) == null, "reject forged " + field)
+			check(SaveCodec.new().decode(forged, run_def, catalog.content_version, catalog, true) == null, "reject forged " + field)
 		for field in ["special_resources", "person_deaths"]:
-			var forged := SaveCodec.new().encode(s._day.state, 26)
+			var forged := SaveCodec.new().encode(s._day.state, catalog.content_version)
 			forged[field].append({"id": "forged"})
-			check(SaveCodec.new().decode(forged, run_def, 26, catalog, true) == null, "reject forged " + field)
+			check(SaveCodec.new().decode(forged, run_def, catalog.content_version, catalog, true) == null, "reject forged " + field)
 		fixture(s, ending)
 	# Reading all pre-ending presentation data cannot expose ability or reward.
 	for action in ["reveal", "press", "mediate", "apology", "angry", "evasive"]:
@@ -351,3 +351,9 @@ func continuation() -> void:
 	act(s, "close_shop"); act(s, "wait_until_seal"); act(s, "resolve_night")
 	check(not s._day.state.risk_pending.is_empty() and s.risk_model().body.contains("别应声"), "resentment future crisis retains warning")
 	verify(s, "resentment uncovered crisis")
+
+func test_manifest() -> String:
+	return "res://data/mirror_reunion_manifest.json"
+
+func fixture_root() -> String:
+	return "res://.godot/qa/v%d" % catalog.content_version

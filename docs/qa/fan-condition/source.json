@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-21",
+  "worktree": ".artifacts/shop-appraisal",
+  "branch": "codex/shop-appraisal",
+  "base_head": "026b0579270400ce5a9a48f40c7010ce8b11ff41",
+  "base_working_content": 28,
+  "content_version": 29,
+  "run_id": "fan_condition_ten",
+  "scope": "Local fan condition and counter/desk integration; preserve existing uncommitted work; no other worktrees modified.",
+  "handoff_date": "2026-09-22"
+}

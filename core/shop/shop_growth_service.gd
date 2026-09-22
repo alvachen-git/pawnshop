@@ -4,7 +4,7 @@ extends RefCounted
 const VERSION := 25
 const RUN := "shop_growth_ten"
 const COSTS := {"bench": 40, "display": 60}
-const NAMES := {"bench": "一级鉴物台", "display": "一级陈列柜"}
+const NAMES := {"bench": "一级鉴物台", "display": "一级陈列柜", "bench_two": "二级专用鉴物台", "fan_tools": "扇画工具"}
 const STEPS := ["整理旧账", "核对柜号", "检查夹板"]
 const MINUTES := [15, 15, 20]
 const MATERIALS := [
@@ -14,14 +14,14 @@ const MATERIALS := [
 ]
 
 static func enabled(run: RunDefinition) -> bool:
-	return String(run.id) == RUN
+	return String(run.id) == RUN or run.variety.get("shop_growth_version", 0) == 1
 
 static func initial() -> Dictionary:
 	return {"bench": false, "display": false, "investments": [], "exploration": [], "display_id": "", "opportunities": []}
 
 static func preparation_count(state: RunState) -> int:
 	if not state.shop_growth_enabled: return 0
-	return state.shop_growth.investments.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index).size()
+	return FanAppraisalService.preparation_count(state) + ShopKnowledgeService.preparation_count(state) + state.shop_growth.investments.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index).size()
 
 static func appraisal_minutes(state: RunState, item: ItemDefinition, action_id: String) -> int:
 	var action := item.find_action(action_id)
@@ -46,6 +46,8 @@ static func blocked(day: DayController) -> bool:
 	return not day.state.pending_event_id.is_empty() or not day.state.risk_pending.is_empty() or not PawnReturnService.current(day.state).is_empty() or MirrorEncounterService.new(day.state.ghost_catalog).pending(day)
 
 static func reason(day: DayController, command: String, detail := "") -> String:
+	if command == "learn_knowledge": return ShopKnowledgeService.reason(day, detail)
+	if command in FanAppraisalService.FACILITY_COMMANDS: return FanAppraisalService.facility_reason(day, command, detail)
 	var state := day.state
 	if not state.shop_growth_enabled: return "这局尚未开办修缮与查铺。"
 	if blocked(day): return "请先处理眼前的事情。"
@@ -77,6 +79,8 @@ static func reason(day: DayController, command: String, detail := "") -> String:
 	return ""
 
 static func perform(day: DayController, command: String, detail := "") -> ActionResult:
+	if command == "learn_knowledge": return ShopKnowledgeService.learn(day, detail)
+	if command in FanAppraisalService.FACILITY_COMMANDS: return FanAppraisalService.facility(day, command, detail)
 	var error := reason(day, command, detail)
 	if not error.is_empty(): return ActionResult.new(false, error)
 	var state := day.state

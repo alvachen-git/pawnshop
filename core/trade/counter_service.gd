@@ -25,6 +25,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	if EarlyRedemption.is_visit(visit): return EarlyRedemption.reason(day, visit, command, detail, amount)
 	var customer := catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
 	var item := catalog.get_definition("items", visit.item.definition_id) as ItemDefinition
+	if FanConditionService.enabled(day.definition) and visit.item.definition_id == GoodsExpertise.FAN and command in ["appraise", "judge"]: return "检查破损可在柜台办理；辨认真假请送上鉴物台。"
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)
 	if visit.night_policy == "one_quote" and command == "question" and scenario != null:
 		var q := scenario.find_question(detail)
@@ -32,6 +33,10 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	var cost := 0
 	if customer.guest_rule == "swap" and command not in ["question", "judge"]: return "他只肯调换点名的当物，请到报价页决定。"
 	match command:
+		"condition_pressure":
+			return FanConditionService.pressure_reason(day, visit, detail, amount)
+		"fan_pressure":
+			return FanBargainingService.reason(day, visit, detail, amount)
 		"verify_source":
 			var error := ProvenanceService.check_reason(day, visit, item)
 			if not error.is_empty(): return error
@@ -105,6 +110,8 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)
 	var cost := 0
 	match command:
+		"condition_pressure": cost = 5
+		"fan_pressure": cost = int(day.definition.variety.fan_bargaining.minutes)
 		"verify_source": cost = int(item.provenance.check_minutes)
 		"appraise": cost = ShopGrowthService.appraisal_minutes(day.state, item, detail)
 		"question": cost = scenario.find_question(detail).minutes if scenario != null else customer.find_question(detail).minutes
@@ -124,6 +131,8 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		return ActionResult.new(true, "你的手刚伸向包裹，那人便一把收回：‘说过了，不许验货。’他带着东西走了，未留下可核实的细节。")
 	var message := ""
 	match command:
+		"condition_pressure": message = FanConditionService.pressure(day, visit)
+		"fan_pressure": message = FanBargainingService.apply(day, visit)
 		"verify_source":
 			ProvenanceService.apply(visit.item, "counter")
 			ProvenanceService.record(day, visit.item, "counter", day.state.game_minutes - cost)
@@ -158,7 +167,8 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"offer", "pawn":
 			var terms := catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 			var threshold := maxi(1, roundi(visit.trade.reserve_price * terms.loan_ratio)) if command == "pawn" else -1
-			if trades.quote(visit.trade, customer, amount, threshold):
+			var accepted := FanBargainingService.sale_quote(day.state, visit, customer, amount) if command == "offer" and FanBargainingService.enabled(day.definition) else trades.quote(visit.trade, customer, amount, threshold)
+			if accepted:
 				if command == "pawn":
 					PawnController.new().issue(day.state, visit, terms, amount)
 					customers.finish(day.state, visit, "pawned")
@@ -167,6 +177,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 				# All guards have passed. These synchronous, non-failing writes emit no signals mid-commit.
 				economy.pay_acquisition(day.state, amount, visit.item.instance_id, "purchase/" + visit_id)
 				inventory.acquire(day.state, visit.item, visit_id, amount)
+				FanBargainingService.bought(day, visit, amount)
 				customers.finish(day.state, visit, "bought")
 				message = (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "成交：支付 %d，物品已入库。估值不等于现金，尚未出售。" % amount
 			else:

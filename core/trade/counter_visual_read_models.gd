@@ -34,7 +34,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		"clues": clues, "speech": speech, "goods_note": GoodsExpertise.description(visit.item, item),
 		"estimate": "%d–%d" % [bounds.x, bounds.y],
 		"judgement": CounterReadModels.JUDGEMENTS[visit.item.judgement],
-		"asking": visit.trade.asking_price, "rounds_left": visit.trade.rounds_left,
+		"asking": FanBargainingService.asking(day.state, visit), "rounds_left": visit.trade.rounds_left,
 		"intent": "只卖" if offers and not pawns else "只当" if pawns and not offers else "卖、当皆可" if offers and pawns else "眼下不能收购或活当",
 		"offer_allowed": offers, "pawn_allowed": pawns,
 		"cash": day.state.cash,
@@ -50,6 +50,20 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		"bargaining_cue": visit.voice.get("belittle_cue", customer.belittle.get("cue", "")),
 		"visit_constraint": visit.voice.get("introduction", ""),
 	}
+	if FanBargainingService.eligible(day, visit):
+		var personal := String(FanAppraisalService.record(day.state, visit.item.instance_id).get("verdict", ""))
+		visual["fan_judgement"] = "自己的判断：" + FanAppraisalService.DISPLAY_LABELS.get(personal, "尚未落笔")
+		visual["fan_statement"] = "对客说法：" + (FanBargainingService.WORDS if not FanBargainingService.attempt(day.state, visit).is_empty() else "尚未拿真伪谈价")
+		visual.goods_note += "\n自己的判断：" + FanAppraisalService.DISPLAY_LABELS.get(personal, "尚未落笔")
+		visual.goods_note += "\n对客说法：" + (FanBargainingService.WORDS if not FanBargainingService.attempt(day.state, visit).is_empty() else "尚未拿真伪谈价")
+		visual.introduction += "\n" + FanBargainingService.cue(day, visit)
+		visual.bargaining_cue = FanBargainingService.cue(day, visit)
+	if FanConditionService.applies(visit.item):
+		visual["condition_enabled"] = true
+		visual["condition_note"] = FanConditionService.note(visit.item)
+		visual.estimate = FanConditionService.estimate(visit.item, item)
+		visual.judgement = FanAppraisalService.DISPLAY_LABELS.get(String(FanAppraisalService.record(day.state, visit.item.instance_id).get("verdict", "")), "尚未落笔")
+		visual.goods_note = visual.condition_note + "\n自己的判断：" + visual.judgement + "\n" + GoodsExpertise.description(visit.item, item)
 	# Reuse the same user-visible operation feedback passed into the main model.
 	if EarlyRedemption.enabled(day.definition) and pawns and terms.id == FamiliarStories.TERMS: visual.pawn_terms += "\n" + EarlyRedemption.AGREEMENT
 	model.visual = visual

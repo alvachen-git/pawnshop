@@ -31,6 +31,10 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 		"item_name": definition.display_name, "item_asset": definition.visual_asset_id, "item_description": definition.description,
 		"introduction": speech, "speech": [], "clues": clues, "estimate": "%d–%d" % [bounds.x, bounds.y],
 		"attitude": "持票回访", "deadline": "验票办结", "judgement": CounterReadModels.JUDGEMENTS[item.judgement]}
+	if FanConditionService.applies(item):
+		model.visual["condition_enabled"] = true
+		model.visual["condition_note"] = FanConditionService.note(item)
+		model.visual.estimate = FanConditionService.estimate(item, definition)
 	for feature in ["appraisal", "dialogue", "trade"]:
 		model[feature].visit_id = visit.id
 		model[feature].body = description if feature != "dialogue" else speech + "\n\n" + description

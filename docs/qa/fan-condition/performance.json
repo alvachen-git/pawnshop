@@ -1,0 +1,41 @@
+[
+	{
+		"actions": 70,
+		"cold_ms": 156.201,
+		"model_ms": 6.9011,
+		"stage": "no-bench",
+		"warm_ms": [
+			33.603,
+			33.9,
+			41.774,
+			32.685,
+			31.997
+		]
+	},
+	{
+		"actions": 81,
+		"cold_ms": 119.034,
+		"model_ms": 8.23465,
+		"stage": "minor-pressed",
+		"warm_ms": [
+			40.12,
+			34.605,
+			44.24,
+			33.286,
+			32.703
+		]
+	},
+	{
+		"actions": 83,
+		"cold_ms": 117.828,
+		"model_ms": 6.59115,
+		"stage": "minor-fan_pressure-offer",
+		"warm_ms": [
+			33.31,
+			31.868,
+			31.525,
+			30.981,
+			31.399
+		]
+	}
+]

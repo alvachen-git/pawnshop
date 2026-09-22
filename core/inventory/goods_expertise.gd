@@ -13,11 +13,21 @@ static func traits(seed_value: int, visit_id: String) -> Dictionary:
 
 static func attach(rows: Array, run: RunDefinition, seed_value: int) -> void:
 	if not enabled(run): return
+	FanConditionService.attach(rows, run, seed_value)
 	for row in rows:
 		if row.item_id == CUP and not row.has("goods"): row.goods = traits(seed_value, row.visit_id)
 
 static func value(item: ItemInstance, definition: ItemDefinition) -> int:
-	if definition.expertise.get("kind") == "fan" and not item.expert_reviewed: return int(definition.expertise.unreviewed_value)
+	return FanConditionService.adjusted(item, appraisal_value(item, definition))
+
+static func appraisal_value(item: ItemInstance, definition: ItemDefinition) -> int:
+	if definition.expertise.get("kind") == "fan" and not item.expert_reviewed:
+		var base: int = definition.expertise.unreviewed_value
+		var claim: String = item.goods.get("fan_claim", "")
+		if not claim.is_empty():
+			var claimed_value: int = definition.find_variant(claim).true_value
+			return base + roundi((claimed_value - base) * int(item.goods.get("fan_weight", 0)) / 100.0)
+		return base
 	return definition.find_variant(item.selected_variant_id).true_value
 
 static func pair_ids(a: String, b: String) -> Array:
@@ -33,6 +43,7 @@ static func certificate(state: RunState, ids: Array) -> Dictionary:
 
 static func description(item: ItemInstance, definition: ItemDefinition) -> String:
 	if item.definition_id == FAN:
+		if not item.expert_reviewed and not String(item.goods.get("fan_claim", "")).is_empty(): return FanAppraisalService.claim_label(item.goods.fan_claim) + "（" + String(FanAppraisalService.DISPLAY_LABELS[item.goods.fan_claim]) + "）。尚未经行家复核，买家只依落笔时的鉴定名声酌量认价。"
 		return "行家鉴赏：" + String(definition.expertise.results[item.selected_variant_id]) if item.expert_reviewed else "尚未经行家鉴赏，买家先按普通旧扇收。"
 	if item.definition_id == CUP and "form" in item.revealed_clue_ids:
 		return "%s纹 · %s式。纹样相近不等于原配，可带两只自有茶盏请行家验配。" % [PATTERNS[int(item.goods.pattern)], "左" if int(item.goods.side) == 0 else "右"]
@@ -71,6 +82,7 @@ static func perform(day: DayController, catalog: ContentCatalog, action: String,
 	day.state.expertise_history.append({"id": id, "action": action, "item_ids": ids, "night": day.state.current_night_index, "start": start, "minute": day.state.game_minutes, "fee": fee, "result": result})
 	EconomyManager.new().commit(day.state, -fee, first.instance_id, id, "expertise", 0)
 	var message := String(definition.expertise.results[result]) if action == "fan" else ("两盏原配：纹样相对，底足制式一致。完好成对交给认配的买家，可另算原配价。" if result == "matched" else "两盏并非原配：纹样、左右式样或底足制式不合，仍可各自出售。")
+	if action == "fan": message += FanAppraisalService.expert_confirmation(day, first)
 	return ActionResult.new(true, message)
 
 static func pair_bonus(state: RunState, catalog: ContentCatalog, buyer: BuyerDefinition, item_ids: Array, pairs: Array, require_owned := true) -> Dictionary:

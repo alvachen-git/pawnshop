@@ -12,6 +12,15 @@ var _initial_run_ready := true
 func _ready() -> void:
 	if OS.is_debug_build():
 		for argument in OS.get_cmdline_user_args():
+			if argument.begins_with("--condition-preview=") and argument.trim_prefix("--condition-preview=") in ["upgrade", "fan-sound", "informed-ready", "ordinary-ready", "urgent-ready", "no-bench", "intact", "minor", "major", "stack", "knowledge-before"]:
+				_bootstrap.condition_preview = argument.trim_prefix("--condition-preview=")
+				start_at_title = false
+			if argument.begins_with("--bargaining-preview=") and argument.trim_prefix("--bargaining-preview=") in ["upgrade", "fan-sound", "informed-ready", "ordinary-ready", "urgent-ready"]:
+				_bootstrap.bargaining_preview = argument.trim_prefix("--bargaining-preview=")
+				start_at_title = false
+			if argument.begins_with("--appraisal-preview=") and argument.trim_prefix("--appraisal-preview=") in ["upgrade", "ready", "fan-sound", "fan-mended", "fan-flawed"]:
+				_bootstrap.appraisal_preview = argument.trim_prefix("--appraisal-preview=")
+				start_at_title = false
 			if argument.begins_with("--growth-preview=") and argument.trim_prefix("--growth-preview=") in ["preparation", "closed", "buyer"]:
 				_bootstrap.growth_preview = argument.trim_prefix("--growth-preview=")
 				start_at_title = false
@@ -51,6 +60,35 @@ func _ready() -> void:
 	if not _bootstrap.growth_preview.is_empty() and _bootstrap.session != null:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"trade" if _bootstrap.growth_preview == "buyer" else &"growth")
 		if _bootstrap.growth_preview == "closed": _counter_screen.facilities.room.select.call_deferred("archive")
+	if not _bootstrap.appraisal_preview.is_empty() and _bootstrap.session != null: _open_appraisal_preview.call_deferred()
+	if not _bootstrap.condition_preview.is_empty() and _bootstrap.session != null:
+		if _bootstrap.condition_preview == "knowledge-before":
+			_open_knowledge_preview.call_deferred()
+		elif _bootstrap.condition_preview in ["upgrade", "fan-sound"]:
+			_bootstrap.appraisal_preview = _bootstrap.condition_preview
+			_open_appraisal_preview.call_deferred()
+		else: _open_condition_preview.call_deferred()
+	if not _bootstrap.bargaining_preview.is_empty() and _bootstrap.session != null: _open_bargaining_preview.call_deferred()
+
+func _open_knowledge_preview() -> void:
+	_counter_screen.get_node("%ScreenFlowCoordinator").show_panel(&"growth")
+	_counter_screen.facilities.room.select("knowledge/gu_yansheng")
+
+func _open_bargaining_preview() -> void:
+	if _bootstrap.bargaining_preview.ends_with("-ready"):
+		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel(&"trade")
+	else:
+		_bootstrap.appraisal_preview = _bootstrap.bargaining_preview
+		_open_appraisal_preview()
+
+func _open_appraisal_preview() -> void:
+	if _bootstrap.appraisal_preview.begins_with("fan-"):
+		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel(&"appraisal")
+		var visit := CustomerManager.new().active(_bootstrap.session._day.state)
+		if visit != null: FanAppraisalView.open(_counter_screen, _bootstrap.session, visit.item.instance_id)
+	else:
+		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel(&"growth")
+		_counter_screen.facilities.room.select("bench")
 
 func _warm_counter() -> void:
 	# Draw once behind the opaque title to upload textures and cache font glyphs.
@@ -112,3 +150,6 @@ func _leave(destination: String) -> void:
 	_counter_screen.hide()
 	_counter_screen.process_mode = Node.PROCESS_MODE_DISABLED
 	_show_title()
+
+func _open_condition_preview() -> void:
+	_counter_screen.get_node("%ScreenFlowCoordinator").show_panel(&"appraisal")

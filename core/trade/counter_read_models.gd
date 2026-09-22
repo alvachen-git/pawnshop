@@ -82,7 +82,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 				var suffix := ""
 				if not question.pressure_clue.is_empty() and not TradeScenarioService.used(visit, scenario, question.pressure_clue): suffix = " · 议价一轮"
 				model.dialogue.buttons.append(_button(day, service, visit, "question", question.id, "%s · %d分钟%s" % [question.prompt, question.minutes, suffix]))
-	model.trade.body = "%s · 要价 %d\n剩余议价轮次 %d · %s\n报价 %d分钟 / 施压 %d分钟，各消耗一轮。\n收购前请自行判断证据与承受价。" % [item.display_name, visit.trade.asking_price, visit.trade.rounds_left, "显得不耐烦" if visit.trade.patience < customer.patience else "尚愿意交谈", customer.terms.quote_minutes, customer.terms.pressure_minutes]
+	model.trade.body = "%s · 要价 %d\n剩余议价轮次 %d · %s\n报价 %d分钟 / 施压 %d分钟，各消耗一轮。\n收购前请自行判断证据与承受价。" % [item.display_name, FanBargainingService.asking(state, visit), visit.trade.rounds_left, "显得不耐烦" if visit.trade.patience < customer.patience else "尚愿意交谈", customer.terms.quote_minutes, customer.terms.pressure_minutes]
 	for clue_id in visit.item.revealed_clue_ids:
 		var clue := item.find_clue(clue_id)
 		var used: bool = clue_id in visit.trade.used_clue_ids or (scenario != null and TradeScenarioService.used(visit, scenario, clue_id))
@@ -91,6 +91,14 @@ static func build(day: DayController, service: CounterService, message: String, 
 		var button := _button(day, service, visit, "pressure", clue_id, label)
 		button.evidence = clue.text
 		model.trade.buttons.append(button)
+	if FanConditionService.enabled(day.definition) and FanConditionService.checked(visit.item) and visit.item.goods.fan_condition != "intact":
+		model.trade.buttons.append(_button(day, service, visit, "condition_pressure", "", "“" + FanConditionService.pressure_words(visit.item) + "” · 5分钟 · 议价一轮"))
+	if FanBargainingService.eligible(day, visit):
+		var personal := String(FanAppraisalService.record(state, visit.item.instance_id).get("verdict", ""))
+		model.trade.body += "\n自己的判断：" + FanAppraisalService.DISPLAY_LABELS.get(personal, "尚未落笔")
+		var claimed := FanBargainingService.attempt(state, visit)
+		model.trade.body += "\n对客说法：" + (FanBargainingService.WORDS if not claimed.is_empty() else "尚未拿真伪谈价")
+		model.trade.buttons.append(_button(day, service, visit, FanBargainingService.COMMAND, "", "“" + FanBargainingService.WORDS + "”" + (" · 已试探" if visit.trade.belittle_used else " · 5分钟 · 议价一轮")))
 	if not customer.belittle.is_empty():
 		var label := "“这东西没你说的那么值钱，再让些。”"
 		label += " · 已试探" if visit.trade.belittle_used else " · %d分钟 · 议价一轮" % int(customer.belittle.minutes)
@@ -100,7 +108,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		model.trade.body += "\n处境与品相分开谈；不赶路的客人可能反感催价。"
 	model.trade.body += "\n客人最迟留到 %s。" % TimeController.clock_text(day.definition.opening_minute, visit.expires_at)
 	model.trade.buttons.append(_button(day, service, visit, "reject", "", "拒绝收货 · %d分钟" % customer.terms.reject_minutes))
-	model.trade.asking_price = visit.trade.asking_price
+	model.trade.asking_price = FanBargainingService.asking(state, visit)
 	model.trade.can_offer = service.reason(day, "offer", visit.visit_id, "", 1).is_empty()
 	var terms := service.catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 	if terms != null:
@@ -110,6 +118,8 @@ static func build(day: DayController, service: CounterService, message: String, 
 		if EarlyRedemption.enabled(day.definition) and terms.id == FamiliarStories.TERMS: model.trade.body += "\n" + EarlyRedemption.AGREEMENT
 		var background := PawnRedemptionPolicy.background(day.definition, customer, VarietySaveCodec.selection(day.state, visit.visit_id))
 		if not background.is_empty(): model.trade.body += "\n" + background
+	if FanConditionService.applies(visit.item):
+		model.appraisal.body = item.description + "\n" + FanConditionService.note(visit.item) + "\n参考价值：" + FanConditionService.estimate(visit.item, item) + "\n" + ProvenanceService.describe(visit.item)
 	if not goods_note.is_empty(): model.appraisal.body += "\n" + goods_note
 	for feature in ["appraisal", "dialogue", "trade"]:
 		model[feature].visit_id = visit.visit_id

@@ -21,4 +21,10 @@ func refresh() -> void:
 	_view.render(_session.counter_model()[feature_key()])
 
 func _on_intent(command: String, visit_id: String, detail: String, amount: int) -> void:
+	if command == "fan_open":
+		FanAppraisalView.open(_view, _session, detail)
+		return
+	if command == "condition":
+		_session.fan_command("condition", detail)
+		return
 	_session.counter_command(command, visit_id, detail, amount)

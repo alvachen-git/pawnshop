@@ -3,6 +3,18 @@ extends RefCounted
 
 static func validate(kind: String, row: Dictionary, path: String, at: String) -> Array:
 	var issues: Array = []
+	if kind == "runs" and row.get("variety") is Dictionary and row.variety.has("fan_bargaining"):
+		var policy: Variant = row.variety.fan_bargaining
+		var valid: bool = policy is Dictionary
+		if valid:
+			for key in ["version", "minutes", "ordinary_discount_percent", "urgent_discount_percent", "informed_patience_cost", "reputation_delta"]:
+				if not RunSchema.integer(policy.get(key)): valid = false
+		if valid:
+			valid = policy.version == 1 and policy.minutes == 5 and policy.ordinary_discount_percent > 0 and policy.ordinary_discount_percent < policy.urgent_discount_percent and policy.urgent_discount_percent < 100 and policy.informed_patience_cost > 0 and policy.reputation_delta < 0 and policy.get("customer_knowledge") is Dictionary
+		if valid:
+			for knowledge in policy.customer_knowledge.values():
+				if knowledge not in ["informed", "uninformed"]: valid = false
+		if not valid: CounterDomainValidator._error(issues, at, "折扇议价规则无效。")
 	if kind == "customers":
 		if row.get("life_status", "living") not in ["living", "ghost"] or row.get("guest_rule", "") not in ["", "no_appraisal", "swap"]: CounterDomainValidator._error(issues, at, "来客生死或接待规则无效。")
 		if row.get("guest_rule", "") in ["no_appraisal", "swap"] and row.get("life_status") != "ghost": CounterDomainValidator._error(issues, at, "阴客规则须绑定亡魂身份。")
@@ -40,6 +52,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 						if total != 100: valid = false
 				if not valid: CounterDomainValidator._error(issues, at, "夜客配置需要有效价格、耗时与合计100的后果权重。")
 			if value.has("ghost_guests_version") and (not RunSchema.integer(value.ghost_guests_version) or value.ghost_guests_version != 1 or value.get("goods_expertise_version") != 1): CounterDomainValidator._error(issues, at, "辨生死版本须使用现有商品复核与有效规则版本。")
+			if value.has("fan_condition_version") and (value.fan_condition_version != 1 or value.get("fan_appraisal_version") != 1 or value.get("fan_bargaining", {}).get("version") != 1): CounterDomainValidator._error(issues, at, "折扇品相须使用鉴物台和议价规则。")
 			if value.has("goods_expertise_version") and (not RunSchema.integer(value.goods_expertise_version) or value.goods_expertise_version != 1 or value.get("pawn_redemption_version") != 1): CounterDomainValidator._error(issues, at, "新品须使用职业赎回版及有效规则版本。")
 			if value.has("pawn_redemption_version") and (not RunSchema.integer(value.pawn_redemption_version) or value.pawn_redemption_version != 1 or value.get("seven_version") != 1):
 				CounterDomainValidator._error(issues, at, "职业赎回概率须使用七夜配置与有效规则版本。")
