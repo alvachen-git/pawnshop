@@ -1,5 +1,7 @@
 # 鬼市当铺
 
+**新增鉴物台与知识柜试玩**：`play-unified.cmd` 进入品相与掌眼十夜；`-Stage knowledge` 测试柜中学习，`-Stage fan` 测试图像对证。包含二级台、免费草稿、落笔计时、折扇压价与破损检查。见[试玩说明](docs/FAN_CONDITION_PLAYTEST.md)和[合并说明](docs/SHOP_APPRAISAL_RELEASE.md)。原线上默认铜镜托梦入口与存档保留。
+
 默认新游戏为 **v29 夜半来声**：收镜后下一夜就寝，门外传来真实女性抽泣声，玩家选择查看或继续睡。最多连续两个夜晚，听完求助后以清晨自语承接并提示调查方向。保留血泪立绘、十夜经营、阿七与铜镜四种结局。旧版存档保持原规则。
 
 完整启动及隔离测试见 [v29试玩说明](docs/MIRROR_DREAM_V29.md)。当前开发工作区运行 `tools/play_v29.cmd -Stage bedtime`；正常新局不带阶段参数。v28自动托梦仍使用 `tools/play_v28.cmd`，历史成长入口见 [成长说明](docs/SHOP_GROWTH_PLAYTEST.md)。

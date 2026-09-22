@@ -53,6 +53,7 @@ func _ready() -> void:
 	_shader = ShaderMaterial.new()
 	_shader.shader = preload("res://ui/shop/facilities_room.gdshader")
 	_shader.set_shader_parameter("repaired", _textures[1])
+	_shader.set_shader_parameter("specialized", _textures[2])
 	_paint.material = _shader
 	# Numbering is gameplay data, never generated lettering. Sixteen distinct public cabinets.
 	for index in 16:
@@ -92,6 +93,11 @@ func _ready() -> void:
 	_make_hotspot("archive", "旧账柜", Rect2(0.418, 0.175, 0.156, 0.482))
 	_make_hotspot("bench", "鉴物台", Rect2(0.706, 0.564, 0.265, 0.300))
 	_make_hotspot("compartment", "检查夹板", Rect2(0.720, 0.467, 0.044, 0.112))
+	for topic in ShopKnowledgeService.TOPICS:
+		var info: Dictionary = ShopKnowledgeService.TOPICS[topic]
+		var id := "knowledge/" + String(topic)
+		_make_hotspot(id, info.name, info.bounds)
+		hotspots[id].hide()
 	_hover_label = Label.new()
 	_style_scene_caption(_hover_label, 21)
 	_hover_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -133,7 +139,7 @@ func _ready() -> void:
 	)
 	visibility_changed.connect(func() -> void:
 		if visible: refresh()
-		else: _hover_label.hide()
+		else: _clear_hover()
 	)
 	resized.connect(_layout)
 	_layout()
@@ -199,18 +205,27 @@ func _make_hotspot(id: String, label: String, rect: Rect2) -> void:
 	bounds(button, rect)
 	button.pressed.connect(select.bind(id))
 	button.mouse_entered.connect(_show_hover.bind(id, label))
-	button.mouse_exited.connect(func() -> void: _hover_label.hide())
+	button.mouse_exited.connect(_clear_hover)
 	button.focus_entered.connect(_show_hover.bind(id, label))
-	button.focus_exited.connect(func() -> void: _hover_label.hide())
+	button.focus_exited.connect(_clear_hover)
 	hotspots[id] = button
 
 func _show_hover(id: String, label: String) -> void:
 	if sheet.visible: return
+	_clear_hover()
+	if id.begins_with("knowledge/"):
+		var area: Rect2 = ShopKnowledgeService.TOPICS[id.trim_prefix("knowledge/")].bounds
+		_shader.set_shader_parameter("cabinet_hover", Vector4(area.position.x, area.position.y, area.size.x, area.size.y))
+		return
 	_hover_label.text = label
 	_hover_label.size = Vector2(144, 38)
 	var rect: Rect2 = hotspots[id].get_global_rect()
 	_hover_label.position = Vector2(clampf(rect.get_center().x - global_position.x - 72, 8, size.x - 152), clampf(rect.position.y - global_position.y - 40, 80, size.y - 45))
 	_hover_label.show()
+
+func _clear_hover() -> void:
+	_hover_label.hide()
+	_shader.set_shader_parameter("cabinet_hover", Vector4.ZERO)
 
 func _make_sheet() -> void:
 	sheet = PanelContainer.new()
@@ -262,6 +277,8 @@ func _layout() -> void:
 	if sheet == null: return
 	var width := clampf(size.x * 0.34, 405, 510)
 	var height := minf(size.y * 0.52, 400)
+	if selected == "bench" and session != null and FanConditionService.enabled(session.definition): height = minf(height, 260)
+	if selected.begins_with("knowledge/"): height = minf(height, 260)
 	sheet.position = Vector2((size.x - width) * 0.50, size.y - height - 18)
 	sheet.size = Vector2(width, height)
 	for number in _numbers: number.add_theme_font_size_override("font_size", 17 if size.x < 1450 else 21)
@@ -273,6 +290,7 @@ func bind(value: RunSession) -> void:
 	refresh()
 
 func select(id: String) -> void:
+	_clear_hover()
 	selected = "archive" if id == "compartment" else id
 	_last_error = ""
 	_render_key = ""
@@ -293,6 +311,9 @@ func close_sheet() -> void:
 func refresh() -> void:
 	if _paint == null: return
 	if not is_visible_in_tree(): return
+	for topic in ShopKnowledgeService.TOPICS:
+		var active := preview_level < 0 and session != null and ShopKnowledgeService.enabled(session.definition)
+		hotspots["knowledge/" + String(topic)].visible = active
 	if preview_level >= 0:
 		_paint.texture = _textures[preview_level]
 		_shader.set_shader_parameter("full_plate", true)
@@ -308,6 +329,7 @@ func refresh() -> void:
 	var state := session._day.state
 	var growth := state.shop_growth
 	_shader.set_shader_parameter("full_plate", false)
+	_shader.set_shader_parameter("bench_specialized", FanAppraisalService.bench_level(state) == 2)
 	_shader.set_shader_parameter("bench_built", bool(growth.bench))
 	_shader.set_shader_parameter("display_built", bool(growth.display))
 	_shader.set_shader_parameter("late_amount", clampf((float(state.game_minutes) - 180.0) / 300.0, 0.0, 0.65) if state.phase != &"pre_open" else 0.0)
@@ -333,10 +355,18 @@ func refresh() -> void:
 	_render_key = key
 	_clear_actions()
 	status_note.text = _last_error
+	var direct_bench := selected == "bench" and FanConditionService.enabled(session.definition)
+	actions.get_parent().move_child(actions, 0 if selected.begins_with("knowledge/") else 1)
 	if selected == "bench":
 		_title.text = "鉴物台 · " + ("一级" if growth.bench else "待整修")
 		body.text = "台面已整平，灯座牢靠，常用工具收在盘里。\n\n普通货用放大镜、灯或磁铁进行的10分钟检查，缩至5分钟。原5分钟检查不变。" if growth.bench else "旧毡起皱，灯座有些松动。\n\n整修后，普通工具检查由10分钟缩至5分钟。\n40银元 · 准备1次 · 当晚可用。"
-		if not growth.bench: _action("整修鉴物台 · 40银元 / 准备1次", "build", "bench")
+		if direct_bench and not growth.bench: _action("整修鉴物台 · 40银元 / 准备1次", "build", "bench")
+		if FanAppraisalService.enabled(session.definition):
+			var advanced := FanAppraisalModels.facility(session._day)
+			_title.text = advanced.title
+			body.text = advanced.body if direct_bench else body.text + "\n\n" + advanced.body
+			for row in advanced.buttons: _action(row.label, row.command, row.detail)
+		if not growth.bench and not direct_bench: _action("整修鉴物台 · 40银元 / 准备1次", "build", "bench")
 	elif selected == "display":
 		_title.text = "陈列柜 · " + ("一级" if growth.display else "待整修")
 		if not growth.display:
@@ -350,6 +380,11 @@ func refresh() -> void:
 		_title.text = "旧账柜"
 		var page := ShopGrowthReadModels.page(session._day, 2)
 		body.text = page.body.trim_prefix("沿柜查铺\n\n")
+		for row in page.buttons: _action(row.label, row.command, row.detail)
+	elif selected.begins_with("knowledge/"):
+		var page := ShopKnowledgeService.page(session._day, selected.trim_prefix("knowledge/"))
+		_title.text = page.title
+		body.text = page.body
 		for row in page.buttons: _action(row.label, row.command, row.detail)
 	_layout()
 

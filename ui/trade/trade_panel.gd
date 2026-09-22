@@ -268,10 +268,17 @@ func render(model: Dictionary) -> void:
 	if new_visit:
 		_mode = "offer"
 	_ask_value.text = str(visual.asking)
+	(_ask_value.get_parent().get_child(0) as Label).text = "收购要价" if visual.has("fan_judgement") else "顾客要价"
 	_estimate_value.text = visual.estimate
+	_column.move_child(_metrics, 0 if visual.get("condition_enabled", false) else 3)
+	(_estimate_value.get_parent().get_child(0) as Label).text = "参考价值" if visual.get("condition_enabled", false) else "证据估值"
 	# Keep actionable pawn context and supernatural warnings from current main,
 	# without bringing back the duplicated ordinary item/appraisal summary.
 	var context_lines: PackedStringArray = []
+	if visual.has("fan_judgement"):
+		context_lines.append(visual.fan_judgement)
+		context_lines.append(visual.fan_statement)
+		context_lines.append(visual.bargaining_cue)
 	var pawn_background := String(visual.get("pawn_background", "")).strip_edges()
 	if not pawn_background.is_empty(): context_lines.append(pawn_background)
 	if not String(model.get("night_policy", "")).is_empty():
@@ -369,7 +376,8 @@ func _render_reactions(rows: Array, visual: Dictionary, pawn_return: bool) -> vo
 func _reaction_text(row: Dictionary) -> String:
 	var text := _player_feedback(String(row.message))
 	# The public price transition gets its own accessible, color-coded line.
-	return text.replace("要价 %d → %d 银元。" % [row.before, row.after], "").strip_edges()
+	text = text.replace("收购要价仍为%d银元。" % row.after, "")
+	return text.replace("收购要价 %d → %d 银元。" % [row.before, row.after], "").replace("要价 %d → %d 银元。" % [row.before, row.after], "").strip_edges()
 
 func _change_color(row: Dictionary) -> Color:
 	return PRICE_DOWN if row.after < row.before else PRICE_UP if row.after > row.before else PRICE_UNCHANGED
@@ -458,7 +466,10 @@ func open_bargain_menu() -> void:
 	if not _bargain_toggle.is_visible_in_tree() or _bargain_toggle.disabled:
 		return
 	var visual: Dictionary = _availability_model.get("visual", {})
-	_bargain_popup.present("%s · 顾客要价 %s 银元 · 证据估值 %s" % [visual.get("item_name", ""), _ask_value.text, _estimate_value.text])
+	var summary := "%s · %s %s 银元 · 证据估值 %s" % [visual.get("item_name", ""), "收购要价" if visual.has("fan_judgement") else "顾客要价", _ask_value.text, _estimate_value.text]
+	if visual.has("fan_judgement"): summary += "\n" + visual.fan_judgement + "\n" + visual.fan_statement + ("\n破损让价用于收购与活当；判假让价只用于买断。" if visual.get("condition_enabled", false) else "\n此处只谈买断；不改自己的鉴定或活当金额。")
+	if visual.get("condition_enabled", false): summary = summary.replace("证据估值", "参考价值")
+	_bargain_popup.present(summary)
 
 
 func _emit_intent(command: String, visit_id: String, detail: String) -> void:

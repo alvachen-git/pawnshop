@@ -59,10 +59,13 @@ func render(model: Dictionary) -> void:
 		_body.text = "已见线索\n"
 		if visual.clues.is_empty(): _body.text += "尚未取证。可从下方选择检查。"
 		for clue in visual.clues: _body.text += ("本次发现 · " if clue.id in _new_clues else "• ") + clue.text + "\n"
+		if visual.get("condition_enabled", false):
+			_summary.text = "%s · 参考价值 %s" % [visual.item_name, visual.estimate]
+			_body.text = visual.item_description + "\n"
 		if not visual.get("guest_warning", "").is_empty(): _body.text = visual.guest_warning + "\n\n" + _body.text
 		if not visual.get("goods_note", "").is_empty(): _body.text += "\n" + visual.goods_note + "\n"
 		if not visual.get("provenance", "").is_empty(): _body.text += "\n" + visual.provenance + "\n"
-		if not visual.message.is_empty() and not _body.text.contains(visual.message):
+		if not visual.message.is_empty() and not _body.text.contains(visual.message) and not (visual.get("condition_enabled", false) and visual.message.begins_with(String(visual.get("condition_note", "")))):
 			_body.text += "\n" + visual.message
 	var buttons := _buttons.get_children()
 	var entries: Array = model.get("buttons", [])
@@ -90,6 +93,7 @@ func render(model: Dictionary) -> void:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_show_image.bind(row.id))
 		_views.add_child(button)
+	if visual.get("condition_enabled", false): _views.hide()
 	_show_image(_selected)
 
 func _show_image(id: String) -> void:

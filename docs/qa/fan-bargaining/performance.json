@@ -1,0 +1,41 @@
+[
+	{
+		"actions": 77,
+		"cold_ms": 217.941,
+		"model_ms": 8.61525,
+		"stage": "ordinary-ready",
+		"warm_ms": [
+			55.858,
+			46.353,
+			66.352,
+			43.951,
+			40.305
+		]
+	},
+	{
+		"actions": 78,
+		"cold_ms": 175.26,
+		"model_ms": 9.89395,
+		"stage": "ordinary-pressed",
+		"warm_ms": [
+			52.126,
+			52.248,
+			48.835,
+			50.318,
+			52.848
+		]
+	},
+	{
+		"actions": 79,
+		"cold_ms": 191.571,
+		"model_ms": 9.897,
+		"stage": "saved-sale",
+		"warm_ms": [
+			62.314,
+			65.532,
+			86.736,
+			70.111,
+			57.699
+		]
+	}
+]

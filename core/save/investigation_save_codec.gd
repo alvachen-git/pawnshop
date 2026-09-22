@@ -79,6 +79,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	if MirrorEndingService.enabled(run): commands["mirror_resolution_command"] = [2, 2]
 	if "aq_coat" in run.event_ids: commands["observe_room"] = [1, 1]
 	if ShopGrowthService.enabled(run): commands["growth_command"] = [2, 2]
+	if FanAppraisalService.enabled(run): commands["fan_command"] = [3, 3]
 	for index in range(start, data.action_journal.size()):
 		var row: Variant = data.action_journal[index]
 		if not row is Dictionary or row.size() != 2 or not row.get("method") is String or not commands.has(row.method) or not row.get("args") is Array: return null
@@ -87,7 +88,8 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 		var args: Array = row.args.duplicate(true)
 		if row.method == "counter_command" and args.size() == 4: args[3] = int(args[3])
 		var result: ActionResult = session.callv(row.method, args)
-		if row.method == "growth_command" and not result.ok: return null
+		if row.method in ["growth_command", "fan_command"] and not result.ok: return null
+		if row.method == "counter_command" and row.args[0] in ["fan_pressure", "condition_pressure"] and not result.ok: return null
 		if ShopGrowthService.enabled(run) and row.method == "counter_command" and row.args[0] in ["display_accept", "display_counter"] and not result.ok: return null
 		replayed_actions += 1
 	var expected: Dictionary = data.duplicate(true)

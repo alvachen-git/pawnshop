@@ -16,7 +16,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 		if not definition.provenance.is_empty() and not item.provenance.investigated and item.provenance.status not in ["verified", "mismatch"]:
 			inventory.buttons.append(_button("inquire", item.instance_id, "", "委托来源调查 · %d银元 / %d分钟" % [definition.provenance.inquiry_fee, definition.provenance.inquiry_minutes], ProvenanceService.inquiry_reason(day, item, definition)))
 		var bounds := AppraisalSystem.new().valuation(item, definition)
-		inventory.body += "已知估值 %d–%d（未出售，盈亏未实现）\n" % [bounds.x, bounds.y]
+		inventory.body += ("参考价值 " + FanConditionService.estimate(item, definition) + "\n" + FanConditionService.note(item) + "\n") if FanConditionService.applies(item) else "已知估值 %d–%d（未出售，盈亏未实现）\n" % [bounds.x, bounds.y]
 		for buyer_id in day.definition.buyer_ids:
 			var buyer := service.catalog.get_definition("buyers", buyer_id) as BuyerDefinition
 			var reason := service.sale_reason(day, item, buyer)

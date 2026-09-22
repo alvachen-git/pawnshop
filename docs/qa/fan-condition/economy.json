@@ -1,0 +1,82 @@
+[
+	{
+		"condition": "minor",
+		"cost": 28,
+		"handling_minutes": 25,
+		"held_overnight": false,
+		"income": 15,
+		"profit": -13,
+		"sold_night": 5,
+		"strategy": "ordinary"
+	},
+	{
+		"condition": "minor",
+		"cost": 22,
+		"handling_minutes": 30,
+		"held_overnight": false,
+		"income": 15,
+		"profit": -7,
+		"sold_night": 5,
+		"strategy": "damage"
+	},
+	{
+		"condition": "minor",
+		"cost": 17,
+		"handling_minutes": 30,
+		"held_overnight": false,
+		"income": 15,
+		"profit": -2,
+		"sold_night": 5,
+		"strategy": "fake"
+	},
+	{
+		"condition": "minor",
+		"cost": 13,
+		"handling_minutes": 35,
+		"held_overnight": false,
+		"income": 15,
+		"profit": 2,
+		"sold_night": 5,
+		"strategy": "both"
+	},
+	{
+		"condition": "major",
+		"cost": 28,
+		"handling_minutes": 25,
+		"held_overnight": false,
+		"income": 10,
+		"profit": -18,
+		"sold_night": 5,
+		"strategy": "ordinary"
+	},
+	{
+		"condition": "major",
+		"cost": 14,
+		"handling_minutes": 30,
+		"held_overnight": true,
+		"income": 10,
+		"profit": -4,
+		"sold_night": 6,
+		"strategy": "damage"
+	},
+	{
+		"condition": "major",
+		"cost": 22,
+		"handling_minutes": 30,
+		"held_overnight": true,
+		"income": 10,
+		"profit": -12,
+		"sold_night": 6,
+		"strategy": "fake"
+	},
+	{
+		"condition": "major",
+		"cost": 11,
+		"handling_minutes": 35,
+		"held_overnight": true,
+		"income": 10,
+		"profit": -1,
+		"sold_night": 6,
+		"strategy": "both"
+	}
+]

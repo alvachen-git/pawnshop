@@ -61,6 +61,12 @@ static func page(day: DayController, section: int) -> Dictionary:
 			if count == 0: model.body += "\n\n旧账堆在最里头的柜脚，灰下还露着几张目录。"
 			_button(model, day, "explore", str(count), "%s · %d分钟" % [ShopGrowthService.STEPS[count], ShopGrowthService.MINUTES[count]])
 		else: model.body += "\n\n这处柜格已查完。抄录留在此页，可随时免费复看。"
+	if FanAppraisalService.enabled(day.definition):
+		if section == 0:
+			var advanced := FanAppraisalModels.facility(day)
+			model.body += "\n\n" + advanced.body
+			model.buttons.append_array(advanced.buttons)
+		elif section == 2: FanAppraisalModels.archive(model, day)
 	return model
 
 static func _button(model: Dictionary, day: DayController, command: String, detail: String, label: String) -> void:

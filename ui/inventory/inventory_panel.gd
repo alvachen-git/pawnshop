@@ -143,7 +143,7 @@ func _emit_intent(command: String, target: String, detail: String) -> void:
 			if entry.command == command and entry.target_id == target and entry.detail == detail:
 				var selected: Array = _model.visual.stock.filter(func(r: Dictionary) -> bool: return r.id == target or r.id == detail)
 				var objects: Array = selected.map(func(r: Dictionary) -> String: return "%s（货签%d）" % [r.name, _model.visual.stock.find(r) + 1])
-				var purpose := "辨别真作、临摹或后添名款，买家按鉴赏结论报价。" if command == "expert_fan" else "核对两盏是否原配；完好原配可向认配的买家争取加价。"
+				var purpose := "辨别真迹、临摹画或假画，买家按鉴赏结论报价。" if command == "expert_fan" else "核对两盏是否原配；完好原配可向认配的买家争取加价。"
 				dialog.dialog_text = "、".join(objects) + "\n" + entry.label + "\n" + purpose + "\n结论可免费复看；办理期间客人照常等候。\n费用不计入货物成本。"
 		dialog.ok_button_text = "付费委托"; dialog.cancel_button_text = "暂不委托"
 		add_child(dialog)

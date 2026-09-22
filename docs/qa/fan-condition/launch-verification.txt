@@ -1,0 +1,4 @@
+Normal unified launch: verified.
+No-bench isolated launch (1600x900): verified.
+Fan desk isolated launch (1600x900): verified 2026-09-22 after interruption recovery.
+Launcher exits successfully with -Verify.

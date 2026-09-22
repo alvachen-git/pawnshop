@@ -11,6 +11,9 @@ var catalog: ContentCatalog
 var session: RunSession
 var preview_stage := ""
 var growth_preview := ""
+var appraisal_preview := ""
+var bargaining_preview := ""
+var condition_preview := ""
 var preview_version := 23
 
 
@@ -63,6 +66,22 @@ func initialize() -> ContentLoadResult:
 			saves.library.register_catalog(manifest_path, catalog)
 		saves.catalog = catalog
 		session = RunSession.new(definition, catalog.content_version, saves, catalog)
+		if (not appraisal_preview.is_empty() or not bargaining_preview.is_empty() or not condition_preview.is_empty()) and FanAppraisalService.enabled(definition):
+			var directory := "res://.godot/qa/shop-appraisal/" if bargaining_preview.is_empty() else "res://.godot/qa/fan-bargaining/"
+			var stage := appraisal_preview if bargaining_preview.is_empty() else bargaining_preview
+			if not condition_preview.is_empty():
+				directory = "res://.godot/qa/fan-condition/"
+				stage = condition_preview
+			var payload: Variant = JSON.parse_string(FileAccess.get_file_as_string(directory + stage + ".json"))
+			var codec := SaveCodec.new()
+			var state := codec.decode(payload, definition, catalog.content_version, catalog, true)
+			if state == null:
+				push_error("识扇试玩资料无效，请重新运行试玩入口：" + codec.error_message)
+				session = null
+				return result
+			state.run_token = Crypto.new().generate_random_bytes(16).hex_encode()
+			state.ghost_origin.run_token = state.run_token
+			session._day.state = state
 		if not growth_preview.is_empty() and ShopGrowthService.enabled(definition):
 			var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/shop-growth/" + growth_preview + ".json"))
 			var codec := SaveCodec.new()

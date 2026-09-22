@@ -5,7 +5,7 @@ var reunion_manifest := "res://data/mirror_reunion_manifest.json"
 var reunion_fixture_dir := "res://.godot/qa/v26/"
 
 func run() -> void:
-	var loaded := JsonContentProvider.new(reunion_manifest).load_catalog()
+	var loaded := JsonContentProvider.new(test_manifest()).load_catalog()
 	check(loaded.is_success(), "v26 catalog")
 	if not loaded.is_success(): quit(1); return
 	catalog = loaded.catalog
@@ -149,8 +149,8 @@ func journey(route: String) -> void:
 	if route == "example": fixture(s, "ending")
 
 func fixture(s: RunSession, stage: String) -> void:
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(reunion_fixture_dir))
-	var file := FileAccess.open(reunion_fixture_dir + stage + ".json", FileAccess.WRITE)
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(fixture_root()))
+	var file := FileAccess.open(fixture_root() + "/" + stage + ".json", FileAccess.WRITE)
 	file.store_string(JSON.stringify(SaveCodec.new().encode(s._day.state, catalog.content_version)))
 
 func aqi_story(s: RunSession, route: String) -> void:
@@ -191,7 +191,7 @@ class FailingStore extends GhostReplayStore:
 func load_ready(stage := "ready") -> RunSession:
 	var s := fresh23()
 	var codec := SaveCodec.new()
-	s._day.state = codec.decode(JSON.parse_string(FileAccess.get_file_as_string(reunion_fixture_dir + stage + ".json")), run_def, catalog.content_version, catalog, true)
+	s._day.state = codec.decode(JSON.parse_string(FileAccess.get_file_as_string(fixture_root() + "/" + stage + ".json")), run_def, catalog.content_version, catalog, true)
 	check(s._day.state != null, "load fixture " + codec.error_message)
 	return s
 
@@ -355,3 +355,9 @@ func continuation() -> void:
 	act(s, "close_shop"); act(s, "wait_until_seal"); act(s, "resolve_night")
 	check(not s._day.state.risk_pending.is_empty() and s.risk_model().body.contains("别应声"), "resentment future crisis retains warning")
 	verify(s, "resentment uncovered crisis")
+
+func test_manifest() -> String:
+	return reunion_manifest
+
+func fixture_root() -> String:
+	return reunion_fixture_dir.trim_suffix("/") if reunion_fixture_dir != "res://.godot/qa/v26/" else "res://.godot/qa/v%d" % catalog.content_version

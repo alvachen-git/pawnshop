@@ -254,6 +254,10 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	return _journal_call("counter_command", [command, visit_id, detail, amount])
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	# Rejected new pressure attempts must not poll events or synchronize markets.
+	if command in [FanBargainingService.COMMAND, "condition_pressure"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
+		var error := _counter.reason(_day, command, visit_id, detail, amount)
+		if not error.is_empty(): return ActionResult.new(false, error)
 	if command == "soul_inspect": return inspect_customer(visit_id)
 	var growth_visit := _counter.customers.active(_day.state)
 	if growth_visit != null and growth_visit.purpose == "display_buyer":
@@ -296,9 +300,10 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 	var feedback_before := _feedback_snapshot()
 	if _counter != null:
 		var negotiating_visit := _counter.customers.active(_day.state)
-		var asking_before := negotiating_visit.trade.asking_price if negotiating_visit != null else 0
+		var asking_before := (negotiating_visit.trade.asking_price if command == "pawn" else FanBargainingService.asking(_day.state, negotiating_visit)) if negotiating_visit != null else 0
 		result = _counter.execute(_day, command, visit_id, detail, amount)
 		_negotiation_reactions.record(_day, negotiating_visit, asking_before, command, detail, result)
+		if result.ok and FanConditionService.enabled(definition) and command in ["condition_pressure", "offer", "pawn"]: _persist()
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
@@ -322,6 +327,7 @@ func _build_counter_model() -> Dictionary:
 	PawnReturnReadModels.enrich(model, _day, _commerce)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
 	ShopGrowthReadModels.inventory(model, _day)
+	FanAppraisalModels.enrich(model, _day)
 	if not _day.state.pending_event_id.is_empty() or mirror_pending() or _day.state.phase in [&"dead", &"bankrupt"]:
 		model.trade.can_offer = false
 		model.trade.can_pawn = false
@@ -870,6 +876,23 @@ func _impl_growth_command(command: String, detail := "") -> ActionResult:
 		MarketService.sync(_day.state, definition)
 		_persist()
 	message = result.message
+	return result
+
+
+func fan_command(command: String, item_id: String, detail := "") -> ActionResult:
+	return _journal_call("fan_command", [command, item_id, detail])
+
+func _impl_fan_command(command: String, item_id: String, detail := "") -> ActionResult:
+	var result := FanAppraisalService.perform(_day, command, item_id, detail)
+	if result.ok:
+		if command not in ["draft", "clear_draft"]:
+			if _risk != null: _risk.capture_close(_day.state)
+			if _events != null: _events.poll(_day.state, definition)
+			MarketService.sync(_day.state, definition)
+		_persist()
+	message = result.message
+	var visit := _counter.customers.active(_day.state)
+	_message_visit_id = visit.visit_id if visit != null and visit.item.instance_id == item_id else ""
 	return result
 
 # Models live only for one synchronous notification, never across actions or rollback.

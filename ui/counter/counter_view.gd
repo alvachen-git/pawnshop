@@ -293,7 +293,7 @@ func render(model: Dictionary) -> void:
 			_speech.text = visual.speech.back().answer
 		_speech.tooltip_text = _speech.text
 		if not visual.get("intent", "").is_empty(): _speech.text = visual.intent + "\n" + _speech.text
-		%ItemText.text = "%s\n已知估值 %s 银元\n已见线索 %d 条" % [visual.item_name, visual.estimate, visual.clues.size()]
+		%ItemText.text = ("%s\n参考价值 %s\n%s" % [visual.item_name, visual.estimate, visual.condition_note]) if visual.get("condition_enabled", false) else "%s\n已知估值 %s 银元\n已见线索 %d 条" % [visual.item_name, visual.estimate, visual.clues.size()]
 		if visual.has("item_status"): %ItemText.text = visual.item_status
 	$Room.has_customer = active and _portrait.texture == null
 	$Room.has_item = active and _item_image.texture == null and not model.get("itemless", false)
