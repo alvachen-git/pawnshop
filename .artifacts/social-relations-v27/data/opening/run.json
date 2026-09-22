@@ -1,0 +1,279 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "opening_v01",
+      "total_nights": 3,
+      "opening_minute": 1080,
+      "night_minutes": 540,
+      "time_step": 5,
+      "initial_cash": 100,
+      "seed": 1049,
+      "tools": [
+        "magnifier",
+        "lamp",
+        "magnet"
+      ],
+      "customer_slots": [
+        {
+          "id": "intro_trade_01",
+          "arrival": 0,
+          "customer_id": "intro_neighbor",
+          "item_id": "intro_silver_hairpin",
+          "variant_id": "",
+          "night_min": 1,
+          "night_max": 1,
+          "tutorial": {
+            "min_quote_rounds": 4,
+            "min_patience": 4
+          }
+        },
+        {
+          "id": "n1_visit2",
+          "arrival": 90,
+          "customer_id": "customer_hawker",
+          "item_id": "item_brass_holder",
+          "variant_id": "",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit3",
+          "arrival": 210,
+          "customer_id": "customer_citizen",
+          "item_id": "item_silver_hairpin",
+          "variant_id": "sound",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit4",
+          "arrival": 360,
+          "customer_id": "customer_scholar",
+          "item_id": "item_fountain_pen",
+          "variant_id": "flawed",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n2_visit1",
+          "arrival": 0,
+          "customer_id": "customer_house_agent",
+          "item_id": "item_pocket_watch",
+          "variant_id": "",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit2",
+          "arrival": 90,
+          "customer_id": "customer_scholar",
+          "item_id": "item_inkstone",
+          "variant_id": "flawed",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit3",
+          "arrival": 210,
+          "customer_id": "customer_house_agent",
+          "item_id": "item_clay_teapot",
+          "variant_id": "sound",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit4",
+          "arrival": 360,
+          "customer_id": "customer_citizen",
+          "item_id": "item_silk_panel",
+          "variant_id": "flawed",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n3_visit2",
+          "arrival": 90,
+          "customer_id": "customer_scholar",
+          "item_id": "item_fountain_pen",
+          "variant_id": "sound",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit3",
+          "arrival": 210,
+          "customer_id": "customer_scholar",
+          "item_id": "item_inkstone",
+          "variant_id": "sound",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit4",
+          "arrival": 360,
+          "customer_id": "customer_hawker",
+          "item_id": "item_pocket_watch",
+          "variant_id": "flawed",
+          "night_min": 3,
+          "night_max": 3
+        }
+      ],
+      "actions": [
+        {
+          "id": "short_task",
+          "label": "歇一歇",
+          "minutes": 5,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "medium_task",
+          "label": "收拾柜面",
+          "minutes": 10,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "long_task",
+          "label": "在铺里走走",
+          "minutes": 30,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "wait_hour",
+          "label": "等待",
+          "minutes": 60,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        }
+      ],
+      "buyer_ids": [
+        "buyer_recycler",
+        "buyer_collector",
+        "buyer_silversmith"
+      ],
+      "event_ids": [
+        "evt_intro_factory_paycut",
+        "evt_intro_factory_argument",
+        "evt_intro_factory_silence",
+        "evt_intro_manqing_memory",
+        "evt_intro_manqing_money",
+        "evt_intro_letter_delivery",
+        "evt_intro_letter_read",
+        "evt_intro_gu_value",
+        "evt_intro_gu_people",
+        "evt_intro_gu_flashbacks",
+        "evt_intro_decision",
+        "evt_intro_shop_arrival",
+        "evt_intro_shop_inspection",
+        "evt_intro_first_customer",
+        "evt_intro_first_trade",
+        "evt_intro_room_first_night",
+        "evt_intro_sleep_first_night"
+      ],
+      "flag_ids": [
+        "INTRO_FACTORY_DONE",
+        "INTRO_MANQING_SHOWN",
+        "INTRO_LETTER_RECEIVED",
+        "INTRO_GU_MEMORY_DONE",
+        "INTRO_SHOP_ARRIVED",
+        "INTRO_COUNTER_MARK_SEEN",
+        "INTRO_MING_LEDGER_SEEN",
+        "INTRO_INCENSE_NOTICED",
+        "INTRO_YIN_LEDGER_NOTICED",
+        "INTRO_SHOP_INSPECTED",
+        "INTRO_FIRST_CUSTOMER_STARTED",
+        "INTRO_FIRST_TRADE_DONE",
+        "INTRO_LETTER_STORED",
+        "INTRO_MANQING_PHOTO_PLACED",
+        "INTRO_LIFE_LAMP_SEEN",
+        "INTRO_MIRROR_SEEN",
+        "INTRO_ROOM_SEEN",
+        "INTRO_FIRST_SLEEP",
+        "INTRO_COMPLETE"
+      ],
+      "ghost_rule_ids": [
+        "weeping_mirror"
+      ],
+      "fee_policy": {
+        "principal": 300,
+        "interest_bps": 100,
+        "overhead": 5,
+        "grace_nights": 1
+      },
+      "mirror_encounters": [],
+      "randomize_seed": true,
+      "trade_scenarios": [
+        {
+          "id": "intro_trade_01",
+          "slot_id": "intro_trade_01",
+          "item_id": "intro_silver_hairpin",
+          "variant_ids": [
+            "mended"
+          ],
+          "situations": [
+            "ordinary"
+          ],
+          "reactions": [
+            "admit"
+          ],
+          "introduction": "妇人把银簪放在柜上：“家里的旧物。掌柜给个公道价。”",
+          "questions": [
+            {
+              "id": "origin",
+              "prompt": "问银簪的来历",
+              "answers": {
+                "default": "“家里用过的老东西。簪尾修过一回，你照实看。”"
+              },
+              "minutes": 5,
+              "requires_questions": [],
+              "requires_clues": [],
+              "pressure_clue": "",
+              "patience_cost": 0
+            }
+          ],
+          "images": [
+            {
+              "id": "front",
+              "label": "正面",
+              "path": "res://assets/opening/hairpin.svg",
+              "requires_clues": []
+            },
+            {
+              "id": "back",
+              "label": "背面",
+              "path": "res://assets/opening/hairpin.svg",
+              "requires_clues": []
+            },
+            {
+              "id": "repair",
+              "label": "簪尾旧修",
+              "path": "res://assets/sample/hairpin_seam.svg",
+              "requires_clues": [
+                "condition_mended"
+              ]
+            }
+          ],
+          "benefit_groups": {
+            "condition_mended": "repair"
+          },
+          "concession_question": "",
+          "concession_amount": 0,
+          "concession_minutes": 5,
+          "urgent_wait_minutes": 180
+        }
+      ],
+      "private_room": true
+    }
+  ]
+}

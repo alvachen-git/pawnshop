@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "intro_neighbor",
+      "name_key": "customer.customer_citizen.name",
+      "portrait_asset_id": "asset.customer_citizen",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 2,
+      "max_quote_rounds": 2,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell"
+      ],
+      "item_pool": [
+        "intro_silver_hairpin"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "街坊妇人",
+        "introduction": "“顾掌柜不在了？……那你给我看看这个。”",
+        "wait_minutes": 180,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.12,
+        "reserve_ratio": 0.75,
+        "counter_step": 3,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "origin",
+          "prompt": "问来历",
+          "answer": "家里用过的旧物，簪尾修过一回。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "家里急用钱，你给个公道价。东西一直收在柜里。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？"
+      }
+    }
+  ]
+}

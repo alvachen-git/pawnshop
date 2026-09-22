@@ -1,0 +1,34 @@
+; Engine configuration file.
+; Godot 4.6.1 Standard + GDScript (M8-A baseline).
+
+config_version=5
+
+[application]
+
+config/name="鬼市当铺"
+config/description="固定柜台式 2D 当铺经营与规则恐怖 Prototype"
+run/main_scene="res://scenes/start.tscn"
+config/version="V27-CoatsAndPlaque.1"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="GhostMarketPawnshop-SocialRelations-v27"
+config/use_custom_user_dir.m8a_windows=true
+config/custom_user_dir_name.m8a_windows="GhostMarketPawnshop-M8A"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0.023, 0.018, 0.016, 1)
+
+[internationalization]
+
+locale/fallback="zh_CN"
+locale/translations=PackedStringArray("res://data/opening/zh_CN.translation")

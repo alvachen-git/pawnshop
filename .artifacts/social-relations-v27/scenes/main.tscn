@@ -1,0 +1,523 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scenes/main.gd" id="1"]
+[ext_resource type="Script" path="res://core/bootstrap.gd" id="2"]
+[ext_resource type="Script" path="res://ui/counter/counter_screen.gd" id="3"]
+[ext_resource type="Script" path="res://ui/counter/counter_view.gd" id="4"]
+[ext_resource type="Script" path="res://ui/status/shop_status_view.gd" id="5"]
+[ext_resource type="Script" path="res://ui/screen_flow_coordinator.gd" id="6"]
+[ext_resource type="Script" path="res://ui/appraisal/appraisal_panel.gd" id="7"]
+[ext_resource type="Script" path="res://ui/dialogue/dialogue_panel.gd" id="8"]
+[ext_resource type="Script" path="res://ui/trade/trade_panel.gd" id="9"]
+[ext_resource type="Script" path="res://ui/inventory/inventory_panel.gd" id="10"]
+[ext_resource type="Script" path="res://ui/ledger/ledger_panel.gd" id="11"]
+[ext_resource type="Script" path="res://ui/night/night_resolution_view.gd" id="12"]
+[ext_resource type="Script" path="res://ui/day/day_flow_panel.gd" id="13"]
+
+[ext_resource type="Script" path="res://ui/events/event_panel.gd" id="14"]
+
+[ext_resource type="Script" path="res://ui/risk/risk_panel.gd" id="15"]
+
+[ext_resource type="Script" path="res://ui/counter/counter_stage.gd" id="16"]
+[ext_resource type="Script" path="res://ui/menu/session_menu_view.gd" id="17"]
+
+
+[node name="Main" type="Node"]
+script = ExtResource("1")
+
+[node name="Bootstrap" type="Node" parent="."]
+script = ExtResource("2")
+
+[node name="CounterScreen" type="Control" parent="."]
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("3")
+
+[node name="CounterView" type="Control" parent="CounterScreen"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.9
+script = ExtResource("4")
+
+[node name="Room" type="Control" parent="CounterScreen/CounterView"]
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+script = ExtResource("16")
+
+[node name="ShopTitle" type="Label" parent="CounterScreen/CounterView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.012
+anchor_top = 0.012
+anchor_right = 0.168
+anchor_bottom = 0.095
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = "鬼市当铺"
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+
+
+[node name="ShopMotto" type="Label" parent="CounterScreen/CounterView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.028
+anchor_top = 0.095
+anchor_right = 0.23
+anchor_bottom = 0.14
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = "货有来路，当有归期。"
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+visible = false
+
+
+[node name="AtmosphereLabel" type="Label" parent="CounterScreen/CounterView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.798
+anchor_top = 0.28
+anchor_right = 0.98
+anchor_bottom = 0.35
+theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = "灯火初上"
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+
+
+[node name="Sign" type="Label" parent="CounterScreen/CounterView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.663
+anchor_top = 0.13
+anchor_right = 0.7
+anchor_bottom = 0.28
+theme_override_font_sizes/font_size = 32
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = "当"
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+visible = false
+
+
+[node name="CustomerPanel" type="PanelContainer" parent="CounterScreen/CounterView"]
+layout_mode = 1
+anchor_left = 0.795
+anchor_top = 0.055
+anchor_right = 0.937
+anchor_bottom = 0.265
+
+
+[node name="CustomerMargin" type="MarginContainer" parent="CounterScreen/CounterView/CustomerPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="CustomerText" type="Label" parent="CounterScreen/CounterView/CustomerPanel/CustomerMargin"]
+unique_name_in_owner = true
+layout_mode = 2
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 18
+text = "顾客席 · 暂无顾客"
+
+[node name="CounterMessage" type="Label" parent="CounterScreen/CounterView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.27
+anchor_top = 0.956
+anchor_right = 0.74
+anchor_bottom = 0.997
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = ""
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+
+
+[node name="ItemText" type="Label" parent="CounterScreen/CounterView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.25
+anchor_top = 0.645
+anchor_right = 0.425
+anchor_bottom = 0.79
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = "柜台暂空"
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+
+
+[node name="IncenseCaption" type="Label" parent="CounterScreen/CounterView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.135
+anchor_top = 0.86
+anchor_right = 0.215
+anchor_bottom = 0.92
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = "财神香"
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+visible = false
+
+
+[node name="LampCaption" type="Label" parent="CounterScreen/CounterView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.819
+anchor_top = 0.82
+anchor_right = 0.891
+anchor_bottom = 0.87
+theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = "命灯"
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+visible = false
+
+
+[node name="ObjectCaption" type="Label" parent="CounterScreen/CounterView"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.332
+anchor_top = 0.67
+anchor_right = 0.453
+anchor_bottom = 0.718
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = "验 货 台"
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+visible = false
+
+
+[node name="MenuButton" type="Button" parent="CounterScreen"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 1.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 0.0
+offset_left = -60.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = 60.0
+tooltip_text = "菜单 · 本局与铺务"
+accessibility_name = "菜单"
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 19
+
+
+[node name="ShopStatusView" type="PanelContainer" parent="CounterScreen"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.904
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("5")
+
+[node name="StatusMargin" type="MarginContainer" parent="CounterScreen/ShopStatusView"]
+layout_mode = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="StatusRow" type="HBoxContainer" parent="CounterScreen/ShopStatusView/StatusMargin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="ClockStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "时辰"
+vertical_alignment = 1
+
+[node name="NightStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "夜次"
+vertical_alignment = 1
+
+[node name="CashStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "现银"
+vertical_alignment = 1
+
+[node name="DebtStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "债务\n—"
+vertical_alignment = 1
+tooltip_text = "当前原型尚未接入债务金额。"
+
+[node name="TicketStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 17
+text = "在当票据"
+vertical_alignment = 1
+
+[node name="RiskStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "香火"
+vertical_alignment = 1
+
+[node name="PhaseStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 15
+text = "铺面"
+vertical_alignment = 1
+
+[node name="Drawer" type="PanelContainer" parent="CounterScreen"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchor_left = 0.595
+anchor_top = 0.09
+anchor_right = 0.985
+anchor_bottom = 0.815
+z_index = 12
+
+
+[node name="DrawerColumn" type="VBoxContainer" parent="CounterScreen/Drawer"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="DrawerHeader" type="HBoxContainer" parent="CounterScreen/Drawer/DrawerColumn"]
+layout_mode = 2
+
+[node name="DrawerTitle" type="Label" parent="CounterScreen/Drawer/DrawerColumn/DrawerHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "  营业"
+theme_override_font_sizes/font_size = 20
+
+[node name="CloseDrawerButton" type="Button" parent="CounterScreen/Drawer/DrawerColumn/DrawerHeader"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "收起 · Esc"
+
+[node name="PanelStack" type="Control" parent="CounterScreen/Drawer/DrawerColumn"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="DayFlowPanel" type="PanelContainer" parent="CounterScreen/Drawer/DrawerColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("13")
+panel_id = &"day"
+
+[node name="AppraisalPanel" type="PanelContainer" parent="CounterScreen/Drawer/DrawerColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("7")
+panel_id = &"appraisal"
+
+[node name="DialoguePanel" type="PanelContainer" parent="CounterScreen/Drawer/DrawerColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("8")
+panel_id = &"dialogue"
+
+[node name="TradePanel" type="PanelContainer" parent="CounterScreen/Drawer/DrawerColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("9")
+panel_id = &"trade"
+
+[node name="InventoryPanel" type="PanelContainer" parent="CounterScreen/Drawer/DrawerColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("10")
+panel_id = &"inventory"
+
+[node name="LedgerPanel" type="PanelContainer" parent="CounterScreen/Drawer/DrawerColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("11")
+panel_id = &"ledger"
+
+[node name="NightResolutionView" type="PanelContainer" parent="CounterScreen/Drawer/DrawerColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("12")
+panel_id = &"night"
+
+[node name="EventPanel" type="PanelContainer" parent="CounterScreen/Drawer/DrawerColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("14")
+panel_id = &"events"
+
+[node name="RiskPanel" type="PanelContainer" parent="CounterScreen/Drawer/DrawerColumn/PanelStack"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("15")
+panel_id = &"risk"
+
+[node name="SessionMenu" type="PanelContainer" parent="CounterScreen"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchor_left = 0.72
+anchor_top = 0.10
+anchor_right = 0.975
+anchor_bottom = 0.825
+script = ExtResource("17")
+
+[node name="MenuMargin" type="MarginContainer" parent="CounterScreen/SessionMenu"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="MenuColumn" type="VBoxContainer" parent="CounterScreen/SessionMenu/MenuMargin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="RunSectionLabel" type="Label" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+layout_mode = 2
+text = "本局"
+theme_override_font_sizes/font_size = 14
+
+[node name="NewRunButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "新游戏"
+
+[node name="LoadRunButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "读取夜末存档"
+
+[node name="ShopSectionSeparator" type="HSeparator" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+layout_mode = 2
+
+[node name="ShopSectionLabel" type="Label" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+layout_mode = 2
+text = "铺务"
+theme_override_font_sizes/font_size = 14
+
+[node name="EventButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "铺中记事"
+
+[node name="RiskButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "物品记事"
+
+[node name="NightButton" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "夜间结算"
+
+[node name="DebugSectionSeparator" type="HSeparator" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="PreviewSelector" type="Button" parent="CounterScreen/SessionMenu/MenuMargin/MenuColumn"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "美术预览：随游戏"
+tooltip_text = "每次点击依次切换正常营业、深夜异常、禁时鬼市、随游戏；不改变玩法或存档。"
+
+[node name="ContentStatus" type="Label" parent="CounterScreen"]
+unique_name_in_owner = true
+layout_mode = 1
+anchor_left = 0.25
+anchor_top = 0.4
+anchor_right = 0.75
+anchor_bottom = 0.55
+theme_override_font_sizes/font_size = 19
+theme_override_colors/font_color = Color(0.88, 0.82, 0.67, 1)
+text = "正在校验内容目录…"
+autowrap_mode = 3
+vertical_alignment = 1
+mouse_filter = 2
+
+
+[node name="ScreenFlowCoordinator" type="Node" parent="CounterScreen"]
+unique_name_in_owner = true
+script = ExtResource("6")

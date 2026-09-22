@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "buyer_recycler",
+      "display_name": "杂货回收商",
+      "channel": "regular",
+      "categories": [
+        "porcelain",
+        "metal",
+        "jewelry",
+        "watches",
+        "stationery",
+        "textile"
+      ],
+      "value_multiplier": 0.6,
+      "night_min": 1,
+      "night_max": 3,
+      "window_start": 0,
+      "window_end": 540,
+      "action_minutes": 10,
+      "capacity_per_night": 2
+    },
+    {
+      "id": "buyer_collector",
+      "display_name": "瓷器收藏客",
+      "channel": "regular",
+      "categories": [
+        "porcelain"
+      ],
+      "value_multiplier": 1.2,
+      "night_min": 1,
+      "night_max": 3,
+      "window_start": 60,
+      "window_end": 240,
+      "action_minutes": 10,
+      "capacity_per_night": 1
+    },
+    {
+      "id": "buyer_introduced",
+      "display_name": "商会旧货客",
+      "channel": "regular",
+      "categories": [
+        "watches",
+        "stationery",
+        "jewelry",
+        "textile"
+      ],
+      "value_multiplier": 1.25,
+      "night_min": 2,
+      "night_max": 3,
+      "window_start": 60,
+      "window_end": 360,
+      "action_minutes": 10,
+      "capacity_per_night": 2,
+      "required_flags": [
+        "buyer_introduced"
+      ]
+    }
+  ]
+}

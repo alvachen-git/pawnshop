@@ -1,0 +1,42 @@
+{
+  "content_version": 12,
+  "default_run_id": "opening_v01",
+  "sources": [
+    {
+      "kind": "runs",
+      "path": "res://data/opening/run.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/items/items_v11.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/opening/items.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/customers/customers_v11.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/opening/customers.json"
+    },
+    {
+      "kind": "buyers",
+      "path": "res://data/opening/buyers.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/pawn_terms/terms_m3.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/opening/events.json"
+    },
+    {
+      "kind": "ghost_rules",
+      "path": "res://data/ghost_rules/rules_m5.json"
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "intro_silver_hairpin",
+      "display_name": "银簪",
+      "description": "簪头刻花，银色被磨得温润；簪尾隐约有一道旧修痕。",
+      "category": "jewelry",
+      "base_value": 25,
+      "unknown_min": 7,
+      "unknown_max": 60,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 45,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "sound",
+            "secondary_sound"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 12,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "flaw",
+            "secondary_flawed"
+          ]
+        },
+        {
+          "id": "mended",
+          "true_value": 28,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "condition_mended",
+            "secondary_mended"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "银色温润，簪头刻花已磨浅，簪尾可见细微旧修痕。",
+          "min_value": 9,
+          "max_value": 55,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "戳记清楚，磨损处里外同色，未见镀层剥落。",
+          "min_value": 40,
+          "max_value": 50,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "flaw",
+          "text": "簪脚磨损露出黄底，戳记边缘新锐，疑为镀银。",
+          "min_value": 10,
+          "max_value": 16,
+          "leverage": 35,
+          "judgement": "fake"
+        },
+        {
+          "id": "condition_mended",
+          "text": "簪身焊口有细小接痕，周围颜色一致，簪脚没有露出异色底料。",
+          "min_value": 25,
+          "max_value": 31,
+          "leverage": 17,
+          "judgement": "damaged"
+        },
+        {
+          "id": "secondary_sound",
+          "text": "簪脚在侧光下线条连贯，未见接焊隆起；材质仍须核对。",
+          "min_value": 31,
+          "max_value": 59,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "secondary_flawed",
+          "text": "簪脚接缝平整，根部颜色比簪首偏黄，仍须放大核对。",
+          "min_value": 7,
+          "max_value": 26,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "secondary_mended",
+          "text": "簪脚有一圈细微隆起，接处明暗与两侧不同，仍须放大核对。",
+          "min_value": 14,
+          "max_value": 42,
+          "leverage": 0,
+          "judgement": "unknown"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "观察银簪",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "快速鉴看 · 戳记与旧修",
+          "minutes": 10,
+          "required_tool": "magnifier",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "flaw",
+            "condition_mended"
+          ]
+        },
+        {
+          "id": "crosscheck",
+          "label": "复检：侧光核对簪脚接缝",
+          "minutes": 5,
+          "required_tool": "lamp",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "secondary_sound",
+            "secondary_flawed",
+            "secondary_mended"
+          ]
+        }
+      ],
+      "name_key": "item.silver_hairpin.name",
+      "type": "normal",
+      "tags": [
+        "jewelry",
+        "m4"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "placeholder.silver_hairpin"
+    }
+  ]
+}
