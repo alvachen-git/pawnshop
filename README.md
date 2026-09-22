@@ -1,18 +1,10 @@
 # 鬼市当铺
 
-**新增鉴物台与知识柜试玩**：`play-unified.cmd` 进入品相与掌眼十夜；`-Stage knowledge` 测试柜中学习，`-Stage fan` 测试图像对证。包含二级台、免费草稿、落笔计时、折扇压价与破损检查。见[试玩说明](docs/FAN_CONDITION_PLAYTEST.md)和[合并说明](docs/SHOP_APPRAISAL_RELEASE.md)。原线上默认铜镜托梦入口与存档保留。
+默认入口现已统一：直接启动后选择**新游戏**，从第一夜开始体验全部已合并内容：十夜经营、活当与熟客、夜客与命灯、阿七陪伴、铜镜调查／重逢／托梦、铺内修缮、知识柜、折扇品相与鉴定议价、军阀往来与棉袄采购。无需选择特殊版本或加载专项场景。
 
-默认新游戏为 **v29 夜半来声**：收镜后下一夜就寝，门外传来真实女性抽泣声，玩家选择查看或继续睡。最多连续两个夜晚，听完求助后以清晨自语承接并提示调查方向。保留血泪立绘、十夜经营、阿七与铜镜四种结局。旧版存档保持原规则。
+Windows 双击 `play.cmd`（`play-unified.cmd` 同样进入完整新局）；macOS 运行 `godot --path .`。首次拉取资源后先运行 `godot --headless --editor --path . --quit`。完整测试路线见 [整合测试说明](FULL_GAME_PLAYTEST.md)。
 
-完整启动及隔离测试见 [v29试玩说明](docs/MIRROR_DREAM_V29.md)。当前开发工作区运行 `tools/play_v29.cmd -Stage bedtime`；正常新局不带阶段参数。v28自动托梦仍使用 `tools/play_v28.cmd`，历史成长入口见 [成长说明](docs/SHOP_GROWTH_PLAYTEST.md)。
-
-线上原有命灯版及夜客规则保留独立内容与存档。需要新开命灯版时运行 `godot --path . res://scenes/life_lamp_start.tscn`；读取已有命灯存档仍按原规则继续。
-
-当前规格与待确认分歧统一见 [当前开发规格](docs/CURRENT_SPEC.md)。默认v29保留线上v23已整合的职业赎回、生计背景与寝屋铜镜反馈；原v21夜客和阿七七夜版使用各自冻结规则。第七夜阿七收尾后不额外叠加墙镜异象。
-
-新增商品与行家复核版作为独立七夜入口保留，包含银戒指、银锁、折扇、茶盏及验配出售；启动方式见 [商品与行家说明](docs/GOODS_EXPERTISE.md)。库存详情统一精简为已知品相要点。
-
-旧版本内容与存档保留原规则，v19经营整合、v20职业赎回和v21商品复核成果继续包含在新局中。换物不改变原票本金、赎金、期限或原主赎回概率；两类阴客与通用辨生死在对应v22、v23及新默认v29中生效。
+新局采用 `unified_ten`、内容／存档版本30。旧存档继续按其原有规则载入；从旧档返回并选择新游戏仍回到统一新局。历史场景和带 `-Stage` 的脚本仅用于兼容或开发定位，不是完整测试入口。当前规则见 [开发规格](docs/CURRENT_SPEC.md)。
 
 固定柜台式 2D 当铺经营与规则恐怖游戏。十夜流程整合开场、随机经营、铜镜遭遇与寝屋，每夜六位基础潜在来客，保留限时钢笔收货及三夜活当回访。原三夜、四夜和七夜经营版本继续作为旧存档入口。第21/49夜还本系统仍属后续范围。
 
@@ -31,12 +23,9 @@
 技术基线为 Godot 4.6.1 Standard，Windows x86_64 / Compatibility。
 
 ```powershell
-.\tools\play_v26.cmd
-# 隔离测试：可对质 / 道歉 / 激怒 / 含糊
-.\tools\play_v26.cmd -Stage ready
-.\tools\play_v26.cmd -Stage apology
-.\tools\play_v26.cmd -Stage angry
-.\tools\play_v26.cmd -Stage evasive -Wide
+.\play.cmd
+# 可选：较大窗口，仍然是相同的完整新局
+.\play.cmd -Wide
 ```
 
 macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path . -- --seed=42`。或导入本目录的 project.godot 后按 F5。ZIP 完整解压后双击 Pawnshop.exe，同目录保留 Pawnshop.pck，无需安装 Godot。
@@ -63,7 +52,7 @@ macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path 
 
 ## 存档
 
-默认十夜新局使用 **save_version=24 / content_version=24**，自动位置为 `auto/aqi_investigation_ten`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://aqi_investigation_ten/autosave_v24.json`。命灯受害仍自动保存，营业中不能手动随时保存。旧v22铜镜版、命灯版及更早存档按原内容读取，不迁移、不追溯补扣伤害。
+默认十夜新局使用 **save_version=30 / content_version=30**，自动位置为 `auto/unified_ten`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://unified_ten/autosave_v30.json`。命灯受害仍自动保存，营业中不能手动随时保存。旧v22铜镜版、命灯版及更早存档按原内容读取，不迁移、不追溯补扣伤害。
 
 旧三夜局使用v12，独立路径为 `user://p0/autosave_v12.json`。独立四夜样板仍用v11，保存于 `user://ordinary_four/autosave_v11.json`。三夜入口可导入通过完整历史校验的旧v9/v10/v11局，原文件保留；旧局继续使用对应旧内容，重新开局才进入v12。旧v10分别保留实施前测试快照和已上线版本的配置，包含两种历史现金/债务组合。
 
@@ -71,7 +60,7 @@ macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path 
 - 已有旧Windows包仍使用其原版本存档；本次没有重新打包。
 - 包日志：`%APPDATA%/GhostMarketPawnshop-M8A/logs/godot.log`
 
-包与编辑器目录独立，不自动复制。启动后从菜单读取。封铺结算、每次应对、回房、就寝、日结、进入下一夜与收尾均原子保存；营业中交易不即时保存。写盘失败回滚，重复提交不重复收费或归档；损坏的历史账册阻止覆盖。只支持单窗口写档。
+包与编辑器目录独立，不自动复制。启动后从菜单读取。封铺结算、每次应对、回房、就寝、日结、进入下一夜与收尾均原子保存；普通交易是否自动保存沿用各系统的事务规则；军阀与折扇进度变化会触发原子保存，营业中仍不能手动保存。写盘失败回滚，重复提交不重复收费或归档；损坏的历史账册阻止覆盖。只支持单窗口写档。
 
 同目录旧 autosave_v7.json 原样保留，只导入经过校验的绝当录/破铺录，不迁移旧局进度。不自动跨越v7导入更早进度。历史M7测试使用独立内容夹具；旧版本兼容保留原有账目校验。
 

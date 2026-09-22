@@ -44,6 +44,7 @@ func _init(run_definition: RunDefinition, version: int, save_manager: SaveManage
 	content_version = version
 	_save = save_manager
 	_day = DayController.new(definition, RunState.create(definition))
+	if _save.get_meta("legacy_social_intro", false): _day.state.social.erase("intro_step")
 	_day.state.ghost_catalog = catalog
 	if _save is GhostReplayStore:
 		_day.state.run_seed = int(_save.origin.seed)
@@ -82,6 +83,9 @@ func has_save() -> bool:
 
 func can_execute(command: String) -> bool:
 	if MirrorEndingService.active(_day.state): return false
+
+	if MilitaryIntroduction.active(_day.state): return false
+	if command == "open_shop" and SocialRules.blocked(_day.state): return false
 	if command in RoomKeepsakes.COMMANDS: return not mirror_pending() and RoomKeepsakes.can_execute(_day.state, command)
 	if command.begins_with("seal_cloth/"): return not mirror_pending() and NightMarketRisk.treatment_reason(_day, command.trim_prefix("seal_cloth/")).is_empty()
 	if command.begins_with("prep_"): return PreparationService.reason(_day.state, definition, command.trim_prefix("prep_")).is_empty()
@@ -100,6 +104,7 @@ func execute(command: String, detail := "") -> ActionResult:
 	return _journal_call("execute", [command, detail])
 
 func _impl_execute(command: String, detail := "") -> ActionResult:
+	if MilitaryIntroduction.active(_day.state): return ActionResult.new(false, "孙大元还在柜前，请先把话说完。")
 	if command in RoomKeepsakes.COMMANDS:
 		var placed := RoomKeepsakes.execute(_day.state, command)
 		if placed.ok: _persist()
@@ -150,6 +155,7 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 	if command == "resolve_night" and not mirror_pending() and _day.can_execute(command) and _commerce != null:
 		_commerce.pawns.resolve_maturities(_day.state, definition.night_minutes, _commerce.catalog, _pawn_choices)
 	if command == "resolve_night" and _day.can_execute(command):
+		MilitaryService.settle(_day.state)
 		NightMarketRisk.settle(_day.state)
 		FeeService.settle(_day.state, definition)
 	var prior_visitor: CustomerVisit = _counter.customers.active(_day.state) if _counter != null else null
@@ -161,7 +167,9 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 			if definition.private_room: RoomFlow.seal(_day.state, _risk)
 			else: _risk.settle(_day.state)
 	if result.ok and (command == "finish_sleep" or (command == "resolve_night" and not definition.private_room)): FeeService.finish(_day.state, definition)
-	if result.ok and command == "open_shop": ShopGrowthService.lock_night(_day.state)
+	if result.ok and command == "open_shop":
+		MilitaryService.spawn_supply(_day.state)
+		ShopGrowthService.lock_night(_day.state)
 	if result.ok and _counter != null:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
 			GhostGuests.dawn(_day.state)
@@ -258,6 +266,10 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 	if command in [FanBargainingService.COMMAND, "condition_pressure"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
 		var error := _counter.reason(_day, command, visit_id, detail, amount)
 		if not error.is_empty(): return ActionResult.new(false, error)
+
+	if command == "military_intro":
+		if visit_id != MilitaryIntroduction.id(_day.state) or amount != 0: return ActionResult.new(false, "请先听清柜前来客的话。")
+		return social_command("intro_talk", detail)
 	if command == "soul_inspect": return inspect_customer(visit_id)
 	var growth_visit := _counter.customers.active(_day.state)
 	if growth_visit != null and growth_visit.purpose == "display_buyer":
@@ -323,6 +335,7 @@ func counter_model() -> Dictionary:
 
 func _build_counter_model() -> Dictionary:
 	var model := CounterReadModels.build(_day, _counter, message, _message_visit_id)
+	if MilitaryIntroduction.active(_day.state): return model
 	model.trade.reactions = _negotiation_reactions.for_visit(_day.state, model.active_id)
 	PawnReturnReadModels.enrich(model, _day, _commerce)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
@@ -772,6 +785,7 @@ func _journal_call(method: String, args: Array) -> ActionResult:
 	if _day.state.shop_growth_enabled:
 		ShopGrowthService.sync(_day.state)
 		if previous != null and previous.shop_growth != _day.state.shop_growth: _pending_checkpoint = true
+	if _day.state.social_enabled and previous != null and previous.social != _day.state.social: _pending_checkpoint = true
 	if not replaying and not result.ok:
 		var before := previous.to_read_model()
 		var after := _day.state.to_read_model()
@@ -930,3 +944,15 @@ var profile_us: Dictionary = {}
 
 func _profile(label: String, started: int) -> void:
 	if profile_enabled: profile_us[label] = int(profile_us.get(label, 0)) + Time.get_ticks_usec() - started
+
+func social_command(command: String, detail := "") -> ActionResult:
+	return _journal_call("social_command", [command, detail])
+
+func _impl_social_command(command: String, detail := "") -> ActionResult:
+	var result := MilitaryService.perform(_day, command, detail)
+	if result.ok:
+		ShopGrowthService.sync(_day.state)
+		MarketService.sync(_day.state, definition)
+		_persist()
+	message = result.message
+	return result

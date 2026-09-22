@@ -41,6 +41,7 @@ const ORDINARY_PLACEMENT := {
 	"teahouse": Vector3(0.505, 0.982, 0.495),
 	"bookkeeper": Vector3(0.500, 1.000, 0.500),
 }
+const SUN_PORTRAIT := "res://assets/social_v27/sun_dayuan_visit_halfbody.png"
 const ITEMS := {
 	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
 	"asset.item_blue_bowl": "bowl", "asset.item_brass_holder": "holder", "asset.weeping_mirror": "mirror",
@@ -62,6 +63,8 @@ static func portrait(asset: String, customer_id := "", person_id := "") -> Textu
 	# Keep the approved cap, face and clothes used by the reunion expression set.
 	if customer_id == "mirror_husband" or person_id == InvestigationService.PERSON:
 		return MIRROR_HUSBAND_PORTRAIT
+	if asset == "social.sun_dayuan_visit":
+		return load(SUN_PORTRAIT) as Texture2D
 	if customer_id == "intro_neighbor" and ResourceLoader.exists(NEIGHBOR_PORTRAIT):
 		return load(NEIGHBOR_PORTRAIT) as Texture2D
 	var identity: String = FAMILIAR_PORTRAITS.get(person_id, SPECIAL_CUSTOMERS.get(customer_id, ""))
@@ -107,6 +110,7 @@ static func ordinary_bounds(texture: Texture2D) -> Vector4:
 	return Vector4(placement.z - 0.1825, top, placement.z + 0.1825, top + placement.x)
 
 static func _painted_front(asset: String) -> String:
+	if asset == "social.cotton_coat": return "res://assets/social_v27/cotton_coat_folded.png"
 	if asset.begins_with("goods."):
 		var goods_path := "res://assets/goods_v21/" + asset.trim_prefix("goods.") + "_front.svg"
 		return goods_path if ResourceLoader.exists(goods_path) else ""
@@ -132,6 +136,7 @@ static func _front_path(asset: String, configured: String) -> String:
 
 static func images(visual: Dictionary, source_images: Array = []) -> Array:
 	var result: Array = []
+	if visual.get("item_asset", "") == "social.cotton_coat": return [{"id":"front", "label":"棉袄", "path":"res://assets/social_v27/cotton_coat_folded.png"}]
 	var family: String = ITEMS.get(visual.get("item_asset", ""), "")
 	# Scenario rows are already knowledge-filtered by the counter service and
 	# own the view IDs. Existing art can fill an empty path, never add a second

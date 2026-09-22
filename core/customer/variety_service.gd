@@ -85,7 +85,9 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		visit.item.selected_variant_id = row.variant_id
 		visit.item.goods = row.get("goods", {}).duplicate(true)
 		if not row.source.is_empty(): visit.item.provenance = {"truth": row.source, "status": "unchecked", "evidence": [], "investigated": false}
-		visit.trade.opening_price = maxi(1, roundi(item.base_value * customer.terms.ask_multiplier))
+		var opening_value := float(item.base_value)
+		if item.id == CoatProcurement.ITEM: opening_value = float(SocialRules.config().coat.sound_value if row.variant_id == "sound" else SocialRules.config().coat.worn_value)
+		visit.trade.opening_price = maxi(1, roundi(opening_value * customer.terms.ask_multiplier))
 		visit.trade.asking_price = visit.trade.opening_price
 		visit.trade.reserve_price = maxi(1, roundi(visit.trade.opening_price * customer.terms.reserve_ratio))
 		visit.trade.rounds_left = customer.max_quote_rounds

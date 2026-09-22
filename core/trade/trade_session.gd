@@ -1,6 +1,9 @@
 class_name TradeSession
 extends RefCounted
 
+var social_flaw_discount := 0
+var social_offer_mode := ""
+var social_last_was_quote := false
 var belittle_used := false
 var opening_price: int
 var asking_price: int

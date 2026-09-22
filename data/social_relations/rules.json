@@ -1,0 +1,165 @@
+{
+  "reputation": {
+    "high_percent": 120,
+    "low_percent": 80,
+    "failed_percent": 60,
+    "high_delta": 2,
+    "low_delta": -2,
+    "failed_delta": -1,
+    "positive_cap": 6,
+    "negative_cap": 6
+  },
+  "gift_cost": 20,
+  "gift_delta": 8,
+  "quiet_nights": 2,
+  "closure_quiet_nights": 4,
+  "bands": [
+    {
+      "max": -80,
+      "closure": 35,
+      "fee": 45,
+      "fee_cost": 35,
+      "release_cost": 50,
+      "supply": 0
+    },
+    {
+      "max": -50,
+      "closure": 20,
+      "fee": 35,
+      "fee_cost": 25,
+      "release_cost": 35,
+      "supply": 0
+    },
+    {
+      "max": -20,
+      "closure": 0,
+      "fee": 35,
+      "fee_cost": 15,
+      "release_cost": 35,
+      "supply": 0
+    },
+    {
+      "max": 19,
+      "closure": 0,
+      "fee": 0,
+      "fee_cost": 0,
+      "release_cost": 35,
+      "supply": 0
+    },
+    {
+      "max": 49,
+      "closure": 0,
+      "fee": 0,
+      "fee_cost": 0,
+      "release_cost": 35,
+      "supply": 25
+    },
+    {
+      "max": 79,
+      "closure": 0,
+      "fee": 0,
+      "fee_cost": 0,
+      "release_cost": 35,
+      "supply": 40
+    },
+    {
+      "max": 100,
+      "closure": 0,
+      "fee": 0,
+      "fee_cost": 0,
+      "release_cost": 35,
+      "supply": 55
+    }
+  ],
+  "supplies": [
+    {
+      "id": "officer_watch",
+      "item": "item_pocket_watch",
+      "variant": "sound",
+      "price": 60,
+      "tier": 20,
+      "disputed": false,
+      "title": "退伍军官的怀表",
+      "cue": "表盖内刻着主人姓名，旧购票夹在绒布里。",
+      "report": "旧购票与刻名相合，原主亲自签了出让字据。"
+    },
+    {
+      "id": "clerk_pen",
+      "item": "item_fountain_pen",
+      "variant": "replacement_nib",
+      "price": 23,
+      "tier": 20,
+      "disputed": false,
+      "title": "文书换下的钢笔",
+      "cue": "笔尖换过，文书把修笔收条一并带来。",
+      "report": "修理铺认得这支笔，原主姓名与收条相合。"
+    },
+    {
+      "id": "family_silver",
+      "item": "item_silver_hairpin",
+      "variant": "sound",
+      "price": 34,
+      "tier": 20,
+      "disputed": false,
+      "title": "军属托售的银簪",
+      "cue": "包簪的纸里有一封家信，署名与委托人相同。",
+      "report": "跑腿人问到了本人，是她自愿托售的旧首饰。"
+    },
+    {
+      "id": "seized_bowl",
+      "item": "item_blue_bowl",
+      "variant": "repaired",
+      "price": 30,
+      "tier": 20,
+      "disputed": true,
+      "title": "营房转来的青花碗",
+      "cue": "箱签写着查扣，交货人却说是自家的。碗口还有旧补的痕。",
+      "report": "旧货主留有同号箱签。这只碗未获准变卖，营里的移交单上也没有他的签字。"
+    },
+    {
+      "id": "collector_teapot",
+      "item": "item_clay_teapot",
+      "variant": "sound",
+      "price": 43,
+      "tier": 50,
+      "disputed": false,
+      "title": "随军账房的紫砂壶",
+      "cue": "账房带来旧照片，壶柄暗记与照片里的相同。",
+      "report": "旧照、暗记与本人出让书相合，是私有旧物。"
+    },
+    {
+      "id": "warehouse_silk",
+      "item": "item_silk_panel",
+      "variant": "faded",
+      "price": 36,
+      "tier": 50,
+      "disputed": true,
+      "title": "仓里拨出的绣片",
+      "cue": "清单只写代存，交货人说主人早走了。布角的姓氏还没拆净。",
+      "report": "货栈找到原寄存簿。主人只是暂时离城，并未卖掉这块绣片。"
+    }
+  ],
+  "contracts": [
+    {
+      "id": "coats",
+      "item": "item_cotton_coat",
+      "name": "采购棉袄",
+      "quantity": 3,
+      "reward": 50,
+      "duration": 0,
+      "delta": 6,
+      "tier": -100
+    }
+  ],
+  "coat": {
+    "chance_percent": 20,
+    "sound_percent": 70,
+    "sound_value": 15,
+    "worn_value": 10
+  },
+  "plaque": {
+    "threshold": 30,
+    "price_percent": 90,
+    "reputation_cost": 1
+  }
+}

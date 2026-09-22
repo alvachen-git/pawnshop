@@ -17,6 +17,7 @@ var lamp_dead := false
 var show_life_lamp := true
 var _paint: TextureRect
 var _paint_material: ShaderMaterial
+var _foreground_material: ShaderMaterial
 var _smoke: TextureRect
 var _smoke_material: ShaderMaterial
 var _smoke_drift := 0.0
@@ -54,6 +55,18 @@ func _ready() -> void:
 	_smoke.anchor_bottom = _paint.anchor_bottom
 	resized.connect(queue_redraw)
 
+func create_counter_foreground() -> TextureRect:
+	var foreground := TextureRect.new()
+	foreground.name = "CounterForeground"
+	foreground.texture = _paint.texture
+	foreground.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	foreground.stretch_mode = TextureRect.STRETCH_SCALE
+	foreground.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_foreground_material = _paint_material.duplicate() as ShaderMaterial
+	_foreground_material.set_shader_parameter("foreground_only", true)
+	foreground.material = _foreground_material
+	return foreground
+
 func _process(delta: float) -> void:
 	if _smoke_material == null: return
 	var target := 1.0 if smoke_wrong else 0.0
@@ -62,11 +75,12 @@ func _process(delta: float) -> void:
 
 func _draw() -> void:
 	if size.x <= 0 or size.y <= 0: return
-	if _paint_material != null:
-		_paint_material.set_shader_parameter("atmosphere", atmosphere)
-		_paint_material.set_shader_parameter("night_band", night_band)
-		_paint_material.set_shader_parameter("lamp_wrong", lamp_wrong and show_life_lamp)
-		_paint_material.set_shader_parameter("lamp_dead", lamp_dead and show_life_lamp)
+	for paint_material in [_paint_material, _foreground_material]:
+		if paint_material == null: continue
+		paint_material.set_shader_parameter("atmosphere", atmosphere)
+		paint_material.set_shader_parameter("night_band", night_band)
+		paint_material.set_shader_parameter("lamp_wrong", lamp_wrong and show_life_lamp)
+		paint_material.set_shader_parameter("lamp_dead", lamp_dead and show_life_lamp)
 	draw_set_transform(Vector2.ZERO, 0, size / Vector2(1280, 648))
 	if has_customer:
 		draw_set_transform(Vector2(56, -34), 0, Vector2(1.0, 1.10) * size / Vector2(1280, 648))

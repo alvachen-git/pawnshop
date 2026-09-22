@@ -81,7 +81,9 @@ func refresh() -> void:
 		elif not state.pending_event_id.is_empty():
 			description = "已封铺\n铺里还有未办完的事，先查看铺中记事。"
 			commands.push_front({"id": "read_events", "label": "查看铺中记事", "enabled": true})
-	if state.phase == "open": description = "营业中"
+	if state.phase == "open": description = "停业守铺 · 只办旧票" if SocialRules.closed(_session._day.state) else "营业中"
+	if SocialRules.enabled(definition):
+		description += SocialReadModels.notice(_session._day.state)
 	if _wait_picker:
 		description = "等待多久？"
 		commands = _wait_commands()
@@ -91,10 +93,11 @@ func refresh() -> void:
 
 func _refresh_chrome(state: RunState) -> void:
 	var definition := _session.definition
-	_session_menu.render({"shop_growth": ShopGrowthService.enabled(definition), "investigation": InvestigationService.enabled(definition), "has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
+	_session_menu.render({"social": SocialRules.enabled(definition), "shop_growth": ShopGrowthService.enabled(definition), "investigation": InvestigationService.enabled(definition), "has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
 	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, _session.definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(_session.definition.opening_minute, state.game_minutes), state.cash])
 	if state.phase != _last_phase:
 		_last_phase = state.phase
+		if MilitaryIntroduction.active(_session._day.state): return
 		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")
 
 func _on_command(command: String) -> void:
@@ -111,7 +114,7 @@ func _on_command(command: String) -> void:
 		_session.execute(command.trim_prefix("wait_option/"))
 		refresh()
 		return
-	var routes := {"read_night": &"night", "read_risk": &"risk", "read_events": &"events"}
+	var routes := {"read_social": &"social", "read_night": &"night", "read_risk": &"risk", "read_events": &"events"}
 	if routes.has(command):
 		route_requested.emit(routes[command])
 		return

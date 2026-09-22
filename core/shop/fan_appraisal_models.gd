@@ -98,7 +98,7 @@ static func comparison(day: DayController, item_id: String) -> Dictionary:
 		if customer.guest_rule == "no_appraisal": model.body += "\n他将扇子按住：‘不许验货。’"
 	else: model.body += "\n这是铺中自有折扇。"
 	for key in ["brush", "inscription"]:
-		model.reference[key] = FanAppraisalService.REFERENCE[key] if a.manual else "尚未取得扇画图录。可先循旧柜目录寻找。"
+		model.reference[key] = FanAppraisalService.REFERENCE[key] if a.manual or (ShopKnowledgeService.enabled(day.definition) and ShopKnowledgeService.mastered(day.state, ShopKnowledgeService.GU_YANSHENG)) else "尚未取得扇画图录。可先循旧柜目录寻找。"
 		model.observations[key] = FanAppraisalService.OBSERVATIONS[String(item.selected_variant_id)][key] if key in row.get("checks", []) else "尚未展开比对。"
 		if key not in row.get("checks", []) and not item.expert_reviewed and String(row.get("verdict", "")).is_empty():
 			var error := FanAppraisalService.reason(day, key, item_id)

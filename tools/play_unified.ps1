@@ -16,9 +16,10 @@ if (-not $GodotPath) {
 }
 if (-not $GodotPath) { throw 'Godot 4.6.1 not found. Supply -GodotPath.' }
 $previousAppData = $env:APPDATA
-$env:APPDATA = Join-Path $gameRoot ('.godot/play-data/unified-v29-' + $Stage)
+if ($Stage -ne 'normal') { $env:APPDATA = Join-Path $gameRoot ('.godot/play-data/fan-preview-v29-' + $Stage) }
 $logDir = Join-Path $gameRoot '.godot/qa/appraisal'
-New-Item -ItemType Directory -Force $env:APPDATA,$logDir | Out-Null
+New-Item -ItemType Directory -Force $logDir | Out-Null
+if ($Stage -ne 'normal') { New-Item -ItemType Directory -Force $env:APPDATA | Out-Null }
 try {
     $ErrorActionPreference = 'Continue'
     & $GodotPath --headless --editor --path $gameRoot --quit *> (Join-Path $logDir 'launch-import.log')
@@ -54,7 +55,8 @@ try {
             Set-Content -LiteralPath $knowledgeStamp -Value 'verified knowledge v29' -Encoding Ascii
         }
     }
-    $gameArgs = @('--path', $gameRoot, '--resolution', $(if ($Wide) { '1600x900' } else { '1280x720' }), 'res://scenes/start_fan_condition_v29.tscn')
+    $scene = if ($Stage -eq 'normal') { 'res://scenes/start.tscn' } else { 'res://scenes/start_fan_condition_v29.tscn' }
+    $gameArgs = @('--path', $gameRoot, '--resolution', $(if ($Wide) { '1600x900' } else { '1280x720' }), $scene)
     if ($Verify) { $gameArgs += @('--quit-after','90') }
     if ($Stage -ne 'normal') {
         $previewStage = if ($Stage -eq 'knowledge') { 'knowledge-before' } elseif ($Stage -eq 'upgrade') { 'upgrade' } elseif ($Stage -eq 'fan') { 'fan-sound' } elseif ($Stage -in @('informed','ordinary','urgent')) { $Stage + '-ready' } else { $Stage }
