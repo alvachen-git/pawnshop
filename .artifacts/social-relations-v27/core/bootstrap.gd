@@ -1,0 +1,108 @@
+class_name Bootstrap
+extends Node
+
+signal content_ready(catalog: ContentCatalog)
+signal content_failed(issues: Array)
+
+@export_file("*.json") var manifest_path := "res://data/content_manifest.json"
+@export var save_path := "user://p0/autosave_v12.json"
+
+var catalog: ContentCatalog
+var session: RunSession
+var preview_stage := ""
+var growth_preview := ""
+var social_preview := ""
+
+
+func initialize() -> ContentLoadResult:
+	var provider := JsonContentProvider.new(manifest_path)
+	var result := provider.load_catalog()
+	if result.is_success():
+		catalog = result.catalog
+		var definition := catalog.get_definition("runs", catalog.default_run_id) as RunDefinition
+		var social_data: Variant = {}
+		if not social_preview.is_empty():
+			social_data = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/social-relations/" + social_preview + ".json"))
+			if social_data is Dictionary: definition = catalog.get_definition("runs", social_data.get("run_definition_id", "")) as RunDefinition
+		if definition == null:
+			result.issues.append(ContentIssue.new("error", "missing_run", manifest_path, "default_run_id", "缺少默认运行定义。"))
+			content_failed.emit(result.issues)
+			return result
+		if OrdinarySamplePlan.enabled(definition) or SevenNightPlan.enabled(definition):
+			for argument in OS.get_cmdline_user_args():
+				if argument.begins_with("--seed=") and argument.trim_prefix("--seed=").is_valid_int():
+					definition._seed = int(argument.trim_prefix("--seed=")) & 0x7fffffff
+					definition._randomize_seed = false
+		if not preview_stage.is_empty(): save_path = "user://tests/v23_preview/" + preview_stage + ".json"
+		var saves := SaveManager.new(save_path)
+		if save_path == "user://p0/autosave_v12.json":
+			for old_path in ["user://p0/autosave_v11.json", "user://p0/autosave_v10.json", "user://p0/autosave_v9.json"]:
+				if FileAccess.file_exists(old_path):
+					saves.import_checkpoint_path = old_path
+					break
+			saves.legacy_archive_path = "user://p0/autosave_v7.json"
+		if save_path == "user://p0/autosave_v11.json":
+			for old_path in ["user://p0/autosave_v10.json", "user://p0/autosave_v9.json"]:
+				if FileAccess.file_exists(old_path):
+					saves.import_checkpoint_path = old_path
+					break
+			saves.legacy_archive_path = "user://p0/autosave_v7.json"
+		if save_path == "user://p0/autosave_v10.json":
+			saves.import_checkpoint_path = "user://p0/autosave_v9.json" if FileAccess.file_exists("user://p0/autosave_v9.json") else "user://p0/autosave_v8.json"
+			saves.prior_version_path = "user://p0/autosave_v8.json"
+			saves.legacy_archive_path = "user://p0/autosave_v7.json"
+		if save_path == "user://p0/autosave_v9.json":
+			saves.import_checkpoint_path = "user://p0/autosave_v8.json"
+			saves.prior_version_path = "user://p0/autosave_v8.json"
+			saves.legacy_archive_path = "user://p0/autosave_v7.json"
+		if save_path == "user://p0/autosave_v8.json":
+			saves.prior_version_path = "user://p0/autosave_v7.json"
+		if save_path == "user://p0/autosave_v7.json":
+			saves.legacy_archive_path = "user://p0/autosave.json"
+			saves.prior_version_path = "user://p0/autosave_v6.json"
+		saves.library = SaveLibrary.new() if not save_path.begins_with("user://tests/") else null
+		saves.catalog = catalog
+		session = RunSession.new(definition, catalog.content_version, saves, catalog)
+		if not social_preview.is_empty():
+			var codec := SaveCodec.new()
+			var restored := codec.decode(social_data, definition, catalog.content_version, catalog, true)
+			if restored == null:
+				push_error("专项试玩资料校验失败：" + codec.error_message)
+				result.issues.append(ContentIssue.new("error", "invalid_preview", manifest_path, "social_preview", codec.error_message))
+				content_failed.emit(result.issues)
+				session = null
+				return result
+			restored.run_token = Crypto.new().generate_random_bytes(16).hex_encode()
+			restored.ghost_origin.run_token = restored.run_token
+			restored.death_archive.assign(session._day.state.death_archive)
+			restored.bankruptcy_archive.assign(session._day.state.bankruptcy_archive)
+			session._day.state = restored
+		if not growth_preview.is_empty() and ShopGrowthService.enabled(definition):
+			var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/shop-growth/" + growth_preview + ".json"))
+			var codec := SaveCodec.new()
+			var state := codec.decode(data, definition, catalog.content_version, catalog, true)
+			if state == null:
+				push_error("当铺成长试玩资料无效，请重新运行 tools/play_shop_growth.ps1：" + codec.error_message)
+				session = null
+				return result
+			state.run_token = Crypto.new().generate_random_bytes(16).hex_encode()
+			state.ghost_origin.run_token = state.run_token
+			state.death_archive.assign(session._day.state.death_archive)
+			state.bankruptcy_archive.assign(session._day.state.bankruptcy_archive)
+			session._day.state = state
+		if not preview_stage.is_empty():
+			var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/v23/" + preview_stage + ".json"))
+			var codec := SaveCodec.new()
+			var preview := codec.decode(data, definition, catalog.content_version, catalog, true)
+			if preview == null:
+				push_error("快速试玩资料无效，请先运行 tools/play_v23.ps1：" + codec.error_message)
+				session = null
+				return result
+			session._day.state = preview
+		if OrdinarySamplePlan.enabled(definition) or SevenNightPlan.enabled(definition): print("RUN SEED: ", session.read_state().run_seed)
+		if SevenNightPlan.enabled(definition) and "--log-plan" in OS.get_cmdline_user_args(): print("SEVEN VISIT PLAN: ", JSON.stringify(session.read_state().seven_plan))
+		if FamiliarStories.enabled(definition) and "--log-plan" in OS.get_cmdline_user_args(): print("FAMILIAR STORY PLAN: ", JSON.stringify(session.read_state().familiar_plan))
+		content_ready.emit(catalog)
+	else:
+		content_failed.emit(result.issues)
+	return result

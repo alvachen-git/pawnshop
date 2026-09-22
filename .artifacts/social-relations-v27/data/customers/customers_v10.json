@@ -1,0 +1,631 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "customer_citizen",
+      "name_key": "customer.customer_citizen.name",
+      "portrait_asset_id": "asset.customer_citizen",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_blue_bowl",
+        "item_silver_hairpin",
+        "item_silk_panel",
+        "item_weeping_mirror"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "旧城住户",
+        "introduction": "家里急用钱，你给个公道价。东西一直收在柜里。",
+        "wait_minutes": 100,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.2,
+        "reserve_ratio": 0.75,
+        "counter_step": 6,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "condition",
+          "prompt": "问：有没有修补过？",
+          "answer": "没有，一直是完整的。你放心收。",
+          "minutes": 5
+        },
+        {
+          "id": "origin",
+          "prompt": "问：东西从哪来？",
+          "answer": "长辈留下的，具体哪年我也说不准。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_redeem",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "家里急用钱，你给个公道价。东西一直收在柜里。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？"
+      },
+      "belittle": {
+        "reaction": "yielding",
+        "minutes": 5,
+        "ordinary_discount": 3,
+        "urgent_discount": 5,
+        "patience_cost": 2,
+        "cue": "他把价钱又低声念了一遍，抬眼等你开口。",
+        "response": "他犹疑了一下：“掌柜既这么说，我再让些。”"
+      }
+    },
+    {
+      "id": "customer_hawker",
+      "name_key": "customer.customer_hawker.name",
+      "portrait_asset_id": "asset.customer_hawker",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 2,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_brass_holder",
+        "item_fountain_pen",
+        "item_pocket_watch"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "夜市货郎",
+        "introduction": "我还要赶下一摊，收不收尽快说。",
+        "wait_minutes": 60,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.7,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "material",
+          "prompt": "问：是什么材质？",
+          "answer": "按整铜的价卖。是真是假，你自己掌眼。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_default",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "我还要赶下一摊，收不收尽快说。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？"
+      },
+      "belittle": {
+        "reaction": "firm",
+        "minutes": 5,
+        "ordinary_discount": 3,
+        "urgent_discount": 5,
+        "patience_cost": 2,
+        "cue": "他报完价便站定了，手还稳稳护着货。",
+        "response": "他把货扶正：“您说低了，也得有个缘由。就这个价。”"
+      }
+    },
+    {
+      "id": "customer_scholar",
+      "name_key": "customer.scholar.name",
+      "portrait_asset_id": "placeholder.scholar",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 4,
+      "max_quote_rounds": 4,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_inkstone",
+        "item_fountain_pen"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m4"
+      ],
+      "counter_terms": {
+        "display_name": "旧书铺先生",
+        "introduction": "近日收账慢，拿几件案头旧物周转。请别伤了东西。",
+        "wait_minutes": 120,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.1,
+        "reserve_ratio": 0.8,
+        "counter_step": 4,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "history",
+          "prompt": "问：平常怎样使用保管？",
+          "answer": "一直放在书案上，用过也修过。细处请掌柜自己看。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_redeem",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "近日收账慢，拿几件案头旧物周转。请别伤了东西。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？"
+      },
+      "belittle": {
+        "reaction": "proud",
+        "minutes": 5,
+        "ordinary_discount": 3,
+        "urgent_discount": 5,
+        "patience_cost": 2,
+        "cue": "他把旧物端端正正摆好，听你开口时神色格外认真。",
+        "response": "他脸色一沉，伸手拢住旧物：“掌柜不愿收，也不必这样糟践。”"
+      }
+    },
+    {
+      "id": "customer_house_agent",
+      "name_key": "customer.house_agent.name",
+      "portrait_asset_id": "placeholder.house_agent",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell"
+      ],
+      "item_pool": [
+        "item_pocket_watch",
+        "item_clay_teapot",
+        "item_silk_panel"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m4"
+      ],
+      "counter_terms": {
+        "display_name": "富户管事",
+        "introduction": "东家清理库房，我带来的东西不急卖，也不接受活当。",
+        "wait_minutes": 140,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.8,
+        "counter_step": 4,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "history",
+          "prompt": "问：有没有维修记录？",
+          "answer": "库房交给我时没有附记录，完好与否我不作保。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "东家清理库房，我带来的东西不急卖，也不接受活当。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？"
+      },
+      "belittle": {
+        "reaction": "yielding",
+        "minutes": 5,
+        "ordinary_discount": 3,
+        "urgent_discount": 5,
+        "patience_cost": 2,
+        "cue": "他反复捋着表链，似乎更想把这笔买卖尽快办妥。",
+        "response": "他低头盘算片刻：“也罢，再让一点，您定吧。”"
+      }
+    },
+    {
+      "id": "customer_seamstress",
+      "name_key": "customer.seamstress",
+      "portrait_asset_id": "asset.customer_seamstress",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_silver_hairpin",
+        "item_silk_panel",
+        "item_clay_teapot"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "绣坊女工",
+        "introduction": "赶完绣坊的活才过来。东西还要用，活当的期限请您说清。",
+        "wait_minutes": 100,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.1,
+        "reserve_ratio": 0.75,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "condition",
+          "prompt": "问：有没有修补过？",
+          "answer": "没有，一直是完整的。你放心收。",
+          "minutes": 5
+        },
+        {
+          "id": "origin",
+          "prompt": "问：东西从哪来？",
+          "answer": "长辈留下的，具体哪年我也说不准。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_redeem",
+      "persona": {
+        "names": [
+          "兰英",
+          "秀珍",
+          "玉琴",
+          "素娥",
+          "桂芳",
+          "月娥",
+          "锦云",
+          "慧贞"
+        ],
+        "origin": "这是自己经手存下的，用惯了才舍不得。",
+        "redeem": "工钱领到了。当票在这儿，请把我的原物还我。",
+        "extend": "这期工钱迟了。我先付续当费，原物请再留一夜。",
+        "condition": "针脚用痕我熟，",
+        "bargain": "您指出的这处，我认；请把让下的数记清。",
+        "refused": "掌柜，这价我还得想想。",
+        "false_pressure": "那处不能算破损，不能这么扣价。"
+      }
+    },
+    {
+      "id": "customer_watchmaker",
+      "name_key": "customer.watchmaker",
+      "portrait_asset_id": "asset.customer_watchmaker",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 1,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_pocket_watch",
+        "item_fountain_pen",
+        "item_brass_holder"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "钟表修理匠",
+        "introduction": "里头的活我懂。您有证据就直说，别拿低价来回试我。",
+        "wait_minutes": 80,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.8,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "condition",
+          "prompt": "问：有没有修补过？",
+          "answer": "没有，一直是完整的。你放心收。",
+          "minutes": 5
+        },
+        {
+          "id": "origin",
+          "prompt": "问：东西从哪来？",
+          "answer": "长辈留下的，具体哪年我也说不准。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_redeem",
+      "persona": {
+        "names": [
+          "守时",
+          "修远",
+          "成业",
+          "仲平",
+          "启荣",
+          "永年",
+          "正明",
+          "怀章"
+        ],
+        "origin": "旧东西经我的手，用料和修配得分开核对。",
+        "redeem": "赎金和当票都在。劳烦验过，把原物交还。",
+        "extend": "这回周转慢，先结续当费，再留一夜。",
+        "condition": "修过和坏了是两回事，",
+        "bargain": "您拿出了实物证据，这份折价我认。",
+        "refused": "我说过不反复试价。这个数不成，东西我带走。",
+        "false_pressure": "这算不上毛病。既拿不出证据，便不谈了。"
+      }
+    },
+    {
+      "id": "customer_teahouse",
+      "name_key": "customer.teahouse",
+      "portrait_asset_id": "asset.customer_teahouse",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 4,
+      "max_quote_rounds": 4,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_clay_teapot",
+        "item_blue_bowl",
+        "item_brass_holder",
+        "item_inkstone"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "茶馆掌柜",
+        "introduction": "铺里腾些旧物周转。茶器用过没有、好不好用，您慢慢看。",
+        "wait_minutes": 120,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.2,
+        "reserve_ratio": 0.75,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "condition",
+          "prompt": "问：有没有修补过？",
+          "answer": "没有，一直是完整的。你放心收。",
+          "minutes": 5
+        },
+        {
+          "id": "origin",
+          "prompt": "问：东西从哪来？",
+          "answer": "长辈留下的，具体哪年我也说不准。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_redeem",
+      "persona": {
+        "names": [
+          "德茂",
+          "和生",
+          "庆安",
+          "福成",
+          "文泰",
+          "瑞庭",
+          "季常",
+          "益丰"
+        ],
+        "origin": "店里周转留下的旧物，平日都要拿来用。",
+        "redeem": "店里收了账，赎金带齐了。请照当票还我原物。",
+        "extend": "今夜的账未收齐，先付续当费，劳烦再留一夜。",
+        "condition": "实用归实用，细处也得讲清，",
+        "bargain": "这处确实影响用，咱们把价往下挪些。",
+        "refused": "掌柜再想想，这个数还差点。",
+        "false_pressure": "这点痕迹不伤用，不能照破损压价。"
+      }
+    },
+    {
+      "id": "customer_bookkeeper",
+      "name_key": "customer.bookkeeper",
+      "portrait_asset_id": "asset.customer_bookkeeper",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_fountain_pen",
+        "item_pocket_watch",
+        "item_inkstone"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "失业账房",
+        "introduction": "东家的账房散了，随身东西还在。您把实价和当期说清便好。",
+        "wait_minutes": 60,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.15,
+        "reserve_ratio": 0.7,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "condition",
+          "prompt": "问：有没有修补过？",
+          "answer": "没有，一直是完整的。你放心收。",
+          "minutes": 5
+        },
+        {
+          "id": "origin",
+          "prompt": "问：东西从哪来？",
+          "answer": "长辈留下的，具体哪年我也说不准。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "short_redeem",
+      "persona": {
+        "names": [
+          "文衡",
+          "秉文",
+          "绍元",
+          "惟正",
+          "承礼",
+          "景和",
+          "伯勤",
+          "子诚"
+        ],
+        "origin": "东家散了账房，随身旧物由我自己处置。",
+        "redeem": "这笔赎金算清了。当票交您，原物归我。",
+        "extend": "手头只够续当费，请按原票再续一夜。",
+        "condition": "账要算明白，东西也是，",
+        "bargain": "证据在这儿，您把折价列清，我认这个数。",
+        "refused": "这价与我要的差了些，请再算一算。",
+        "false_pressure": "没证据的损耗，不能记在我头上。"
+      }
+    }
+  ]
+}

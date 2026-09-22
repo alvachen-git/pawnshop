@@ -68,9 +68,10 @@ func run() -> void:
 	var main = load("res://scenes/start.tscn").instantiate()
 	main.start_at_title = false
 	main.get_node("Bootstrap").manifest_path = "res://data/mirror_dream_call_manifest.json" if version == 29 else "res://data/mirror_dream_manifest.json" if version == 28 else "res://data/aqi_reunion_manifest.json" if version == 27 else "res://data/mirror_reunion_manifest.json"
-	main.get_node("Bootstrap").save_path = "user://tests/v26-ui-%d/auto.json" % root.size.x
+	main.get_node("Bootstrap").save_path = "res://.godot/qa/mirror_performance_%d_%d/auto.json" % [root.size.x, Time.get_ticks_usec()]
 	root.add_child(main)
 	session = main.get_node("Bootstrap").session
+	session._save.library.path = "res://.godot/qa/mirror_performance_library_%d.json" % Time.get_ticks_usec()
 	screen = main.get_node("CounterScreen")
 	view = screen.get_node("MirrorReunion")
 	check(CounterVisualCatalog.portrait("asset.customer_hawker", "mirror_husband").resource_path == view._stage._normal.resource_path, "third-night husband and confrontation share approved portrait")
