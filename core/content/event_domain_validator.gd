@@ -4,7 +4,7 @@ extends RefCounted
 static func validate(catalog: ContentCatalog) -> Array:
 	var issues: Array = []
 	for event: EventDefinition in catalog.get_all("events"):
-		if event.kind not in ["anchor", "conditional", "random"] or event.phase not in ["pre_open", "open", "closed_processing", "shop_resolution", "private_room", "sleep_resolution"] or event.night_min < 1 or event.night_max < event.night_min or event.window_start < 0 or event.window_end <= event.window_start or event.priority < 0 or event.weight < 1 or event.max_count < 1 or event.cooldown < 0 or event.choices.is_empty():
+		if event.kind not in ["anchor", "conditional", "random"] or event.phase not in ["pre_open", "open", "closed_processing", "shop_resolution", "private_room", "sleep_resolution", "day_summary"] or event.night_min < 1 or event.night_max < event.night_min or event.window_start < 0 or event.window_end <= event.window_start or event.priority < 0 or event.weight < 1 or event.max_count < 1 or event.cooldown < 0 or event.choices.is_empty():
 			_error(issues, event.id, "事件类型、窗口、权重、次数或选项无效。")
 		# M4 guaranteed anchors run before opening, where player actions cannot skip them.
 		if event.kind == "anchor" and event.presentation.is_empty() and (event.phase != "pre_open" or event.window_start != 0 or not event.required_flags.is_empty() or not event.excluded_flags.is_empty() or not event.required_items.is_empty() or not event.conflicts_with.is_empty()):
@@ -19,7 +19,7 @@ static func validate(catalog: ContentCatalog) -> Array:
 			if other == null or id == event.id or other.kind == "anchor": _error(issues, event.id, "互斥引用失效或试图排除保底锚点。")
 		var choices: Array = []
 		for choice in event.choices:
-			if choice.id.is_empty() or choice.id in choices or choice.minutes < 0 or (event.phase in ["pre_open", "shop_resolution", "private_room", "sleep_resolution"] and choice.minutes != 0) or (event.phase != "pre_open" and choice.minutes == 0 and event.presentation.is_empty()): _error(issues, event.id, "选项ID重复或耗时不符合阶段。")
+			if choice.id.is_empty() or choice.id in choices or choice.minutes < 0 or (event.phase in ["pre_open", "shop_resolution", "private_room", "sleep_resolution", "day_summary"] and choice.minutes != 0) or (event.phase != "pre_open" and choice.minutes == 0 and event.presentation.is_empty()): _error(issues, event.id, "选项ID重复或耗时不符合阶段。")
 			for id in choice.required_items:
 				if not catalog.has_definition("items", id): _error(issues, event.id, "选项物品条件引用失效。")
 			choices.append(choice.id)
@@ -32,7 +32,7 @@ static func validate(catalog: ContentCatalog) -> Array:
 				_error(issues, run.id, "事件引用失效：" + id)
 				continue
 			if event.presentation.has("purchase_slot_id") and not run.customer_slots.any(func(slot: VisitSlotDefinition) -> bool: return slot.id == event.presentation.purchase_slot_id): _error(issues, id, "成交剧情引用的来访不存在。")
-			var room_event := event.phase in ["shop_resolution", "private_room", "sleep_resolution"]
+			var room_event := event.phase in ["shop_resolution", "private_room", "sleep_resolution", "day_summary"]
 			if room_event and (not run.private_room or event.window_start != run.night_minutes): _error(issues, id, "房间事件须在封铺后。")
 			if event.night_min > run.total_nights or event.window_end > run.night_minutes + (run.time_step if room_event else 0) or event.window_start % run.time_step != 0 or event.window_end % run.time_step != 0: _error(issues, id, "事件窗口超出运行或不匹配步长。")
 			for ref in event.conflicts_with:

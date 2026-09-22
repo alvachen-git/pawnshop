@@ -13,10 +13,14 @@ func bind(session: RunSession, view: CounterView) -> void:
 	_session.changed.connect(refresh)
 	refresh()
 
-func refresh() -> void:
+func refresh(force := false) -> void:
+	# The reunion owns the visible counter. Rebuild this covered surface on collapse.
+	if not force and MirrorReunionService.enabled(_session.definition) and MirrorEndingService.active(_session._day.state): return
 	_view.render(_session.counter_model())
 	_view.bell.render(_session.bell_model())
-	var story := _session.event_model()
+	var pending: String = _session._day.state.pending_event_id
+	var event := _session._counter.catalog.get_definition("events", pending) as EventDefinition if not pending.is_empty() else null
+	var story := _session.event_model() if event != null and event.presentation.get("scene", "") == "aqi_counter" else {}
 	var state := _session.read_state()
 	_view.render_story(story if story.get("presentation", {}).get("scene", "") == "aqi_counter" else {}, state)
 	_view.companion.render(_session.companion_model())

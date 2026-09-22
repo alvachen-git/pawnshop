@@ -8,6 +8,8 @@ func _init(content: ContentCatalog) -> void:
 	catalog = content
 
 func eligible(state: RunState, event: EventDefinition) -> bool:
+	if event.id == MirrorDreamService.EVENT and not MirrorDreamService.eligible(state, event.presentation.get("requires_call", false)): return false
+	if event.id == MirrorDreamService.CALL and not MirrorDreamService.call_eligible(state): return false
 	if String(state.phase) != event.phase or state.current_night_index < event.night_min or state.current_night_index > event.night_max or state.game_minutes < event.window_start or state.game_minutes >= event.window_end: return false
 	if not CounterDomainValidator._contains_all(state.narrative_flags, event.required_flags): return false
 	for flag in event.excluded_flags:
@@ -40,6 +42,7 @@ func eligible(state: RunState, event: EventDefinition) -> bool:
 func select_next(state: RunState, run: RunDefinition) -> String:
 	var candidates: Array[EventDefinition] = []
 	for id in run.event_ids:
+		if id == MirrorDreamService.EVENT and not MirrorDreamService.enabled(run): continue
 		var event := catalog.get_definition("events", id) as EventDefinition
 		if not event.presentation.get("manual", false) and eligible(state, event) and _can_finish_any(state, event): candidates.append(event)
 	if candidates.is_empty(): return ""

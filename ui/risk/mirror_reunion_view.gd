@@ -112,6 +112,8 @@ func reset() -> void:
 func collapse() -> void:
 	_stage.stop()
 	_collapsed = true
+	for presenter in _screen.get_children():
+		if presenter is CounterPresenter: presenter.refresh(true)
 	hide()
 	_screen._close_drawer()
 

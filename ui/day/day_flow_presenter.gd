@@ -23,14 +23,18 @@ func bind(session: RunSession, view: DayFlowPanel, session_menu: SessionMenuView
 	_session_menu.save_requested.connect(func() -> void: _session.storage_requested.emit("save"))
 	_session_menu.leave_requested.connect(func(destination: String) -> void: _session.leave_requested.emit(destination))
 	_session.changed.connect(refresh)
+	_view.visibility_changed.connect(refresh, CONNECT_DEFERRED)
 	_session.restored.connect(func() -> void: _last_phase = ""; _wait_picker = false)
 	refresh()
 
 func refresh() -> void:
-	var state := _session.read_state()
+	var state := _session._day.state
 	var definition := _session.definition
 	if state.phase not in ["open", "closed_processing"]: _wait_picker = false
 	if state.phase != "pre_open" or _picker_night != state.current_night_index: _category_picker = false
+	if not _view.is_visible_in_tree():
+		_refresh_chrome(state)
+		return
 	var commands: Array = []
 	for entry in [{"id": "open_shop", "label": "开铺"}, {"id": "close_shop", "label": "关门（本夜不可重开）"}]:
 		entry.enabled = _session.can_execute(entry.id)
@@ -83,8 +87,12 @@ func refresh() -> void:
 		commands = _wait_commands()
 		commands.append({"id": "cancel_wait", "label": "返回", "enabled": true})
 	_view.render({"description": description, "message": _session.message, "commands": commands, "preparation": OpeningPreparation.enabled(definition) and state.current_night_index >= 2 and state.phase == "pre_open"})
+	_refresh_chrome(state)
+
+func _refresh_chrome(state: RunState) -> void:
+	var definition := _session.definition
 	_session_menu.render({"shop_growth": ShopGrowthService.enabled(definition), "investigation": InvestigationService.enabled(definition), "has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
-	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(definition.opening_minute, state.game_minutes), state.cash])
+	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, _session.definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(_session.definition.opening_minute, state.game_minutes), state.cash])
 	if state.phase != _last_phase:
 		_last_phase = state.phase
 		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")

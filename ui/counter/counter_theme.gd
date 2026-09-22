@@ -58,10 +58,14 @@ static func style_paper_button(button: Button) -> void:
 	focus.set_border_width_all(1)
 	button.add_theme_stylebox_override("focus", focus)
 
+static var _display_font: Font
+
 static func display_font() -> Font:
+	if _display_font != null: return _display_font
 	var font := SystemFont.new()
 	font.font_names = PackedStringArray(["Songti SC", "STSong", "SimSun", "Noto Serif CJK SC"])
 	font.fallbacks = [preload("res://assets/fonts/NotoSansSC.ttf")]
+	_display_font = font
 	return font
 
 static func box(fill: String, edge: String, horizontal: int, vertical: int) -> StyleBoxFlat:

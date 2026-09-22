@@ -14,6 +14,9 @@ static func build(day: DayController, catalog: ContentCatalog) -> Array:
 	var memories: Array = []
 	var investigation: Array = []
 	for row in day.state.event_history:
+		if row.event_id == MirrorDreamService.EVENT:
+			var dream := catalog.get_definition("events", row.event_id) as EventDefinition
+			memories.append(entry(row.event_id, "梦中求助", "第%d夜 · 梦中听闻" % row.night, dream.find_choice(row.choice_id).result))
 		if not TITLES.has(row.event_id): continue
 		var event := catalog.get_definition("events", row.event_id) as EventDefinition
 		if event == null or not event.presentation.get("manual", false): continue

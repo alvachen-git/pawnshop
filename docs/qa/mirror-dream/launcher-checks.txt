@@ -1,0 +1,64 @@
+new: launcher -Check completed successfully; isolated storage.
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+Godot_v4.6.1-stable_win64_console.exe : ERROR: Failed to read the root certificate store.
+At C:\Users\alvachen\Documents\ChatGPT\pawnbroker\.tools\v25-playable\tools\play_v28.ps1:49 char:9
++         & $Godot @gameArgs *> $gameLog
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR: Failed t...tificate store.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+RUN SEED: 1297265310
+
+bedtime: launcher -Check completed successfully; isolated storage.
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+Godot_v4.6.1-stable_win64_console.exe : ERROR: Failed to read the root certificate store.
+At C:\Users\alvachen\Documents\ChatGPT\pawnbroker\.tools\v25-playable\tools\play_v28.ps1:49 char:9
++         & $Godot @gameArgs *> $gameLog
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR: Failed t...tificate store.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+RUN SEED: 2
+
+dream: launcher -Check completed successfully; isolated storage.
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+Godot_v4.6.1-stable_win64_console.exe : ERROR: Failed to read the root certificate store.
+At C:\Users\alvachen\Documents\ChatGPT\pawnbroker\.tools\v25-playable\tools\play_v28.ps1:49 char:9
++         & $Godot @gameArgs *> $gameLog
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR: Failed t...tificate store.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+RUN SEED: 2
+
+after: launcher -Check completed successfully; isolated storage.
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+Godot_v4.6.1-stable_win64_console.exe : ERROR: Failed to read the root certificate store.
+At C:\Users\alvachen\Documents\ChatGPT\pawnbroker\.tools\v25-playable\tools\play_v28.ps1:49 char:9
++         & $Godot @gameArgs *> $gameLog
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR: Failed t...tificate store.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+RUN SEED: 2
+
+ready: launcher -Check completed successfully; isolated storage.
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+Godot_v4.6.1-stable_win64_console.exe : ERROR: Failed to read the root certificate store.
+At C:\Users\alvachen\Documents\ChatGPT\pawnbroker\.tools\v25-playable\tools\play_v28.ps1:49 char:9
++         & $Godot @gameArgs *> $gameLog
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ERROR: Failed t...tificate store.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+RUN SEED: 2

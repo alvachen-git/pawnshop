@@ -3,13 +3,14 @@ extends "res://tests/inventory_event_notice_ui.gd"
 var session: RunSession
 var screen: CounterScreen
 var view: MirrorReunionView
+var output_dir := "res://docs/qa/mirror-performance/"
 var version := 26
 var fixture_dir := "res://.godot/qa/v26/"
 
 func shot(label: String) -> void:
 	await create_timer(0.32).timeout
 	await RenderingServer.frame_post_draw
-	root.get_texture().get_image().save_png("res://docs/qa/mirror-performance/%d-%s.png" % [root.size.x, label])
+	root.get_texture().get_image().save_png(output_dir + "%d-%s.png" % [root.size.x, label])
 
 func choose(command: String) -> void:
 	await create_timer(0.32).timeout
@@ -55,10 +56,18 @@ func run() -> void:
 	if "v27" in OS.get_cmdline_user_args():
 		version = 27
 		fixture_dir = "res://.godot/qa/v27-reunion/"
-	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://docs/qa/mirror-performance"))
+	if "v28" in OS.get_cmdline_user_args():
+		version = 28
+		fixture_dir = "res://.godot/qa/v28/"
+		output_dir = "res://docs/qa/mirror-dream/endings/"
+	if "v29" in OS.get_cmdline_user_args():
+		version = 29
+		fixture_dir = "res://.godot/qa/v29/"
+		output_dir = "res://docs/qa/mirror-dream-call/endings/"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path(output_dir))
 	var main = load("res://scenes/start.tscn").instantiate()
 	main.start_at_title = false
-	main.get_node("Bootstrap").manifest_path = "res://data/aqi_reunion_manifest.json" if version == 27 else "res://data/mirror_reunion_manifest.json"
+	main.get_node("Bootstrap").manifest_path = "res://data/mirror_dream_call_manifest.json" if version == 29 else "res://data/mirror_dream_manifest.json" if version == 28 else "res://data/aqi_reunion_manifest.json" if version == 27 else "res://data/mirror_reunion_manifest.json"
 	main.get_node("Bootstrap").save_path = "user://tests/v26-ui-%d/auto.json" % root.size.x
 	root.add_child(main)
 	session = main.get_node("Bootstrap").session
@@ -68,6 +77,7 @@ func run() -> void:
 	check(CounterVisualCatalog.portrait("asset.customer_hawker", "mirror_husband", InvestigationService.PERSON).resource_path == view._stage._normal.resource_path, "appointment keeps the same husband identity")
 	var notice: Button = screen.get_node("InventoryEventNotice")
 	for ending in MirrorReunionService.ENDINGS:
+		print("ROUTE ", ending)
 		await install("ready-apology" if ending == "acknowledged" else "ready-angry")
 		if ending == "acknowledged":
 			screen._close_drawer()
@@ -86,9 +96,11 @@ func run() -> void:
 		for child in buttons.get_children():
 			if child is Button and child.text.contains("请镜中女子现身"):
 				(column.get_parent() as ScrollContainer).ensure_control_visible(child)
-				await frames(); await click(child); break
+				await frames()
+				await click(child); break
 		await frames()
 		check(view.visible, "native dialogue opens")
+		if not view.visible: quit(1); return
 		var close := view.find_child("CollapseDialogue", true, false) as Button
 		check(close.get_parent().get_child_count() == 2, "header contains speaker and one close control")
 		check(view._next.size.x <= 200 and view._next.size.y <= 44, "continue is a compact button")

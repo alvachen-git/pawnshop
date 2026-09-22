@@ -2,6 +2,7 @@ shader_type canvas_item;
 uniform bool chroma_key = false;
 uniform bool clean_chroma_edges = false;
 uniform bool hand_contact_shadow = false;
+uniform bool dream_visitor = false;
 // Counter-only occlusion; dialogue portraits retain the entire approved source.
 uniform float source_bottom = 1.0;
 varying vec4 sprite_tint;
@@ -26,6 +27,10 @@ vec4 cutout(vec4 pixel) {
 }
 void fragment() {
 	vec4 pixel = cutout(texture(TEXTURE, UV));
+	if (dream_visitor) {
+		pixel.a *= 1.0 - smoothstep(0.86, 0.99, UV.y);
+		pixel.rgb = mix(pixel.rgb, vec3(dot(pixel.rgb, vec3(0.3, 0.5, 0.2))), 0.28);
+	}
 	pixel.a *= 1.0 - step(source_bottom, UV.y);
 	if (hand_contact_shadow) {
 		// Only the forward hands touch the table; derive their small shadow from the sprite.
