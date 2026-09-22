@@ -7,7 +7,6 @@ var _images: Array = []
 var _selected := "front"
 var _last_visit := ""
 var _summary: Label
-var _judgements: GridContainer
 var _known_clues: Array = []
 var _new_clues: Array = []
 
@@ -34,16 +33,8 @@ func _ready() -> void:
 	_views = HBoxContainer.new()
 	_column.add_child(_views)
 	_column.move_child(_views, 1)
-	_judgements = GridContainer.new()
-	_judgements.columns = 2
-	_judgements.add_theme_constant_override("h_separation", 6)
-	_judgements.add_theme_constant_override("v_separation", 6)
-	_column.add_child(_judgements)
 
 func render(model: Dictionary) -> void:
-	for child in _judgements.get_children():
-		_judgements.remove_child(child)
-		child.queue_free()
 	super.render(model)
 	var visual: Dictionary = model.get("visual", {})
 	_summary.visible = not visual.is_empty()
@@ -55,7 +46,7 @@ func render(model: Dictionary) -> void:
 		elif ids != _known_clues:
 			_new_clues = ids.filter(func(id: String) -> bool: return id not in _known_clues)
 			_known_clues = ids.duplicate()
-		_summary.text = "%s\n证据估值 %s\n你的判断：%s" % [visual.item_name, visual.estimate, visual.judgement]
+		_summary.text = "%s\n证据估值 %s" % [visual.item_name, visual.estimate]
 		_body.text = "已见线索\n"
 		if visual.clues.is_empty(): _body.text += "尚未取证。可从下方选择检查。"
 		for clue in visual.clues: _body.text += ("本次发现 · " if clue.id in _new_clues else "• ") + clue.text + "\n"
@@ -67,15 +58,6 @@ func render(model: Dictionary) -> void:
 		if not visual.get("provenance", "").is_empty(): _body.text += "\n" + visual.provenance + "\n"
 		if not visual.message.is_empty() and not _body.text.contains(visual.message) and not (visual.get("condition_enabled", false) and visual.message.begins_with(String(visual.get("condition_note", "")))):
 			_body.text += "\n" + visual.message
-	var buttons := _buttons.get_children()
-	var entries: Array = model.get("buttons", [])
-	for index in entries.size():
-		if entries[index].command == "judge":
-			var button := buttons[index] as Button
-			_buttons.remove_child(button)
-			_judgements.add_child(button)
-			button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-			button.add_theme_font_size_override("font_size", 14)
 	var known := CounterVisualCatalog.images(visual, model.get("images", []))
 	if _last_visit != _visit_id: _selected = "front"
 	elif known.size() > _images.size(): _selected = known.back().id

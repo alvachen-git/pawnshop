@@ -58,14 +58,12 @@ static func build(day: DayController, service: CounterService, message: String, 
 	var evidence_lines: PackedStringArray = []
 	for clue_id in visit.item.revealed_clue_ids: evidence_lines.append("• " + item.find_clue(clue_id).text)
 	var goods_note := GoodsExpertise.description(visit.item, item)
-	model.appraisal.body = "%s\n证据估值：%d–%d（不是买家报价）\n你的判断：%s\n\n%s" % [item.display_name, bounds.x, bounds.y, JUDGEMENTS[visit.item.judgement], "\n".join(evidence_lines) if not evidence_lines.is_empty() else "尚未取得证据。卖家说法不能替代检查。"]
+	model.appraisal.body = "%s\n证据估值：%d–%d（不是买家报价）\n\n%s" % [item.display_name, bounds.x, bounds.y, "\n".join(evidence_lines) if not evidence_lines.is_empty() else "尚未取得证据。卖家说法不能替代检查。"]
 	for action in item.appraisal_actions:
 		model.appraisal.buttons.append(_button(day, service, visit, "appraise", action.id, "%s · %d分钟" % [action.label, ShopGrowthService.appraisal_minutes(state, item, action.id)]))
 	if not item.provenance.is_empty():
 		model.appraisal.body += "\n" + ProvenanceService.describe(visit.item)
 		model.appraisal.buttons.append(_button(day, service, visit, "verify_source", "", "核对来源凭据与原物 · %d分钟" % int(item.provenance.check_minutes)))
-	for key in JUDGEMENTS:
-		model.appraisal.buttons.append(_button(day, service, visit, "judge", key, "记录判断：" + JUDGEMENTS[key]))
 	if scenario == null:
 		model.dialogue.body = customer.terms.introduction + "\n\n卖家口供未证实，不自动收窄估值。"
 		for question in customer.questions:
