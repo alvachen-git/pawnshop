@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "wm_dream",
+      "title": "梦中求助",
+      "speaker": "梦中女子",
+      "body": "没听见脚步声，柜前却多了个女子。灯火泛着青色，她静静地看着你。",
+      "kind": "anchor",
+      "phase": "sleep_resolution",
+      "night_min": 2,
+      "night_max": 10,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 1,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "wm_dream_heard"
+      ],
+      "required_items": [
+        "item_weeping_mirror"
+      ],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "wake",
+          "label": "醒来",
+          "result": "梦里的女子说，她靠洗衣、缝补养着孩子，后来为凑药钱，当掉了母亲留下的铜镜。她托我寻找离家的丈夫，想亲口问问他为什么一直不回来。她提起当镜时留下的当票，也许能从铺中旧档开始查。\n\n这些是她在梦中的自述，尚待查证。",
+          "minutes": 0,
+          "grant_flags": [
+            "wm_dream_heard"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "mirror_dream",
+        "checkpoint": true
+      }
+    }
+  ]
+}

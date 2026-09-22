@@ -10,9 +10,11 @@ func bind(session: RunSession, view: NightResolutionView) -> void:
 	_view.command_requested.connect(_on_command)
 	_view.pawn_choice_requested.connect(_session.choose_pawn_disposal)
 	_session.changed.connect(refresh)
+	_view.visibility_changed.connect(refresh, CONNECT_DEFERRED)
 	refresh()
 
 func refresh() -> void:
+	if not _view.is_visible_in_tree(): return
 	var state := _session.read_state()
 	var risk_enabled := not _session.definition.ghost_rule_ids.is_empty()
 	var body := "夜深了\n\n关门前，再看一眼柜里的东西。" if risk_enabled else "夜深了\n\n街上最后一辆车过去，该核一核今夜的账了。"

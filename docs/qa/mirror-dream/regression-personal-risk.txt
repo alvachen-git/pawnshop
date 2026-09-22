@@ -1,0 +1,13 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+LAMP ROUTE stop damage=0 phase=pre_open
+LAMP ROUTE pursue damage=1 phase=pre_open
+LAMP ROUTE severe damage=2 phase=pre_open
+LAMP ROUTE shop damage=2 phase=pre_open
+LAMP ROUTE storage damage=0 phase=pre_open
+LAMP ROUTE both damage=4 phase=dead
+LAMP ROUTE sold damage=1 phase=open
+LAMP WET CLOTH: 2 injuries; 2 sealed; run_ended
+PERSONAL RISK: 2364 passes, 0 failures
