@@ -1,0 +1,102 @@
+class_name MirrorEncounterService
+extends RefCounted
+
+var catalog: ContentCatalog
+var customers := CustomerManager.new()
+var risk: RiskManager
+func _init(content: ContentCatalog) -> void:
+	catalog = content
+	risk = RiskManager.new(content)
+
+static func find_definition(run: RunDefinition, id: String) -> MirrorEncounterDefinition:
+	for definition in run.mirror_encounters:
+		if definition.id == id: return definition
+	return null
+
+static func stage(state: RunState, visit_id: String) -> String:
+	var result := ""
+	for row in state.mirror_history:
+		if row.visit_id == visit_id: result = row.action
+	return result
+
+static func used_tonight(state: RunState) -> bool:
+	return state.mirror_history.any(func(row: Dictionary) -> bool: return row.night == state.current_night_index and String(row.action).begins_with("peek"))
+
+static func witnessed(state: RunState, visit_id: String) -> bool:
+	return state.mirror_history.any(func(row: Dictionary) -> bool: return row.visit_id == visit_id and row.action == "peek")
+
+func current(day: DayController) -> MirrorEncounterDefinition:
+	if day.state.phase != &"open" or not PawnReturnService.current(day.state).is_empty(): return null
+	var visit := customers.active(day.state)
+	if visit == null or EarlyRedemption.is_visit(visit): return null
+	for definition in day.definition.mirror_encounters:
+		if visit.visit_id != "%s/%d/%s" % [day.definition.id, day.state.current_night_index, definition.slot_id]: continue
+		if not CounterDomainValidator._contains_all(day.state.narrative_flags, definition.required_flags): continue
+		var previous := stage(day.state, visit.visit_id)
+		if day.state.game_minutes >= definition.start_minute and held_mirror(day.state, definition) != null and (previous.is_empty() or (previous == "peek" and definition.allow_pursuit)): return definition
+	return null
+
+func held_mirror(state: RunState, definition: MirrorEncounterDefinition) -> ItemInstance:
+	for item in state.inventory_instances:
+		if item.definition_id == definition.mirror_item_id and item.ownership_state in ["owned", "pledged"]: return item
+	return null
+
+func pending(day: DayController) -> bool:
+	var visit := customers.active(day.state)
+	return current(day) != null and visit != null and stage(day.state, visit.visit_id) == "peek"
+
+func choose(day: DayController, id: String, command: String) -> ActionResult:
+	var definition := current(day)
+	if definition == null or definition.id != id or not day.state.pending_event_id.is_empty(): return ActionResult.new(false, "柜前的人已离去，镜里也没了那道影子。")
+	var visit := customers.active(day.state)
+	var previous := stage(day.state, visit.visit_id)
+	if command not in (["peek", "decline"] if previous.is_empty() else ["pursue", "stop"]): return ActionResult.new(false, "你已经收回了视线。")
+	if command == "peek" and definition.once_per_night and used_tonight(day.state): return ActionResult.new(false, "今夜镜面已显过一回。")
+	var mirror := held_mirror(day.state, definition)
+	var cost := definition.peek_minutes if command == "peek" else (definition.pursue_minutes if command == "pursue" else 0)
+	if cost > 0 and risk.covered(day.state, mirror.instance_id): return ActionResult.new(false, "镜面还覆着红布。")
+	if cost > 0 and not TimeController.new().can_spend(day.state, day.definition, cost): return ActionResult.new(false, "余下的时辰不够了。")
+	var prior := visit.item.completed_action_ids.duplicate()
+	if cost > 0:
+		day.spend_action(cost)
+		customers.update(day.state)
+	var action := command if visit.status == "active" else command + "_expired"
+	var row := {"encounter_id": id, "visit_id": visit.visit_id, "mirror_id": mirror.instance_id, "night": day.state.current_night_index, "minute": day.state.game_minutes, "action": action, "prior_actions": prior}
+	day.state.mirror_history.append(row)
+	risk.capture_close(day.state)
+	if visit.status != "active": return ActionResult.new(false, "你抬头时，柜前的人已经走了。镜里只剩下一片昏黄。")
+	if command == "peek":
+		if not definition.clue_id.is_empty() and definition.clue_id not in visit.item.revealed_clue_ids: visit.item.revealed_clue_ids.append(definition.clue_id)
+		return ActionResult.new(true, definition.text("peek_text"))
+	if command == "pursue":
+		PersonalRisk.damage(day.state, "mirror/" + visit.visit_id, 1, "追看铜镜后，冰凉的手指抵住了你的后颈。", "mirror")
+		return ActionResult.new(true, definition.text("pursue_text") + ("\n后颈忽然一凉，地上的影子贴住了你的脚。" if day.state.personal_risk_enabled else ""))
+	return ActionResult.new(true, "你收回视线，柜前的人把怀表往前推了推。镜面还露在外头。" if command == "stop" else "你没有去碰那面镜子，继续招呼柜前的客人。")
+
+func model(day: DayController) -> Dictionary:
+	var definition := current(day)
+	var result := {"body": "", "buttons": [], "attention_id": ""}
+	if definition == null or not day.state.pending_event_id.is_empty(): return result
+	var visit := customers.active(day.state)
+	var peeked := stage(day.state, visit.visit_id) == "peek"
+	result.attention_id = visit.visit_id + ("/peek" if peeked else "/offer")
+	var cloth := risk.covered(day.state, held_mirror(day.state, definition).instance_id)
+	result.body = definition.text("peek_text" if peeked else "covered_invitation" if cloth and not definition.text("covered_invitation").is_empty() else "invitation")
+	if day.state.personal_risk_enabled and peeked: result.body += PersonalRisk.warning(day.state, "mirror/" + visit.visit_id, 1)
+	for command in (["stop", "pursue"] if peeked else ["peek", "decline"]):
+		var label: String = {"peek": "借镜照一照来客", "decline": "继续招呼柜前的客人", "stop": "收回视线", "pursue": "看清那张旧当票"}[command]
+		if LivingMirror.enabled(day.definition) and command == "peek": label = "看镜中旧事"
+		var cost := definition.peek_minutes if command == "peek" else (definition.pursue_minutes if command == "pursue" else 0)
+		var reason := ""
+		if cost > 0:
+			label += " · %d分钟" % cost
+			if command == "peek" and definition.once_per_night and used_tonight(day.state): reason = "今夜镜面已显过一回。"
+			elif cloth: reason = "请先揭开红布。"
+			elif not TimeController.new().can_spend(day.state, day.definition, cost): reason = "剩余时间不足。"
+		result.buttons.append({"command": "mirror_" + command, "target_id": definition.id, "detail": "", "label": label, "enabled": reason.is_empty(), "reason": reason})
+	return result
+
+static func pursuit(state: RunState, night: int) -> Dictionary:
+	for row in state.mirror_history:
+		if row.night == night and row.action == "pursue": return row
+	return {}

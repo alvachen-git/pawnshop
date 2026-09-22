@@ -1,6 +1,8 @@
 extends "res://tests/run_integrated_seven.gd"
 
 var test_seed := 42
+var reunion_manifest := "res://data/mirror_reunion_manifest.json"
+var reunion_fixture_dir := "res://.godot/qa/v26/"
 
 func run() -> void:
 	var loaded := JsonContentProvider.new(test_manifest()).load_catalog()
@@ -125,6 +127,7 @@ func journey(route: String) -> void:
 		act(s, "resolve_night")
 		if not s._day.state.risk_pending.is_empty(): s.risk_command("retreat", s._day.state.risk_pending)
 		if n == 7: aqi_story(s, route)
+		if AqiCompanion.enabled(run_def): driver.drain(s)
 		act(s, "enter_room"); driver.drain(s)
 		if n in [2, 5] and route != "ignore":
 			fixture(s, "aq-room-" + str(n))
@@ -298,6 +301,7 @@ func pass_night(s: RunSession) -> void:
 	if s._day.state.phase == &"closed_processing": act(s, "wait_until_seal")
 	act(s, "resolve_night")
 	if not s._day.state.risk_pending.is_empty(): check(s.risk_command("retreat", s._day.state.risk_pending).ok, "resolve retained taboo")
+	if AqiCompanion.enabled(run_def): driver.drain(s)
 	act(s, "enter_room"); driver.drain(s)
 	act(s, "sleep"); driver.drain(s)
 	if not s._day.state.risk_pending.is_empty(): check(s.risk_command("retreat", s._day.state.risk_pending).ok, "personal response")
@@ -353,7 +357,7 @@ func continuation() -> void:
 	verify(s, "resentment uncovered crisis")
 
 func test_manifest() -> String:
-	return "res://data/mirror_reunion_manifest.json"
+	return reunion_manifest
 
 func fixture_root() -> String:
-	return "res://.godot/qa/v%d" % catalog.content_version
+	return reunion_fixture_dir.trim_suffix("/") if reunion_fixture_dir != "res://.godot/qa/v26/" else "res://.godot/qa/v%d" % catalog.content_version

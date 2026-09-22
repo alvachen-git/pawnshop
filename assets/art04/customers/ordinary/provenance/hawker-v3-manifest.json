@@ -1,0 +1,20 @@
+{
+  "id": "hawker",
+  "name": "夜市货郎",
+  "date": "2026-09-17",
+  "generator": "built-in image_gen",
+  "source": "exec-6148cfc4-5b50-4fe1-bdc6-652df33b37b2.png",
+  "production_file": "res://assets/art04/customers/ordinary/hawker.png",
+  "prompt": "Use case: stylized-concept. Generate ONE entirely NEW ordinary night-market hawker character sprite for 鬼市当铺, a Republican-era Shanghai pawnshop game. Input1 is a painting-style and framing reference ONLY; its cap-wearing man is now an EXCLUSIVE named husband character. Do not copy that man's face, cap, hairstyle, narrow pointed face, prominent ears, shoulder strap or shoulder-gripping gesture. Input2 is ONLY the game's muted gouache environment style and lighting, never paint the environment.\nStyle: grounded semi-realistic opaque gouache, broad irregular hand-painted brush planes with varied marks, matte worn fabric, believable anatomy, lived-in Chinese face, no glamour or generic AI handsome stock face, no uniformly crunchy tiny triangles. Muted earth brown, dusty grey-green, smoky charcoal and understated warm skin.\nNEW PERSON: Chinese male itinerant night-market hawker, about 56 years old. Short and solidly built, broad compact ribcage, thick strong forearms, slightly forward rounded shoulders. A notably wide flat forehead and receding horseshoe of short bristly salt-and-pepper hair; NO HAT and no headband. Short broad face, small deep-set squinting eyes, uneven thick eyebrows, a blunt crooked broad nose, protruding lower lip, short coarse grey moustache with uneven ends; brown sun-worn skin and pronounced smile creases, lightly pitted cheeks. Strong individuality, plain and endearing, a real older working man. Not obese, no double chin, not frail, not related to the reference man. Wears a washed-out grey-green cotton work shirt with sleeves unevenly rolled to elbow, simple open faded russet-brown waistcoat, dark loose trousers at lower edge, no jewellery, no glasses.\nPOSE: body facing almost front but weight leaning toward his left, head tipped downward only slightly with eyes glancing upward sideways toward the pawnbroker. Mouth closed with one side pursed in a thoughtful businesslike expression. His LEFT forearm cradles a SMALL rolled empty grey canvas carrying sack against his lower ribs; the right hand lies over the roll with thumb and forefinger resting on its ordinary hemp tie as if absentmindedly tightening it. Hands visibly separated enough to read, wrists natural. No shoulder bag strap. No coins, pawned merchandise, weighing tools, weapons or text. Asymmetrical elbows; casual specific observed gesture, no front-facing folded-hands ceremonial pose.\nCOMPOSITION: ONE isolated head-to-upper-hip STANDING character, square canvas target1254x1254 or closest supported square size. Crown, elbows and ALL fingers fully inside with generous 5% side and head margins. Enough lower torso beneath hands for waist-height counter placement. Lower shirt ends at bottom frame, no floating finished waist hem. Eye-level conversational viewpoint. No counter, floor, cast shadow, environment, frame, labels, UI or other people.\nBACKGROUND: flat uniform solid saturated MAGENTA #FF00FF chroma key, including openings between arms and body; no texture, gradient, halo, magenta spill, checkerboard or fake transparency. No supernatural signifiers.\n",
+  "references": [
+    "Original ordinary/hawker.png v2, now special/mirror_husband.png (painting style only, not identity)",
+    "res://assets/art04/counter_room.png"
+  ],
+  "dimensions": [
+    1254,
+    1254
+  ],
+  "mode": "RGBA",
+  "background": "Generator returned true alpha transparency; original pixels retained.",
+  "sha256": "0d52e8a4c4dec1d9177288cc7babfde613b4146bbe623fe7d43076d52f482094"
+}

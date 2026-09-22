@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "wm_dream",
+      "title": "梦中求助",
+      "speaker": "梦中女子",
+      "body": "没听见脚步声，柜前却多了个女子。灯火泛着青色，她静静地看着你。",
+      "kind": "anchor",
+      "phase": "sleep_resolution",
+      "night_min": 2,
+      "night_max": 10,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 1,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "wm_dream_entered"
+      ],
+      "excluded_flags": [
+        "wm_dream_heard"
+      ],
+      "required_items": [
+        "item_weeping_mirror"
+      ],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "wake",
+          "label": "醒来",
+          "result": "梦里的女子说，她靠洗衣、缝补养着孩子，后来为凑药钱，当掉了母亲留下的铜镜。她托我寻找离家的丈夫，想亲口问问他为什么一直不回来。她提起当镜时留下的当票，也许能从铺中旧档开始查。\n\n这些是她在梦中的自述，尚待查证。",
+          "minutes": 0,
+          "grant_flags": [
+            "wm_dream_heard"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "mirror_dream",
+        "checkpoint": true,
+        "requires_call": true
+      }
+    },
+    {
+      "id": "wm_dream_call",
+      "title": "夜半",
+      "speaker": "寝屋",
+      "body": "闭上眼睛，逐渐失去意识，但似乎有个声音。",
+      "kind": "anchor",
+      "phase": "sleep_resolution",
+      "night_min": 2,
+      "night_max": 10,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 1,
+      "weight": 1,
+      "max_count": 2,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "wm_dream_heard",
+        "wm_dream_entered"
+      ],
+      "required_items": [
+        "item_weeping_mirror"
+      ],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "inspect",
+          "label": "出去看看",
+          "result": "你披上外衣，推开房门。",
+          "minutes": 0,
+          "grant_flags": [
+            "wm_dream_entered"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "ignore",
+          "label": "继续睡",
+          "result": "你没有开门，拉好被子，躺回床上。",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "mirror_dream",
+        "checkpoint": true
+      }
+    },
+    {
+      "id": "wm_dream_morning",
+      "title": "天亮了",
+      "speaker": "我",
+      "body": "那女子托我寻找离家的丈夫。也许能从铺里的旧档查起。",
+      "kind": "anchor",
+      "phase": "day_summary",
+      "night_min": 2,
+      "night_max": 10,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 1,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "wm_dream_heard"
+      ],
+      "excluded_flags": [
+        "wm_dream_recalled"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "rise",
+          "label": "起身",
+          "result": "天已经亮了，先把昨夜的事记下。",
+          "minutes": 0,
+          "grant_flags": [
+            "wm_dream_recalled"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "mirror_dream",
+        "checkpoint": true
+      }
+    }
+  ]
+}

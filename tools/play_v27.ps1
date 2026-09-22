@@ -40,7 +40,7 @@ try {
             Set-Content -LiteralPath $stamp -Value 'verified v27' -Encoding Ascii
         }
     }
-    $gameArgs = @('--path', $gameRoot, '--resolution', $(if ($Wide) { '1600x900' } else { '1280x720' }), 'res://scenes/start_v27.tscn')
+    $gameArgs = @('--path', $gameRoot, '--resolution', $(if ($Wide) { '1600x900' } else { '1280x720' }), 'res://scenes/start_shop_appraisal_v27.tscn')
     if ($Verify) { $gameArgs += @('--quit-after','90') }
     if ($Stage -ne 'normal') {
         $previewStage = if ($Stage -eq 'upgrade') { 'upgrade' } else { 'fan-sound' }

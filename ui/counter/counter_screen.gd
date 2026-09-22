@@ -267,8 +267,8 @@ func bind_session(session: RunSession) -> void:
 	_narrative.menu_requested.connect(_toggle_menu)
 	_narrative.bind(session)
 	_narrative.visibility_changed.connect(func() -> void:
-		if not _narrative.visible and _session.read_state().phase == "open": _close_drawer()
-		if not _narrative.visible and _session.read_state().phase == "shop_resolution" and _session.read_state().risk_pending.is_empty(): _flow.show_panel(&"night")
+		if not _narrative.visible and _session._day.state.phase == "open": _close_drawer()
+		if not _narrative.visible and _session._day.state.phase == "shop_resolution" and _session._day.state.risk_pending.is_empty(): _flow.show_panel(&"night")
 	)
 
 	var inventory_event_notice := preload("res://ui/inventory/inventory_event_notice.gd").new()
@@ -279,6 +279,9 @@ func bind_session(session: RunSession) -> void:
 		facilities.name = "FacilitiesNavigation"
 		add_child(facilities)
 		facilities.bind(self, session)
+	var dream := MirrorDreamView.new()
+	add_child(dream)
+	dream.bind(session, self)
 	if MirrorReunionService.enabled(session.definition):
 		var reunion := MirrorReunionView.new()
 		add_child(reunion)
@@ -299,7 +302,7 @@ func focus_active_screen() -> void:
 func _drain_departures() -> void:
 	if _departure == null: return
 	if not is_visible_in_tree() or process_mode == Node.PROCESS_MODE_DISABLED: return
-	var state := _session.read_state()
+	var state := _session._day.state
 	if state.phase in ["dead", "bankrupt"]:
 		_departure_queue.clear()
 		_departure.hide()
@@ -328,7 +331,7 @@ func _drain_departures() -> void:
 	_start_feedback(notice)
 
 func _departure_closed(_destination: String) -> void:
-	if _session.read_state().phase != "open": _flow.show_panel(&"night")
+	if _session._day.state.phase != "open": _flow.show_panel(&"night")
 	elif not _departure_return_panel.is_empty(): _flow.show_panel(_departure_return_panel)
 	else:
 		_close_drawer()
@@ -346,14 +349,14 @@ func _show_receipt(receipt: Dictionary) -> void:
 	_remember_feedback(receipt)
 	_receipt_event = ""
 	# Acknowledge the existing first-account event through its receipt, once.
-	if receipt.kind == "acquisition" and _session.read_state().pending_event_id == "evt_intro_first_trade":
+	if receipt.kind == "acquisition" and _session._day.state.pending_event_id == "evt_intro_first_trade":
 		_receipt_event = "evt_intro_first_trade"
 		receipt = receipt.duplicate(true)
 		receipt.detail = "你看着纸上的红印，想起顾叔按住你手的那一刻。\n" + tr("opening.first_trade.continue.result")
-		receipt.can_inspect = _session.read_state().phase == "open" and _session.read_state().risk_pending.is_empty() and not _session.mirror_pending()
+		receipt.can_inspect = _session._day.state.phase == "open" and _session._day.state.risk_pending.is_empty() and not _session.mirror_pending()
 		_narrative.hide()
-	_receipt_run = _session.read_state().run_token
-	_receipt_night = _session.read_state().current_night_index
+	_receipt_run = _session._day.state.run_token
+	_receipt_night = _session._day.state.current_night_index
 	_receipt_id = receipt.id
 	_receipt_followup = receipt.followup
 	_close_menu()
@@ -376,11 +379,11 @@ func _receipt_closed(destination: String) -> void:
 		return
 	var event := _receipt_event
 	_receipt_event = ""
-	if not event.is_empty() and _session.read_state().pending_event_id == event:
+	if not event.is_empty() and _session._day.state.pending_event_id == event:
 		_session.event_command(event, "continue")
 	_counter_view.release_feedback()
 	_drain_departures.call_deferred()
-	var state := _session.read_state()
+	var state := _session._day.state
 	if not state.risk_pending.is_empty() or _session.mirror_pending(): _flow.show_panel(&"risk")
 	elif not state.pending_event_id.is_empty():
 		if _session.event_model().presentation.is_empty(): _flow.show_panel(&"events")
@@ -395,7 +398,7 @@ func _receipt_closed(destination: String) -> void:
 	_refresh_recent_visibility()
 
 func _sync_room() -> void:
-	var state := _session.read_state()
+	var state := _session._day.state
 	if _feedback != null and _feedback_state_id != _session._day.state.get_instance_id():
 		_cancel_feedback(true)
 		_feedback_state_id = _session._day.state.get_instance_id()
@@ -408,8 +411,8 @@ func _sync_room() -> void:
 		_market_notice.tooltip_text = demand.body + "\n查看口信不耗时；外出交货一趟20分钟。"
 		_notice_key = state.run_token + "/" + current.id
 		_notice_stamp.visible = _notice_key != _notice_read_key
-	var model := _session.counter_model()
-	var id: String = model.active_id if model.trade.get("pawn_return", false) else ""
+	var returning := PawnReturnService.current(_session._day.state)
+	var id: String = returning.get("id", "")
 	if id.is_empty(): _return_id = ""
 	elif id != _return_id and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending():
 		_return_id = id
@@ -445,7 +448,7 @@ func _sync_room() -> void:
 
 
 func _refresh_notice_visibility() -> void:
-	var state := _session.read_state()
+	var state := _session._day.state
 	_market_notice.visible = not _session.definition.market.is_empty() and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending() and not %Drawer.visible and not _session_menu.visible
 
 
@@ -605,6 +608,7 @@ func _reset_reception() -> void:
 func _bell_blocked() -> bool:
 	if not is_visible_in_tree() or process_mode == Node.PROCESS_MODE_DISABLED: return true
 	if %Drawer.visible or _session_menu.visible: return true
+	if _counter_view.companion.dialogue.visible or _counter_view.story.visible: return true
 	for overlay in [_receipt, _departure, _narrative, _feedback]:
 		if overlay != null and overlay.visible: return true
 	var main := get_parent()
@@ -657,7 +661,7 @@ func _remember_feedback(receipt: Dictionary) -> void:
 
 func _refresh_recent_visibility() -> void:
 	if _recent_bar == null: return
-	var state := _session.read_state()
+	var state := _session._day.state
 	_recent_bar.visible = not _recent.is_empty() and not _recent_collapsed and not _feedback.visible and not _receipt.visible and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending() and not (%Drawer.visible and _flow.get_active_panel_id() == &"risk")
 
 func _feedback_finished() -> void:
@@ -684,7 +688,7 @@ func _cancel_feedback(clear_recent: bool) -> void:
 	else: _refresh_recent_visibility()
 
 func _review_receipt(id: String) -> void:
-	var state := _session.read_state()
+	var state := _session._day.state
 	if not state.pending_event_id.is_empty() or not state.risk_pending.is_empty() or _session.mirror_pending(): return
 	var receipt := _session.receipt_for(id)
 	if receipt.is_empty(): return

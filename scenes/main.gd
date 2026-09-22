@@ -21,6 +21,14 @@ func _ready() -> void:
 			if argument.begins_with("--appraisal-preview=") and argument.trim_prefix("--appraisal-preview=") in ["upgrade", "ready", "fan-sound", "fan-mended", "fan-flawed"]:
 				_bootstrap.appraisal_preview = argument.trim_prefix("--appraisal-preview=")
 				start_at_title = false
+			if argument.begins_with("--mirror-call-preview=") and argument.trim_prefix("--mirror-call-preview=") in ["bedtime", "call", "dream", "morning", "second", "ready"]:
+				_bootstrap.preview_stage = argument.trim_prefix("--mirror-call-preview=")
+				_bootstrap.preview_version = 29
+				start_at_title = false
+			if argument.begins_with("--mirror-dream-preview=") and argument.trim_prefix("--mirror-dream-preview=") in ["bedtime", "dream", "after", "ready"]:
+				_bootstrap.preview_stage = argument.trim_prefix("--mirror-dream-preview=")
+				_bootstrap.preview_version = 28
+				start_at_title = false
 			if argument.begins_with("--growth-preview=") and argument.trim_prefix("--growth-preview=") in ["preparation", "closed", "buyer"]:
 				_bootstrap.growth_preview = argument.trim_prefix("--growth-preview=")
 				start_at_title = false
@@ -55,7 +63,7 @@ func _ready() -> void:
 	if start_at_title:
 		_show_title()
 		_warm_counter.call_deferred()
-	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null:
+	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null and _bootstrap.preview_version not in [28, 29]:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"risk" if _bootstrap.preview_version >= 25 else &"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
 	if not _bootstrap.growth_preview.is_empty() and _bootstrap.session != null:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"trade" if _bootstrap.growth_preview == "buyer" else &"growth")

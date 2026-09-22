@@ -1,0 +1,757 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "evt_intro_factory_paycut",
+      "title": "opening.factory_paycut.title",
+      "speaker": "opening.factory_paycut.speaker",
+      "body": "opening.factory_paycut.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.factory_paycut.continue.label",
+          "result": "opening.factory_paycut.continue.result",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "factory",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_factory_argument",
+      "title": "opening.factory_argument.title",
+      "speaker": "opening.factory_argument.speaker",
+      "body": "opening.factory_argument.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 999,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.factory_argument.continue.label",
+          "result": "opening.factory_argument.continue.result",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "factory",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_factory_silence",
+      "title": "opening.factory_silence.title",
+      "speaker": "opening.factory_silence.speaker",
+      "body": "opening.factory_silence.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 998,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.factory_silence.continue.label",
+          "result": "opening.factory_silence.continue.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_FACTORY_DONE"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "photo",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_manqing_memory",
+      "title": "opening.manqing_memory.title",
+      "speaker": "opening.manqing_memory.speaker",
+      "body": "opening.manqing_memory.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 997,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.manqing_memory.continue.label",
+          "result": "opening.manqing_memory.continue.result",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "wedding",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_manqing_money",
+      "title": "opening.manqing_money.title",
+      "speaker": "opening.manqing_money.speaker",
+      "body": "opening.manqing_money.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 996,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.manqing_money.continue.label",
+          "result": "opening.manqing_money.continue.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_MANQING_SHOWN"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "photo",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_letter_delivery",
+      "title": "opening.letter_delivery.title",
+      "speaker": "opening.letter_delivery.speaker",
+      "body": "opening.letter_delivery.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 995,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.letter_delivery.continue.label",
+          "result": "opening.letter_delivery.continue.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_LETTER_RECEIVED"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "key",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_letter_read",
+      "title": "opening.letter_read.title",
+      "speaker": "opening.letter_read.speaker",
+      "body": "opening.letter_read.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 994,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.letter_read.continue.label",
+          "result": "opening.letter_read.continue.result",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "letter",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_gu_value",
+      "title": "opening.gu_value.title",
+      "speaker": "opening.gu_value.speaker",
+      "body": "opening.gu_value.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 993,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.gu_value.continue.label",
+          "result": "opening.gu_value.continue.result",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "memory",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_gu_people",
+      "title": "opening.gu_people.title",
+      "speaker": "opening.gu_people.speaker",
+      "body": "opening.gu_people.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 992,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.gu_people.continue.label",
+          "result": "opening.gu_people.continue.result",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "memory",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_gu_flashbacks",
+      "title": "opening.gu_flashbacks.title",
+      "speaker": "opening.gu_flashbacks.speaker",
+      "body": "opening.gu_flashbacks.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 991,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.gu_flashbacks.continue.label",
+          "result": "opening.gu_flashbacks.continue.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_GU_MEMORY_DONE"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "stamp",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_decision",
+      "title": "opening.decision.title",
+      "speaker": "opening.decision.speaker",
+      "body": "opening.decision.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 990,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.decision.continue.label",
+          "result": "opening.decision.continue.result",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "photo",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_shop_arrival",
+      "title": "opening.shop_arrival.title",
+      "speaker": "opening.shop_arrival.speaker",
+      "body": "opening.shop_arrival.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 989,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "enter",
+          "label": "opening.shop_arrival.enter.label",
+          "result": "opening.shop_arrival.enter.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_SHOP_ARRIVED"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "exterior",
+        "checkpoint": true,
+        "repeat_skip": true
+      }
+    },
+    {
+      "id": "evt_intro_shop_inspection",
+      "title": "opening.shop_inspection.title",
+      "speaker": "opening.shop_inspection.speaker",
+      "body": "opening.shop_inspection.body",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 988,
+      "weight": 1,
+      "max_count": 5,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "INTRO_SHOP_INSPECTED"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "counter",
+          "label": "opening.shop_inspection.counter.label",
+          "result": "opening.shop_inspection.counter.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_COUNTER_MARK_SEEN"
+          ],
+          "required_flags": [],
+          "excluded_flags": [
+            "INTRO_COUNTER_MARK_SEEN"
+          ]
+        },
+        {
+          "id": "accounts",
+          "label": "opening.shop_inspection.accounts.label",
+          "result": "opening.shop_inspection.accounts.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_MING_LEDGER_SEEN"
+          ],
+          "required_flags": [],
+          "excluded_flags": [
+            "INTRO_MING_LEDGER_SEEN"
+          ]
+        },
+        {
+          "id": "incense",
+          "label": "opening.shop_inspection.incense.label",
+          "result": "opening.shop_inspection.incense.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_INCENSE_NOTICED"
+          ],
+          "required_flags": [],
+          "excluded_flags": [
+            "INTRO_INCENSE_NOTICED"
+          ]
+        },
+        {
+          "id": "ledger",
+          "label": "opening.shop_inspection.ledger.label",
+          "result": "opening.shop_inspection.ledger.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_YIN_LEDGER_NOTICED"
+          ],
+          "required_flags": [],
+          "excluded_flags": [
+            "INTRO_YIN_LEDGER_NOTICED"
+          ]
+        },
+        {
+          "id": "ready",
+          "label": "opening.shop_inspection.ready.label",
+          "result": "opening.shop_inspection.ready.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_SHOP_INSPECTED"
+          ],
+          "required_flags": [
+            "INTRO_MING_LEDGER_SEEN",
+            "INTRO_YIN_LEDGER_NOTICED"
+          ],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "inspection",
+        "checkpoint": true,
+        "repeat_skip": false,
+        "hotspots": true
+      }
+    },
+    {
+      "id": "evt_intro_first_customer",
+      "title": "opening.first_customer.title",
+      "speaker": "opening.first_customer.speaker",
+      "body": "opening.first_customer.body",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 987,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.first_customer.continue.label",
+          "result": "opening.first_customer.continue.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_FIRST_CUSTOMER_STARTED"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "customer",
+        "checkpoint": false,
+        "repeat_skip": false
+      }
+    },
+    {
+      "id": "evt_intro_first_trade",
+      "title": "opening.first_trade.title",
+      "speaker": "opening.first_trade.speaker",
+      "body": "opening.first_trade.body",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 1,
+      "night_max": 3,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 986,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "INTRO_FIRST_CUSTOMER_STARTED"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.first_trade.continue.label",
+          "result": "opening.first_trade.continue.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_FIRST_TRADE_DONE"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "stamp",
+        "checkpoint": false,
+        "repeat_skip": false,
+        "required_purchases": 1
+      }
+    },
+    {
+      "id": "evt_intro_room_first_night",
+      "title": "opening.room_first_night.title",
+      "speaker": "opening.room_first_night.speaker",
+      "body": "opening.room_first_night.body",
+      "kind": "anchor",
+      "phase": "private_room",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 985,
+      "weight": 1,
+      "max_count": 5,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "INTRO_ROOM_SEEN"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "letter",
+          "label": "opening.room_first_night.letter.label",
+          "result": "opening.room_first_night.letter.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_LETTER_STORED"
+          ],
+          "required_flags": [],
+          "excluded_flags": [
+            "INTRO_LETTER_STORED"
+          ]
+        },
+        {
+          "id": "photo",
+          "label": "opening.room_first_night.photo.label",
+          "result": "opening.room_first_night.photo.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_MANQING_PHOTO_PLACED"
+          ],
+          "required_flags": [],
+          "excluded_flags": [
+            "INTRO_MANQING_PHOTO_PLACED"
+          ]
+        },
+        {
+          "id": "lamp",
+          "label": "opening.room_first_night.lamp.label",
+          "result": "opening.room_first_night.lamp.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_LIFE_LAMP_SEEN"
+          ],
+          "required_flags": [],
+          "excluded_flags": [
+            "INTRO_LIFE_LAMP_SEEN"
+          ]
+        },
+        {
+          "id": "mirror",
+          "label": "opening.room_first_night.mirror.label",
+          "result": "opening.room_first_night.mirror.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_MIRROR_SEEN"
+          ],
+          "required_flags": [],
+          "excluded_flags": [
+            "INTRO_MIRROR_SEEN"
+          ]
+        },
+        {
+          "id": "settled",
+          "label": "opening.room_first_night.settled.label",
+          "result": "opening.room_first_night.settled.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_ROOM_SEEN"
+          ],
+          "required_flags": [
+            "INTRO_LETTER_STORED",
+            "INTRO_LIFE_LAMP_SEEN"
+          ],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "room",
+        "checkpoint": true,
+        "repeat_skip": false,
+        "hotspots": true
+      }
+    },
+    {
+      "id": "evt_intro_sleep_first_night",
+      "title": "opening.sleep_first_night.title",
+      "speaker": "opening.sleep_first_night.speaker",
+      "body": "opening.sleep_first_night.body",
+      "kind": "anchor",
+      "phase": "sleep_resolution",
+      "night_min": 1,
+      "night_max": 1,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 984,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "opening.sleep_first_night.continue.label",
+          "result": "opening.sleep_first_night.continue.result",
+          "minutes": 0,
+          "grant_flags": [
+            "INTRO_FIRST_SLEEP",
+            "INTRO_COMPLETE"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "sleep",
+        "checkpoint": true,
+        "repeat_skip": false
+      }
+    }
+  ]
+}

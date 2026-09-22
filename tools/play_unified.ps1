@@ -54,7 +54,7 @@ try {
             Set-Content -LiteralPath $knowledgeStamp -Value 'verified knowledge v29' -Encoding Ascii
         }
     }
-    $gameArgs = @('--path', $gameRoot, '--resolution', $(if ($Wide) { '1600x900' } else { '1280x720' }), 'res://scenes/start.tscn')
+    $gameArgs = @('--path', $gameRoot, '--resolution', $(if ($Wide) { '1600x900' } else { '1280x720' }), 'res://scenes/start_fan_condition_v29.tscn')
     if ($Verify) { $gameArgs += @('--quit-after','90') }
     if ($Stage -ne 'normal') {
         $previewStage = if ($Stage -eq 'knowledge') { 'knowledge-before' } elseif ($Stage -eq 'upgrade') { 'upgrade' } elseif ($Stage -eq 'fan') { 'fan-sound' } elseif ($Stage -in @('informed','ordinary','urgent')) { $Stage + '-ready' } else { $Stage }

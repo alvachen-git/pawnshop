@@ -80,6 +80,6 @@
 
 ## 版本与边界
 
-当前默认是v29 `fan_condition_ten`。v28保留 `play-v28.cmd` / `scenes/start_v28.tscn`，v27保留 `play-v27.cmd` / `scenes/start_v27.tscn`。旧局不补品相、不重算历史价格或商誉；新规则需新开v29局。
+当前默认是v29 `fan_condition_ten`。v28保留 `play-v28.cmd` / `scenes/start_fan_bargaining_v28.tscn`，v27保留 `play-v27.cmd` / `scenes/start_shop_appraisal_v27.tscn`。旧局不补品相、不重算历史价格或商誉；新规则需新开v29局。
 
 本批只改普通折扇，其他商品和铜镜规则保留；没有接入修复破损、其他任务的关系系统或新的品相美术图。工作目录仍为 `.artifacts/shop-appraisal`，各启动场景及保存隔离见[统一接入安排](UNIFIED_PLAYTEST_INTEGRATION.md)。

@@ -21,7 +21,7 @@ func _run() -> void:
 	_capture_prefix = "appraisal_1600" if "wide" in OS.get_cmdline_user_args() else "appraisal_1280"
 	root.size = Vector2i(1600, 900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280, 720)
 	root.content_scale_size = root.size
-	_main = load("res://scenes/start_v27.tscn").instantiate()
+	_main = load("res://scenes/start_shop_appraisal_v27.tscn").instantiate()
 	_main.get_node("Bootstrap").save_path = "user://tests/appraisal_ui/auto.json"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session

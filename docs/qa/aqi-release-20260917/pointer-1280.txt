@@ -1,0 +1,9 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 4.1 Metal - 89.4 - Compatibility - Using Device: Apple - Apple M4
+
+RUN SEED: 82725679
+POINTER chat overlap=[P: (0.0, 0.0), S: (0.0, 0.0)] minute=0
+AFTER minute=0 active=
+POINTER paper overlap=[P: (896.0, 361.56), S: (83.19995, 42.0)] minute=0
+AFTER minute=0 active=
+AQI POINTER UI: 25 assertions, 0 failures

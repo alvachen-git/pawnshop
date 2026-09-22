@@ -12,12 +12,13 @@ func bind(session: RunSession, view: IntentPanel) -> void:
 	_view = view
 	_view.intent.connect(_on_intent)
 	_session.changed.connect(refresh)
-	_view.visibility_changed.connect(refresh)
+	_view.visibility_changed.connect(refresh, CONNECT_DEFERRED)
 	refresh()
 
 func refresh() -> void:
 	# Hidden drawers read current state when opened; no eager rebuild per action.
 	if not _view.is_visible_in_tree(): return
+	if MirrorReunionService.enabled(_session.definition) and MirrorEndingService.active(_session._day.state): return
 	_view.render(_session.counter_model()[feature_key()])
 
 func _on_intent(command: String, visit_id: String, detail: String, amount: int) -> void:

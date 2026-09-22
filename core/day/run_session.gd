@@ -10,6 +10,9 @@ signal operation_completed(feedback: Dictionary)
 
 const NEW_RUN_MESSAGE := "暮色又落到了铺门前。柜上的账册，翻开了第一页。"
 
+var _model_cache: Dictionary = {}
+var _notifying := false
+
 var _ghost_depth := 0
 var definition: RunDefinition
 var content_version: int
@@ -60,7 +63,11 @@ func _init(run_definition: RunDefinition, version: int, save_manager: SaveManage
 		_events.poll(_day.state, definition)
 
 func read_state() -> Dictionary:
-	return _day.state.to_read_model()
+	var key := "state"
+	if _notifying and _model_cache.has(key): return _model_cache[key].duplicate(true)
+	var model: Dictionary = _day.state.to_read_model()
+	if _notifying: _model_cache[key] = model.duplicate(true)
+	return model
 
 func seven_notice() -> String:
 	if not SevenNightPlan.enabled(definition): return ""
@@ -135,8 +142,8 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 		_publish_feedback(treatment_before, command, "", treated)
 		_emit_changed()
 		return treated
-	# Only these commands create checkpoints. Snapshot before mutation for rollback.
-	var checkpoint := command in ["resolve_night", "continue_run", "enter_room", "sleep", "finish_sleep"]
+	# Lifecycle checkpoints plus v25 opening story checkpoints roll back atomically.
+	var checkpoint := command in ["resolve_night", "continue_run", "enter_room", "sleep", "finish_sleep"] or (AqiCompanion.enabled(definition) and command == "open_shop")
 	var previous: RunState
 	if checkpoint:
 		previous = _copy_state(_day.state)
@@ -169,7 +176,7 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 		if not _persist():
 			_day.state = previous
 			result = ActionResult.new(false, "未推进；请重试。" + _save.error_message)
-		else:
+		elif command != "open_shop":
 			result.message = "这一夜的账，记下了。"
 	if result.ok and command == "resolve_night":
 		_pawn_choices.clear()
@@ -237,7 +244,10 @@ func new_run() -> void:
 
 func _copy_state(source: RunState) -> RunState:
 	if replaying: return source
-	return RunSnapshot.copy(source)
+	var started := Time.get_ticks_usec()
+	var snapshot := RunSnapshot.copy(source)
+	_profile("snapshots", started)
+	return snapshot
 
 func counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
 	if command.begins_with("ending_"): return mirror_resolution_command(command.trim_prefix("ending_"), visit_id)
@@ -305,6 +315,13 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 	return result
 
 func counter_model() -> Dictionary:
+	var key := "counter"
+	if _notifying and _model_cache.has(key): return _model_cache[key].duplicate(true)
+	var model: Dictionary = _build_counter_model()
+	if _notifying: _model_cache[key] = model.duplicate(true)
+	return model
+
+func _build_counter_model() -> Dictionary:
 	var model := CounterReadModels.build(_day, _counter, message, _message_visit_id)
 	model.trade.reactions = _negotiation_reactions.for_visit(_day.state, model.active_id)
 	PawnReturnReadModels.enrich(model, _day, _commerce)
@@ -412,7 +429,20 @@ func receipt_for(transaction_id: String) -> Dictionary:
 		return TradeReceiptModel.build(_day, _counter.catalog, entry)
 	return {}
 
+func companion_model() -> Dictionary:
+	return AqiCompanion.model(_day, _events, _counter, mirror_pending() or MirrorEndingService.active(_day.state))
+
+func old_debt_model() -> Dictionary:
+	return AqiCompanion.old_debt(_day, _events)
+
 func event_model() -> Dictionary:
+	var key := "event"
+	if _notifying and _model_cache.has(key): return _model_cache[key].duplicate(true)
+	var model: Dictionary = _build_event_model()
+	if _notifying: _model_cache[key] = model.duplicate(true)
+	return model
+
+func _build_event_model() -> Dictionary:
 	var model: Dictionary = _events.model(_day, message) if _events != null else {"body": "暂无记事。", "buttons": [], "pending_id": ""}
 	if not _day.state.risk_pending.is_empty():
 		model.presentation = {}
@@ -435,8 +465,21 @@ func _impl_event_command(event_id: String, choice_id: String) -> ActionResult:
 	var checkpoint := false
 	if _events != null:
 		var event := _events.catalog.get_definition("events", event_id) as EventDefinition
-		checkpoint = event != null and event.presentation.get("checkpoint", false) and String(_day.state.phase) in SaveCodec.CHECKPOINTS
-		result = _events.choose(_day, event_id, choice_id)
+		checkpoint = event != null and event.presentation.get("checkpoint", false) and (String(_day.state.phase) in SaveCodec.CHECKPOINTS or (AqiCompanion.enabled(definition) and _day.state.phase == &"open"))
+		if event != null and event.presentation.get("scene", "") == "aqi_companion":
+			if not companion_model().get("available", false): return ActionResult.new(false, "先招呼客人，等会儿再聊。")
+			result = _events.investigate(_day, event_id, choice_id)
+		else:
+			result = _events.choose(_day, event_id, choice_id)
+		if result.ok and event_id == MirrorDreamService.EVENT:
+			# Event history and the existing sleep settlement share the outer journal commit.
+			result = _impl_execute("finish_sleep")
+		elif result.ok and event_id == MirrorDreamService.CALL and choice_id == "ignore":
+			result = _impl_execute("finish_sleep")
+			if result.ok and _day.state.phase == &"day_summary" and _day.state.pending_event_id.is_empty():
+				result = _impl_execute("continue_run")
+		elif result.ok and event_id == MirrorDreamService.MORNING:
+			result = _impl_execute("continue_run")
 		if result.ok and _counter != null: _counter.customers.update(_day.state)
 	if _risk != null: _risk.capture_close(_day.state)
 	if result.ok and checkpoint and not _persist():
@@ -454,6 +497,13 @@ func _event_blocked() -> ActionResult:
 	return ActionResult.new(false, message)
 
 func risk_model(record_id := "") -> Dictionary:
+	var key := "risk/" + record_id + ""
+	if _notifying and _model_cache.has(key): return _model_cache[key].duplicate(true)
+	var model: Dictionary = _build_risk_model(record_id)
+	if _notifying: _model_cache[key] = model.duplicate(true)
+	return model
+
+func _build_risk_model(record_id := "") -> Dictionary:
 	var records: Array = RiskReadModels.records(_day, _risk) if _risk != null else []
 	if not _day.state.risk_pending.is_empty():
 		record_id = InventoryManager.new().find(_day.state, _day.state.risk_pending).definition_id
@@ -497,6 +547,8 @@ func risk_model(record_id := "") -> Dictionary:
 		model.history += InvestigationService.notes(_day.state)
 		model.buttons.append({"command": "open_investigation", "target_id": "", "detail": "", "label": "托人查访", "enabled": not model.requires_response, "reason": ""})
 	MirrorEndingService.decorate(model, _day, _counter.catalog)
+	var dream_hint := MirrorDreamService.guidance(_day.state)
+	if not dream_hint.is_empty(): model.body += "\n\n" + dream_hint
 	model.note_sections = preload("res://ui/risk/mirror_journal.gd").build(_day, _counter.catalog)
 	return model
 
@@ -701,7 +753,8 @@ func _persist() -> bool:
 	return _save.save_state(_day.state, definition, content_version)
 
 func _journal_call(method: String, args: Array) -> ActionResult:
-	if MirrorEndingService.active(_day.state) and method != "mirror_resolution_command": return ActionResult.new(false, "镜前的话还未说完；若要先办别的事，请选择「暂且收起」。")
+	if MirrorEndingService.active(_day.state) and method != "mirror_resolution_command":
+		return ActionResult.new(false, "镜前的话还未说完，请从库存提醒回到镜前。" if MirrorReunionService.enabled(definition) else "镜前的话还未说完；若要先办别的事，请选择「暂且收起」。")
 	if LivingMirror.enabled(definition) and not InvestigationService.enabled(definition): return _ghost_call(method, args)
 	if not _day.state.personal_risk_enabled or _journal_depth > 0: return callv("_impl_" + method, args)
 	if _day.state.action_journal.size() >= 4096: return ActionResult.new(false, "本局操作记录已满，请读取较早的存档。")
@@ -712,7 +765,9 @@ func _journal_call(method: String, args: Array) -> ActionResult:
 	_pending_checkpoint = false
 	_pending_notifications.clear()
 	_journal_depth += 1
+	var domain_started := Time.get_ticks_usec()
 	var result: ActionResult = callv("_impl_" + method, args)
+	_profile("domain", domain_started)
 	_journal_depth -= 1
 	if _day.state.shop_growth_enabled:
 		ShopGrowthService.sync(_day.state)
@@ -723,7 +778,10 @@ func _journal_call(method: String, args: Array) -> ActionResult:
 		before.erase("action_journal"); after.erase("action_journal")
 		if before == after: _day.state.action_journal.pop_back()
 	if not replaying and (_pending_checkpoint or before_damage != _day.state.personal_risk_history.size()):
-		if not _save.save_state(_day.state, definition, content_version):
+		var save_started := Time.get_ticks_usec()
+		var saved := _save.save_state(_day.state, definition, content_version)
+		_profile("save", save_started)
+		if not saved:
 			_day.state = previous
 			_pawn_choices = pawn_choices
 			result = ActionResult.new(false, "操作未保存，已恢复原状；请重试。" + _save.error_message)
@@ -735,14 +793,16 @@ func _journal_call(method: String, args: Array) -> ActionResult:
 		if result.ok: _risk_error = ""
 		var notifications := _pending_notifications.duplicate()
 		_pending_notifications.clear()
+		var notification_started := Time.get_ticks_usec()
 		for notification in notifications: emit_signal(notification.signal_name, notification.payload)
-		changed.emit()
+		_profile("notices", notification_started)
+		_notify_changed()
 	return result
 
 var _pending_notifications: Array[Dictionary] = []
 
 func _emit_changed() -> void:
-	if _journal_depth == 0 and not replaying: changed.emit()
+	if _journal_depth == 0 and not replaying: _notify_changed()
 
 func _emit_transaction(payload: Dictionary) -> void:
 	if replaying: return
@@ -834,3 +894,39 @@ func _impl_fan_command(command: String, item_id: String, detail := "") -> Action
 	var visit := _counter.customers.active(_day.state)
 	_message_visit_id = visit.visit_id if visit != null and visit.item.instance_id == item_id else ""
 	return result
+
+# Models live only for one synchronous notification, never across actions or rollback.
+func _notify_changed() -> void:
+	_model_cache.clear()
+	_notifying = true
+	var started := Time.get_ticks_usec()
+	changed.emit()
+	_profile("refresh_dispatch", started)
+	_notifying = false
+	_model_cache.clear()
+
+# Attention/atmosphere must remain live even when the journal drawer is closed.
+# This projection deliberately does not build prose, investigation buttons or records.
+func risk_signal_model() -> Dictionary:
+	var state := _day.state
+	var held: Array = []
+	if _risk != null:
+		for item in _risk.ghosts(state):
+			if item.ownership_state in ["owned", "pledged"]: held.append(item.instance_id)
+	var closed: Array = []
+	var intrusion := false
+	for row in state.risk_history:
+		var key := "%d/%s" % [row.night, row.item_id]
+		if row.action == "close": closed.append(key)
+		if (row.action == "close" and not row.covered) or (row.action == "uncover" and key in closed): intrusion = true
+	if MirrorEndingService.released(state): intrusion = false
+	var attention: String = _mirror.model(_day).attention_id if _mirror != null else ""
+	if MirrorEndingService.active(state): attention = "resolution/" + state.mirror_resolution.visit_id + "/" + str(state.mirror_resolution.step)
+	return {"held_ids": held, "pending_id": state.risk_pending, "intrusion": intrusion, "attention_id": attention}
+
+# Optional diagnostics; never serialized and never consulted by gameplay.
+var profile_enabled := false
+var profile_us: Dictionary = {}
+
+func _profile(label: String, started: int) -> void:
+	if profile_enabled: profile_us[label] = int(profile_us.get(label, 0)) + Time.get_ticks_usec() - started

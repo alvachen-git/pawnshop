@@ -23,11 +23,11 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 			var closed: int = SaveTimeline.closing(state, int(row.night))
 			if row.phase == "open" and row.minute > closed: return "营业事件发生在关门后。"
 			if row.phase == "closed_processing" and row.offered_minute < closed: return "关门事件发生在营业时。"
-		var rank: int = {"pre_open": 0, "open": 1, "closed_processing": 2, "shop_resolution": 3, "private_room": 4, "sleep_resolution": 5}.get(row.phase, -1)
+		var rank: int = {"pre_open": 0, "open": 1, "closed_processing": 2, "shop_resolution": 3, "private_room": 4, "sleep_resolution": 5, "day_summary": 6}.get(row.phase, -1)
 		if rank < 0: return "事件阶段无效。"
-		if row.phase in ["shop_resolution", "private_room", "sleep_resolution"]:
+		if row.phase in ["shop_resolution", "private_room", "sleep_resolution", "day_summary"]:
 			if row.minute != run.night_minutes or not run.private_room: return "房间事件时刻无效。"
-			var action: String = {"shop_resolution": "seal", "private_room": "enter_room", "sleep_resolution": "sleep"}[row.phase]
+			var action: String = {"shop_resolution": "seal", "private_room": "enter_room", "sleep_resolution": "sleep", "day_summary": "finish_sleep"}[row.phase]
 			var occurred := false
 			for step in data.get("room_history", []):
 				if step is Dictionary and step.get("night") == row.night and step.get("action") == action: occurred = true
@@ -87,7 +87,7 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 	return ""
 
 static func _stamp(night: int, minute: int, phase: int, run: RunDefinition) -> int:
-	return (night * (run.night_minutes + 1) + minute) * 6 + phase
+	return (night * (run.night_minutes + 1) + minute) * 7 + phase
 
 static func _inventory_at(state: RunState, night: int, minute: int) -> Array[ItemInstance]:
 	var items: Array[ItemInstance] = []

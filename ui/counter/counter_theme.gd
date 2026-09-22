@@ -16,8 +16,8 @@ static func build() -> Theme:
 		result.set_stylebox(state, "Button", paper_button_style(state))
 		result.set_color("font_" + state + "_color" if state != "normal" else "font_color", "Button", Color("302a24") if state != "disabled" else Color("706657"))
 	result.set_color("font_focus_color", "Button", Color("302a24"))
-	var focus := box("00000000", "8d2a24", 0, 0)
-	focus.set_border_width_all(3)
+	var focus := box("00000000", "8a6b38", 0, 0)
+	focus.set_border_width_all(1)
 	result.set_stylebox("focus", "Button", focus)
 	result.set_stylebox("normal", "LineEdit", box("f1e2bf", "74634e", 8, 8))
 	result.set_color("font_color", "LineEdit", Color("302a24"))
@@ -54,14 +54,18 @@ static func style_paper_button(button: Button) -> void:
 		var tint: Color = {"normal": Color.WHITE, "hover": Color("fff0cc"), "pressed": Color("bdac86"), "disabled": Color("8a8877")}[state]
 		button.add_theme_stylebox_override(state, painted_paper(tint))
 		button.add_theme_color_override("font_color" if state == "normal" else "font_" + state + "_color", Color("302a24"))
-	var focus := box("00000000", "8d2a24", 0, 0)
-	focus.set_border_width_all(3)
+	var focus := box("00000000", "8a6b38", 0, 0)
+	focus.set_border_width_all(1)
 	button.add_theme_stylebox_override("focus", focus)
 
+static var _display_font: Font
+
 static func display_font() -> Font:
+	if _display_font != null: return _display_font
 	var font := SystemFont.new()
 	font.font_names = PackedStringArray(["Songti SC", "STSong", "SimSun", "Noto Serif CJK SC"])
 	font.fallbacks = [preload("res://assets/fonts/NotoSansSC.ttf")]
+	_display_font = font
 	return font
 
 static func box(fill: String, edge: String, horizontal: int, vertical: int) -> StyleBoxFlat:

@@ -4,7 +4,7 @@ func _run() -> void:
 	root.size = Vector2i(1600, 900)
 	root.content_scale_size = root.size
 	_capture_prefix = "fan-desk-variants"
-	_main = load("res://scenes/start_v27.tscn").instantiate()
+	_main = load("res://scenes/start_shop_appraisal_v27.tscn").instantiate()
 	_main.get_node("Bootstrap").save_path = "user://tests/fan_desk_visuals/auto.json"
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session

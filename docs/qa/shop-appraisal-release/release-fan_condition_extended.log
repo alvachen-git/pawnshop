@@ -1,0 +1,13 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+CONDITION ECONOMY { "condition": "minor", "strategy": "ordinary", "cost": 28, "income": 15, "profit": -13, "handling_minutes": 25, "held_overnight": false, "sold_night": 5 }
+CONDITION ECONOMY { "condition": "minor", "strategy": "damage", "cost": 22, "income": 15, "profit": -7, "handling_minutes": 30, "held_overnight": false, "sold_night": 5 }
+CONDITION ECONOMY { "condition": "minor", "strategy": "fake", "cost": 17, "income": 15, "profit": -2, "handling_minutes": 30, "held_overnight": false, "sold_night": 5 }
+CONDITION ECONOMY { "condition": "minor", "strategy": "both", "cost": 13, "income": 15, "profit": 2, "handling_minutes": 35, "held_overnight": false, "sold_night": 5 }
+CONDITION ECONOMY { "condition": "major", "strategy": "ordinary", "cost": 28, "income": 10, "profit": -18, "handling_minutes": 25, "held_overnight": false, "sold_night": 5 }
+CONDITION ECONOMY { "condition": "major", "strategy": "damage", "cost": 14, "income": 10, "profit": -4, "handling_minutes": 30, "held_overnight": true, "sold_night": 6 }
+CONDITION ECONOMY { "condition": "major", "strategy": "fake", "cost": 22, "income": 10, "profit": -12, "handling_minutes": 30, "held_overnight": true, "sold_night": 6 }
+CONDITION ECONOMY { "condition": "major", "strategy": "both", "cost": 11, "income": 10, "profit": -1, "handling_minutes": 35, "held_overnight": true, "sold_night": 6 }
+FAN CONDITION EXTENDED: 154 passes, 0 failures

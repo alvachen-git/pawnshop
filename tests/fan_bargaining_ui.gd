@@ -25,7 +25,7 @@ func _run() -> void:
 	_capture_prefix="fan_bargaining_1600" if "wide" in OS.get_cmdline_user_args() else "fan_bargaining_1280"
 	root.size=Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720)
 	root.content_scale_size=root.size
-	_main=load("res://scenes/start_v28.tscn").instantiate()
+	_main=load("res://scenes/start_fan_bargaining_v28.tscn").instantiate()
 	_main.get_node("Bootstrap").save_path="user://tests/bargaining_ui/auto.json"
 	root.add_child(_main)
 	_session=_main.get_node("Bootstrap").session

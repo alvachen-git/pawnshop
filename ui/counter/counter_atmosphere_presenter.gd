@@ -23,7 +23,7 @@ func set_preview(mode: int) -> void:
 
 func refresh() -> void:
 	var state := _session.read_state()
-	var risk := _session.risk_model()
+	var risk := _session.risk_signal_model()
 	# Ghost-market gameplay is not implemented. Only the review selector uses GHOST.
 	# Time darkens the room; actual risk evidence alone bends smoke / flame.
 	current_mode = LATE if int(state.game_minutes) >= 300 or state.phase in ["closed_processing", "night_resolution", "day_summary", "dead"] or risk.intrusion else NORMAL

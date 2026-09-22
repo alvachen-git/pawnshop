@@ -2,6 +2,8 @@
 
 日期：2026-09-22（2026-09-21开始实施）。已本地验证，尚未推送或合并。
 
+**发布接入补充**：以下保留开发记录。本次已获推送合并授权，合并最新main时将鉴物台场景改为带运行名称的独立入口；`play-unified.cmd`仍启动本批，Godot原默认铜镜入口保留。当前入口与验证以[合并说明](SHOP_APPRAISAL_RELEASE.md)为准。
+
 ## 当前接入
 
 2026-09-22升级与知识补充：v29的二级鉴物台与扇画工具取消工具册前置。顾砚生知识改在旧账柜第一柜直接学习，花1次准备，无需先探索；知识独立记录，旧局已研习者直接认作掌握，不重复收费。已有v29存档直接生效，不改版本号和保存入口；v27/v28规则保留。`upgrade`测试升级，`fan`测试鉴物台，新增`knowledge`测试柜中学习，独立保存于`unified-v29-knowledge`。费用与流程见[试玩说明](FAN_CONDITION_PLAYTEST.md#升级与知识2026-09-22补充)。
@@ -10,9 +12,9 @@
 
 | 运行 | 启动与保存 |
 | --- | --- |
-| v29 `fan_condition_ten` | 当前默认，`play-unified.cmd` / `scenes/start.tscn`；自动位 `auto/fan_condition_ten`，`user://fan_condition_ten/autosave_v29.json` |
-| v28 `fan_bargaining_ten` | `play-v28.cmd` / `scenes/start_v28.tscn`，原名声和判假议价，不补品相 |
-| v27 `shop_appraisal_ten` | `play-v27.cmd` / `scenes/start_v27.tscn`，保留原规则 |
+| v29 `fan_condition_ten` | 鉴物台试玩默认，`play-unified.cmd` / `scenes/start_fan_condition_v29.tscn`；自动位 `auto/fan_condition_ten`，`user://fan_condition_ten/autosave_v29.json` |
+| v28 `fan_bargaining_ten` | `play-v28.cmd` / `scenes/start_fan_bargaining_v28.tscn`，原名声和判假议价，不补品相 |
+| v27 `shop_appraisal_ten` | `play-v27.cmd` / `scenes/start_shop_appraisal_v27.tscn`，保留原规则 |
 | v26及更早 | 清单、规则、历史存档入口继续保留 |
 
 根目录启动器继续转入同一隔离工程。v29正常与专项数据各自在 `.godot/play-data/unified-v29-场景名`；v28仍为 `unified-v28-场景名`，v27仍为 `unified-场景名`。三个版本不互相覆盖自动存档。直接用Godot启动场景时，共用项目档案库的不同运行自动位。
@@ -29,7 +31,7 @@
 
 ## 当前接入
 
-延续隔离工作目录 `.artifacts/shop-appraisal`（分支 `codex/shop-appraisal`）已有v27成果，新运行 `fan_bargaining_ten` 使用版本28。实施前复查根目录及各隔离工程清单，28未占用。统一启动 `play-unified.cmd`、`scenes/start.tscn` 默认v28；`play-v27.cmd`、`scenes/start_v27.tscn` 保留v27。
+延续隔离工作目录 `.artifacts/shop-appraisal`（分支 `codex/shop-appraisal`）已有v27成果，新运行 `fan_bargaining_ten` 使用版本28。实施前复查根目录及各隔离工程清单，28未占用。统一启动 `play-unified.cmd`、`scenes/start_fan_condition_v29.tscn` 默认v28；`play-v27.cmd`、`scenes/start_shop_appraisal_v27.tscn` 保留v27。
 
 | 运行 | 状态与保存 |
 | --- | --- |
@@ -57,7 +59,7 @@
 
 基于线上 main `026b0579270400ce5a9a48f40c7010ce8b11ff41`，在独立工作目录 `.artifacts/shop-appraisal`、分支 `codex/shop-appraisal` 开发。原主目录、旧试玩副本和其他任务工作保留。
 
-本批统一入口为 `scenes/start.tscn`，新运行 `shop_appraisal_ten`，内容与存档版本 **27**。复制 v26 镜中重逢的十夜数据，在新运行配置中启用 `shop_growth_version=1` 与 `fan_appraisal_version=1`；包含阿七、铜镜夫妻重逢与四种收尾、命灯、寝屋、原有经营、一级设施、陈列买家、第十七柜，以及本批二级鉴物台和扇画自鉴。
+本批统一入口为 `scenes/start_fan_condition_v29.tscn`，新运行 `shop_appraisal_ten`，内容与存档版本 **27**。复制 v26 镜中重逢的十夜数据，在新运行配置中启用 `shop_growth_version=1` 与 `fan_appraisal_version=1`；包含阿七、铜镜夫妻重逢与四种收尾、命灯、寝屋、原有经营、一级设施、陈列买家、第十七柜，以及本批二级鉴物台和扇画自鉴。
 
 正式启动使用 `play-unified.cmd`。专项只是同一份游戏代码的隔离场景，不再维护另一份玩法实现。尚未增加第十一夜。
 

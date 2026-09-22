@@ -6,7 +6,7 @@
 
 - 延续 `.artifacts/shop-appraisal` 的已有 v27 工作，保留案上对证、免费草稿、落笔10分钟、设施与铜镜剧情。未修改其他任务目录。
 - 实施前检查根工程及 `.artifacts` 各工作目录的版本清单，已有版本最高27，分配28。其他目录状态只是检查时快照，不代表当前开发进度。
-- 新运行与内容清单为 `fan_bargaining_ten` / `data/fan_bargaining_manifest.json`。`scenes/start.tscn`及统一启动脚本进入v28；`start_v27.tscn`和`play-v27.cmd`保留v27。
+- 新运行与内容清单为 `fan_bargaining_ten` / `data/fan_bargaining_manifest.json`。`scenes/start_fan_condition_v29.tscn`及统一启动脚本进入v28；`start_v27.tscn`和`play-v27.cmd`保留v27。
 - `FanBargainingService`集中识货配置、资格、压价、买断报价、名声及隐藏事件。原活当价格不被折扣改写，买断让价另存于 `shop_growth.fan_bargaining.attempts`。
 - 隐藏事件存于同一快照的 `reputation_events`，交易键为 `purchase/来访ID`，事件键为 `fan_pressure/purchase/来访ID`，由所属运行限定作用域。重复成交/重放不再追加；不与其他任务的商誉字段混写。
 - 外层动作记录与原子保存同时覆盖让价、时钟、轮次、耐心、现金、库存、结论和事件。保留缓存、旧指令重放及旧存档规则。

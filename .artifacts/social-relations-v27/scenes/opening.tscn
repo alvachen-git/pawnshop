@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/main.tscn" id="1"]
+
+[node name="Main" instance=ExtResource("1")]
+start_at_title = true
+
+[node name="Bootstrap" parent="." index="0"]
+manifest_path = "res://data/opening_manifest.json"
+save_path = "user://p0/opening_v01.json"

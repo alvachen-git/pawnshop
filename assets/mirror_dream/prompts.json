@@ -1,0 +1,18 @@
+{
+  "date": "2026-09-22",
+  "tool": "built-in image_gen.imagegen",
+  "assets": [
+    {
+      "target": "wife_waiting_blood_tears.png",
+      "reference": "../mirror_reunion/portraits/wife_waiting.png",
+      "generated": "exec-cde25718-b695-4378-a0a7-bf7560cc7dda.png",
+      "prompt": "Edit the provided existing game character portrait. Change only her clear tears into restrained dark crimson blood tears, two visible narrow trails from lower eyelids down cheeks. Keep the identical face, age, waiting expression, gaze, hair, body, clasped hands, blue-grey clothing, gouache brushwork, framing and proportions. Subtle eerie sadness, no gore or wounds. Preserve transparent background, no mirror or scenery. Output one transparent PNG game sprite."
+    },
+    {
+      "target": "wife_sorrow_blood_tears.png",
+      "reference": "../mirror_reunion/portraits/wife_sorrow.png",
+      "generated": "exec-ed5fce4a-561b-4acd-9f0c-765003af15cd.png",
+      "prompt": "Edit the provided existing game character portrait wife_sorrow. Change only her clear tears into restrained dark crimson blood tears, two visible narrow trails from lower eyelids down cheeks. Keep the identical face, age, sorrowful expression and downward gaze, hair, body, clasped hands, blue-grey clothing, gouache brushwork, framing and proportions. Subtle eerie sadness, no gore or wounds. Preserve transparent background, no mirror or scenery. Output one transparent PNG game sprite."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "content_version": 10,
+  "default_run_id": "p0_variety",
+  "sources": [
+    {
+      "kind": "runs",
+      "path": "res://data/runs/p0_variety.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/legacy/items_v10_snapshot.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/legacy/customers_v10_snapshot.json"
+    },
+    {
+      "kind": "buyers",
+      "path": "res://data/buyers/buyers_v10.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/pawn_terms/terms_m3.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/events/events_v10.json"
+    },
+    {
+      "kind": "ghost_rules",
+      "path": "res://data/ghost_rules/rules_m5.json"
+    }
+  ]
+}

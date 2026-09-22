@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "p0_m4",
+      "total_nights": 3,
+      "opening_minute": 1080,
+      "night_minutes": 540,
+      "time_step": 5,
+      "initial_cash": 100,
+      "seed": 1049,
+      "tools": [
+        "magnifier",
+        "lamp",
+        "magnet"
+      ],
+      "customer_slots": [
+        {
+          "id": "n1_visit1",
+          "arrival": 0,
+          "customer_id": "customer_citizen",
+          "item_id": "item_blue_bowl",
+          "variant_id": "repaired",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit2",
+          "arrival": 90,
+          "customer_id": "customer_hawker",
+          "item_id": "item_brass_holder",
+          "variant_id": "plated",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit3",
+          "arrival": 210,
+          "customer_id": "customer_citizen",
+          "item_id": "item_silver_hairpin",
+          "variant_id": "sound",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n1_visit4",
+          "arrival": 360,
+          "customer_id": "customer_scholar",
+          "item_id": "item_fountain_pen",
+          "variant_id": "flawed",
+          "night_min": 1,
+          "night_max": 1
+        },
+        {
+          "id": "n2_visit1",
+          "arrival": 0,
+          "customer_id": "customer_house_agent",
+          "item_id": "item_pocket_watch",
+          "variant_id": "sound",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit2",
+          "arrival": 90,
+          "customer_id": "customer_scholar",
+          "item_id": "item_inkstone",
+          "variant_id": "flawed",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit3",
+          "arrival": 210,
+          "customer_id": "customer_house_agent",
+          "item_id": "item_clay_teapot",
+          "variant_id": "sound",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n2_visit4",
+          "arrival": 360,
+          "customer_id": "customer_citizen",
+          "item_id": "item_silk_panel",
+          "variant_id": "flawed",
+          "night_min": 2,
+          "night_max": 2
+        },
+        {
+          "id": "n3_visit1",
+          "arrival": 0,
+          "customer_id": "customer_citizen",
+          "item_id": "item_silver_hairpin",
+          "variant_id": "flawed",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit2",
+          "arrival": 90,
+          "customer_id": "customer_scholar",
+          "item_id": "item_fountain_pen",
+          "variant_id": "sound",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit3",
+          "arrival": 210,
+          "customer_id": "customer_scholar",
+          "item_id": "item_inkstone",
+          "variant_id": "sound",
+          "night_min": 3,
+          "night_max": 3
+        },
+        {
+          "id": "n3_visit4",
+          "arrival": 360,
+          "customer_id": "customer_hawker",
+          "item_id": "item_pocket_watch",
+          "variant_id": "flawed",
+          "night_min": 3,
+          "night_max": 3
+        }
+      ],
+      "actions": [
+        {
+          "id": "short_task",
+          "label": "短行动（占位）",
+          "minutes": 5,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "medium_task",
+          "label": "整理桌面（占位）",
+          "minutes": 10,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "long_task",
+          "label": "店内处理（占位）",
+          "minutes": 30,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        },
+        {
+          "id": "wait_hour",
+          "label": "等待",
+          "minutes": 60,
+          "phases": [
+            "open",
+            "closed_processing"
+          ]
+        }
+      ],
+      "buyer_ids": [
+        "buyer_recycler",
+        "buyer_collector",
+        "buyer_introduced"
+      ],
+      "event_ids": [
+        "shen_opening",
+        "cash_lesson",
+        "final_stock",
+        "buyer_reply",
+        "rain_news",
+        "patient_buyer",
+        "stock_note"
+      ],
+      "flag_ids": [
+        "shen_met",
+        "contact_requested",
+        "independent",
+        "cash_reviewed",
+        "stock_reviewed",
+        "buyer_introduced",
+        "rumor_heard",
+        "liquidity_hint",
+        "holder_reviewed"
+      ]
+    }
+  ]
+}
