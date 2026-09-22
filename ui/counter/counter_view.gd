@@ -300,7 +300,8 @@ func render(model: Dictionary) -> void:
 	$Room.queue_redraw()
 	if arrived:
 		if _arrival != null: _arrival.kill()
-		_bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
+		if visual.get("item_asset", "") == "goods.silver_ring": _bounds(_item_image, 0.475, 0.645, 0.545, 0.785)
+		else: _bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
 		_item_image.offset_top = 0
 		_item_image.offset_bottom = 0
 		_portrait.modulate.a = 0.0

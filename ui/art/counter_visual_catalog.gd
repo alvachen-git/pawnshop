@@ -107,6 +107,7 @@ static func ordinary_bounds(texture: Texture2D) -> Vector4:
 	return Vector4(placement.z - 0.1825, top, placement.z + 0.1825, top + placement.x)
 
 static func _painted_front(asset: String) -> String:
+	if asset == "goods.silver_ring": return "res://assets/art10/items/silver_ring_front.png"
 	if asset.begins_with("goods."):
 		var goods_path := "res://assets/goods_v21/" + asset.trim_prefix("goods.") + "_front.svg"
 		return goods_path if ResourceLoader.exists(goods_path) else ""
@@ -125,6 +126,7 @@ static func front(asset: String, source_images: Array = []) -> Texture2D:
 	return load(ROOT + "items/" + ITEMS[asset] + "_front.svg") as Texture2D
 
 static func _front_path(asset: String, configured: String) -> String:
+	if asset == "goods.silver_ring" and configured == "res://assets/goods_v21/silver_ring_front.svg": return _painted_front(asset)
 	# Upgrade only the shipped opening placeholder. Artist-authored paths still win.
 	var painted := _painted_front(asset)
 	if configured == "res://assets/opening/hairpin.svg" and asset == "placeholder.silver_hairpin" and not painted.is_empty(): return painted
