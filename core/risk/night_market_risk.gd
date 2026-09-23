@@ -99,6 +99,8 @@ static func death_record(state: RunState) -> Dictionary:
 
 static func note(state: RunState) -> String:
 	if not state.night_market_enabled: return ""
+	# Reveal the warning when a wet-cloth guest is present, before any risky choice.
+	if unresolved(state).is_empty() and not state.visits.any(func(visit: CustomerVisit) -> bool: return visit.night_policy == "wet_cloth" and visit.status in ["active", "waiting"]): return ""
 	var body := RULE_NOTE
 	for id in unresolved(state):
 		var planned := selection(state, id)

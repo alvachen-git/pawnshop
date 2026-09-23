@@ -58,7 +58,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	if not RiskSaveCodec.valid_archive(data.get("death_archive")) or not FeeSaveCodec.valid_archive(data.get("bankruptcy_archive")): return null
 	if data.get("phase") not in SaveCodec.CHECKPOINTS + ["open"] + (SaveTimeline.UNSETTLED if extended or ShopGrowthService.enabled(run) else []): return null
 	var store := GhostReplayStore.new()
-	var legacy_intro: bool = SocialRules.enabled(run) and version == 27 and data.get("social") is Dictionary and not data.social.has("intro_step")
+	var legacy_intro: bool = SocialRules.enabled(run) and catalog.content_version == 27 and data.get("social") is Dictionary and not data.social.has("intro_step")
 	store.set_meta("legacy_social_intro", legacy_intro)
 	store.origin = origin.duplicate(true)
 	store.prior_deaths = data.death_archive.filter(func(row: Dictionary) -> bool: return row.run_token != origin.run_token)
@@ -100,9 +100,9 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 		replayed_actions += 1
 	var expected: Dictionary = data.duplicate(true)
 	expected.erase("save_version"); expected.erase("content_version")
-	if SocialRules.enabled(run) and version == 26: expected = SocialCopyMigration.normalize(expected)
+	if SocialRules.enabled(run) and catalog.content_version == 26: expected = SocialCopyMigration.normalize(expected)
 	var actual := session.read_state()
-	if SocialRules.enabled(run) and version == 27: SocialCopyMigration.v27_notices(expected, actual)
+	if SocialRules.enabled(run) and catalog.content_version == 27: SocialCopyMigration.v27_notices(expected, actual)
 	if not GhostSaveCodec.same(actual, expected):
 		for key in actual:
 			if not GhostSaveCodec.same(actual[key], expected.get(key)): error_message += "（" + key + "）"; break

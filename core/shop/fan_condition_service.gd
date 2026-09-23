@@ -93,8 +93,10 @@ static func pressure(day: DayController, visit: CustomerVisit) -> String:
 	var keep: int = RETAIN[visit.item.goods.fan_condition]
 	var t := visit.trade
 	if day.state.social_enabled:
-		var fair_basis := maxi(1, t.opening_price - t.social_flaw_discount)
-		t.social_flaw_discount += fair_basis - maxi(1, roundi(fair_basis * keep / 100.0))
+		# Genuine condition concessions lower the fair-price comparison too;
+		# prior military or authenticity pressure never lowers that baseline.
+		var basis := maxi(1, t.opening_price - t.social_flaw_discount)
+		t.social_flaw_discount = t.opening_price - maxi(1, roundi(basis * keep / 100.0))
 	var row := {"before_asking": t.asking_price, "before_reserve": t.reserve_price, "retain": keep,
 		"minute": day.state.game_minutes, "night": day.state.current_night_index}
 	t.asking_price = maxi(1, roundi(t.asking_price * keep / 100.0))

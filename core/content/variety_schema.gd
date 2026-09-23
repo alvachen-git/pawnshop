@@ -29,7 +29,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 	var value: Dictionary = row[field]
 	match kind:
 		"runs":
-			for feature in ["investigation_version", "personal_risk_version"]:
+			for feature in ["investigation_version", "personal_risk_version", "social_relations_version"]:
 				if value.has(feature) and (not RunSchema.integer(value[feature]) or value[feature] != 1): CounterDomainValidator._error(issues, at, "功能版本无效。")
 			if value.has("night_market"):
 				var late: Variant = value.night_market

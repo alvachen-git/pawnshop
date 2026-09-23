@@ -52,8 +52,9 @@ func _evidence() -> void:
 	check.call(first.counter_model().appraisal.body.contains("18–25") and first.counter_model().appraisal.body.contains("补釉接缝"), "物理证据揭示修补并收窄估值。")
 	var minute: int = first.read_state().game_minutes
 	check.call(not _command(first, "appraise", "light").ok and first.read_state().game_minutes == minute, "重复鉴定不产生新信息或重复耗时。")
-	_command(first, "judge", "sound")
-	check.call(first.counter_model().appraisal.body.contains("完好真品") and first.counter_model().appraisal.body.contains("18–25"), "玩家错误判断不会改写证据估值。")
+	check.call(_command(first, "judge", "sound").ok, "历史判断动作仍可回放。")
+	var judged := CustomerManager.new().active(first._day.state)
+	check.call(judged.item.judgement == "sound" and first.counter_model().appraisal.body.contains("18–25"), "玩家错误判断不会改写证据估值。")
 	check.call(_command(first, "question", "condition").ok, "卖家口供可询问。")
 	minute = first.read_state().game_minutes
 	check.call(not _command(first, "question", "condition").ok and first.read_state().game_minutes == minute, "同一问题不能无限试探。")

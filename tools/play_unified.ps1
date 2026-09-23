@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('normal','watch','wealthy','wealthy-basic','wealthy-deep','wealthy-appraised','advertisement','introduction','contract','upgrade','fan','informed','ordinary','urgent','no-bench','intact','minor','major','stack','plaque','delivered','bedtime','call','dream','reunion','companion')][string]$Stage = 'normal',
+    [ValidateSet('normal','knowledge','watch','wealthy','wealthy-basic','wealthy-deep','wealthy-appraised','advertisement','introduction','contract','upgrade','fan','informed','ordinary','urgent','no-bench','intact','minor','major','stack','plaque','delivered','bedtime','call','dream','reunion','companion')][string]$Stage = 'normal',
     [ValidateSet('embroidery','gold_bangle','gold_watch','mantel_clock','pearl_necklace','jade_pendant','album','porcelain_vase','repeater','silver_set')][string]$Item = 'porcelain_vase',
     [ValidateSet('sound','mended','flawed')][string]$Condition = 'mended',
     [ValidateSet('intact','minor','major')][string]$Damage = 'minor',
@@ -17,6 +17,10 @@ if (-not $GodotPath) {
     else { $GodotPath = (Get-Command godot -ErrorAction SilentlyContinue).Source }
 }
 if (-not $GodotPath) { throw 'Godot 4.6.1 not found. Supply -GodotPath.' }
+if ($Stage -eq 'knowledge') {
+    & (Join-Path $PSScriptRoot 'play_fan_condition.ps1') -Stage knowledge -GodotPath $GodotPath -Wide:$Wide -Verify:$Verify
+    exit $LASTEXITCODE
+}
 $previousAppData = $env:APPDATA
 $precisionPreview = $Stage -in @('watch','wealthy','wealthy-basic','wealthy-deep')
 if ($Stage -eq 'watch') { $Item = 'gold_watch' }

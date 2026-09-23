@@ -8,7 +8,9 @@ func run() -> void:
 	plaque_rules()
 	seeded_coats()
 	new_replays()
+	preserved_events()
 	reply_feedback()
+	coat_trade_paths()
 	legacy_unchanged()
 	print("SOCIAL V27: %d passes, %d failures" % [passes, failures])
 	quit(0 if failures == 0 else 1)
@@ -201,9 +203,76 @@ func new_replays() -> void:
 		check(not s.social_command("cancel_contract").ok and s.read_state() == before,"save failure rollback")
 	run_def = original
 
+func fixture_session(stage: String) -> RunSession:
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/social-relations/" + stage + ".json"))
+	var definition := catalog.get_definition("runs",data.run_definition_id) as RunDefinition
+	var store := CountingStore.new(); store.origin = data.ghost_origin.duplicate(true)
+	var s := RunSession.new(definition,27,store,catalog)
+	s._day.state = SaveCodec.new().decode(data,definition,27,catalog,true)
+	return s
+
+func preserved_events() -> void:
+	for command in ["pay","close"]:
+		var s := fixture_session("closure")
+		var cost: int = s._day.state.social.pending.cost
+		var cash := s._day.state.cash
+		check(not s.social_command("favor").ok,"historical favor command rejected")
+		check(s.social_command(command).ok,"closure route " + command)
+		check(SocialRules.closed(s._day.state) == (command == "close"),"closure restriction")
+		check(s._day.state.cash == cash - (cost if command == "pay" else 0),"closure cash")
+		verify(s,"closure " + command)
+	for command in ["claim_return","claim_compensate","claim_military"]:
+		var s := fixture_session("claim")
+		check(s.social_command(command).ok,"claim route " + command)
+		verify(s,command)
+	var s := fixture_session("claim")
+	s._day.state.social.military = 19
+	check(not s.social_command("claim_military").ok,"claim assistance unavailable at 19")
+	s._day.state.social.military = 20
+	check(s.social_command("claim_military").ok,"claim assistance at 20 without favor")
+	s = fixture_session("supply")
+	var score: int = s._day.state.social.military
+	check(s.social_command("decline_supply").ok and s._day.state.social.military == score,"decline supply neutral")
+	verify(s,"decline special goods")
+
 func reply_feedback() -> void:
 	var op := {"before":{"counter":{"visual":{"customer_name":"测试客人","asking":90,"intimidated":true,"original_purchase_basis":100,"original_pawn_basis":60,"social_feedback":true},"trade":{"pawn_asking":54}}}}
 	for entry in [["acquisition",90,"intimidated"],["acquisition",120,"generous_after_threat"],["pawn_loan",54,"intimidated"],["pawn_loan",72,"generous_after_threat"]]:
 		var reply := CustomerReplyModel.build({"kind":entry[0],"amount":-entry[1]},op)
 		check(reply.style == entry[2],"receipt threat feedback reconciles " + str(entry[1]))
 
+func coat_trade_paths() -> void:
+	var s := fixture_session("cotton")
+	var v := s._counter.customers.active(s._day.state)
+	check(v != null and v.item.definition_id == CoatProcurement.ITEM,"live coat fixture")
+	if v == null: return
+	check(s.counter_command("appraise",v.visit_id,"observe").ok,"coat observe")
+	check(s.counter_command("appraise",v.visit_id,"inspect").ok,"coat inspect")
+	check(v.item.selected_variant_id in v.item.revealed_clue_ids,"coat condition actually revealed")
+	check(s.counter_command("offer",v.visit_id,"",v.trade.asking_price).ok,"coat ordinary purchase")
+	verify(s,"coat appraisal and acquisition")
+	for i in 20:
+		driver.drain(s)
+		var active := s._counter.customers.active(s._day.state)
+		if active == null: break
+		check(s.counter_command("reject",active.visit_id).ok,"clear counter before resale")
+	var cash := s._day.state.cash
+	check(s.sell_batch("buyer_recycler",[v.item.instance_id]).ok,"coat ordinary resale")
+	check(v.item.ownership_state == "sold" and s._day.state.cash > cash,"resale ownership and income")
+	verify(s,"coat resale")
+	s = second_night()
+	v = active_ordinary(s)
+	if v == null: return
+	v.item.definition_id = CoatProcurement.ITEM; v.item.selected_variant_id = "worn"
+	v.customer_id = "customer_citizen"; v.transaction_modes.assign(["sell","pawn"])
+	var customer := catalog.get_definition("customers",v.customer_id) as CustomerDefinition
+	var terms := catalog.get_definition("pawn_terms",VarietyService.terms_for(v,customer)) as PawnTermsDefinition
+	SocialRules.change(s._day.state,"military",30,"test")
+	# Pricing already consumed its nightly negative allowance; intimidation is separate.
+	s._day.state.social.trades.append({"night":2,"delta":-6,"visit_id":"cap/fixture"})
+	v.trade.opening_price = 15; v.trade.asking_price = 15; v.trade.reserve_price = 10
+	check(s.counter_command("intimidate",v.visit_id).ok and s._day.state.social.reputation == -1,"fear still costs after price cap")
+	var amount := maxi(1,roundi(9*terms.loan_ratio))
+	check(s.counter_command("pawn",v.visit_id,"",amount).ok,"cotton pawn uses once-discounted threshold")
+	check(v.item.ownership_state == "pledged" and v.item not in CoatProcurement.stock(s._day.state),"pawned cotton never procurement stock")
+	check(s._day.state.social.reputation == -1,"price cap does not suppress or repeat fear charge")

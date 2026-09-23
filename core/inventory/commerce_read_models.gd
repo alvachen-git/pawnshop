@@ -17,7 +17,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 		var military_source := MilitaryService.supply_for(day.state, item.instance_id) if day.state.social_enabled else {}
 		if not military_source.is_empty(): inventory.body += String(military_source.report if military_source.investigated else military_source.cue) + "\n"
 		if item.ownership_state != "owned": continue
-		if not definition.provenance.is_empty() and not item.provenance.investigated and item.provenance.status not in ["verified", "mismatch"]:
+		if not definition.provenance.is_empty() and not item.provenance.is_empty() and not item.provenance.investigated and item.provenance.status not in ["verified", "mismatch"]:
 			inventory.buttons.append(_button("inquire", item.instance_id, "", "委托来源调查 · %d银元 / %d分钟" % [definition.provenance.inquiry_fee, definition.provenance.inquiry_minutes], ProvenanceService.inquiry_reason(day, item, definition)))
 		var bounds := AppraisalSystem.new().valuation(item, definition)
 		inventory.body += ("参考价值 " + FanConditionService.estimate(item, definition) + "\n" + FanConditionService.note(item) + "\n") if FanConditionService.applies(item) else "已知估值 %d–%d（未出售，盈亏未实现）\n" % [bounds.x, bounds.y]

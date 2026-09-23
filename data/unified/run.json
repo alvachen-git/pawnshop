@@ -2866,6 +2866,7 @@
         "mirror_dream_call": 1,
         "shop_growth_version": 1,
         "fan_appraisal_version": 1,
+        "fan_condition_version": 1,
         "fan_bargaining": {
           "version": 1,
           "minutes": 5,
@@ -2879,8 +2880,7 @@
             "customer_bookkeeper": "uninformed"
           }
         },
-        "fan_condition_version": 1,
-        "social_version": 1
+        "social_relations_version": 1
       },
       "batch_selling": true,
       "market": {

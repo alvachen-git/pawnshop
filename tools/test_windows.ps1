@@ -62,6 +62,8 @@ try {
     Run-Test 'watch-patterns-core' 'watch_movement_patterns.gd'
     Run-Test 'named-wealthy-core' 'named_wealthy.gd'
     Run-Test 'named-wealthy-journey' 'named_wealthy_journey.gd'
+    Run-Test 'named-wealthy-story' 'named_wealthy_story.gd'
+    Run-Test 'named-wealthy-companion' 'named_wealthy_companion.gd'
     Run-Test 'named-wealthy-1280x720' 'named_wealthy_ui.gd' @() $false
     Run-Test 'named-wealthy-1600x900' 'named_wealthy_ui.gd' @('wide') $false
     Run-Test 'watch-patterns-journey' 'watch_patterns_journey.gd'

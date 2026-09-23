@@ -38,6 +38,7 @@ func refresh() -> void:
 	var commands: Array = []
 	for entry in [{"id": "open_shop", "label": "开铺"}, {"id": "close_shop", "label": "关门（本夜不可重开）"}]:
 		entry.enabled = _session.can_execute(entry.id)
+		entry.visible = state.phase == "pre_open" if entry.id == "open_shop" else state.phase in ["open", "closed_processing"]
 		commands.append(entry)
 	var remaining := maxi(0, definition.night_minutes - int(state.game_minutes))
 	commands.append({"id": "wait_until_seal", "label": "等到封铺 · %d分钟" % remaining, "enabled": _session.can_execute("wait_until_seal"), "visible": state.phase in ["open", "closed_processing"]})
@@ -60,7 +61,7 @@ func refresh() -> void:
 		appointment_hint += "\n" + _session.seven_notice()
 		if state.current_night_index >= 4 and state.phase == "pre_open": appointment_hint = "\n今夜准备剩余%d次，开铺后不可返回。\n收货传闻与来客口信记在铺中记事里。" % (2 - PreparationService.count(_session._day.state))
 	var event_hint := "\n有待处理的铺中记事，请先查看。" if not state.pending_event_id.is_empty() else ""
-	var description := "%s\n剩余 %d 分钟 · 查看面板不耗时\n点击柜台上的客人与货物进行接待。\n等待/店内行动也会让顾客继续等候。" % [PHASE_LABELS[state.phase], definition.night_minutes - int(state.game_minutes)] + event_hint + appointment_hint
+	var description := String(PHASE_LABELS[state.phase]) + event_hint + appointment_hint
 	if SevenNightPlan.enabled(definition) and state.phase == "pre_open" and state.current_night_index >= 4:
 		description = "开铺前\n今夜准备剩余%d次，开铺后不可返回。\n收货与来客消息可免费复看。" % (2 - PreparationService.count(_session._day.state))
 	if OpeningPreparation.enabled(definition) and state.current_night_index >= 2:

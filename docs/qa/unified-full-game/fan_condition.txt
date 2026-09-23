@@ -1,0 +1,15 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+CONDITION FIXTURE intact { "seed": 11, "visit_id": "fan_condition_ten/5/n5_visit4" }
+CONDITION FIXTURE minor { "seed": 17, "visit_id": "fan_condition_ten/5/n5_visit3" }
+CONDITION FIXTURE major { "seed": 377, "visit_id": "fan_condition_ten/5/n5_visit6" }
+CONDITION DISTRIBUTION { "intact": 589, "minor": 304, "major": 107 }
+STACK minor ["condition_pressure", "fan_pressure"] offer cost=13 minutes=15
+STACK minor ["condition_pressure", "fan_pressure"] pawn cost=11 minutes=15
+STACK minor ["fan_pressure", "condition_pressure"] offer cost=14 minutes=15
+STACK minor ["fan_pressure", "condition_pressure"] pawn cost=11 minutes=15
+STACK major ["condition_pressure", "fan_pressure"] offer cost=11 minutes=15
+STACK major ["condition_pressure", "fan_pressure"] pawn cost=7 minutes=15
+STACK major ["fan_pressure", "condition_pressure"] offer cost=11 minutes=15
+STACK major ["fan_pressure", "condition_pressure"] pawn cost=7 minutes=15
+FAN CONDITION: 2078 passes, 0 failures

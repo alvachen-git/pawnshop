@@ -1,0 +1,44 @@
+[
+  {
+    "file": "holder_front_v2.png",
+    "source": "/Users/alvachen/.codex/generated_images/01a0c923-8e99-7c61-a112-29ab760aa9df/exec-83f05a64-b8fd-4797-8b10-7df629be429d.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "sha256": "bb5e366459399d2a74f5a9fdde124e711e3cf03125b58bb06868fc3908dbdb34"
+  },
+  {
+    "file": "pocket_watch_front_v2.png",
+    "source": "/Users/alvachen/.codex/generated_images/01a0c923-8e99-7c61-a112-29ab760aa9df/exec-8b80e2da-a4bf-44b2-8027-88b21859dece.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "sha256": "7b9ff9a8941ad5ddba79e4caf7b3adb54a13c281a1e759a7eb417d8caff7a851"
+  },
+  {
+    "file": "pocket_watch_back_v2.png",
+    "source": "/Users/alvachen/.codex/generated_images/01a0c923-8e99-7c61-a112-29ab760aa9df/exec-40d026fc-b87d-419f-b82a-9d415bf5f068.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "sha256": "2fc72990233ea2935f9a34c25ac481a9d307adef180ba93f0ea31308686e897d"
+  }
+]

@@ -23,24 +23,22 @@ static func reason(state: RunState, visit: CustomerVisit) -> String:
 
 static func intimidate(state: RunState, visit: CustomerVisit) -> String:
 	var trade := visit.trade
-	var before := FanBargainingService.asking(state, visit)
+	var shown_before := FanBargainingService.asking(state, visit)
+	var before := trade.asking_price
 	var reserve := trade.reserve_price
 	var percent := int(SocialRules.config().plaque.price_percent)
-	trade.asking_price = maxi(1, ceili(float(trade.asking_price * percent) / 100.0))
+	trade.asking_price = maxi(1, ceili(float(before * percent) / 100.0))
 	trade.reserve_price = maxi(1, ceili(float(reserve * percent) / 100.0))
 	if WealthyCustomers.active(state) and WealthyCustomers.is_customer(visit.customer_id):
 		var luxury := WealthyCustomers.trade(state,visit)
 		luxury.intimidation = float(percent) / 100.0
 		trade.reserve_price = maxi(trade.reserve_price,int(luxury.funding))
 		trade.asking_price = maxi(trade.asking_price,trade.reserve_price)
-	var bargain := FanBargainingService.attempt(state, visit)
-	if bargain.get("accepted", false):
-		reserve = int(bargain.reserve)
-		bargain.asking = maxi(1, ceili(float(int(bargain.asking) * percent) / 100.0))
-		bargain.reserve = maxi(1, ceili(float(reserve * percent) / 100.0))
-	var after := FanBargainingService.asking(state, visit)
-	var after_reserve := int(bargain.reserve) if bargain.get("accepted", false) else trade.reserve_price
-	state.social.intimidations.append({"visit_id":visit.visit_id, "night":state.current_night_index, "asking_before":before, "asking_after":after, "reserve_before":reserve, "reserve_after":after_reserve})
+	var fan := FanBargainingService.attempt(state, visit)
+	if fan.get("accepted", false):
+		fan.asking = maxi(1, ceili(float(int(fan.asking) * percent) / 100.0))
+		fan.reserve = maxi(1, ceili(float(int(fan.reserve) * percent) / 100.0))
+	state.social.intimidations.append({"visit_id":visit.visit_id, "night":state.current_night_index, "asking_before":before, "asking_after":trade.asking_price, "reserve_before":reserve, "reserve_after":trade.reserve_price})
 	SocialRules.change(state, "reputation", -int(SocialRules.config().plaque.reputation_cost), "intimidation/" + visit.visit_id)
 	visit.voice.completed = "他数过银元，朝墙上的木牌瞥了一眼，把钱收进衣襟，没有再说话。"
-	return "你抬手指了指军方照应牌。客人把嘴边的话咽回去：‘那就再让一成。’\n要价 %d → %d 银元。" % [before, after]
+	return "你抬手指了指军方照应牌。客人把嘴边的话咽回去：‘那就再让一成。’\n要价 %d → %d 银元。" % [shown_before, FanBargainingService.asking(state, visit)]

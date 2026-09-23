@@ -1,8 +1,8 @@
 # 鬼市当铺
 
-**当前统一入口：`play-unified.cmd`，或在 Godot 中运行项目。** 新游戏为 v37 `named_wealthy_ten` 十夜局。五位富客使用固定姓名与人物身份，柜台、谈价、当票和赎回保持一致；沿用怀表机芯图样与议价规则。旧存档保留原姓名与账目。详见 [富客固定姓名与价格核对](docs/NAMED_WEALTHY_V37.md)。
+**当前统一入口：`play.cmd`、`play-unified.cmd`，或在 Godot 中运行项目。** 新游戏为 v37 `named_wealthy_ten` 十夜局。五位富客使用固定姓名与人物身份，柜台、谈价、当票和赎回保持一致；沿用怀表机芯图样与议价规则。旧存档保留原姓名与账目。详见 [富客固定姓名与价格核对](docs/NAMED_WEALTHY_V37.md)。
 
-历史折扇v29改用 `play-fan-condition.cmd`；历史铜镜来声仍用 `tools/play_v29.cmd`。旧局按原规则继续，不改写成统一局。当前本地整合基于线上main `fc90ece`，尚未推送。
+历史折扇v29改用 `play-fan-condition.cmd`；历史铜镜来声仍用 `tools/play_v29.cmd`。旧局按原规则继续，不改写成统一局。本版已整合线上 main `e891dc2` 的物品美术与完整入口；发布验证见 [v37发布记录](docs/RELEASE_V37.md)。
 
 线上原有命灯版及夜客规则保留独立内容与存档。需要新开命灯版时运行 `godot --path . res://scenes/life_lamp_start.tscn`；读取已有命灯存档仍按原规则继续。
 
@@ -30,7 +30,7 @@
 
 ```powershell
 .\play-unified.cmd
-# v33怀表快速试玩（隔离测试预置，进度不保存）
+# v37怀表快速试玩（隔离测试预置，进度不保存）
 .\play-unified.cmd -Stage watch -Wide
 .\play-unified.cmd -Stage wealthy-basic -Item gold_watch
 .\play-unified.cmd -Stage wealthy
@@ -68,7 +68,7 @@ macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path 
 
 ## 存档
 
-默认十夜新局使用 **save_version=32 / content_version=32**，自动位置为 `auto/precision_ten`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://precision_ten/autosave_v32.json`。旧v31 `wealthy_ten`、v30 `unified_ten` 和更早存档继续按各自规则运行，不补抽破损、不追收器材、不改写原当票。命灯受害仍自动保存，营业中不能手动随时保存。
+默认十夜新局使用 **save_version=37 / content_version=37**，自动位置为 `auto/named_wealthy_ten`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://named_wealthy_ten/autosave_v37.json`。旧v31 `wealthy_ten`、v30 `unified_ten` 和更早存档继续按各自规则运行，不补抽破损、不追收器材、不改写原当票。命灯受害仍自动保存，营业中不能手动随时保存。
 
 旧三夜局使用v12，独立路径为 `user://p0/autosave_v12.json`。独立四夜样板仍用v11，保存于 `user://ordinary_four/autosave_v11.json`。三夜入口可导入通过完整历史校验的旧v9/v10/v11局，原文件保留；旧局继续使用对应旧内容，重新开局才进入v12。旧v10分别保留实施前测试快照和已上线版本的配置，包含两种历史现金/债务组合。
 

@@ -558,6 +558,7 @@ func _close_drawer() -> void:
 
 
 func _toggle_menu() -> void:
+	if _counter_view.story_active: _counter_view.story.hide()
 	if _social_panel != null: _social_panel.hide()
 	_counter_view.dismiss_contexts()
 	%Drawer.hide()
