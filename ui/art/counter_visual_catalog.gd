@@ -153,12 +153,15 @@ static func _front_path(asset: String, configured: String) -> String:
 	# Upgrade only the shipped opening placeholder. Artist-authored paths still win.
 	var painted := _painted_front(asset)
 	if configured == "res://assets/opening/hairpin.svg" and asset == "placeholder.silver_hairpin" and not painted.is_empty(): return painted
+	if asset in ["asset.weeping_mirror_ordinary", "asset.weeping_mirror_resentful"] and configured == ROOT + "items/" + ITEMS[asset] + "_front.svg": return painted
 	return configured
 
 static func images(visual: Dictionary, source_images: Array = []) -> Array:
 	if CounterItemArt.has_asset(visual.get("item_asset", "")):
 		return CounterItemArt.images(visual, source_images)
 	var result: Array = []
+	if source_images.is_empty() and visual.get("item_asset", "") in ["asset.weeping_mirror_ordinary", "asset.weeping_mirror_resentful"]:
+		return [{"id": "front", "label": "正面", "path": _painted_front(visual.item_asset)}]
 	if visual.get("item_asset", "") == "social.cotton_coat": return [{"id":"front", "label":"棉袄", "path":"res://assets/social_v27/cotton_coat_folded.png"}]
 	var family: String = ITEMS.get(visual.get("item_asset", ""), "")
 	# Scenario rows are already knowledge-filtered by the counter service and
@@ -174,10 +177,11 @@ static func images(visual: Dictionary, source_images: Array = []) -> Array:
 					if row.path.is_empty(): row.path = ROOT + "items/" + family + "_" + row.id + ".svg"
 				else:
 					for clue in visual.get("clues", []):
-						if DETAILS[family].has(clue.id):
+						if DETAILS.get(family, {}).has(clue.id):
 							row.path = ROOT + "items/" + DETAILS[family][clue.id][0] + ".svg"
 			if row.path.is_empty() and row.id == "front": row.path = _painted_front(visual.get("item_asset", ""))
-			# Hairpin currently has front art only; do not offer a blank back tab.
+			row.path = CounterItemArt.study_path(visual.get("item_asset", ""), row.id, row.path)
+			# Unknown custom empty pages are not image tabs.
 			if visual.get("item_asset", "") == "placeholder.silver_hairpin" and row.path.is_empty(): continue
 			result.append(row)
 		return result
@@ -187,9 +191,11 @@ static func images(visual: Dictionary, source_images: Array = []) -> Array:
 		# Only already-revealed clues select detail assets. Front/back are identical
 		# across hidden variants, so browsing free views cannot reveal a defect early.
 		for clue in visual.get("clues", []):
-			if DETAILS[family].has(clue.id):
+			if DETAILS.get(family, {}).has(clue.id):
 				var spec: Array = DETAILS[family][clue.id]
 				result.append({"id": "detail_" + clue.id, "label": spec[1], "path": ROOT + "items/" + spec[0] + ".svg"})
+	for row in result:
+		row.path = CounterItemArt.study_path(visual.get("item_asset", ""), row.id, row.path)
 	return result
 
 static func study_material(texture: Texture2D) -> ShaderMaterial:

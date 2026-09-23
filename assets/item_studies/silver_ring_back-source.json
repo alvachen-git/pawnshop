@@ -1,0 +1,22 @@
+{
+  "tool": "built-in image_gen",
+  "use_case": "stylized-concept",
+  "reference": "assets/item_art_v30/silver_ring_front.png",
+  "original_generated_file": "/Users/alvachen/.codex/generated_images/01a0cca9-e3ad-7e43-8c58-a0f0b8f2c72e/exec-f93cbd91-9dfa-41fd-ad2e-12f62398bd1a.png",
+  "prompt": "Use case: stylized-concept. Asset type: reverse-side inspection page PNG for a 1930s Chinese pawnshop Godot game. Input image 1 is the exact identity, material and style reference: a thin, humble, plain worn silver ring band. Create ONE matching reverse/inner-rim view of this very same band, gently rotated to show the opposite side and inner circumference from a slightly steeper three-quarter inspection angle. Preserve thin plausible ring cross-section, circular shape, small natural scratches, slightly uneven handworked edges and understated aged gray silver. Semi-realistic opaque gouache with quiet brush grain and restrained soft upper-left warm light, low contrast highlights, no bright chrome. Center whole ring in 1536x1024 landscape with generous transparent margins, about 62 percent canvas width. Genuinely transparent RGBA background, transparent center hole, no painted checkerboard, no tabletop or surrounding backdrop, no glow or haze outside object. This free back page must NOT reveal hidden yellow metal core, yellow/brass material, crushed damage, breaks or a special damaged variant. No gemstones, ornament, readable lettering, labels, diagrams, watermark, border or extra objects.",
+  "file": "silver_ring_back.png",
+  "validation": {
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "center_alpha": 0,
+    "corner_alpha": 0,
+    "visual": "Matching plain thin worn silver band; reverse scratch placement, slightly steeper inner-rim view; no hidden yellow core or crushed variant."
+  }
+}

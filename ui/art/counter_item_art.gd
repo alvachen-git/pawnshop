@@ -13,6 +13,7 @@ const FAMILIES := {
 const PLACEMENT_FAMILIES := {
 	"asset.item_blue_bowl": "bowl", "placeholder.silver_hairpin": "hairpin",
 	"goods.silver_ring": "silver_ring", "goods.silver_lock": "silver_lock",
+	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
 }
 const FRONTS := {
 	"inkstone": "res://assets/item_art_v30/inkstone_front.png",
@@ -26,7 +27,33 @@ const FRONTS := {
 	"hairpin": "res://assets/art04/items/hairpin_front.png",
 	"silver_ring": "res://assets/item_art_v30/silver_ring_front.png",
 	"silver_lock": "res://assets/item_art_v30/silver_lock_front.png",
+	"mirror_ordinary": "res://assets/item_studies/mirror_ordinary_front.png",
+	"mirror_resentful": "res://assets/item_studies/mirror_resentful_front.png",
 }
+const STUDY_ROOT := "res://assets/item_studies/"
+
+# Only replace shipped paths in their intended view. A custom front pointing
+# at another illustration (even an old back SVG) still belongs to the author.
+static func study_path(asset: String, view: String, path: String) -> String:
+	if view == "front": return path
+	var family: String = PLACEMENT_FAMILIES.get(asset, "")
+	if family == "bowl":
+		var old := {
+			"res://assets/art02/items/bowl_back.svg": "bowl_back",
+			"res://assets/art02/items/bowl_intact.svg": "bowl_intact",
+			"res://assets/art02/items/bowl_repair.svg": "bowl_repair",
+			"res://assets/sample/bowl_seam.svg": "bowl_seam",
+			"res://assets/sample/bowl_foot.svg": "bowl_foot",
+		}
+		if old.has(path): return STUDY_ROOT + old[path] + ".png"
+	if family == "hairpin":
+		if view == "back" and path in ["", "res://assets/opening/hairpin.svg"]: return STUDY_ROOT + "hairpin_back.png"
+		if path == "res://assets/sample/hairpin_seam.svg": return STUDY_ROOT + "hairpin_seam.png"
+	if family in ["silver_ring", "silver_lock"]:
+		for suffix in ["back", "sound", "flaw", "condition_mended"]:
+			if path == "res://assets/goods_v21/" + family + "_" + suffix + ".svg":
+				return STUDY_ROOT + family + "_" + suffix + ".png"
+	return path
 const BACKS := {
 	"holder": "res://assets/art07/items/holder_back.png",
 	"mirror": "res://assets/art07/items/mirror_back.png",
@@ -46,6 +73,8 @@ const BOUNDS := {
 	"silk_panel": Rect2(.395, .634, .235, .195),
 	"holder": Rect2(.440, .616, .140, .1844),
 	"mirror": Rect2(.390, .644, .240, .168),
+	"mirror_ordinary": Rect2(.390, .644, .240, .168),
+	"mirror_resentful": Rect2(.390, .644, .240, .168),
 	"fountain_pen": Rect2(.474, .701, .072, .064),
 	"pocket_watch": Rect2(.469, .697, .082, .108),
 	"bowl": Rect2(.456, .663, .108, .1422),
@@ -111,15 +140,15 @@ static func counter_bounds(texture: Texture2D) -> Rect2:
 	return BOUNDS.get(_family(texture), Rect2())
 
 static func projects_on_table(texture: Texture2D) -> bool:
-	return _family(texture) in ["mirror", "fountain_pen"]
+	return _family(texture) in ["mirror", "mirror_ordinary", "mirror_resentful", "fountain_pen"]
 
 static func material(texture: Texture2D, on_counter := false) -> ShaderMaterial:
 	if texture == null: return null
 	var path := texture.resource_path
-	if not (path in [FRONTS.bowl, FRONTS.hairpin] or path.begins_with("res://assets/item_art_v30/") or path.begins_with("res://assets/art06/items/") or path.begins_with("res://assets/art07/items/") or path.begins_with("res://assets/art09/items/")): return null
+	if not (path in [FRONTS.bowl, FRONTS.hairpin] or path.begins_with(STUDY_ROOT) or path.begins_with("res://assets/item_art_v30/") or path.begins_with("res://assets/art06/items/") or path.begins_with("res://assets/art07/items/") or path.begins_with("res://assets/art09/items/")): return null
 	var result := ShaderMaterial.new()
 	result.shader = preload("res://ui/art/counter_item.gdshader")
-	result.set_shader_parameter("chroma_key", path.begins_with("res://assets/art09/") or path.get_file() in ["holder_back.png", "mirror_back.png"])
+	result.set_shader_parameter("chroma_key", path.begins_with("res://assets/art09/") or path.get_file() in ["holder_back.png", "mirror_back.png", "bowl_back.png"])
 	var watch := path.get_file().begins_with("pocket_watch")
 	var new_watch := path in [FRONTS.pocket_watch, BACKS.pocket_watch]
 	var old_holder := path.begins_with("res://assets/art07/items/holder_")

@@ -1,0 +1,17 @@
+{
+  "asset": "silver_lock_sound.png",
+  "tool": "built-in image_gen",
+  "generated_original": "/Users/alvachen/.codex/generated_images/01a0ccaa-36b1-7663-a462-0e7f64501410/exec-78165f78-1108-402b-a17d-d82e6eac40be.png",
+  "reference": "assets/item_studies/silver_lock_back.png",
+  "use_case": "precise-object-edit",
+  "evidence": "锁身接合平整，磨痕里银色一致",
+  "prompt": "Use case: precise-object-edit. Asset type: paid appraisal evidence detail painting for 1930s Chinese pawnshop narrative game, landscape 1536x1024. Input image is the exact silver longevity-lock pendant BACK, preserve identity and handmade opaque gouache style. Primary request: create ONE macro inspection close-up at 2 to 3 times magnification of this exact old lock's lower-left scalloped shoulder edge, with recognizable cloud lobe shape, part of its scroll decoration, curved silver-gray face and thick sidewall. Crop most of the pendant naturally beyond the top and right image boundaries; do not show the whole object. Focus of evidence: lock casing joins are flush and smooth, worn scratches retain consistent silver coloring. Depict a coherent joined silver casing with a very fine flush construction join, continuous natural old wear across it, smooth modest silver-gray abrasions on the edge exposing the SAME silver-gray metal underneath. No split, no open crack, no bright yellow or copper/brass core, no solder blobs, no raised weld mounds, no patchwork repair, no labels. Keep the aged patina and restrained highlights, painterly semi-realistic opaque gouache brushwork with tactile metal weight, muted desaturated silvery gray and smoky umber reflected light. Soft diffuse upper-left lamplight, medium low contrast, avoid blinding polished chrome or modern product photograph. Background is simple opaque desaturated very dark olive/umber with no recognizable objects. Evidence meaning only, do not print these words: 锁身接合平整，磨痕里银色一致. No text, arrows, circles, magnifying glass, hands, tools, extra chains or keys. Single continuous close-up illustration, not a diagram or collage.",
+  "review": "Viewed image: same cloud lobes and scroll decoration in a closeup; coherent silver-gray edge and no solder mound, patch or exposed yellow core. Opaque dark olive/umber background. Original output, no pixel edits.",
+  "date": "2026-09-23",
+  "size": [
+    1536,
+    1024
+  ],
+  "mode": "RGB",
+  "sha256": "46a43df05c12e7cc36eed0f5ed386d47d4fc7ddb5a85b4e1faf1af2181e108ef"
+}

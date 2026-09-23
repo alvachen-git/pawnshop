@@ -1,0 +1,20 @@
+{
+  "tool": "built-in image_gen",
+  "generated_at": "2026-09-23",
+  "input": "/Users/alvachen/Documents/ChatGPT/pawn/.artifacts/item-art-release/assets/art04/items/hairpin_front.png",
+  "source": "/Users/alvachen/.codex/generated_images/01a0ccaa-71b4-7771-8f52-b1df0435211f/exec-35f3abeb-2a5f-4ae9-a579-8a151910169c.png",
+  "output": "assets/item_studies/hairpin_back.png",
+  "prompt": "Use case: precise-object-edit. Asset type: transparent inspection sprite for a 1930s Chinese pawnshop narrative game. Input image is the exact existing silver hairpin FRONT and is the identity, proportions, composition and opaque-gouache style reference. Create ONE BACK view of this SAME object by rotating it about its long axis. Preserve exactly the long narrow single tapered pin, flat narrow hammered silver shaft, small rounded spoon/teardrop-shaped decorative head, and physical proportions. The reference front has a five-petal flower relief; because we now see the rear, show the corresponding plain rear face of that same rounded head without inventing a new ornament. Maintain the same diagonal placement: tip lower left and rounded head upper right, full object inside canvas, ample clean margin. Worn dim gray silver with restrained highlights and semi-realistic opaque gouache brush texture, modest early twentieth century handmade construction, visible thin edge thickness. No jewels, no extra prongs, no fork, no gold or yellow core, no highlighted seam, no revealed hidden evidence. The freely accessible back must look intact and ordinary with only subtle everyday scratches. GENUINELY TRANSPARENT alpha background, no black backdrop, no gray halo, no checkerboard baked in, no table, no cast shadow. Canvas 1536 by 1024 landscape. One object only, no text, no labels.",
+  "validation": {
+    "mode": "RGBA",
+    "size": [
+      1536,
+      1024
+    ],
+    "alpha_extrema": [
+      0,
+      254
+    ],
+    "review": "Same single tapered shaft and rounded head, reverse undecorated rear face; no gold core, jewels, seam emphasis or extra prongs."
+  }
+}

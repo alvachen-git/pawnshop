@@ -1,0 +1,16 @@
+{
+  "asset": "silver_lock_condition_mended.png",
+  "tool": "built-in image_gen",
+  "generated_original": "/Users/alvachen/.codex/generated_images/01a0ccaa-36b1-7663-a462-0e7f64501410/exec-705d6033-c4a6-4fd3-ab71-94f20eb9158c.png",
+  "reference": "assets/item_studies/silver_lock_sound.png",
+  "use_case": "precise-object-edit",
+  "prompt": "Use case: precise-object-edit. Asset type: paid appraisal evidence detail for Chinese 1930s pawnshop game, 1536x1024 landscape. Edit the attached exact SOUND macro illustration (not a brass-core variant). Preserve entire composition, camera, crop, pendant identity, silver-gray cloud-shaped lobed sidewall, scroll ornament, painted opaque-gouache texture, subtle warm upper-left lighting and opaque desaturated dark olive-umber backdrop. Change ONLY a narrow area at the pendant's concave shoulder/inner corner near image coordinates x640 y490 and extending slightly down the sidewall: a narrow aged repaired solder JOIN with subtly uneven slightly raised silver-gray solder, a different muted cooler gray alloy from the worn silver around it. It is a small hand-repaired seam that follows the casing join for about 160 pixels, only 8 to 16 pixels wide, with fine tiny irregularities, worn and darkened over years. Keep connected intact casing geometry, coherent thickness, no gross deformation. Make the fine raised solder line visually readable at macro scale through modest shading and its different dull gray tone, not through exaggerated size. All abrasions around it stay SILVER-GRAY metal; absolutely no yellow or brass core exposed, no gold, copper, rust or colored glue. No giant blob, broken edge, open crack, fissure, missing material, fresh bright weld or modern fabrication marks. No change to backdrop, light, decoration or shape. No labels, text, arrows, magnifying glass, hands or tools. This is one subtle repaired-condition evidence detail, not a destroyed object.",
+  "review": "Viewed image: same macro composition, narrow slightly raised gray solder repair at concave shoulder continuing a short way down sidewall; no yellow core, fracture or gross deformation. Original output, no pixel edits.",
+  "date": "2026-09-23",
+  "size": [
+    1536,
+    1024
+  ],
+  "mode": "RGB",
+  "sha256": "909f1932c88ef13f81db781029ee98a863a4a6cb035abad05cf4c3413289a0b2"
+}
