@@ -5,6 +5,9 @@ extends Control
 @onready var _status_view: ShopStatusView = %ShopStatusView
 @onready var _counter_view: CounterView = %CounterView
 @onready var _session_menu: SessionMenuView = %SessionMenu
+var first_debt_conversation: FirstDebtConversation
+var old_shop: OldShopView
+var _old_shop_presenter: OldShopPresenter
 var atmosphere_presenter: CounterAtmospherePresenter
 var _preview_index := 0
 var _return_focus: Control
@@ -72,7 +75,9 @@ func _ready() -> void:
 	_counter_view.ledger_requested.connect(_route_from_counter.bind(&"ledger", &"ledger"))
 	_counter_view.background_requested.connect(_close_menu)
 	_counter_view.context_opened.connect(_on_context_opened)
-	%LedgerPanel.panel_requested.connect(_flow.show_panel)
+	%DialoguePanel.document_requested.connect(_open_case_document)
+	%AppraisalPanel.document_requested.connect(_open_case_document)
+	%LedgerPanel.panel_requested.connect(_route_ledger)
 	%InventoryPanel.panel_requested.connect(func(panel: StringName) -> void:
 		_flow.show_panel(panel)
 		if panel == &"ledger":
@@ -123,6 +128,13 @@ func bind_session(session: RunSession) -> void:
 		if _market_notice != null: _refresh_notice_visibility()
 		_refresh_recent_visibility()
 	)
+	if FirstDebt.enabled(session.definition):
+		old_shop = OldShopView.new()
+		old_shop.name = "OldShop"
+		add_child(old_shop)
+		_old_shop_presenter = OldShopPresenter.new()
+		_old_shop_presenter.bind(old_shop, session)
+		old_shop.closed.connect(_close_drawer)
 	var growth_panel := ShopGrowthPanel.new()
 	growth_panel.panel_id = &"growth"
 	growth_panel.name = "ShopGrowthPanel"
@@ -308,6 +320,10 @@ func bind_session(session: RunSession) -> void:
 	var dream := MirrorDreamView.new()
 	add_child(dream)
 	dream.bind(session, self)
+	if FirstDebt.revised(session._day.state):
+		first_debt_conversation = FirstDebtConversation.new()
+		add_child(first_debt_conversation)
+		first_debt_conversation.bind(session, self)
 	if MirrorReunionService.enabled(session.definition):
 		var reunion := MirrorReunionView.new()
 		add_child(reunion)
@@ -357,6 +373,7 @@ func _drain_departures() -> void:
 	_start_feedback(notice)
 
 func _departure_closed(_destination: String) -> void:
+	if first_debt_conversation != null: first_debt_conversation.refresh.call_deferred()
 	if _session._day.state.phase != "open": _flow.show_panel(&"night")
 	elif not _departure_return_panel.is_empty(): _flow.show_panel(_departure_return_panel)
 	else:
@@ -393,6 +410,7 @@ func _show_receipt(receipt: Dictionary) -> void:
 	_status_view.release_cash()
 
 func _receipt_closed(destination: String) -> void:
+	if first_debt_conversation != null: first_debt_conversation.refresh.call_deferred()
 	_status_view.release_cash()
 	if _reviewing:
 		_reviewing = false
@@ -497,16 +515,27 @@ func _route_from_counter(panel_id: StringName, hotspot: StringName) -> void:
 
 
 func _route_from_customer(panel_id: StringName) -> void:
+	if panel_id == &"dialogue" and first_debt_conversation != null and not _session.counter_model().get("case_dialogue", {}).is_empty():
+		first_debt_conversation.refresh()
+		first_debt_conversation.reopen()
+		return
 	_return_focus = _counter_view.get_hotspot(&"customer")
 	_flow.show_panel(panel_id)
 
 
 func _route_from_item(panel_id: StringName) -> void:
+	if panel_id == &"dialogue" and first_debt_conversation != null and not _session.counter_model().get("case_dialogue", {}).is_empty():
+		first_debt_conversation.refresh()
+		first_debt_conversation.reopen()
+		return
 	_return_focus = _counter_view.get_hotspot(&"item")
 	_flow.show_panel(panel_id)
 
 
 func _route_from_menu(panel_id: StringName) -> void:
+	if panel_id == &"old_shop":
+		open_old_shop()
+		return
 	if _room.visible and panel_id != &"risk": return
 	_return_focus = _active_menu_button()
 	_flow.show_panel(panel_id)
@@ -520,6 +549,8 @@ func _on_context_opened(kind: StringName) -> void:
 
 
 func _open_drawer(panel_id: StringName) -> void:
+	if first_debt_conversation != null and first_debt_conversation.visible: first_debt_conversation.collapse()
+	if old_shop != null: old_shop.hide()
 	if _counter_view.story_active: _counter_view.story.hide()
 	if facilities != null:
 		if panel_id == &"growth":
@@ -557,6 +588,7 @@ func _close_drawer() -> void:
 
 
 func _toggle_menu() -> void:
+	if first_debt_conversation != null and first_debt_conversation.visible: first_debt_conversation.collapse()
 	if _counter_view.story_active: _counter_view.story.hide()
 	if _social_panel != null: _social_panel.hide()
 	_counter_view.dismiss_contexts()
@@ -587,6 +619,14 @@ func _preview_selected(index: int) -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("ui_cancel"):
+		return
+	if first_debt_conversation != null and first_debt_conversation.visible:
+		first_debt_conversation.collapse()
+		get_viewport().set_input_as_handled()
+		return
+	if old_shop != null and old_shop.visible:
+		old_shop.back()
+		get_viewport().set_input_as_handled()
 		return
 	if _departure != null and _departure.visible:
 		_departure.dismiss()
@@ -631,6 +671,7 @@ func show_content_error(issues: Array) -> void:
 	_status_view.show_content_error(summary)
 
 func _reset_reception() -> void:
+	if old_shop != null: old_shop.hide()
 	_cancel_feedback(true)
 	_room_phase = ""
 	_room_pending = ""
@@ -645,6 +686,8 @@ func _reset_reception() -> void:
 	_counter_view.dismiss_contexts()
 
 func _bell_blocked() -> bool:
+	if first_debt_conversation != null and first_debt_conversation.visible: return true
+	if old_shop != null and old_shop.visible: return true
 	if not is_visible_in_tree() or process_mode == Node.PROCESS_MODE_DISABLED: return true
 	if %Drawer.visible or _session_menu.visible or (_social_panel != null and _social_panel.visible): return true
 	if _counter_view.companion.dialogue.visible or _counter_view.story.visible: return true
@@ -751,3 +794,21 @@ func _sync_military_reception() -> void:
 	elif not active and _military_was_active:
 		_close_drawer.call_deferred()
 	_military_was_active = active
+func _route_ledger(panel_id: StringName) -> void:
+	if panel_id == &"old_shop": open_old_shop()
+	else: _flow.show_panel(panel_id)
+
+func open_old_shop() -> void:
+	if old_shop == null: return
+	if first_debt_conversation != null and first_debt_conversation.visible: first_debt_conversation.collapse()
+	_return_focus = _counter_view.get_hotspot(&"ledger")
+	_close_menu()
+	%Drawer.hide()
+	_counter_view.dismiss_contexts()
+	_counter_view.companion.dialogue.hide()
+	old_shop.open_album()
+
+func _open_case_document(id: String) -> void:
+	if old_shop == null: return
+	open_old_shop()
+	_old_shop_presenter.read_document(id)

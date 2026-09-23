@@ -1,0 +1,10 @@
+{
+  "tool": "built-in image_gen.imagegen",
+  "date": "2026-09-23",
+  "input": "assets/first_debt/lu_zhangyan.png",
+  "output": "assets/first_debt/lu_zhangyan_stocky.png",
+  "prompt": "lu_zhangyan_stocky.prompt.txt",
+  "sha256": "7408c99f2d0f72802c569bc51ee90ef3b20a7d892adb9018fe3e06f9d035a381",
+  "change": "Identity-preserving edit: fuller shoulders, arms and abdomen; compact neck and torso. In-game height .50 -> .46, no nonuniform stretching.",
+  "source": "/Users/alvachen/.codex/generated_images/01a08f6d-f5ec-7460-8b00-17e2b157dae1/exec-3dfb2664-66d0-4be2-a9c0-219452dd5743.png"
+}

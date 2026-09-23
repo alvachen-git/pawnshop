@@ -28,4 +28,7 @@ func _on_intent(command: String, visit_id: String, detail: String, amount: int) 
 	if command == "condition":
 		_session.fan_command("condition", detail)
 		return
-	_session.counter_command(command, visit_id, detail, amount)
+	var result := _session.counter_command(command, visit_id, detail, amount)
+	if command == "fd_event" and visit_id in FirstDebt.DOCUMENTS and FirstDebt.revised(_session._day.state):
+		if result.ok: _view.document_requested.emit(visit_id)
+		else: _view._body.text = result.message

@@ -50,7 +50,7 @@ func _ready() -> void:
 
 func render_snapshot(state: Dictionary, definition: RunDefinition, intrusion: bool, haunting: bool) -> void:
 	%ClockStatus.text = TimeController.clock_text(definition.opening_minute, state.game_minutes)
-	%NightStatus.text = "第 %d / %d 夜" % [state.current_night_index, definition.total_nights]
+	%NightStatus.text = "第 %d 夜" % state.current_night_index if FirstDebt.enabled(definition) else "第 %d / %d 夜" % [state.current_night_index, definition.total_nights]
 	_pending_cash = "%d 大洋" % state.cash
 	if not cash_held: %CashStatus.text = _pending_cash
 	var arrears := 0

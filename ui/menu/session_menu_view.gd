@@ -8,6 +8,7 @@ signal load_requested
 signal panel_requested(panel_id: StringName)
 
 var _save_button: Button
+var _old_shop_button: Button
 var _growth_button: Button
 var _investigation_button: Button
 var _leave_buttons: Array[Button] = []
@@ -18,6 +19,10 @@ var _error_dialog: AcceptDialog
 
 
 func _ready() -> void:
+	_old_shop_button = Button.new()
+	_old_shop_button.text = "旧当铺"
+	%RiskButton.get_parent().add_child(_old_shop_button)
+	_old_shop_button.pressed.connect(_route.bind(&"old_shop"))
 	_growth_button = Button.new()
 	_growth_button.text = "修缮与查铺"
 	_growth_button.name = "ShopGrowthMenuButton"
@@ -56,6 +61,7 @@ func _ready() -> void:
 
 
 func render(model: Dictionary) -> void:
+	_old_shop_button.visible = model.get("old_shop", false) and not model.get("in_room", false)
 	_growth_button.visible = model.get("shop_growth", false) and not model.get("in_room", false)
 	_investigation_button.visible = model.get("investigation", false) and not model.get("in_room", false)
 	_manual_storage = model.get("manual_storage", false)

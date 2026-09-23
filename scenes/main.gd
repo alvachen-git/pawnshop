@@ -29,6 +29,16 @@ func _ready() -> void:
 				_bootstrap.preview_stage = argument.trim_prefix("--mirror-dream-preview=")
 				_bootstrap.preview_version = 28
 				start_at_title = false
+			if argument.begins_with("--dragon-preview=") and argument.trim_prefix("--dragon-preview=") in ["seller", "before-fd_search_motive", "search-ready", "invite-ready", "lu", "quoted", "buy"]:
+				_bootstrap.manifest_path = "res://data/first_debt_dragon_search_manifest.json"
+				_bootstrap.preview_stage = "quoted" if argument == "--dragon-preview=buy" else argument.trim_prefix("--dragon-preview=")
+				_bootstrap.preview_version = 31
+				start_at_title = false
+			if argument in ["--first-debt-preview=seller", "--first-debt-preview=chen"]:
+				_bootstrap.manifest_path = "res://data/first_debt_reckoning_manifest.json"
+				_bootstrap.preview_stage = argument.trim_prefix("--first-debt-preview=")
+				_bootstrap.preview_version = 29
+				start_at_title = false
 			if argument.begins_with("--growth-preview=") and argument.trim_prefix("--growth-preview=") in ["preparation", "closed", "buyer"]:
 				_bootstrap.growth_preview = argument.trim_prefix("--growth-preview=")
 				start_at_title = false
@@ -63,7 +73,11 @@ func _ready() -> void:
 	if start_at_title:
 		_show_title()
 		_warm_counter.call_deferred()
-	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null and _bootstrap.preview_version not in [28, 29]:
+	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null and FirstDebt.enabled(_bootstrap.session.definition):
+		if _bootstrap.preview_stage in ["seller", "chen"]: _counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"trade")
+		elif _bootstrap.session._day.state.phase == &"pre_open": _counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"day")
+		else: _counter_screen._route_from_customer.call_deferred(&"dialogue")
+	elif not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null and _bootstrap.preview_version not in [28, 29]:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"risk" if _bootstrap.preview_version >= 25 else &"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
 	if not _bootstrap.growth_preview.is_empty() and _bootstrap.session != null:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"trade" if _bootstrap.growth_preview == "buyer" else &"growth")

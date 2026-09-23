@@ -8,6 +8,8 @@ var _pages: Array[VBoxContainer] = []
 var _selected := 0
 var _night_only := true
 var _model: Dictionary = {}
+var _document_dialog: AcceptDialog
+var _old_shop_button: Button
 var _heading: VBoxContainer
 
 func _ready() -> void:
@@ -31,6 +33,11 @@ func _ready() -> void:
 		_column.add_child(page)
 		_pages.append(page)
 	_column.move_child(_body, _column.get_child_count() - 1)
+	_old_shop_button = Button.new()
+	_old_shop_button.text = "旧当铺"
+	_old_shop_button.pressed.connect(panel_requested.emit.bind(&"old_shop"))
+	_tabs.add_child(_old_shop_button)
+	_old_shop_button.hide()
 	select_page(0)
 
 func select_page(index: int) -> void:
@@ -54,6 +61,11 @@ func render(model: Dictionary) -> void:
 	_tabs.get_child(3).visible = not old.is_empty()
 	if old.is_empty() and _selected == 3: _selected = 0
 	if not old.is_empty(): AccountPaper.label(_pages[3], old.text, 18)
+	var has_album: bool = not model.get("first_debt", {}).is_empty()
+	_old_shop_button.visible = has_album
+	if has_album:
+		_tabs.get_child(3).hide()
+		if _selected == 3: _selected = 0
 	var debt := AccountPaper.entry(_pages[1])
 	AccountPaper.label(debt, "借据与息费", 21)
 	AccountPaper.rule(debt)
@@ -87,7 +99,7 @@ func render(model: Dictionary) -> void:
 		if model.has("cash_flow") and row.state == "active": AccountPaper.label(ticket, "约定收款，尚未入账；不计入当前可周转现银。", 14)
 		for entry in model.buttons:
 			if entry.target_id == row.id: AccountPaper.action(ticket, entry, _emit_intent)
-	_body.text = v.message
+	_body.text = "" if has_album and v.message == model.first_debt.text else v.message
 	select_page(_selected)
 
 func _emit_intent(command: String, visit_id: String, detail: String) -> void:
@@ -128,3 +140,26 @@ func _draw_entries() -> void:
 			review.pressed.connect(receipt_requested.emit.bind(receipt_id))
 			_pages[0].add_child(review)
 	if count == 0: AccountPaper.label(_pages[0], "本页尚无收支。", 17)
+
+func show_document(id: String) -> void:
+	if _document_dialog != null: _document_dialog.queue_free()
+	_document_dialog = AcceptDialog.new()
+	_document_dialog.title = "铺中旧纸"
+	_document_dialog.ok_button_text = "收好"
+	_document_dialog.min_size = Vector2i(620, 400)
+	add_child(_document_dialog)
+	var scroll := ScrollContainer.new()
+	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	scroll.offset_bottom = -55
+	_document_dialog.add_child(scroll)
+	var row := HBoxContainer.new()
+	row.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(row)
+	for document in _model.get("first_debt", {}).get("documents", []):
+		if id == "all" and document.id not in ["fd_ticket", "fd_receipt", "fd_family"]: continue
+		if id != "all" and document.id != id: continue
+		var paper := FirstDebtDocument.new()
+		paper.configure(document)
+		paper.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(paper)
+	_document_dialog.popup_centered(Vector2i(mini(1160, get_viewport_rect().size.x - 70), mini(660, get_viewport_rect().size.y - 60)))

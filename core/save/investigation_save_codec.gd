@@ -49,7 +49,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	replayed_actions = 0
 	if not data is Dictionary or catalog == null or not InvestigationService.enabled(run): return null
 	if data.get("content_version") != catalog.content_version or data.get("save_version") != catalog.content_version or data.get("run_definition_id") != String(run.id): return null
-	if not data.get("action_journal") is Array or data.action_journal.size() > 4096: return null
+	if not data.get("action_journal") is Array or (not FirstDebt.enabled(run) and data.action_journal.size() > 4096): return null
 	if not data.get("ghost_origin") is Dictionary: return null
 	var origin: Dictionary = data.ghost_origin
 	if origin.size() != 2 or not RunSchema.integer(origin.get("seed")) or origin.seed < 0 or origin.seed > 2147483647 or not origin.get("run_token") is String or origin.run_token.length() != 32 or not origin.run_token.is_valid_hex_number(): return null
@@ -79,23 +79,33 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 			start = verified.action_journal.size()
 	var commands := GhostSaveCodec.COMMANDS.duplicate(true)
 	commands["investigation_command"] = [2, 2]
+	if FirstDebt.enabled(run): commands["observe_document"] = [1, 1]
 	if MirrorEndingService.enabled(run): commands["mirror_resolution_command"] = [2, 2]
 	if "aq_coat" in run.event_ids: commands["observe_room"] = [1, 1]
 	if ShopGrowthService.enabled(run): commands["growth_command"] = [2, 2]
 	if FanAppraisalService.enabled(run): commands["fan_command"] = [3, 3]
 	if SocialRules.enabled(run): commands["social_command"] = [2, 2]
+	var chen_revision := session._day.state.action_journal.any(func(r: Dictionary) -> bool: return r.has("chen_visits"))
 	for index in range(start, data.action_journal.size()):
 		var row: Variant = data.action_journal[index]
-		if not row is Dictionary or row.size() != 2 or not row.get("method") is String or not commands.has(row.method) or not row.get("args") is Array: return null
+		if not row is Dictionary or not row.get("method") is String or not commands.has(row.method) or not row.get("args") is Array: return null
+		if row.has("chen_visits"):
+			if not DragonSearch.enabled(session._day.state) or row.size() != 3 or row.chen_visits != 1: return null
+			chen_revision = true
+		elif row.size() != 2 or chen_revision: return null
+		session._day.state.set_meta("legacy_chen_visits", DragonSearch.enabled(session._day.state) and not chen_revision)
 		var limits: Array = commands[row.method]
 		if row.args.size() < limits[0] or row.args.size() > limits[1] or not GhostSaveCodec.valid_args(row.method, row.args): return null
 		var args: Array = row.args.duplicate(true)
 		if row.method == "counter_command" and args.size() == 4: args[3] = int(args[3])
 		var result: ActionResult = session.callv(row.method, args)
+		if DragonSearch.enabled(session._day.state) and row.method == "execute" and (str(row.args[0]).begins_with("prep_dragon_") or row.args[0] == "prep_chen_invite") and not result.ok: return null
 		if row.method in ["growth_command", "fan_command", "social_command"] and not result.ok: return null
 		if row.method == "counter_command" and row.args[0] in ["fan_pressure", "condition_pressure"] and not result.ok: return null
+		if FirstDebt.enabled(run) and not result.ok and (row.method == "observe_document" or (row.method == "event_command" and str(row.args[0]).begins_with("fd_")) or (row.method == "execute" and row.args[0] == "finish_trial")): return null
 		if ShopGrowthService.enabled(run) and row.method == "counter_command" and row.args[0] in ["display_accept", "display_counter"] and not result.ok: return null
 		replayed_actions += 1
+	session._day.state.set_meta("legacy_chen_visits", false)
 	var expected: Dictionary = data.duplicate(true)
 	expected.erase("save_version"); expected.erase("content_version")
 	if SocialRules.enabled(run) and catalog.content_version == 26: expected = SocialCopyMigration.normalize(expected)

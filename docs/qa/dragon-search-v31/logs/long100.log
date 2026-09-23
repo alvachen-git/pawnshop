@@ -1,0 +1,7 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+ERROR: Condition "ret != noErr" is true. Returning: ""
+   at: get_system_ca_certificates (platform/macos/os_macos.mm:1014)
+GENERATED100_MS=230310 ACTIONS=10537
+COLD_REPLAY100_MS=26045
+DRAGON LONG: 10580 passes, 0 failures

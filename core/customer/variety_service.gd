@@ -58,6 +58,7 @@ static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -
 
 static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog, delay: int) -> void:
 	state.ghost_catalog = catalog
+	if FirstDebt.enabled(run): state.seven_plan.assign(SevenNightPlan.plan(run, catalog, state.run_seed, state.current_night_index))
 	var rows: Array[Dictionary] = state.seven_plan if SevenNightPlan.enabled(run) and not state.seven_plan.is_empty() else plan(run, catalog, state.run_seed)
 	if SevenNightPlan.enabled(run): state.seven_plan.assign(rows)
 	if OpeningPreparation.enabled(run): rows = OpeningPreparation.plan(state, run, catalog)

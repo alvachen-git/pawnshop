@@ -41,6 +41,8 @@ const ORDINARY_PLACEMENT := {
 	"teahouse": Vector3(0.505, 0.982, 0.495),
 	"bookkeeper": Vector3(0.500, 1.000, 0.500),
 }
+const LU_PORTRAIT := "res://assets/first_debt/lu_zhangyan_stocky.png"
+const CHEN_PORTRAIT := "res://assets/first_debt/chen_xiaoman_petite.png"
 const SUN_PORTRAIT := "res://assets/social_v27/sun_dayuan_visit_halfbody.png"
 const ITEMS := {
 	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
@@ -59,6 +61,10 @@ const DETAILS := {
 }
 
 static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
+	if customer_id == "fd_aqi": return AqiArt.counter_texture("aqi")
+	if customer_id == "fd_chen": return load(CHEN_PORTRAIT) as Texture2D
+	if customer_id == "fd_lu": return load(LU_PORTRAIT) as Texture2D
+	if customer_id == "fd_seller": customer_id = "customer_house_agent"
 	# The chapter's hawker and every later appointment are the same man.
 	# Keep the approved cap, face and clothes used by the reunion expression set.
 	if customer_id == "mirror_husband" or person_id == InvestigationService.PERSON:
@@ -80,7 +86,7 @@ static func portrait(asset: String, customer_id := "", person_id := "") -> Textu
 	return load(ROOT + "customers/" + PORTRAITS[asset] + ".svg") as Texture2D
 
 static func portrait_material(texture: Texture2D) -> ShaderMaterial:
-	if texture == null or not texture.resource_path.begins_with("res://assets/art04/"): return null
+	if texture == null or (not texture.resource_path.begins_with("res://assets/art04/") and texture.resource_path != CHEN_PORTRAIT): return null
 	var material := ShaderMaterial.new()
 	material.shader = preload("res://ui/art/counter_cutout.gdshader")
 	material.set_shader_parameter("source_bottom", 1.0)
@@ -110,6 +116,7 @@ static func ordinary_bounds(texture: Texture2D) -> Vector4:
 	return Vector4(placement.z - 0.1825, top, placement.z + 0.1825, top + placement.x)
 
 static func _painted_front(asset: String) -> String:
+	if asset.begins_with("fd."): return "res://assets/first_debt/" + asset.trim_prefix("fd.") + ".png"
 	if asset == "social.cotton_coat": return "res://assets/social_v27/cotton_coat_folded.png"
 	var item_path := CounterItemArt.front_path(asset)
 	if not item_path.is_empty(): return item_path
@@ -142,6 +149,11 @@ static func images(visual: Dictionary, source_images: Array = []) -> Array:
 	if CounterItemArt.has_asset(visual.get("item_asset", "")):
 		return CounterItemArt.images(visual, source_images)
 	var result: Array = []
+	if str(visual.get("item_asset", "")).begins_with("fd."):
+		result.append({"id": "front", "label": "正面", "path": _painted_front(visual.item_asset)})
+		if visual.get("clues", []).any(func(c: Dictionary) -> bool: return c.id in ["mark", "repair"]):
+			result.append({"id": "mark_repair", "label": "工记与旧修补", "path": "res://assets/first_debt/mark_repair.png"})
+		return result
 	if visual.get("item_asset", "") == "social.cotton_coat": return [{"id":"front", "label":"棉袄", "path":"res://assets/social_v27/cotton_coat_folded.png"}]
 	var family: String = ITEMS.get(visual.get("item_asset", ""), "")
 	# Scenario rows are already knowledge-filtered by the counter service and

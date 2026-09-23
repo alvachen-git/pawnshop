@@ -1,5 +1,7 @@
 # 鬼市当铺
 
+本地 v31 龙镯追查整合版：默认新游戏包含主线全部经营能力与第一账开放延续，见 [当前规格](docs/CURRENT_SPEC.md)、[启动与快捷试玩](docs/FIRST_DEBT_TESTING.md)、[验收报告](docs/qa/dragon-search-v31/REPORT.md)。下文原主线入口与专项记录保留作历史参考。
+
 默认入口现已统一：直接启动后选择**新游戏**，从第一夜开始体验全部已合并内容：十夜经营、活当与熟客、夜客与命灯、阿七陪伴、铜镜调查／重逢／托梦、铺内修缮、知识柜、折扇品相与鉴定议价、军阀往来与棉袄采购。无需选择特殊版本或加载专项场景。
 
 Windows 双击 `play.cmd`（`play-unified.cmd` 同样进入完整新局）；macOS 运行 `godot --path .`。首次拉取资源后先运行 `godot --headless --editor --path . --quit`。完整测试路线见 [整合测试说明](FULL_GAME_PLAYTEST.md)。

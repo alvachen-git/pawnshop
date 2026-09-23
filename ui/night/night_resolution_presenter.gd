@@ -48,6 +48,7 @@ func refresh() -> void:
 	if state.phase in ["day_summary", "run_ended"] and state.risk_pending.is_empty():
 		account = state.summaries.back().duplicate(true)
 		account["outcome_text"] = RiskManager.LABELS.get(account.outcome, "今夜无事。")
+		if FirstDebt.enabled(_session.definition) and state.phase == "run_ended": account.outcome_text = "本次试玩已结束，铺中的货、未到期的票与旧事照实记存。"
 		account["closed_clock"] = TimeController.clock_text(_session.definition.opening_minute, account.closed_at)
 		account["fee_enabled"] = _session.definition.fee_policy.enabled
 		account["debt"] = _session.economy_model().description if account.fee_enabled else ""
@@ -76,7 +77,8 @@ func refresh() -> void:
 	if state.phase == "shop_resolution" and state.risk_pending.is_empty(): body = "铺内收尾\n\n门闩已经落好。柜中的东西安静下来，可以回房了。"
 	var disposals := _session.pawn_disposal_model()
 	if not disposals.is_empty(): body = "夜末核票\n\n这几张当票已经到期，今夜无人来赎。逐张选好去向，再合账。\n留货不进现银；转当须把原物一并交出。\n\n" + _session.message
-	_view.render({"pawn_disposals": disposals, "resolve_command": "enter_room" if state.phase == "shop_resolution" else "resolve_night", "account": account, "resolve_label": "回房" if state.phase == "shop_resolution" else "核妥当票，合上账册" if not disposals.is_empty() else "合上今夜的账册" if risk_enabled or _session.definition.private_room else "结算本夜（占位）并自动保存", "body": body, "can_resolve": _session.can_execute("enter_room") or _session.can_execute("resolve_night"), "can_continue": _session.can_execute("continue_run"), "continue_label": ("合卷" if risk_enabled or _session.definition.private_room else "结束本轮试玩") if state.current_night_index == _session.definition.total_nights else "进入下一夜"})
+	if FirstDebt.enabled(_session.definition) and not account.is_empty() and FirstDebt.flag(_session._day.state, "aq_ticket_seen"): account.familiar_notes += "\n" + FirstDebt.outcome(_session._day.state)
+	_view.render({"can_finish_trial": _session.can_execute("finish_trial"), "pawn_disposals": disposals, "resolve_command": "enter_room" if state.phase == "shop_resolution" else "resolve_night", "account": account, "resolve_label": "回房" if state.phase == "shop_resolution" else "核妥当票，合上账册" if not disposals.is_empty() else "合上今夜的账册" if risk_enabled or _session.definition.private_room else "结算本夜（占位）并自动保存", "body": body, "can_resolve": _session.can_execute("enter_room") or _session.can_execute("resolve_night"), "can_continue": _session.can_execute("continue_run"), "continue_label": "继续营业" if FirstDebt.enabled(_session.definition) else ("合卷" if risk_enabled or _session.definition.private_room else "结束本轮试玩") if state.current_night_index == _session.definition.total_nights else "进入下一夜"})
 
 func _on_command(command: String) -> void:
 	_session.execute(command)

@@ -2,7 +2,7 @@ class_name OpeningPreparation
 extends RefCounted
 
 const CATEGORIES := {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房", "textile": "布货"}
-const COSTS := {"attract": 3, "target": 0, "seek": 3, "tea": 5, "visitors": 0, "investigate": 0, "finish": 0}
+const COSTS := {"attract": 3, "target": 0, "seek": 3, "tea": 5, "visitors": 0, "investigate": 0, "finish": 0, "dragon_search": 0, "dragon_invite": 0, "chen_invite": 0}
 
 static func enabled(run: RunDefinition) -> bool:
 	return run.variety.get("preparation_version", 0) == 1
@@ -12,7 +12,8 @@ static func ordinary(row: Dictionary) -> bool:
 
 # Keep the seeded base intact. Every consumer sees the same replayable overlay.
 static func plan(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> Array[Dictionary]:
-	var rows := FamiliarStories.overlay(state, run, catalog, SevenNightPlan.plan(run, catalog, state.run_seed))
+	var rows := FamiliarStories.overlay(state, run, catalog, SevenNightPlan.plan(run, catalog, state.run_seed, state.current_night_index))
+	rows = FirstDebt.overlay(state, run, catalog, rows)
 	rows = NightMarketPlan.overlay(rows, run, catalog, state.run_seed)
 	rows = ReputationService.overlay(state, run, catalog, rows)
 	if not enabled(run): return rows
@@ -40,6 +41,9 @@ static func reason(state: RunState, action: String, category := "") -> String:
 	if state.phase != &"pre_open" or PreparationService.used(state, "finish", state.current_night_index): return "今夜准备已结束。"
 	if not state.pending_event_id.is_empty() or not state.risk_pending.is_empty(): return "请先处理眼前的事情。"
 	if not COSTS.has(action): return "没有这项准备行动。"
+	if action in ["dragon_search", "dragon_invite", "chen_invite"]:
+		var error := DragonSearch.prep_reason(state, action)
+		if not error.is_empty(): return error
 	if action == "finish": return ""
 	if PreparationService.used(state, action, 0 if action == "investigate" else state.current_night_index): return "这项准备已经做过。已知消息可以免费复看。"
 	if action == "investigate" and state.current_night_index not in [4, 5, 6]: return "眼下没有待调查的收货消息。"
@@ -129,7 +133,7 @@ static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog
 	state.preparation_history.append(record)
 	if record.cost > 0:
 		EconomyManager.new().commit(state, -record.cost, "preparation", posting_id(record), "preparation", 0)
-	var messages := {"seek": "寻配口信已送出，今夜会有人带同纹样、相对式样的茶盏来。是否原配，还须验看；价钱另谈。", "attract": "口信已经送出，今夜会多一位客人带货来。", "target": "已托人捎话，今夜有位客人带%s来。" % CATEGORIES.get(category, "旧物"), "tea": "茶水备好了，今夜普通来客会多等20分钟。", "visitors": "两位来客的口信已记在铺中记事里。", "investigate": PreparationService.DETAILS, "finish": "准备妥当，可以开铺了。"}
+	var messages := {"chen_invite": "已约陈小满今夜来谈，开铺后待柜前得空便可说话。", "dragon_search": "已托人寻找龙镯，收铺后会有口信。", "dragon_invite": "已约陆掌眼带龙镯来。今夜19:00起，待柜前得空便可验看。", "seek": "寻配口信已送出，今夜会有人带同纹样、相对式样的茶盏来。是否原配，还须验看；价钱另谈。", "attract": "口信已经送出，今夜会多一位客人带货来。", "target": "已托人捎话，今夜有位客人带%s来。" % CATEGORIES.get(category, "旧物"), "tea": "茶水备好了，今夜普通来客会多等20分钟。", "visitors": "两位来客的口信已记在铺中记事里。", "investigate": PreparationService.DETAILS, "finish": "准备妥当，可以开铺了。"}
 	return ActionResult.new(true, messages[action] + "\n现银%d大洋 · 今夜准备剩余%d次。" % [state.cash, 2 - PreparationService.count(state)])
 
 static func posting_id(record: Dictionary) -> String:
@@ -165,7 +169,7 @@ static func refresh_visits(state: RunState, run: RunDefinition, catalog: Content
 
 static func restore(data: Dictionary, state: RunState, run: RunDefinition, catalog: ContentCatalog) -> String:
 	if not data.get("preparation_history") is Array or not data.get("seven_plan") is Array: return "缺少开铺准备记录。"
-	var base := SevenNightPlan.plan(run, catalog, state.run_seed)
+	var base := SevenNightPlan.plan(run, catalog, state.run_seed, state.current_night_index)
 	if VarietySaveCodec.normalize_plan(data.seven_plan) != base: return "本局基础来客编排不符。"
 	var simulator := RunState.create(run)
 	simulator.run_seed = state.run_seed

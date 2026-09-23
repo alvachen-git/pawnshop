@@ -64,7 +64,14 @@ func _draw() -> void:
 	_sale_view.visible = _filter == 2 and _model.has("sales")
 	if _model.has("sales"): _sale_view.render(_model.sales)
 	_body.text = _model.visual.message
-	if _sale_view.visible: return
+	if _sale_view.visible:
+		for button in _model.get("first_debt", {}).get("buttons", []):
+			if button.target_id in ["fd_lu", "fd_dragon"]:
+				AccountPaper.label(_sale_view, button.get("context", ""), 18)
+				AccountPaper.action(_sale_view, button, _emit_intent)
+		return
+	for button in _model.get("first_debt", {}).get("buttons", []):
+		if button.target_id in ["fd_receipt", "fd_mark"]: AccountPaper.action(_sheet, button, _emit_intent)
 	AccountPaper.metrics(_sheet, [["现货 / 件", financial.inventory_count], ["现货占款 / 银元", financial.inventory_cost], ["在当本金 / 银元", financial.pawn_principal]])
 	AccountPaper.label(_sheet, "估值供判断，出售后才成为现银。在当货物须按当票办理。", 14)
 	for resource in visual.get("resources", []):

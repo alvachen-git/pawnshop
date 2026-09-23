@@ -8,6 +8,7 @@ func _init(content: ContentCatalog) -> void:
 	catalog = content
 
 func quote(item: ItemInstance, buyer: BuyerDefinition) -> int:
+	if buyer.id == "buyer_lu" and item.definition_id in [FirstDebt.PHOENIX, FirstDebt.DRAGON]: return 120 if item.definition_id == FirstDebt.PHOENIX else 160
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	var base := base_quote(item, buyer)
 	return base + ProvenanceService.premium(item, buyer, base)
@@ -26,7 +27,7 @@ func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 		if flag not in day.state.narrative_flags: return "尚未取得买家介绍；请查看铺中记事。"
 	if item.ownership_state != "owned": return "只有店铺所有的现货可出售；在当物品不可出售。"
 	if day.state.phase != &"open": return "买家只在营业时收货。"
-	if MilitaryService.buyer_night(day.state, buyer.id) < buyer.night_min or MilitaryService.buyer_night(day.state, buyer.id) > buyer.night_max or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家到访窗口。"
+	if MilitaryService.buyer_night(day.state, buyer.id) < buyer.night_min or (MilitaryService.buyer_night(day.state, buyer.id) > buyer.night_max and not (FirstDebt.enabled(day.definition) and buyer.id in ["buyer_recycler", "buyer_collector", "buyer_mirror", "buyer_lu"])) or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家到访窗口。"
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	var appointment_error := OrdinarySamplePlan.buyer_reason(day.state, buyer.id, definition.category, day.state.current_night_index, day.state.game_minutes)
 	if not appointment_error.is_empty(): return appointment_error
@@ -70,7 +71,7 @@ func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	if item.ownership_state != "owned": return "只有铺中自有现货可以出售。"
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	if ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
-	if MarketService.is_special(day.definition, buyer) and ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) != MarketService.category(day): return "不合陆掌眼眼下的收货偏好。"
+	if MarketService.is_special(day.definition, buyer) and item.definition_id not in [FirstDebt.PHOENIX, FirstDebt.DRAGON] and ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) != MarketService.category(day): return "不合陆掌眼眼下的收货偏好。"
 	return ""
 
 func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
@@ -85,7 +86,7 @@ func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
 	if not PawnReturnService.current(day.state).is_empty(): return "原当户还在店里，请先办妥当票。"
 	for visit in day.state.visits:
 		if visit.status in ["active", "waiting"]: return "店里还有客人，请先接待或送客，再去交货。"
-	if MilitaryService.buyer_night(day.state, buyer.id) < buyer.night_min or MilitaryService.buyer_night(day.state, buyer.id) > buyer.night_max or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家收货时段。"
+	if MilitaryService.buyer_night(day.state, buyer.id) < buyer.night_min or (MilitaryService.buyer_night(day.state, buyer.id) > buyer.night_max and not (FirstDebt.enabled(day.definition) and buyer.id in ["buyer_recycler", "buyer_collector", "buyer_mirror", "buyer_lu"])) or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家收货时段。"
 	if day.state.game_minutes + buyer.action_minutes >= mini(buyer.window_end, day.definition.night_minutes): return "来不及在收货结束前往返20分钟。"
 	return ""
 
@@ -112,6 +113,12 @@ func sell_batch(day: DayController, buyer_id: String, item_ids: Array, pairs: Ar
 		income += price
 		cost += item.acquisition_price
 		rows.append({"item_instance_id": id, "price": price, "cost_basis": item.acquisition_price, "realized_profit": price - item.acquisition_price})
+	if FirstDebt.enabled(day.definition) and buyer_id == "buyer_lu":
+		var ids: Array = rows.map(func(r: Dictionary) -> String: return InventoryManager.new().find(day.state, r.item_instance_id).definition_id)
+		if FirstDebt.PHOENIX in ids and FirstDebt.DRAGON in ids:
+			for row in rows:
+				if InventoryManager.new().find(day.state, row.item_instance_id).definition_id == FirstDebt.DRAGON:
+					row.price += 40; row.realized_profit += 40; income += 40
 	var start := day.state.game_minutes
 	var market := MarketService.current(day.definition, day.state.run_seed, day.state.current_night_index, start)
 	var batch_id := "batch/%d" % (day.state.sale_batches.size() + 1)

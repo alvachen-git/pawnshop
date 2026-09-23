@@ -18,6 +18,7 @@ var story: CounterStoryView
 var story_active := false
 var _story_actor := false
 var _story_contact_shadow: TextureRect
+var _first_debt_relic: TextureRect
 var _portrait: TextureRect
 var _counter_foreground: TextureRect
 var _item_image: TextureRect
@@ -30,8 +31,10 @@ var _item_context: PanelContainer
 var _dialogue_action: Button
 var _trade_action: Button
 var _appraisal_action: Button
+var _item_panel_id: StringName = &"appraisal"
 var _active_id := ""
 var feedback_held := false
+var conversation_held := false
 var _pending_model: Dictionary = {}
 var _arrival: Tween
 var bell
@@ -62,6 +65,16 @@ func _ready() -> void:
 	_story_contact_shadow.material = contact_material
 	add_child(_story_contact_shadow)
 	_story_contact_shadow.hide()
+	_first_debt_relic = TextureRect.new()
+	_first_debt_relic.name = "PhoenixOnCounter"
+	_first_debt_relic.texture = load("res://assets/first_debt/phoenix.png")
+	_first_debt_relic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_first_debt_relic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_first_debt_relic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_first_debt_relic.z_index = 3
+	add_child(_first_debt_relic)
+	_bounds(_first_debt_relic, 0.35, 0.64, 0.47, 0.82)
+	_first_debt_relic.hide()
 	_portrait = TextureRect.new()
 	_portrait.name = "CustomerPortrait"
 	_portrait.unique_name_in_owner = true
@@ -263,7 +276,7 @@ static func _bounds(control: Control, left: float, top: float, right: float, bot
 
 
 func render(model: Dictionary) -> void:
-	if feedback_held:
+	if feedback_held or conversation_held:
 		_pending_model = model
 		return
 	_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
@@ -277,9 +290,11 @@ func render(model: Dictionary) -> void:
 	%ItemText.text = model.item
 	%CounterMessage.text = ""
 	%CounterMessage.hide()
+	_bounds(_first_debt_relic, 0.35, 0.565 if model.has("case_dialogue") else 0.64, 0.47, 0.745 if model.has("case_dialogue") else 0.82)
+	_first_debt_relic.visible = model.get("first_debt_relic", false)
 	var visual: Dictionary = model.get("visual", {})
 	var current_active_id := String(model.get("active_id", ""))
-	var arrived := current_active_id != _active_id and not current_active_id.is_empty()
+	var arrived: bool = current_active_id != _active_id and not current_active_id.is_empty() and (not model.has("continuous_from") or model.continuous_from != _active_id)
 	if current_active_id != _active_id:
 		dismiss_contexts()
 	_active_id = current_active_id
@@ -291,7 +306,8 @@ func render(model: Dictionary) -> void:
 	_item_hotspot.visible = active and not item_actions.is_empty()
 	_apply_action(_dialogue_action, customer_actions, &"dialogue")
 	_apply_action(_trade_action, customer_actions, &"trade")
-	_apply_action(_appraisal_action, item_actions, &"appraisal")
+	_item_panel_id = &"dialogue" if item_actions.any(func(a: Dictionary) -> bool: return a.id == "dialogue") else &"appraisal"
+	_apply_action(_appraisal_action, item_actions, _item_panel_id)
 	if not _customer_hotspot.visible:
 		_customer_context.hide()
 	if not _item_hotspot.visible:
@@ -308,6 +324,16 @@ func render(model: Dictionary) -> void:
 	elif _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT:
 		_bounds(_portrait, 0.315, 0.025, 0.68, 0.604)
 		(_portrait.material as ShaderMaterial).set_shader_parameter("hand_contact_shadow", true)
+	elif _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.LU_PORTRAIT:
+		# His hands remain on his side, cropped by the painted rear counter edge.
+		var hem := 445.0 / 941.0 / 0.9
+		_bounds(_portrait, 0.3175, hem - 0.46, 0.6825, hem)
+	elif _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.CHEN_PORTRAIT:
+		# Petite adult, on the guest side. Keep the waist behind the rear lip,
+		# rather than extending the source's flat crop onto the counter mat.
+		var hem := 445.0 / 941.0 / 0.9
+		_bounds(_portrait, 0.3175, hem - 0.46 * 0.95, 0.6825, hem + 0.46 * 0.05)
+		(_portrait.material as ShaderMaterial).set_shader_parameter("source_bottom", 0.95)
 	elif CounterVisualCatalog.is_special_portrait(_portrait.texture):
 		var portrait_bounds := CounterVisualCatalog.special_bounds(_portrait.texture)
 		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
@@ -408,6 +434,7 @@ func render_story(model: Dictionary, state: Dictionary) -> void:
 
 func release_feedback() -> void:
 	feedback_held = false
+	if conversation_held: return
 	if not _pending_model.is_empty():
 		var model := _pending_model
 		_pending_model = {}
@@ -475,7 +502,7 @@ func _on_customer_action(panel_id: StringName) -> void:
 
 func _on_item_action(panel_id: StringName) -> void:
 	dismiss_contexts()
-	item_action_requested.emit(panel_id)
+	item_action_requested.emit(_item_panel_id if panel_id == &"appraisal" else panel_id)
 
 
 func _on_background_pressed() -> void:

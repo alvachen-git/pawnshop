@@ -14,6 +14,7 @@ static func texture(id: String) -> AtlasTexture:
 	return result
 
 static func counter_texture(id: String) -> Texture2D:
+	if id == "dragon_message": return load("res://assets/ui/mail/envelope.png") as Texture2D
 	if id == "aqi": return load("res://assets/aqi/counter-aqi-resting.png") as Texture2D
 	if id == "ledger": return load("res://assets/aqi/ledger.svg") as Texture2D
 	var path := "res://assets/aqi/counter-" + id + ".png"
