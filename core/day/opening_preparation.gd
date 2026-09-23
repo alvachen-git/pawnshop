@@ -1,7 +1,7 @@
 class_name OpeningPreparation
 extends RefCounted
 
-const CATEGORIES := {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房", "textile": "绣品"}
+const CATEGORIES := {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房", "textile": "布货"}
 const COSTS := {"attract": 3, "target": 0, "seek": 3, "tea": 5, "visitors": 0, "investigate": 0, "finish": 0}
 
 static func enabled(run: RunDefinition) -> bool:
@@ -14,14 +14,16 @@ static func ordinary(row: Dictionary) -> bool:
 static func plan(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> Array[Dictionary]:
 	var rows := FamiliarStories.overlay(state, run, catalog, SevenNightPlan.plan(run, catalog, state.run_seed))
 	rows = NightMarketPlan.overlay(rows, run, catalog, state.run_seed)
+	rows = ReputationService.overlay(state, run, catalog, rows)
 	if not enabled(run): return rows
 	for record in state.preparation_history:
 		if record.action == "attract": rows.append(record.change.duplicate(true))
 		elif record.action in ["target", "seek"]:
 			for index in rows.size():
-				if rows[index].visit_id == record.change.visit_id: rows[index] = record.change.duplicate(true); break
+				if rows[index].visit_id == record.change.visit_id and int(rows[index].night) == int(record.night): rows[index] = record.change.duplicate(true); break
 	for row in rows:
 		if ordinary(row) and PreparationService.used(state, "tea", int(row.night)): row.wait_minutes = int(row.wait_minutes) + 20
+	CoatProcurement.overlay(state, rows)
 	GoodsExpertise.attach(rows, run, state.run_seed)
 	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.night < b.night if a.night != b.night else a.arrival < b.arrival)
 	return rows
@@ -33,6 +35,7 @@ static func known_ids(state: RunState, night: int) -> Array:
 	return ids
 
 static func reason(state: RunState, action: String, category := "") -> String:
+	if SocialRules.closed(state) and action in ["attract", "target", "seek", "tea"]: return "今夜停接新客，暂不托人招揽或备客；原有约定已顺延。"
 	if state.current_night_index < 2: return "第二夜起可在开铺前准备。"
 	if state.phase != &"pre_open" or PreparationService.used(state, "finish", state.current_night_index): return "今夜准备已结束。"
 	if not state.pending_event_id.is_empty() or not state.risk_pending.is_empty(): return "请先处理眼前的事情。"
@@ -47,7 +50,7 @@ static func reason(state: RunState, action: String, category := "") -> String:
 	if action == "target" and not category.is_empty() and not CATEGORIES.has(category): return "没有这类收货方向。"
 	return ""
 
-static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalog, id: String, arrival: int, category: String) -> Dictionary:
+static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalog, id: String, arrival: int, category: String, name_rows: Array = []) -> Dictionary:
 	var candidates: Array = []
 	for context in run.variety.contexts:
 		var modes: Array = context.transaction_modes.duplicate()
@@ -67,7 +70,7 @@ static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalo
 	if not item.provenance.is_empty():
 		for source in ["none", "authentic", "mismatch"]:
 			for weight in int(item.provenance.weights[source]): sources.append(source)
-	var existing_names: Array = plan(state, run, catalog).filter(func(r: Dictionary) -> bool: return r.visit_id != id).map(func(r: Dictionary) -> String: return r.person.name)
+	var existing_names: Array = (name_rows if not name_rows.is_empty() else plan(state, run, catalog)).filter(func(r: Dictionary) -> bool: return r.visit_id != id).map(func(r: Dictionary) -> String: return r.person.name)
 	var names: Array = customer.persona.names
 	var surnames: Array = run.variety.surnames
 	var first := VarietyService.rng(state.run_seed, key + "/name").randi_range(0, names.size() * surnames.size() - 1)

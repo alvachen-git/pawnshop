@@ -3,7 +3,7 @@ extends RefCounted
 
 static func build(day: DayController, service: CommerceService) -> Dictionary:
 	var buyers: Array = []
-	var categories := {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房", "textile": "绣品", "ghost": "特殊物品"}
+	var categories := {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房", "textile": "布货", "ghost": "特殊物品"}
 	var market := MarketService.current(day.definition, day.state.run_seed, day.state.current_night_index, day.state.game_minutes)
 	var demand := MarketService.demand(day.definition, market)
 	for id in day.definition.buyer_ids:

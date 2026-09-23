@@ -3,7 +3,7 @@ extends RefCounted
 
 const STATES := {"exchanged_out": "原物已换出", "lost": "湿灰毁损", "owned": "现货", "pledged": "在当（不可售）", "sold": "已售", "redeemed": "已赎回", "transferred": "已转当"}
 const TICKETS := {"active": "在当", "redeemed": "已赎回", "transferred": "已转当", "defaulted": "已绝当转现货"}
-const KINDS := {"facility_investment": "设施投入", "investigation": "查访支出", "pawn_exchange": "换物收款", "inventory_loss": "损货核销（无现金支出）", "acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费", "daily_fees": "息费付款", "pawn_transfer": "转当收入", "provenance_inquiry": "来源调查费", "expertise": "行家复核费", "preparation": "准备支出"}
+const KINDS := {"military_expense": "军方往来支出", "facility_investment": "设施投入", "investigation": "查访支出", "pawn_exchange": "换物收款", "inventory_loss": "损货核销（无现金支出）", "acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费", "daily_fees": "息费付款", "pawn_transfer": "转当收入", "provenance_inquiry": "来源调查费", "expertise": "行家复核费", "preparation": "准备支出"}
 
 static func build(day: DayController, service: CommerceService, message: String) -> Dictionary:
 	var financial := FinancialSummary.build(day.state)
@@ -12,8 +12,10 @@ static func build(day: DayController, service: CommerceService, message: String)
 	for item in day.state.inventory_instances:
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 		inventory.body += "\n%s · %s · 成本 %d\n" % [definition.display_name, STATES[item.ownership_state], item.acquisition_price]
+		var military_source := MilitaryService.supply_for(day.state, item.instance_id) if day.state.social_enabled else {}
+		if not military_source.is_empty(): inventory.body += String(military_source.report if military_source.investigated else military_source.cue) + "\n"
 		if item.ownership_state != "owned": continue
-		if not definition.provenance.is_empty() and not item.provenance.investigated and item.provenance.status not in ["verified", "mismatch"]:
+		if not definition.provenance.is_empty() and not item.provenance.is_empty() and not item.provenance.investigated and item.provenance.status not in ["verified", "mismatch"]:
 			inventory.buttons.append(_button("inquire", item.instance_id, "", "委托来源调查 · %d银元 / %d分钟" % [definition.provenance.inquiry_fee, definition.provenance.inquiry_minutes], ProvenanceService.inquiry_reason(day, item, definition)))
 		var bounds := AppraisalSystem.new().valuation(item, definition)
 		inventory.body += ("参考价值 " + FanConditionService.estimate(item, definition) + "\n" + FanConditionService.note(item) + "\n") if FanConditionService.applies(item) else "已知估值 %d–%d（未出售，盈亏未实现）\n" % [bounds.x, bounds.y]
@@ -31,6 +33,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 	var ledger := {"body": "现银 %d · 本夜已实现盈亏 %+d\n收购支出/活当本金不是已实现亏损。\n" % [day.state.cash, financial.realized_profit], "buttons": []}
 	if day.definition.fee_policy.enabled:
 		ledger.body = FeeService.describe(day.state, day.definition) + "\n现银 %d · 本夜交易毛利 %+d\n当夜利息 %d · 铺面开支 %d · 经营净收益 %+d\n本夜实际付息费 %d\n" % [day.state.cash, financial.realized_profit, financial.interest_expense, financial.shop_expense, financial.operating_profit, financial.fees_paid]
+	if financial.has("military_expense"): ledger.body += "本夜军方往来支出 %d 银元\n" % financial.military_expense
 	if financial.has("preparation_expense"): ledger.body += "本夜准备支出 %d 大洋（经营费用）\n" % financial.preparation_expense
 	if financial.has("provenance_expense"): ledger.body += "本夜来源调查费 %d 银元（经营费用）\n" % financial.provenance_expense
 	if financial.has("expertise_expense"): ledger.body += "本夜行家复核费 %d 银元（经营费用）\n" % financial.expertise_expense

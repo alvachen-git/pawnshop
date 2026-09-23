@@ -7,6 +7,7 @@ uniform bool lamp_wrong = false;
 uniform sampler2D lamp_off_texture : source_color, filter_linear;
 uniform sampler2D incense_lit_texture : source_color, filter_linear;
 uniform float incense_strength : hint_range(0.0, 1.0) = 1.0;
+uniform bool foreground_only = false;
 
 float soft_region(vec2 p, vec4 bounds, float feather) {
 	vec2 edges = smoothstep(bounds.xy, bounds.xy + vec2(feather), p)
@@ -62,5 +63,9 @@ void fragment() {
 	float bulb = (1.0 - smoothstep(0.029, 0.052, length((UV - vec2(0.772, 0.399)) * vec2(1.0, 1.5))));
 	if (lamp_dead) color *= 1.0 - bulb * 0.88;
 	else if (lamp_wrong || atmosphere == 2) color = mix(color, vec3(dot(color, vec3(0.333))) * vec3(0.82, 1.02, 1.12), bulb);
-	COLOR = vec4(color, source.a);
+	// The back edge of the real painted wooden sill, not the near edge of the mat.
+	// Sampling the same room art and lighting places the visitor BEHIND the sill.
+	float edge = mix(0.474, 0.473, smoothstep(0.32, 0.68, UV.x));
+	float cover = foreground_only ? smoothstep(edge, edge + 0.0008, UV.y) : 1.0;
+	COLOR = vec4(color, source.a * cover);
 }

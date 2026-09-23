@@ -2,6 +2,7 @@ extends RefCounted
 
 var check: Callable
 var catalog: ContentCatalog
+var pause_military_intro := false
 
 func action(s: RunSession, command: String) -> void:
 	var result := s.execute(command)
@@ -9,6 +10,10 @@ func action(s: RunSession, command: String) -> void:
 
 func drain(s: RunSession) -> void:
 	for step in 60:
+		if MilitaryIntroduction.active(s._day.state):
+			if pause_military_intro: return
+			check.call(s.counter_command("military_intro", MilitaryIntroduction.id(s._day.state), str(s._day.state.social.intro_step)).ok, "military greeting")
+			continue
 		var model := s.event_model()
 		if model.pending_id.is_empty(): return
 		check.call(not model.buttons.is_empty(), "event has choices")

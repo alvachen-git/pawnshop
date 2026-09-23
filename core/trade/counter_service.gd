@@ -63,6 +63,9 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		"judge":
 			if detail not in ["unknown", "sound", "damaged", "fake"]: return "判断类型无效。"
 			return ""
+		"intimidate":
+			if not detail.is_empty() or amount != 0: return "借牌压价不接受另填报价。"
+			return MilitaryPlaque.reason(day.state, visit)
 		"belittle":
 			if customer.belittle.is_empty(): return "这位客人不接受这样的试探。"
 			if visit.trade.belittle_used: return "已试探过，不能再说一遍。"
@@ -108,6 +111,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		visit.item.judgement = detail
 		return ActionResult.new(true, "已记录你的判断；判断本身不会揭露真相或改变物品价值。")
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)
+	visit.trade.social_last_was_quote = false
 	var cost := 0
 	match command:
 		"condition_pressure": cost = 5
@@ -153,6 +157,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"reject":
 			customers.finish(day.state, visit, "rejected")
 			message = (String(visit.voice.rejected) + "\n" if visit.voice.has("rejected") else "") + "拒绝收货，送客消耗 %d 分钟。" % cost
+		"intimidate": message = MilitaryPlaque.intimidate(day.state, visit)
 		"belittle": message = BelittleService.apply(visit, customer)
 		"pressure":
 			var before := visit.trade.asking_price
@@ -167,6 +172,8 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"offer", "pawn":
 			var terms := catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 			var threshold := maxi(1, roundi(visit.trade.reserve_price * terms.loan_ratio)) if command == "pawn" else -1
+			visit.trade.social_offer_mode = command
+			visit.trade.social_last_was_quote = true
 			var accepted := FanBargainingService.sale_quote(day.state, visit, customer, amount) if command == "offer" and FanBargainingService.enabled(day.definition) else trades.quote(visit.trade, customer, amount, threshold)
 			if accepted:
 				if command == "pawn":

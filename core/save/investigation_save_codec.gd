@@ -57,6 +57,8 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	if not RiskSaveCodec.valid_archive(data.get("death_archive")) or not FeeSaveCodec.valid_archive(data.get("bankruptcy_archive")): return null
 	if data.get("phase") not in SaveCodec.CHECKPOINTS + ["open"] + (SaveTimeline.UNSETTLED if extended or ShopGrowthService.enabled(run) else []): return null
 	var store := GhostReplayStore.new()
+	var legacy_intro: bool = SocialRules.enabled(run) and catalog.content_version == 27 and data.get("social") is Dictionary and not data.social.has("intro_step")
+	store.set_meta("legacy_social_intro", legacy_intro)
 	store.origin = origin.duplicate(true)
 	store.prior_deaths = data.death_archive.filter(func(row: Dictionary) -> bool: return row.run_token != origin.run_token)
 	store.prior_bankruptcies = data.bankruptcy_archive.filter(func(row: Dictionary) -> bool: return row.run_token != origin.run_token)
@@ -66,6 +68,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	# prefix too. Prior attempts affect archives even when the current seed matches.
 	var objects := {}
 	var context := JSON.stringify([_content_value(catalog, objects), _content_value(run, objects), origin, store.prior_deaths, store.prior_bankruptcies])
+	if SocialRules.enabled(run): context += JSON.stringify([SocialRules.config(), legacy_intro])
 	var start := 0
 	if _checkpoint.get("context", "") == context:
 		var verified: RunState = _checkpoint.state
@@ -80,6 +83,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	if "aq_coat" in run.event_ids: commands["observe_room"] = [1, 1]
 	if ShopGrowthService.enabled(run): commands["growth_command"] = [2, 2]
 	if FanAppraisalService.enabled(run): commands["fan_command"] = [3, 3]
+	if SocialRules.enabled(run): commands["social_command"] = [2, 2]
 	for index in range(start, data.action_journal.size()):
 		var row: Variant = data.action_journal[index]
 		if not row is Dictionary or row.size() != 2 or not row.get("method") is String or not commands.has(row.method) or not row.get("args") is Array: return null
@@ -88,13 +92,15 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 		var args: Array = row.args.duplicate(true)
 		if row.method == "counter_command" and args.size() == 4: args[3] = int(args[3])
 		var result: ActionResult = session.callv(row.method, args)
-		if row.method in ["growth_command", "fan_command"] and not result.ok: return null
+		if row.method in ["growth_command", "fan_command", "social_command"] and not result.ok: return null
 		if row.method == "counter_command" and row.args[0] in ["fan_pressure", "condition_pressure"] and not result.ok: return null
 		if ShopGrowthService.enabled(run) and row.method == "counter_command" and row.args[0] in ["display_accept", "display_counter"] and not result.ok: return null
 		replayed_actions += 1
 	var expected: Dictionary = data.duplicate(true)
 	expected.erase("save_version"); expected.erase("content_version")
+	if SocialRules.enabled(run) and catalog.content_version == 26: expected = SocialCopyMigration.normalize(expected)
 	var actual := session.read_state()
+	if SocialRules.enabled(run) and catalog.content_version == 27: SocialCopyMigration.v27_notices(expected, actual)
 	if not GhostSaveCodec.same(actual, expected):
 		for key in actual:
 			if not GhostSaveCodec.same(actual[key], expected.get(key)): error_message += "（" + key + "）"; break

@@ -8,7 +8,7 @@ static func used(state: RunState, action: String, night := 0) -> bool:
 	return state.preparation_history.any(func(row: Dictionary) -> bool: return row.action == action and (night == 0 or row.night == night))
 
 static func count(state: RunState) -> int:
-	return ShopGrowthService.preparation_count(state) + state.preparation_history.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index and row.action != "finish").size()
+	return SocialRules.preparation_count(state) + ShopGrowthService.preparation_count(state) + state.preparation_history.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index and row.action != "finish").size()
 
 static func reason(state: RunState, run: RunDefinition, action: String) -> String:
 	if OpeningPreparation.enabled(run): return OpeningPreparation.reason(state, action)
@@ -51,7 +51,7 @@ static func notice(state: RunState, catalog: ContentCatalog) -> String:
 		var row: Dictionary = found[0]
 		var item := catalog.get_definition("items", row.item_id) as ItemDefinition
 		var start := int(row.arrival) / 60 * 60
-		var category: String = {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房用具", "textile": "绣品"}.get(item.category, "旧物")
+		var category: String = {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房用具", "textile": "布货"}.get(item.category, "旧物")
 		var intent := "想办活当" if row.transaction_modes == ["pawn"] else ("只想出售" if row.transaction_modes == ["sell"] else "出售、活当都愿谈")
 		lines.append("第%d夜来客口信：约%s–%s，有人带%s来，%s。原当户办理若占了时辰，来客也会稍晚。" % [row.night, TimeController.clock_text(1080, start), TimeController.clock_text(1080, start + 60), category, intent])
 	return "\n\n".join(lines)

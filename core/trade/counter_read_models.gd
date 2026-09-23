@@ -13,6 +13,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 	model.trade.can_pawn = false
 	model.trade.pawn_asking = 1
 	if service == null: return model
+	if MilitaryIntroduction.active(day.state): return MilitaryIntroduction.model(model, day.state)
 	var state := day.state
 	var waiting := 0
 	var next_arrival := -1
@@ -57,14 +58,12 @@ static func build(day: DayController, service: CounterService, message: String, 
 	var evidence_lines: PackedStringArray = []
 	for clue_id in visit.item.revealed_clue_ids: evidence_lines.append("• " + item.find_clue(clue_id).text)
 	var goods_note := GoodsExpertise.description(visit.item, item)
-	model.appraisal.body = "%s\n证据估值：%d–%d（不是买家报价）\n你的判断：%s\n\n%s" % [item.display_name, bounds.x, bounds.y, JUDGEMENTS[visit.item.judgement], "\n".join(evidence_lines) if not evidence_lines.is_empty() else "尚未取得证据。卖家说法不能替代检查。"]
+	model.appraisal.body = "%s\n证据估值：%d–%d（不是买家报价）\n\n%s" % [item.display_name, bounds.x, bounds.y, "\n".join(evidence_lines) if not evidence_lines.is_empty() else "尚未取得证据。卖家说法不能替代检查。"]
 	for action in item.appraisal_actions:
 		model.appraisal.buttons.append(_button(day, service, visit, "appraise", action.id, "%s · %d分钟" % [action.label, ShopGrowthService.appraisal_minutes(state, item, action.id)]))
 	if not item.provenance.is_empty():
 		model.appraisal.body += "\n" + ProvenanceService.describe(visit.item)
 		model.appraisal.buttons.append(_button(day, service, visit, "verify_source", "", "核对来源凭据与原物 · %d分钟" % int(item.provenance.check_minutes)))
-	for key in JUDGEMENTS:
-		model.appraisal.buttons.append(_button(day, service, visit, "judge", key, "记录判断：" + JUDGEMENTS[key]))
 	if scenario == null:
 		model.dialogue.body = customer.terms.introduction + "\n\n卖家口供未证实，不自动收窄估值。"
 		for question in customer.questions:
@@ -99,6 +98,9 @@ static func build(day: DayController, service: CounterService, message: String, 
 		var claimed := FanBargainingService.attempt(state, visit)
 		model.trade.body += "\n对客说法：" + (FanBargainingService.WORDS if not claimed.is_empty() else "尚未拿真伪谈价")
 		model.trade.buttons.append(_button(day, service, visit, FanBargainingService.COMMAND, "", "“" + FanBargainingService.WORDS + "”" + (" · 已试探" if visit.trade.belittle_used else " · 5分钟 · 议价一轮")))
+	if state.social_enabled and state.social.plaque_awarded and ReputationService.eligible(state, visit):
+		model.trade.buttons.append(_button(day, service, visit, "intimidate", "", "借军方牌子压价 · 让价10% · 伤口碑"))
+		model.trade.body += "\n借牌压价每位客人限一次，会损伤口碑。"
 	if not customer.belittle.is_empty():
 		var label := "“这东西没你说的那么值钱，再让些。”"
 		label += " · 已试探" if visit.trade.belittle_used else " · %d分钟 · 议价一轮" % int(customer.belittle.minutes)

@@ -14,7 +14,7 @@ const MATERIALS := [
 ]
 
 static func enabled(run: RunDefinition) -> bool:
-	return String(run.id) == RUN or run.variety.get("shop_growth_version", 0) == 1
+	return String(run.id) == RUN or SocialRules.enabled(run) or run.variety.get("shop_growth_version", 0) == 1
 
 static func initial() -> Dictionary:
 	return {"bench": false, "display": false, "investments": [], "exploration": [], "display_id": "", "opportunities": []}
@@ -43,7 +43,7 @@ static func opportunity(state: RunState) -> Dictionary:
 	return {}
 
 static func blocked(day: DayController) -> bool:
-	return not day.state.pending_event_id.is_empty() or not day.state.risk_pending.is_empty() or not PawnReturnService.current(day.state).is_empty() or MirrorEncounterService.new(day.state.ghost_catalog).pending(day)
+	return MilitaryIntroduction.active(day.state) or not day.state.pending_event_id.is_empty() or not day.state.risk_pending.is_empty() or not PawnReturnService.current(day.state).is_empty() or MirrorEncounterService.new(day.state.ghost_catalog).pending(day)
 
 static func reason(day: DayController, command: String, detail := "") -> String:
 	if command == "learn_knowledge": return ShopKnowledgeService.reason(day, detail)
@@ -109,7 +109,7 @@ static func perform(day: DayController, command: String, detail := "") -> Action
 	return ActionResult.new(false, "铺务未办妥。")
 
 static func lock_night(state: RunState) -> void:
-	if not state.shop_growth_enabled or not opportunity(state).is_empty(): return
+	if not state.shop_growth_enabled or SocialRules.closed(state) or not opportunity(state).is_empty(): return
 	var id: String = state.shop_growth.display_id
 	var item := InventoryManager.new().find(state, id)
 	var eligible: bool = state.shop_growth.display and item_reason(state, item).is_empty()

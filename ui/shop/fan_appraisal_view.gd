@@ -390,7 +390,7 @@ func refresh() -> void:
 			fan.texture = load(ART + "fan-" + variant + ".png")
 			fan.queue_redraw()
 			_art_variant = variant
-	book.visible = FanAppraisalService.data(state).get("manual", false)
+	book.visible = FanAppraisalService.data(state).get("manual", false) or (ShopKnowledgeService.enabled(session.definition) and ShopKnowledgeService.mastered(state, ShopKnowledgeService.GU_YANSHENG))
 	fan.visible = item != null and _access.is_empty()
 	if not fan.visible:
 		book.set_marker(UNSELECTED)

@@ -38,6 +38,7 @@ func refresh() -> void:
 	var commands: Array = []
 	for entry in [{"id": "open_shop", "label": "开铺"}, {"id": "close_shop", "label": "关门（本夜不可重开）"}]:
 		entry.enabled = _session.can_execute(entry.id)
+		entry.visible = state.phase == "pre_open" if entry.id == "open_shop" else state.phase in ["open", "closed_processing"]
 		commands.append(entry)
 	var remaining := maxi(0, definition.night_minutes - int(state.game_minutes))
 	commands.append({"id": "wait_until_seal", "label": "等到封铺 · %d分钟" % remaining, "enabled": _session.can_execute("wait_until_seal"), "visible": state.phase in ["open", "closed_processing"]})
@@ -60,7 +61,7 @@ func refresh() -> void:
 		appointment_hint += "\n" + _session.seven_notice()
 		if state.current_night_index >= 4 and state.phase == "pre_open": appointment_hint = "\n今夜准备剩余%d次，开铺后不可返回。\n收货传闻与来客口信记在铺中记事里。" % (2 - PreparationService.count(_session._day.state))
 	var event_hint := "\n有待处理的铺中记事，请先查看。" if not state.pending_event_id.is_empty() else ""
-	var description := "%s\n剩余 %d 分钟 · 查看面板不耗时\n点击柜台上的客人与货物进行接待。\n等待/店内行动也会让顾客继续等候。" % [PHASE_LABELS[state.phase], definition.night_minutes - int(state.game_minutes)] + event_hint + appointment_hint
+	var description := String(PHASE_LABELS[state.phase]) + event_hint + appointment_hint
 	if SevenNightPlan.enabled(definition) and state.phase == "pre_open" and state.current_night_index >= 4:
 		description = "开铺前\n今夜准备剩余%d次，开铺后不可返回。\n收货与来客消息可免费复看。" % (2 - PreparationService.count(_session._day.state))
 	if OpeningPreparation.enabled(definition) and state.current_night_index >= 2:
@@ -81,7 +82,9 @@ func refresh() -> void:
 		elif not state.pending_event_id.is_empty():
 			description = "已封铺\n铺里还有未办完的事，先查看铺中记事。"
 			commands.push_front({"id": "read_events", "label": "查看铺中记事", "enabled": true})
-	if state.phase == "open": description = "营业中"
+	if state.phase == "open": description = "停业守铺 · 只办旧票" if SocialRules.closed(_session._day.state) else "营业中"
+	if SocialRules.enabled(definition):
+		description += SocialReadModels.notice(_session._day.state)
 	if _wait_picker:
 		description = "等待多久？"
 		commands = _wait_commands()
@@ -91,10 +94,11 @@ func refresh() -> void:
 
 func _refresh_chrome(state: RunState) -> void:
 	var definition := _session.definition
-	_session_menu.render({"shop_growth": ShopGrowthService.enabled(definition), "investigation": InvestigationService.enabled(definition), "has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
+	_session_menu.render({"social": SocialRules.enabled(definition), "shop_growth": ShopGrowthService.enabled(definition), "investigation": InvestigationService.enabled(definition), "has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
 	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, _session.definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(_session.definition.opening_minute, state.game_minutes), state.cash])
 	if state.phase != _last_phase:
 		_last_phase = state.phase
+		if MilitaryIntroduction.active(_session._day.state): return
 		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")
 
 func _on_command(command: String) -> void:
@@ -111,7 +115,7 @@ func _on_command(command: String) -> void:
 		_session.execute(command.trim_prefix("wait_option/"))
 		refresh()
 		return
-	var routes := {"read_night": &"night", "read_risk": &"risk", "read_events": &"events"}
+	var routes := {"read_social": &"social", "read_night": &"night", "read_risk": &"risk", "read_events": &"events"}
 	if routes.has(command):
 		route_requested.emit(routes[command])
 		return

@@ -19,7 +19,6 @@ func _run() -> void:
 		await _click(label)
 	_check(_session.counter_model().appraisal.body.contains("18–25"), "鼠标鉴定揭露真实修补证据")
 	await _capture("03_evidence")
-	await _click("记录判断：有修补/瑕疵")
 	await _click("交易")
 	await _click_trade_intent("pressure", "repair")
 	_check(_session.counter_model().trade.asking_price == 32, "证据施压降低要价")
@@ -44,11 +43,10 @@ func _run() -> void:
 	await _click("进入下一夜")
 	await _click("开铺")
 	await _click("鉴定")
-	await _click("记录判断：完好真品")
 	await _click("交易")
 	price.value = 60
 	await _click("正式报价并收购")
-	_check(_session.read_state().cash == 22 and _session.read_state().inventory_instances.size() == 2, "第二夜错误判断仍会真实付出高价")
+	_check(_session.read_state().cash == 22 and _session.read_state().inventory_instances.size() == 2, "第二夜未经检查收购仍会真实付出高价")
 	await _click("营业")
 	await _click("读取夜末存档")
 	await create_timer(0.3).timeout
