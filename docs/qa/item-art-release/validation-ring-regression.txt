@@ -1,0 +1,4 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+RUN SEED: 1298439619
+SILVER RING UI: 55 assertions, 0 failures

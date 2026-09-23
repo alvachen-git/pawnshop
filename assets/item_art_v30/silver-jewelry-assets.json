@@ -1,0 +1,30 @@
+[
+  {
+    "file": "silver_ring_front.png",
+    "source": "/Users/alvachen/.codex/generated_images/01a0c923-8e99-7c61-a112-29ab760aa9df/exec-46b65993-0f08-4d5c-9837-dc751d94c96a.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "sha256": "3422a1272a1f7b593bebe533c862459d2ce671ac7535cb54eadb4432bb415de3"
+  },
+  {
+    "file": "silver_lock_front.png",
+    "source": "/Users/alvachen/.codex/generated_images/01a0c923-8e99-7c61-a112-29ab760aa9df/exec-3924f5f8-d88f-41d3-809b-36e037096b45.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "sha256": "fa20d7c0ba3f2ca5159595a4a1012d9dd03631b06c868cbefa43f88e618f4a17"
+  }
+]

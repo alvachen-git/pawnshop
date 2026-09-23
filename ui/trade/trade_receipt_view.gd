@@ -52,6 +52,7 @@ func _ready() -> void:
 	goods.add_theme_constant_override("separation", 22)
 	column.add_child(goods)
 	_picture = TextureRect.new()
+	_picture.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	_picture.custom_minimum_size = Vector2(110, 106)
 	_picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -136,6 +137,7 @@ func present(receipt: Dictionary) -> void:
 	_amount.text = "%s  %d 银元" % ["实付" if receipt.amount < 0 else "实收", absi(receipt.amount)]
 	_cash.text = "现银  %d → %d 银元" % [receipt.before, receipt.after]
 	_picture.texture = CounterVisualCatalog.front(receipt.item_asset, receipt.images)
+	_picture.material = CounterVisualCatalog.study_material(_picture.texture)
 	_picture.visible = _picture.texture != null
 	_destination = receipt.destination
 	_secondary.text = "查看当票" if receipt.destination == "ledger" else "查看库存"

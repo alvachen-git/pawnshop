@@ -107,7 +107,8 @@ static func ordinary_bounds(texture: Texture2D) -> Vector4:
 	return Vector4(placement.z - 0.1825, top, placement.z + 0.1825, top + placement.x)
 
 static func _painted_front(asset: String) -> String:
-	if asset == "goods.silver_ring": return "res://assets/art10/items/silver_ring_front.png"
+	var item_path := CounterItemArt.front_path(asset)
+	if not item_path.is_empty(): return item_path
 	if asset.begins_with("goods."):
 		var goods_path := "res://assets/goods_v21/" + asset.trim_prefix("goods.") + "_front.svg"
 		return goods_path if ResourceLoader.exists(goods_path) else ""
@@ -126,13 +127,16 @@ static func front(asset: String, source_images: Array = []) -> Texture2D:
 	return load(ROOT + "items/" + ITEMS[asset] + "_front.svg") as Texture2D
 
 static func _front_path(asset: String, configured: String) -> String:
-	if asset == "goods.silver_ring" and configured == "res://assets/goods_v21/silver_ring_front.svg": return _painted_front(asset)
+	var upgraded := CounterItemArt.upgrade_path(configured)
+	if upgraded != configured: return upgraded
 	# Upgrade only the shipped opening placeholder. Artist-authored paths still win.
 	var painted := _painted_front(asset)
 	if configured == "res://assets/opening/hairpin.svg" and asset == "placeholder.silver_hairpin" and not painted.is_empty(): return painted
 	return configured
 
 static func images(visual: Dictionary, source_images: Array = []) -> Array:
+	if CounterItemArt.has_asset(visual.get("item_asset", "")):
+		return CounterItemArt.images(visual, source_images)
 	var result: Array = []
 	var family: String = ITEMS.get(visual.get("item_asset", ""), "")
 	# Scenario rows are already knowledge-filtered by the counter service and
@@ -151,6 +155,8 @@ static func images(visual: Dictionary, source_images: Array = []) -> Array:
 						if DETAILS[family].has(clue.id):
 							row.path = ROOT + "items/" + DETAILS[family][clue.id][0] + ".svg"
 			if row.path.is_empty() and row.id == "front": row.path = _painted_front(visual.get("item_asset", ""))
+			# Hairpin currently has front art only; do not offer a blank back tab.
+			if visual.get("item_asset", "") == "placeholder.silver_hairpin" and row.path.is_empty(): continue
 			result.append(row)
 		return result
 	if not family.is_empty():
@@ -163,3 +169,6 @@ static func images(visual: Dictionary, source_images: Array = []) -> Array:
 				var spec: Array = DETAILS[family][clue.id]
 				result.append({"id": "detail_" + clue.id, "label": spec[1], "path": ROOT + "items/" + spec[0] + ".svg"})
 	return result
+
+static func study_material(texture: Texture2D) -> ShaderMaterial:
+	return CounterItemArt.material(texture)

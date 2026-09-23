@@ -1,0 +1,50 @@
+[
+  {
+    "item": "holder",
+    "old_visible_px_at_1280": [
+      97.5,
+      163.0
+    ],
+    "new_visible_px_at_1280": [
+      66.6,
+      111.3
+    ],
+    "width_reduction_percent": 31.7
+  },
+  {
+    "item": "bowl",
+    "old_visible_px_at_1280": [
+      147.9,
+      113.6
+    ],
+    "new_visible_px_at_1280": [
+      110.7,
+      85.0
+    ],
+    "width_reduction_percent": 25.2
+  },
+  {
+    "item": "hairpin",
+    "old_visible_px_at_1280": [
+      148.2,
+      81.4
+    ],
+    "new_visible_px_at_1280": [
+      96.6,
+      53.0
+    ],
+    "width_reduction_percent": 34.8
+  },
+  {
+    "item": "inkstone",
+    "old_visible_px_at_1280": [
+      171.1,
+      111.2
+    ],
+    "new_visible_px_at_1280": [
+      119.2,
+      77.5
+    ],
+    "width_reduction_percent": 30.3
+  }
+]

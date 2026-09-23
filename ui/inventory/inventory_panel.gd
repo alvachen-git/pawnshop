@@ -84,6 +84,8 @@ func _draw() -> void:
 		if texture != null:
 			var picture := TextureRect.new()
 			picture.texture = texture
+			picture.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+			picture.material = CounterVisualCatalog.study_material(texture)
 			picture.custom_minimum_size = Vector2(68, 60)
 			picture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			picture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED

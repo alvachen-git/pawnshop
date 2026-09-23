@@ -41,8 +41,8 @@ func _run() -> void:
 		_main.get_node("CounterScreen")._close_drawer()
 		_session.changed.emit()
 		await create_timer(0.4).timeout
-		_check(sprite.texture.resource_path == "res://assets/art10/items/silver_ring_front.png", "ring uses new alpha artwork")
-		_check(is_equal_approx(sprite.anchor_left, 0.475) and is_equal_approx(sprite.anchor_right, 0.545), "ring counter uses small tabletop bounds")
+		_check(sprite.texture.resource_path == "res://assets/item_art_v30/silver_ring_front.png", "ring uses new alpha artwork")
+		_check(is_equal_approx(sprite.anchor_left, 0.493) and is_equal_approx(sprite.anchor_right, 0.527), "ring counter uses small tabletop bounds")
 		var final_texture := sprite.texture
 		var final_bounds := Vector4(sprite.anchor_left, sprite.anchor_top, sprite.anchor_right, sprite.anchor_bottom)
 		view._bounds(sprite, 0.425, 0.62, 0.595, 0.81)
@@ -72,5 +72,6 @@ func _run() -> void:
 func _capture(label: String) -> void:
 	if DisplayServer.get_name() == "headless": return
 	await RenderingServer.frame_post_draw
-	var path := "res://docs/qa/silver-ring/" + _capture_prefix + "_" + label + ".png"
+	DirAccess.make_dir_recursive_absolute(ProjectSettings.globalize_path("res://.godot/qa/silver-ring-release/"))
+	var path := "res://.godot/qa/silver-ring-release/" + _capture_prefix + "_" + label + ".png"
 	_check(root.get_texture().get_image().save_png(path) == OK, "saved actual window render " + label)

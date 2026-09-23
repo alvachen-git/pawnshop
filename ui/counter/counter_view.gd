@@ -75,6 +75,7 @@ func _ready() -> void:
 	_item_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	_item_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_item_image.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_item_image.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	_item_image.z_index = 2
 	add_child(_item_image)
 	_bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
@@ -282,8 +283,18 @@ func render(model: Dictionary) -> void:
 		_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
 	_portrait.visible = active and _portrait.texture != null
 	_item_image.texture = CounterVisualCatalog.front(visual.get("item_asset", ""), model.appraisal.get("images", []))
-	_item_image.material = null
+	_item_image.material = CounterItemArt.material(_item_image.texture, true)
 	_item_image.visible = active and _item_image.texture != null
+	var item_bounds := CounterItemArt.counter_bounds(_item_image.texture)
+	_item_image.stretch_mode = TextureRect.STRETCH_SCALE if CounterItemArt.projects_on_table(_item_image.texture) else TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	if item_bounds.size != Vector2.ZERO:
+		_bounds(_item_image, item_bounds.position.x, item_bounds.position.y, item_bounds.end.x, item_bounds.end.y)
+	else: _bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
+	_bounds(_item_hotspot, 0.425, 0.615, 0.595, 0.815)
+	if item_bounds.size != Vector2.ZERO:
+		# Keep a usable click target for small goods; larger painted goods stay inside it.
+		var hit := item_bounds.grow(0.012).merge(Rect2(0.46, 0.66, 0.10, 0.12))
+		_bounds(_item_hotspot, hit.position.x, hit.position.y, hit.end.x, hit.end.y)
 	_speech_panel.visible = active and not visual.is_empty()
 	if not visual.is_empty():
 		%CustomerText.text = "%s\n%s\n最迟留到 %s" % [visual.customer_name, visual.attitude, visual.deadline]
@@ -300,18 +311,13 @@ func render(model: Dictionary) -> void:
 	$Room.queue_redraw()
 	if arrived:
 		if _arrival != null: _arrival.kill()
-		if visual.get("item_asset", "") == "goods.silver_ring": _bounds(_item_image, 0.475, 0.645, 0.545, 0.785)
-		else: _bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
 		_item_image.offset_top = 0
 		_item_image.offset_bottom = 0
 		_portrait.modulate.a = 0.0
 		_item_image.modulate.a = 0.0
-		var end_y := _item_image.position.y
-		_item_image.position.y -= 8
 		_arrival = create_tween().set_parallel(true)
 		_arrival.tween_property(_portrait, "modulate:a", 1.0, 0.18)
 		_arrival.tween_property(_item_image, "modulate:a", 1.0, 0.18)
-		_arrival.tween_property(_item_image, "position:y", end_y, 0.18)
 
 func render_story(model: Dictionary, state: Dictionary) -> void:
 	story_active = not model.is_empty()
@@ -335,6 +341,7 @@ func render_story(model: Dictionary, state: Dictionary) -> void:
 	_portrait.modulate.a = 1.0
 	var item_art: String = art
 	if art == "aqi": item_art = "fixed" if "aq_helped" in state.narrative_flags else "bent"
+	_item_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_item_image.texture = AqiArt.counter_texture(item_art)
 	_item_image.material = AqiArt.counter_material(item_art)
 	_item_image.visible = true
