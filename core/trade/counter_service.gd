@@ -36,6 +36,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	if customer.guest_rule == "swap" and command not in ["question", "judge"]: return "他只肯调换点名的当物，请到报价页决定。"
 	match command:
 		"watch_bluff": return WatchEconomy.bluff_reason(day,visit,detail,amount)
+		"pearl_claim": return PearlNegotiation.reason(day,visit,detail,amount)
 		"watch_claim": return WatchNegotiation.reason(day,visit,detail,amount)
 		"luxury_pressure":
 			return LuxuryAppraisalService.pressure_reason(day, visit, detail, amount)
@@ -122,7 +123,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	var cost := 0
 	match command:
 		"watch_bluff": cost = 5
-		"watch_claim": cost = 5
+		"watch_claim", "pearl_claim": cost = 5
 		"luxury_pressure": cost = 5
 		"condition_pressure": cost = 5
 		"fan_pressure": cost = int(day.definition.variety.fan_bargaining.minutes)
@@ -146,6 +147,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	var message := ""
 	match command:
 		"watch_bluff": message = WatchEconomy.bluff(day,visit)
+		"pearl_claim": message = PearlNegotiation.submit(day,visit,detail)
 		"watch_claim": message = WatchNegotiation.submit(day,visit,detail)
 		"luxury_pressure": message = LuxuryAppraisalService.pressure(day, visit)
 		"condition_pressure": message = FanConditionService.pressure(day, visit)

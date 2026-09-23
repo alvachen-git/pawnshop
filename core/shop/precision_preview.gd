@@ -3,7 +3,7 @@ extends RefCounted
 
 # Deliberately constructed debug preview, never a replay-valid production save.
 # The launcher isolates APPDATA; this store cannot publish player progress.
-static func apply(session: RunSession, level: int, short := "porcelain_vase", variant := "mended", damage := "minor", hidden := true) -> void:
+static func apply(session: RunSession, level: int, short := "porcelain_vase", variant := "mended", damage := "minor", hidden := true, holder := "") -> void:
 	var state := session._day.state
 	var id := "item_luxury_"+short
 	if short == "silver_set": id = "item_luxury_silver_service"
@@ -12,6 +12,9 @@ static func apply(session: RunSession, level: int, short := "porcelain_vase", va
 	for cid in WealthyCustomers.config(state).profiles:
 		var customer := state.ghost_catalog.get_definition("customers",cid) as CustomerDefinition
 		if id in customer.item_pool: customer_id = cid; break
+	if LuxuryCarry.enabled(session.definition):
+		var preferred := "customer_wealthy_"+(holder if not holder.is_empty() else "opera" if short == "pearl_necklace" else "factory" if short == "gold_watch" else "antique")
+		if preferred in WealthyCustomers.config(state).profiles: customer_id = preferred
 	var customer := state.ghost_catalog.get_definition("customers",customer_id) as CustomerDefinition
 	state.phase = &"open"; state.current_night_index = 6; state.game_minutes = 0; state.cash = 2000
 	state.pending_event_id = ""; state.social.pending.clear(); state.social.intro_step = -1
@@ -47,8 +50,9 @@ static func from_arguments(session: RunSession) -> bool:
 		if argument.begins_with("--precision-"): args[argument.get_slice("=",0)] = argument.get_slice("=",1)
 	if not args.has("--precision-preview"): return false
 	var level: int = {"basic":0,"standard":2,"deep":3}.get(args["--precision-preview"],0)
-	apply(session,level,args.get("--precision-item","porcelain_vase"),args.get("--precision-condition","mended"),args.get("--precision-damage","minor"),args.get("--precision-difficulty","hidden") == "hidden")
+	apply(session,level,args.get("--precision-item","porcelain_vase"),args.get("--precision-condition","mended"),args.get("--precision-damage","minor"),args.get("--precision-difficulty","hidden") == "hidden",args.get("--precision-holder",""))
 	if WatchEconomy.enabled(session.definition) and args.has("--precision-watch-case"): watch_case(session,args["--precision-watch-case"])
+	if PearlEconomy.enabled(session.definition) and args.has("--precision-pearl-case"): PearlPreview.apply(session,args["--precision-pearl-case"])
 	return true
 
 static func watch_case(session: RunSession, scenario: String) -> void:

@@ -102,7 +102,7 @@ static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalo
 		name = surnames[index / given.size()] + given[index % given.size()]
 		if name not in used and name not in FamiliarStories.NAMES: break
 	return {"visit_id": old.visit_id, "night": old.night, "arrival": old.arrival, "wealthy": true,
-		"customer_id": id, "context_id": "wealthy/" + id, "item_id": VarietyService.pick(customer.item_pool,state.run_seed,key + "/item"),
+		"customer_id": id, "context_id": "wealthy/" + id, "item_id": LuxuryCarry.pick(run,customer,state.run_seed,key),
 		"variant_id": variant, "source": "", "situation": "ordinary", "reaction": "explain", "transaction_modes": modes,
 		"wait_minutes": customer.terms.wait_minutes, "terms_id": PawnRedemptionPolicy.terms_for(run,customer,state.run_seed,old.visit_id,customer.pawn_terms_id),
 		"person": person(customer) if fixed_people(run) else {"id": "person/" + old.visit_id, "name": name, "portrait": customer.portrait_asset_id}}
@@ -120,7 +120,11 @@ static func prepare(state: RunState, visit: CustomerVisit) -> void:
 	visit.trade.asking_price = visit.trade.opening_price
 	visit.trade.reserve_price = maxi(funding,roundi(reference * float(profile.reserve_percent) / 100.0))
 	if funding > 0: visit.voice.introduction += "\n‘这回至少要筹到%d银元，少了办不成。’" % funding
+	if LuxuryCarry.enabled(state.ghost_catalog.get_definition("runs",state.run_definition_id)):
+		visit.voice = visit.voice.duplicate(true)
+		visit.voice.introduction = LuxuryCarry.origin(state,visit) + ("\n这回至少需筹%d银元。" % funding if funding > 0 else "")
 	if WatchEconomy.handles(state,visit.item): WatchEconomy.prepare(state,visit)
+	if PearlEconomy.handles(state,visit.item): PearlEconomy.prepare(state,visit)
 
 static func reference_price(value: int, mode: String) -> int:
 	return roundi(value * (0.5 if mode == "pawn" else 0.7))

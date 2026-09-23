@@ -27,6 +27,9 @@ func _on_intent(command: String, visit_id: String, detail: String, amount: int) 
 		if visitor == null: return
 		var result := _session.fan_command(command,visitor.item.instance_id,detail)
 		if result.ok:
+			if PearlEconomy.handles(_session._day.state,visitor.item):
+				PearlDeskView.open_pearl(_view,_session,visitor.item.instance_id)
+				return
 			if WatchAppraisal.handles(_session._day.state,visitor.item):
 				WatchDeskView.create(_view,_session,visitor.item.instance_id)
 				return

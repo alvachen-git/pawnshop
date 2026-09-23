@@ -94,7 +94,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 		if row.method == "counter_command" and args.size() == 4: args[3] = int(args[3])
 		var result: ActionResult = session.callv(row.method, args)
 		if row.method in ["growth_command", "fan_command", "social_command"] and not result.ok: return null
-		if row.method == "counter_command" and (row.args[0] in ["fan_pressure", "condition_pressure", "watch_bluff", "watch_claim"] or String(row.args[0]).begins_with("luxury_")) and not result.ok: return null
+		if row.method == "counter_command" and (row.args[0] in ["fan_pressure", "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim"] or String(row.args[0]).begins_with("luxury_")) and not result.ok: return null
 		if SocialRules.enabled(run) and row.method == "counter_command" and row.args[0] in ["military_intro", "intimidate"] and not result.ok: return null
 		if ShopGrowthService.enabled(run) and row.method == "counter_command" and row.args[0] in ["display_accept", "display_counter"] and not result.ok: return null
 		replayed_actions += 1

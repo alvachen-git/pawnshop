@@ -28,6 +28,8 @@ static func topic_info(run: RunDefinition, topic: String) -> Dictionary:
 			info.bounds = TOPICS.luxury_textile.bounds; info.cabinet = 2; info.cabinet_name = "第二柜"; info.name = "名表鉴定指南"
 		elif topic == "luxury_textile":
 			info.bounds = TOPICS.luxury_watch.bounds; info.cabinet = 4
+	if run != null and PearlEconomy.enabled(run) and topic == "luxury_jade":
+		info.name = "珠玉鉴定指南"; info.description = "转珠看表层，放大孔口，再把整串逐粒比较。"
 	return info
 
 static func mastered(state: RunState, topic: String) -> bool:

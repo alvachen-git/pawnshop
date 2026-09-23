@@ -296,6 +296,11 @@ func render(model: Dictionary) -> void:
 	_body.text = "\n".join(context_lines)
 	_body.visible = not _body.text.is_empty()
 	_style_bargaining(model)
+	if model.has("pearl_claims"):
+		var form := WatchClaimForm.new(); _buttons.add_child(form); form.build(model.pearl_claims)
+		form.name = "PearlClaimForm"
+		_bargain_toggle.show(); _bargain_toggle.disabled = false
+		form.submitted.connect(func(detail: String) -> void: _emit_intent("pearl_claim",_visit_id,detail))
 	if model.has("watch_claims"):
 		var form := WatchClaimForm.new(); _buttons.add_child(form); form.build(model.watch_claims)
 		form.submitted.connect(func(detail: String) -> void: _emit_intent("watch_claim",_visit_id,detail))
