@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "fd_seller",
+      "name_key": "customer.customer_citizen.name",
+      "portrait_asset_id": "asset.customer_house_agent",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell"
+      ],
+      "item_pool": [
+        "fd_phoenix"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "周成业 · 旧宅管事",
+        "introduction": "旧宅分物时留下的一只凤镯。包纸也带来了，掌柜自己看。",
+        "wait_minutes": 120,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.0,
+        "reserve_ratio": 0.8333333333333334,
+        "counter_step": 6,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "history",
+          "prompt": "问问来路",
+          "answer": "原来是一对，旧包纸还夹着当年的出货凭据。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "旧宅分物时留下的一只凤镯。包纸也带来了，掌柜自己看。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？",
+        "pawn_background": "这家靠零工过日子，近来几笔工钱还没有着落。"
+      },
+      "belittle": {
+        "reaction": "yielding",
+        "minutes": 5,
+        "ordinary_discount": 3,
+        "urgent_discount": 5,
+        "patience_cost": 2,
+        "cue": "他把价钱又低声念了一遍，抬眼等你开口。",
+        "response": "他犹疑了一下：“掌柜既这么说，我再让些。”"
+      },
+      "pawn_redemption_chance": 20
+    },
+    {
+      "id": "fd_chen",
+      "name_key": "customer.seamstress",
+      "portrait_asset_id": "fd.chen",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 3,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell"
+      ],
+      "item_pool": [
+        "item_silk_panel"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "陈小满 · 缝补帮工",
+        "introduction": "赶完一批绣活，带一件旧绣样来周转。",
+        "wait_minutes": 120,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.0,
+        "reserve_ratio": 0.8,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "history",
+          "prompt": "问问来路",
+          "answer": "家里留下的式样，我自己照着做过活。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "",
+      "persona": {
+        "names": [
+          "兰英",
+          "秀珍",
+          "玉琴",
+          "素娥",
+          "桂芳",
+          "月娥",
+          "锦云",
+          "慧贞"
+        ],
+        "origin": "赶完一批绣活，带一件旧绣样来周转。",
+        "redeem": "工钱领到了。当票在这儿，请把我的原物还我。",
+        "extend": "这期工钱迟了。我先付续当费，原物请再留一夜。",
+        "condition": "针脚用痕我熟，",
+        "bargain": "您指出的这处，我认；请把让下的数记清。",
+        "refused": "掌柜，这价我还得想想。",
+        "false_pressure": "那处不能算破损，不能这么扣价。",
+        "pawn_background": "绣坊按件结工钱，她手头的活还没交，家里用钱却等不得。"
+      },
+      "belittle": {
+        "reaction": "yielding",
+        "minutes": 5,
+        "ordinary_discount": 3,
+        "urgent_discount": 5,
+        "patience_cost": 2,
+        "cue": "他把价钱又低声念了一遍，抬眼等你开口。",
+        "response": "他犹疑了一下：“掌柜既这么说，我再让些。”"
+      },
+      "pawn_redemption_chance": 20
+    }
+  ]
+}

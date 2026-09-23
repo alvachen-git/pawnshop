@@ -1,6 +1,7 @@
 class_name IntentPanel
 extends FeaturePanel
 
+signal document_requested(id: String)
 signal intent(command: String, visit_id: String, detail: String, amount: int)
 var _body: Label
 var _buttons: VBoxContainer

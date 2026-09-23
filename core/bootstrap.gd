@@ -76,6 +76,8 @@ func initialize() -> ContentLoadResult:
 			saves.legacy_archive_path = "user://p0/autosave.json"
 			saves.prior_version_path = "user://p0/autosave_v6.json"
 		saves.library = SaveLibrary.new() if not save_path.begins_with("user://tests/") else null
+		if FirstDebt.enabled(definition) and not preview_stage.is_empty():
+			saves.library = SaveLibrary.new("user://tests/v%d_preview/" % preview_version + preview_stage + "_library.json")
 		# Seed overrides mutate the runtime definition; keep save validation on the
 		# authored catalog in that debugging mode.
 		if saves.library != null and not Array(OS.get_cmdline_user_args()).any(func(arg: String) -> bool: return arg.begins_with("--seed=")):
@@ -121,6 +123,7 @@ func initialize() -> ContentLoadResult:
 			session._day.state = state
 		if not preview_stage.is_empty():
 			var fixture_path := "res://.godot/qa/" + String(UNIFIED_PREVIEWS[unified_preview]) + ".json" if not unified_preview.is_empty() else "res://.godot/qa/v%d/" % preview_version + preview_stage + ".json"
+			if FirstDebt.enabled(definition): fixture_path = "res://docs/qa/first-debt-v%d/fixtures/" % preview_version + preview_stage + ".json"
 			var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(fixture_path))
 			var codec := SaveCodec.new()
 			var preview := codec.decode(data, definition, catalog.content_version, catalog, true)
@@ -128,7 +131,12 @@ func initialize() -> ContentLoadResult:
 				push_error("快速试玩资料无效，请重新运行对应版本的试玩入口：" + codec.error_message)
 				session = null
 				return result
-			session._day.state = preview
+			if FirstDebt.enabled(definition):
+				if not saves.library.adopt({"state": preview, "run": definition, "catalog": catalog}, session):
+					push_error("快速试玩档案无法载入：" + saves.library.error_message)
+					session = null
+					return result
+			else: session._day.state = preview
 		if OrdinarySamplePlan.enabled(definition) or SevenNightPlan.enabled(definition): print("RUN SEED: ", session.read_state().run_seed)
 		if SevenNightPlan.enabled(definition) and "--log-plan" in OS.get_cmdline_user_args(): print("SEVEN VISIT PLAN: ", JSON.stringify(session.read_state().seven_plan))
 		if FamiliarStories.enabled(definition) and "--log-plan" in OS.get_cmdline_user_args(): print("FAMILIAR STORY PLAN: ", JSON.stringify(session.read_state().familiar_plan))

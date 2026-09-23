@@ -94,8 +94,8 @@ func refresh() -> void:
 
 func _refresh_chrome(state: RunState) -> void:
 	var definition := _session.definition
-	_session_menu.render({"social": SocialRules.enabled(definition), "shop_growth": ShopGrowthService.enabled(definition), "investigation": InvestigationService.enabled(definition), "has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
-	status_updated.emit("第 %d / %d 夜 · %s · %s · 现银 %d" % [state.current_night_index, _session.definition.total_nights, PHASE_LABELS[state.phase], TimeController.clock_text(_session.definition.opening_minute, state.game_minutes), state.cash])
+	_session_menu.render({"old_shop": FirstDebt.enabled(definition), "social": SocialRules.enabled(definition), "shop_growth": ShopGrowthService.enabled(definition), "investigation": InvestigationService.enabled(definition), "has_save": _session.has_save(), "manual_storage": _session._save.library != null, "save_reason": SaveLibrary.save_reason(_session._day.state), "room_flow": state.room_enabled, "in_room": state.room_enabled and state.phase in ["private_room", "sleep_resolution", "dead"]})
+	status_updated.emit(("第 %d 夜" % state.current_night_index if FirstDebt.enabled(definition) else "第 %d / %d 夜" % [state.current_night_index, definition.total_nights]) + " · " + PHASE_LABELS[state.phase] + " · " + TimeController.clock_text(definition.opening_minute, state.game_minutes) + " · 现银 %d" % state.cash)
 	if state.phase != _last_phase:
 		_last_phase = state.phase
 		if MilitaryIntroduction.active(_session._day.state): return
@@ -175,6 +175,13 @@ func _preparation_commands() -> Array:
 	if WealthyCustomers.active(state): actions.append(["advertise", "宣传铺子 · 30银元 · 准备1次", "每夜一次；关铺时公布商誉变化，宣传最多增至80"] )
 	if state.current_night_index in [4, 5, 6] and not PreparationService.used(state, "investigate"):
 		actions.append(["investigate", "调查收货消息 · 准备1次", "提前打听第六夜的收货细目"])
+	if DragonSearch.enabled(state):
+		if not FirstDebt.last(state, "fd_search_motive").is_empty() and not FirstDebt.flag(state, "fd_followed"):
+			actions.push_front(["chen_invite", "约陈小满来谈 · 准备1次", "不另收费，开铺后等空柜接待；谈完后告辞"])
+		if FirstDebt.flag(state, "fd_search_promised") and DragonSearch.preparation(state, "dragon_search").is_empty() and not FirstDebt.settled(state):
+			actions.push_front(["dragon_search", "托人寻找龙镯 · 准备1次", "不另收费，收铺后收口信"])
+		if FirstDebt.flag(state, "fd_search_message") and not FirstDebt.item_exists(state, FirstDebt.DRAGON) and not FirstDebt.settled(state):
+			actions.push_front(["dragon_invite", "约陆掌眼带龙镯来 · 准备1次", "19:00起等空柜接待，货款另谈"])
 	for action in actions:
 		var error := OpeningPreparation.reason(state, action[0])
 		var tooltip: String = action[2] + "。"

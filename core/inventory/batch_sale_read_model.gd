@@ -29,6 +29,14 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 		buyers.append({"id": id, "name": buyer.display_name, "wanted": "、".join(wanted), "reason": reason, "stock": stock,
 			"window": "第六夜，时段待打听" if not known else "%s–%s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end)],
 			"note": demand.body if special else "按实物品相报价，收货件数不限。"})
+	if FirstDebt.enabled(day.definition):
+		for row in buyers:
+			var phoenix := FirstDebt.owned(day.state, FirstDebt.PHOENIX)
+			var dragon := FirstDebt.owned(day.state, FirstDebt.DRAGON)
+			if row.id == "buyer_lu" and phoenix != null and dragon != null:
+				row["fixed_pair"] = [phoenix.instance_id, dragon.instance_id]
+				row["fixed_bonus"] = 40
+				row.note += "\n龙凤两只一并交货，合价320银元。"
 	if GoodsExpertise.enabled(day.definition):
 		for row in buyers:
 			row.pairs = GoodsExpertiseUI.sale_pairs(day, service, service.catalog.get_definition("buyers", row.id))

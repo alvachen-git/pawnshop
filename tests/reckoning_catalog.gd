@@ -1,0 +1,11 @@
+extends SceneTree
+func _initialize() -> void:
+	var loaded := JsonContentProvider.new("res://data/first_debt_reckoning_manifest.json").load_catalog()
+	for issue in loaded.issues: print(issue.format_message())
+	if not loaded.is_success(): quit(1); return
+	var run: RunDefinition = loaded.catalog.get_definition("runs", loaded.catalog.default_run_id)
+	var store := GhostReplayStore.new()
+	store.origin = {"seed": 42, "run_token": "0123456789abcdef0123456789abcdef"}
+	var session := RunSession.new(run, 29, store, loaded.catalog)
+	print("V29 CATALOG OK ", session.read_state().current_night_index)
+	quit()

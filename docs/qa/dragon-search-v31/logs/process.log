@@ -1,0 +1,11 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+COLD LOAD committed-before-fd_search_motive 528ms
+COLD LOAD committed-search-ready 529ms
+COLD LOAD committed-letter 546ms
+COLD LOAD committed-invite-ready 555ms
+COLD LOAD committed-lu 557ms
+COLD LOAD committed-quoted 561ms
+COLD LOAD bought 626ms
+COLD LOAD after-fd_settle 550ms
+DRAGON PROCESS: 16 passes, 0 failures

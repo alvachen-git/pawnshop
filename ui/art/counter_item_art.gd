@@ -11,11 +11,14 @@ const FAMILIES := {
 # Existing bowl/hairpin inspection pages keep their original knowledge rules.
 # They share only presentation sizing and the tabletop material here.
 const PLACEMENT_FAMILIES := {
+	"fd.dragon": "dragon_bangle", "fd.phoenix": "phoenix_bangle",
 	"asset.item_blue_bowl": "bowl", "placeholder.silver_hairpin": "hairpin",
 	"goods.silver_ring": "silver_ring", "goods.silver_lock": "silver_lock",
 	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
 }
 const FRONTS := {
+	"dragon_bangle": "res://assets/first_debt/dragon.png",
+	"phoenix_bangle": "res://assets/first_debt/phoenix.png",
 	"inkstone": "res://assets/item_art_v30/inkstone_front.png",
 	"clay_teapot": "res://assets/item_art_v30/clay_teapot_front.png",
 	"silk_panel": "res://assets/item_art_v30/silk_panel_front.png",
@@ -68,6 +71,9 @@ const DETAILS := {
 # mirror/pen sources are projected onto the same tabletop. The redesigned
 # watch already has painted perspective and must retain its original aspect.
 const BOUNDS := {
+	# 64px source square at 1280x720; visible diameter ~56px, near a human wrist.
+	"dragon_bangle": Rect2(.485, .649, .050, .0988),
+	"phoenix_bangle": Rect2(.485, .649, .050, .0988),
 	"inkstone": Rect2(.455, .666, .110, .145),
 	"clay_teapot": Rect2(.452, .638, .115, .152),
 	"silk_panel": Rect2(.395, .634, .235, .195),
@@ -145,7 +151,7 @@ static func projects_on_table(texture: Texture2D) -> bool:
 static func material(texture: Texture2D, on_counter := false) -> ShaderMaterial:
 	if texture == null: return null
 	var path := texture.resource_path
-	if not (path in [FRONTS.bowl, FRONTS.hairpin] or path.begins_with(STUDY_ROOT) or path.begins_with("res://assets/item_art_v30/") or path.begins_with("res://assets/art06/items/") or path.begins_with("res://assets/art07/items/") or path.begins_with("res://assets/art09/items/")): return null
+	if not (path in [FRONTS.bowl, FRONTS.hairpin, FRONTS.dragon_bangle, FRONTS.phoenix_bangle] or path.begins_with(STUDY_ROOT) or path.begins_with("res://assets/item_art_v30/") or path.begins_with("res://assets/art06/items/") or path.begins_with("res://assets/art07/items/") or path.begins_with("res://assets/art09/items/")): return null
 	var result := ShaderMaterial.new()
 	result.shader = preload("res://ui/art/counter_item.gdshader")
 	result.set_shader_parameter("chroma_key", path.begins_with("res://assets/art09/") or path.get_file() in ["holder_back.png", "mirror_back.png", "bowl_back.png"])
@@ -154,6 +160,10 @@ static func material(texture: Texture2D, on_counter := false) -> ShaderMaterial:
 	var old_holder := path.begins_with("res://assets/art07/items/holder_")
 	result.set_shader_parameter("highlight_reduction", 0.06 if new_watch else (0.24 if watch or old_holder else 0.0))
 	result.set_shader_parameter("saturation", 0.90 if new_watch else (0.68 if watch else (0.8 if old_holder else 1.0)))
+	var bangle := path in [FRONTS.dragon_bangle, FRONTS.phoenix_bangle]
+	if bangle:
+		result.set_shader_parameter("saturation", 0.88)
+		result.set_shader_parameter("highlight_reduction", 0.12)
 	if on_counter:
 		var family := _family(texture)
 		result.set_shader_parameter("exposure", 0.92 if new_watch or family == "holder" else (0.76 if watch else 0.86))
