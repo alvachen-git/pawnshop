@@ -13,7 +13,7 @@ func _ready() -> void:
 	if OS.is_debug_build():
 		for argument in OS.get_cmdline_user_args():
 			if argument.begins_with("--precision-preview="): start_at_title = false
-			if argument.begins_with("--unified-preview=") and _bootstrap.manifest_path in ["res://data/named_wealthy_manifest.json", "res://data/watch_patterns_manifest.json", "res://data/watch_negotiation_manifest.json", "res://data/watch_market_manifest.json", "res://data/watch_manifest.json", "res://data/unified_manifest.json", "res://data/wealthy_manifest.json", "res://data/tiered_manifest.json"]:
+			if argument.begins_with("--unified-preview=") and _bootstrap.manifest_path in ["res://data/first_debt_unified_manifest.json", "res://data/pearl_market_manifest.json", "res://data/named_wealthy_manifest.json", "res://data/watch_patterns_manifest.json", "res://data/watch_negotiation_manifest.json", "res://data/watch_market_manifest.json", "res://data/watch_manifest.json", "res://data/unified_manifest.json", "res://data/wealthy_manifest.json", "res://data/tiered_manifest.json"]:
 				var stage := argument.trim_prefix("--unified-preview=")
 				if stage in Bootstrap.UNIFIED_PREVIEWS:
 					_bootstrap.manifest_path = "res://data/wealthy_manifest.json" if stage in Bootstrap.WEALTHY_PREVIEWS else "res://data/unified_manifest.json"
@@ -36,6 +36,16 @@ func _ready() -> void:
 			if argument.begins_with("--mirror-dream-preview=") and argument.trim_prefix("--mirror-dream-preview=") in ["bedtime", "dream", "after", "ready"]:
 				_bootstrap.preview_stage = argument.trim_prefix("--mirror-dream-preview=")
 				_bootstrap.preview_version = 28
+				start_at_title = false
+			if argument.begins_with("--dragon-preview=") and argument.trim_prefix("--dragon-preview=") in ["seller", "before-fd_search_motive", "search-ready", "invite-ready", "lu", "quoted", "buy"]:
+				_bootstrap.manifest_path = "res://data/first_debt_dragon_search_manifest.json"
+				_bootstrap.preview_stage = "quoted" if argument == "--dragon-preview=buy" else argument.trim_prefix("--dragon-preview=")
+				_bootstrap.preview_version = 31
+				start_at_title = false
+			if argument in ["--first-debt-preview=seller", "--first-debt-preview=chen"]:
+				_bootstrap.manifest_path = "res://data/first_debt_reckoning_manifest.json"
+				_bootstrap.preview_stage = argument.trim_prefix("--first-debt-preview=")
+				_bootstrap.preview_version = 29
 				start_at_title = false
 			if argument.begins_with("--growth-preview=") and argument.trim_prefix("--growth-preview=") in ["preparation", "closed", "buyer"]:
 				_bootstrap.growth_preview = argument.trim_prefix("--growth-preview=")
@@ -71,9 +81,13 @@ func _ready() -> void:
 	if start_at_title:
 		_show_title()
 		_warm_counter.call_deferred()
-	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null and _bootstrap.preview_version not in [28, 29, 31]:
+	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null and FirstDebt.enabled(_bootstrap.session.definition):
+		if _bootstrap.preview_stage in ["seller", "chen"]: _counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"trade")
+		elif _bootstrap.session._day.state.phase == &"pre_open": _counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"day")
+		else: _counter_screen._route_from_customer.call_deferred(&"dialogue")
+	elif not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null and _bootstrap.preview_version not in [28, 29, 31]:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"risk" if _bootstrap.preview_version >= 25 else &"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
-	if _bootstrap.preview_version == 31 and _bootstrap.session != null:
+	if _bootstrap.unified_preview in Bootstrap.WEALTHY_PREVIEWS and _bootstrap.session != null:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"day" if _bootstrap.unified_preview == "advertisement" else &"trade" if _bootstrap.unified_preview == "wealthy-appraised" else &"dialogue")
 	if not _bootstrap.growth_preview.is_empty() and _bootstrap.session != null:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"trade" if _bootstrap.growth_preview == "buyer" else &"growth")

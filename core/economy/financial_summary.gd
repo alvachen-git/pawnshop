@@ -9,6 +9,7 @@ static func build(state: RunState) -> Dictionary:
 	if state.social_enabled: result.military_expense = 0
 	if state.shop_growth_enabled: result.facility_investment = 0
 	if state.investigation_enabled: result.investigation_expense = 0
+	if state.run_definition_id in ["first_debt_open", "first_debt_reckoning", "first_debt_dragon_search", "first_debt_unified"]: result.debt_compensation = 0
 	if state.goods_version == 1: result.expertise_expense = 0
 	if state.preparation_version == 1: result.preparation_expense = 0
 	if not state.ordinary_selections.is_empty(): result.provenance_expense = 0
@@ -28,6 +29,7 @@ static func build(state: RunState) -> Dictionary:
 				if item != null: result.inventory_loss += item.acquisition_price
 			"pawn_exchange": result.exchange_receipts += entry.amount
 			"investigation": result.investigation_expense -= entry.amount
+			"debt_compensation": result.debt_compensation -= entry.amount
 			"expertise": result.expertise_expense = int(result.get("expertise_expense", 0)) - int(entry.amount)
 			"preparation": result.preparation_expense = int(result.get("preparation_expense", 0)) - int(entry.amount)
 			"provenance_inquiry": result.provenance_expense = int(result.get("provenance_expense", 0)) - int(entry.amount)
@@ -42,7 +44,7 @@ static func build(state: RunState) -> Dictionary:
 			result.inventory_cost += item.acquisition_price
 	for ticket in state.pawn_tickets:
 		if ticket.status == "active": result.pawn_principal += ticket.principal
-	result.operating_profit = result.realized_profit - int(result.get("military_expense", 0)) - int(result.get("investigation_expense", 0)) - int(result.get("expertise_expense", 0)) - result.interest_expense - result.shop_expense - int(result.get("provenance_expense", 0)) - int(result.get("preparation_expense", 0)) - int(result.get("inventory_loss", 0))
+	result.operating_profit = result.realized_profit - int(result.get("debt_compensation", 0)) - int(result.get("military_expense", 0)) - int(result.get("investigation_expense", 0)) - int(result.get("expertise_expense", 0)) - result.interest_expense - result.shop_expense - int(result.get("provenance_expense", 0)) - int(result.get("preparation_expense", 0)) - int(result.get("inventory_loss", 0))
 	if WealthyCustomers.active(state):
 		result["reputation_trade_count"] = WealthyCustomers.data(state).transactions.size()
 		result["reputation_growth"] = WealthyCustomers.data(state).milestones.filter(func(r: Dictionary) -> bool: return r.night == state.current_night_index).reduce(func(total: int, r: Dictionary) -> int: return total + int(r.delta), 0)

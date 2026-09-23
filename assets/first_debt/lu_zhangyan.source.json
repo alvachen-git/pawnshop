@@ -1,0 +1,12 @@
+{
+  "date": "2026-09-23",
+  "tool": "built-in image_gen.imagegen",
+  "asset": "assets/first_debt/lu_zhangyan.png",
+  "sha256": "9e9adb7942b1fd5dbc246dd9d9d20edbf34f1001f162838901a9d1d5b536142a",
+  "source": "/Users/alvachen/.codex/generated_images/01a08f6d-f5ec-7460-8b00-17e2b157dae1/exec-ea33c916-b660-48cc-86ea-58f56a203442.png",
+  "prompt": "lu_zhangyan.prompt.txt",
+  "reference": "assets/art04/counter_room.png",
+  "reference_role": "painted scene style and light only",
+  "format": "1254x1254 RGBA, original generated alpha preserved",
+  "integration": "Dedicated fd_lu sprite; normal bookkeeper remains unchanged. Lower body ends behind rear counter edge. No raw-image postprocessing."
+}

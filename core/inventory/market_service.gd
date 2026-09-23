@@ -1,12 +1,12 @@
 class_name MarketService
 extends RefCounted
 
-static func plan(run: RunDefinition, seed_value: int) -> Array[Dictionary]:
+static func plan(run: RunDefinition, seed_value: int, through_night := 0) -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	if run.market.is_empty(): return rows
 	var config: Dictionary = run.market
 	var previous := ""
-	for index in range(0, run.total_nights + 1):
+	for index in range(0, (maxi(run.total_nights, through_night) if FirstDebt.enabled(run) else run.total_nights) + 1):
 		var candidates: Array = config.demands.filter(func(d: Dictionary) -> bool: return d.id != previous)
 		var demand: Dictionary = VarietyService.pick(candidates, seed_value, "market/demand/%d" % index)
 		var minute := 0 if index == 0 else VarietyService.rng(seed_value, "market/time/%d" % index).randi_range(int(config.change_start) / run.time_step, int(config.change_end) / run.time_step) * run.time_step
@@ -16,7 +16,7 @@ static func plan(run: RunDefinition, seed_value: int) -> Array[Dictionary]:
 
 static func current(run: RunDefinition, seed_value: int, night: int, minute: int) -> Dictionary:
 	var found: Dictionary = {}
-	for row in plan(run, seed_value):
+	for row in plan(run, seed_value, night):
 		if row.night < night or (row.night == night and row.minute <= minute): found = row
 	return found
 
@@ -28,7 +28,7 @@ static func demand(run: RunDefinition, row: Dictionary) -> Dictionary:
 
 static func sync(state: RunState, run: RunDefinition) -> void:
 	if run.market.is_empty(): return
-	state.market_history.assign(plan(run, state.run_seed).filter(func(row: Dictionary) -> bool:
+	state.market_history.assign(plan(run, state.run_seed, state.current_night_index).filter(func(row: Dictionary) -> bool:
 		return row.night < state.current_night_index or (row.night == state.current_night_index and row.minute <= state.game_minutes)))
 
 static func category(day: DayController) -> String:

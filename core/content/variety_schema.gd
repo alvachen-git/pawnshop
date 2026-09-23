@@ -29,6 +29,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 	var value: Dictionary = row[field]
 	match kind:
 		"runs":
+			if value.has("first_debt_version") and (not RunSchema.integer(value.first_debt_version) or int(value.first_debt_version) not in [1, 2, 3]): CounterDomainValidator._error(issues, at, "第一账版本无效。")
 			for feature in ["investigation_version", "personal_risk_version", "social_relations_version"]:
 				if value.has(feature) and (not RunSchema.integer(value[feature]) or value[feature] != 1): CounterDomainValidator._error(issues, at, "功能版本无效。")
 			if value.has("night_market"):
@@ -116,7 +117,7 @@ static func domain(catalog: ContentCatalog) -> Array:
 		if run.variety.is_empty(): continue
 		if SevenNightPlan.enabled(run):
 			issues.append_array(story_domain(run, catalog))
-			if run.total_nights != (10 if InvestigationService.enabled(run) else 7) or run.customer_slots.size() != run.total_nights * 6 or not run.batch_selling: CounterDomainValidator._error(issues, run.id, "七夜运行配置不一致。")
+			if run.total_nights != (18 if FirstDebt.enabled(run) else 10 if InvestigationService.enabled(run) else 7) or run.customer_slots.size() != run.total_nights * 6 or not run.batch_selling: CounterDomainValidator._error(issues, run.id, "七夜运行配置不一致。")
 			for id in run.variety.customer_ids:
 				if run.variety.contexts.filter(func(c: Dictionary) -> bool: return c.customer_id == id).size() != 2: CounterDomainValidator._error(issues, run.id, "每类人物须有两种处境。")
 			for c in run.variety.contexts:

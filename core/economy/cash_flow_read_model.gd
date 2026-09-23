@@ -54,6 +54,7 @@ static func sale_preview(flow: Dictionary, buyer: Dictionary, selected: Array) -
 		if not found: error = "货单包含无效货物，请重新选择。"
 		if not error.is_empty(): break
 	if not error.is_empty(): return {"valid": false, "reason": error}
+	if buyer.has("fixed_pair") and buyer.fixed_pair.all(func(id: String) -> bool: return id in selected): income += int(buyer.fixed_bonus)
 	var reason: String = buyer.get("reason", "")
 	if selected.is_empty(): reason = "请先选择货物。"
 	return {"valid": true, "executable": reason.is_empty(), "reason": reason, "count": selected.size(),
