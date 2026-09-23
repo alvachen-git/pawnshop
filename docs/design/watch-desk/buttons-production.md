@@ -1,0 +1,9 @@
+# Runtime button texture atlas
+
+Generated with the built-in imagegen tool using the selected third mock as the material reference. No raster postprocessing. `assets/watch_desk/buttons.png` contains two equal side-by-side cells, walnut/brass on left and oxblood/gold on right. Both are blank, inspected for unwanted labels and icons. Use atlas regions and nine-slice scaling at runtime; the native output did not retain the requested 1024 × 256 aspect ratio.
+
+Source: `C:/Users/alvachen/.codex/generated_images/01a0cbfe-6129-7013-a005-a902e7bfe27c/exec-9d9043a4-347f-48dc-a947-1369ea64aa80.png`
+
+## Prompt
+
+Create a compact game UI texture atlas from the buttons in this selected historical pawnshop mockup. Output a wide 1024x256 PNG, exact 4:1 aspect ratio, with TWO equal 512x256 texture cells side by side; left cell worn dark walnut with antique brass rim, right cell muted oxblood red lacquer with fine restrained aged gold rim. Both plaques fill their complete cell edge-to-edge; NO surrounding tabletop, NO outside background, NO gaps between cells, no shadows outside their cell. Frontal orthographic rectangles, straight axes, square-to-subtly-rounded corners. Each plaque has a fine double-line metallic border 12 pixels inward from its own four edges, very small restrained corner wear, rich tactile but not busy central texture. Flat empty central areas suitable for readable cream UI text later. Absolutely NO text, letters, numbers, icons, ears, symbols, flourishes, or logos anywhere. Preserve original mock's nuanced polished walnut, warm tarnished brass, and red lacquer material quality. Intended nine-slice runtime texture scaling to roughly 200x60 pixels, so central fill must be visually quiet. Do not reproduce reference screenshot scene, only the two adjacent blank rectangular plaque texture cells.

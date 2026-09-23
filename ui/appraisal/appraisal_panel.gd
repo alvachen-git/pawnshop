@@ -78,6 +78,15 @@ func render(model: Dictionary) -> void:
 		_views.add_child(button)
 	if visual.get("condition_enabled", false): _views.hide()
 	_show_image(_selected)
+	_image.material = null
+	if visual.has("tiered_atlas"):
+		_image.texture = TieredArt.cell(visual.tiered_atlas,int(visual.tiered_exterior),0)
+		if visual.get("watch_art",false):
+			_image.texture = WatchArt.cell([0,3,4][int(visual.tiered_exterior)])
+			_image.material = WatchArt.material()
+		_image.visible = _image.texture != null
+		_image.tooltip_text = "物品外观"
+		_views.hide()
 
 func _show_image(id: String) -> void:
 	for index in _images.size():

@@ -427,7 +427,7 @@ func _sync_room() -> void:
 	_sync_military_reception()
 	_counter_view.get_hotspot(&"social").visible = _session._day.state.social_enabled and not _social_panel.visible and _session._day.state.phase not in ["dead", "bankrupt"]
 	_counter_view.get_hotspot(&"plaque").visible = _session._day.state.social_enabled and _session._day.state.social.get("plaque_awarded", false) and _session._day.state.phase not in ["dead", "bankrupt"]
-	if _social_panel != null and (_room.visible or _session._day.state.phase in ["dead", "bankrupt"]): _social_panel.hide()
+	if _social_panel != null and (_room.visible or _session._day.state.phase not in ["pre_open", "open", "closed_processing"] or not _session._day.state.pending_event_id.is_empty() or not _session._day.state.risk_pending.is_empty()): _social_panel.hide()
 	var state := _session._day.state
 	if _feedback != null and _feedback_state_id != _session._day.state.get_instance_id():
 		_cancel_feedback(true)
@@ -520,6 +520,7 @@ func _on_context_opened(kind: StringName) -> void:
 
 
 func _open_drawer(panel_id: StringName) -> void:
+	if panel_id != &"social" and _social_panel != null: _social_panel.hide()
 	if _counter_view.story_active: _counter_view.story.hide()
 	if facilities != null:
 		if panel_id == &"growth":

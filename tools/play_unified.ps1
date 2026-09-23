@@ -1,5 +1,10 @@
 param(
-    [ValidateSet('normal', 'upgrade', 'fan', 'informed', 'ordinary', 'urgent', 'no-bench', 'intact', 'minor', 'major', 'stack', 'knowledge')][string]$Stage = 'normal',
+    [ValidateSet('normal','knowledge','watch','wealthy','wealthy-basic','wealthy-deep','wealthy-appraised','advertisement','introduction','contract','upgrade','fan','informed','ordinary','urgent','no-bench','intact','minor','major','stack','plaque','delivered','bedtime','call','dream','reunion','companion')][string]$Stage = 'normal',
+    [ValidateSet('embroidery','gold_bangle','gold_watch','mantel_clock','pearl_necklace','jade_pendant','album','porcelain_vase','repeater','silver_set')][string]$Item = 'porcelain_vase',
+    [ValidateSet('sound','mended','flawed')][string]$Condition = 'mended',
+    [ValidateSet('intact','minor','major')][string]$Damage = 'minor',
+    [ValidateSet('ordinary','hidden')][string]$Difficulty = 'hidden',
+    [ValidateSet('natural','guide','bargain','overpriced','urgent','spotted','bluff','fault','firm','partial','fake-fault','exposed','engraving','gears')][string]$WatchCase = 'natural',
     [string]$GodotPath = '',
     [switch]$Wide,
     [switch]$Verify
@@ -7,70 +12,57 @@ param(
 $ErrorActionPreference = 'Stop'
 $gameRoot = Split-Path -Parent $PSScriptRoot
 if (-not $GodotPath) {
-    foreach ($candidate in @(
-        (Join-Path $gameRoot '.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe'),
-        (Join-Path $gameRoot '../../.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe')
-    )) {
-        if (Test-Path -LiteralPath $candidate) { $GodotPath = (Resolve-Path -LiteralPath $candidate).Path; break }
-    }
+    $candidate = Join-Path $gameRoot '.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe'
+    if (Test-Path -LiteralPath $candidate) { $GodotPath = (Resolve-Path -LiteralPath $candidate).Path }
+    else { $GodotPath = (Get-Command godot -ErrorAction SilentlyContinue).Source }
 }
 if (-not $GodotPath) { throw 'Godot 4.6.1 not found. Supply -GodotPath.' }
+if ($Stage -eq 'knowledge') {
+    & (Join-Path $PSScriptRoot 'play_fan_condition.ps1') -Stage knowledge -GodotPath $GodotPath -Wide:$Wide -Verify:$Verify
+    exit $LASTEXITCODE
+}
 $previousAppData = $env:APPDATA
-if ($Stage -ne 'normal') { $env:APPDATA = Join-Path $gameRoot ('.godot/play-data/fan-preview-v29-' + $Stage) }
-$logDir = Join-Path $gameRoot '.godot/qa/appraisal'
+$precisionPreview = $Stage -in @('watch','wealthy','wealthy-basic','wealthy-deep')
+if ($Stage -eq 'watch') { $Item = 'gold_watch' }
+$logDir = Join-Path $gameRoot ('.godot/qa/unified-launch/' + (Get-Date -Format 'yyyyMMdd-HHmmss-ffff') + '-' + $PID)
 New-Item -ItemType Directory -Force $logDir | Out-Null
-if ($Stage -ne 'normal') { New-Item -ItemType Directory -Force $env:APPDATA | Out-Null }
+# Normal play shares the editor's save library. QA and previews are isolated.
+if ($Stage -ne 'normal' -or $Verify) {
+    $env:APPDATA = Join-Path $gameRoot ('.godot/play-data/unified-' + $Stage)
+    New-Item -ItemType Directory -Force $env:APPDATA | Out-Null
+}
+function Invoke-CheckedGodot([string[]]$GameArgs, [string]$LogName, [switch]$TestRun) {
+    $log = Join-Path $logDir $LogName
+    $ErrorActionPreference = 'Continue'
+    & $GodotPath @GameArgs *> $log
+    $code = $LASTEXITCODE
+    $ErrorActionPreference = 'Stop'
+    $body = Get-Content -LiteralPath $log -Raw
+    if ($code -ne 0 -or $body -match 'SCRIPT ERROR|Parse Error|FAIL ' -or ($TestRun -and $body -notmatch '0 failures')) {
+        throw "Validation failed. See $log"
+    }
+}
 try {
-    $ErrorActionPreference = 'Continue'
-    & $GodotPath --headless --editor --path $gameRoot --quit *> (Join-Path $logDir 'launch-import.log')
-    $importExit = $LASTEXITCODE
-    $ErrorActionPreference = 'Stop'
-    if ($importExit -ne 0 -or (Select-String (Join-Path $logDir 'launch-import.log') -Pattern 'SCRIPT ERROR|Parse Error' -Quiet)) { throw 'Project import failed. See .godot/qa/appraisal/launch-import.log.' }
-    if ($Stage -ne 'normal') {
-        $fixture = Join-Path $gameRoot '.godot/qa/fan-condition/fan-sound.json'
-        $stamp = Join-Path $gameRoot '.godot/qa/fan-condition/verified.stamp'
-        $latest = Get-ChildItem (Join-Path $gameRoot 'core'),(Join-Path $gameRoot 'data'),(Join-Path $gameRoot 'tests/fan_condition.gd') -Recurse -File |
-            Where-Object { $_.Extension -in '.gd','.json' } | Sort-Object LastWriteTimeUtc -Descending | Select-Object -First 1
-        if (-not (Test-Path $fixture) -or -not (Test-Path $stamp) -or (Get-Item $stamp).LastWriteTimeUtc -lt $latest.LastWriteTimeUtc) {
-            $ErrorActionPreference = 'Continue'
-            & $GodotPath --headless --path $gameRoot --script tests/fan_condition.gd *> (Join-Path $logDir 'launch-fixtures.log')
-            $fixtureExit = $LASTEXITCODE
-            $ErrorActionPreference = 'Stop'
-            $fixtureLog = Get-Content (Join-Path $logDir 'launch-fixtures.log') -Raw
-            if ($fixtureExit -ne 0 -or $fixtureLog -match 'SCRIPT ERROR|Parse Error|FAIL ' -or $fixtureLog -notmatch '0 failures') { throw 'Preview validation failed. See .godot/qa/appraisal/launch-fixtures.log.' }
-            Set-Content -LiteralPath $stamp -Value 'verified v29' -Encoding Ascii
-        }
+    Invoke-CheckedGodot @('--headless','--editor','--path',$gameRoot,'--quit') 'import.log'
+    if ($Stage -ne 'normal' -and -not $precisionPreview) {
+        $test = if ($Stage -in @('wealthy','wealthy-appraised')) { 'wealthy_journey' }
+            elseif ($Stage -eq 'advertisement') { 'wealthy_customers' }
+            elseif ($Stage -in @('plaque','delivered')) { 'unified_social' }
+            elseif ($Stage -in @('bedtime','call','dream','reunion')) { 'unified_story' }
+            elseif ($Stage -eq 'companion') { 'unified_companion' }
+            else { 'unified_appraisal' }
+        # Regenerate and verify from real play, so previews never use stale rules.
+        Invoke-CheckedGodot @('--headless','--path',$gameRoot,'--script',"res://tests/$test.gd") "$test.log" -TestRun
     }
-    if ($Stage -eq 'knowledge') {
-        $knowledgeFixture = Join-Path $gameRoot '.godot/qa/fan-condition/knowledge-before.json'
-        $knowledgeStamp = Join-Path $gameRoot '.godot/qa/fan-condition/knowledge.stamp'
-        $knowledgeTest = Get-Item (Join-Path $gameRoot 'tests/shop_knowledge.gd')
-        if (-not (Test-Path $knowledgeFixture) -or -not (Test-Path $knowledgeStamp) -or (Get-Item $knowledgeStamp).LastWriteTimeUtc -lt $latest.LastWriteTimeUtc -or (Get-Item $knowledgeStamp).LastWriteTimeUtc -lt $knowledgeTest.LastWriteTimeUtc) {
-            $ErrorActionPreference = 'Continue'
-            & $GodotPath --headless --path $gameRoot --script tests/shop_knowledge.gd *> (Join-Path $logDir 'launch-knowledge-fixtures.log')
-            $knowledgeExit = $LASTEXITCODE
-            $ErrorActionPreference = 'Stop'
-            $knowledgeLog = Get-Content (Join-Path $logDir 'launch-knowledge-fixtures.log') -Raw
-            if ($knowledgeExit -ne 0 -or $knowledgeLog -match 'SCRIPT ERROR|Parse Error|FAIL ' -or $knowledgeLog -notmatch '0 failures') { throw 'Knowledge preview validation failed. See .godot/qa/appraisal/launch-knowledge-fixtures.log.' }
-            Set-Content -LiteralPath $knowledgeStamp -Value 'verified knowledge v29' -Encoding Ascii
-        }
-    }
-    $scene = if ($Stage -eq 'normal') { 'res://scenes/start.tscn' } else { 'res://scenes/start_fan_condition_v29.tscn' }
-    $gameArgs = @('--path', $gameRoot, '--resolution', $(if ($Wide) { '1600x900' } else { '1280x720' }), $scene)
+    $gameArgs = @('--path',$gameRoot,'--resolution',$(if ($Wide) { '1600x900' } else { '1280x720' }),'res://scenes/start.tscn')
     if ($Verify) { $gameArgs += @('--quit-after','90') }
-    if ($Stage -ne 'normal') {
-        $previewStage = if ($Stage -eq 'knowledge') { 'knowledge-before' } elseif ($Stage -eq 'upgrade') { 'upgrade' } elseif ($Stage -eq 'fan') { 'fan-sound' } elseif ($Stage -in @('informed','ordinary','urgent')) { $Stage + '-ready' } else { $Stage }
-        $gameArgs += @('--', "--condition-preview=$previewStage")
-    }
-    $launchId = [Guid]::NewGuid().ToString('N').Substring(0, 12)
-    $stdout = Join-Path $logDir ('launch-' + $Stage + '-' + $launchId + '.log')
-    Write-Output "Starting unified game: $Stage"
-    # Native invocation also works in Windows PowerShell 5 when the inherited
-    # environment contains both Path and PATH (Start-Process rejects that).
-    $ErrorActionPreference = 'Continue'
-    & $GodotPath @gameArgs 2>&1 | Out-File -LiteralPath $stdout -Encoding utf8 -ErrorAction Stop
-    $gameExit = $LASTEXITCODE
-    $ErrorActionPreference = 'Stop'
-    if ($gameExit -ne 0 -or (Select-String $stdout -Pattern 'SCRIPT ERROR|Parse Error' -Quiet)) { throw "Launch failed: $Stage. See $stdout" }
-    if ($Verify) { Write-Output "Verified unified launch: $Stage" }
+    if ($precisionPreview) {
+        $precisionLevel = @{ 'watch'='standard'; 'wealthy'='standard'; 'wealthy-basic'='basic'; 'wealthy-deep'='deep' }[$Stage]
+        $gameArgs += @('--',"--precision-preview=$precisionLevel","--precision-item=$Item","--precision-condition=$Condition","--precision-damage=$Damage","--precision-difficulty=$Difficulty","--precision-watch-case=$WatchCase")
+        Write-Output 'Appraisal test preset: isolated, progress is not saved.'
+    } elseif ($Stage -ne 'normal') { $gameArgs += @('--',"--unified-preview=$Stage") }
+    $version = if ($Stage -eq 'normal' -or $precisionPreview) { 37 } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
+    Write-Output "Starting unified v${version}: $Stage"
+    Invoke-CheckedGodot $gameArgs ('launch-' + $Stage + '.log')
+    if ($Verify) { Write-Output "Verified unified v${version}: $Stage" }
 } finally { $env:APPDATA = $previousAppData }

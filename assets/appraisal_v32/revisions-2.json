@@ -1,0 +1,22 @@
+[
+  {
+    "id": "jade_pendant",
+    "source": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-040d73e4-f8f9-4459-8792-1673afe3b674.png",
+    "prompt": "Keep exact 4-column by 3-row grid, paper and every cell unchanged EXCEPT: row1 column2 (numbering from1) remove the chip from jade outer rim, keep only bent gold hanging loop. Row2 column2 LEFT circular view should show intact natural jade fibrous translucent texture SAME as row2 column1 left; repair is hidden behind mounting and only right repair mount has glue/retooling. Row3 column1 and row3 column4 LEFT circular view MUST have uninterrupted natural jade texture under the gold claw, absolutely NO crack, no diagonal line. Row3 column2 retains clear hidden crack/glue. This is an evidence atlas where authentic original must not falsely look damaged."
+  },
+  {
+    "id": "embroidery",
+    "source": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-2c1ae21d-ffa5-4dd4-a0c9-daa135863230.png",
+    "prompt": "Keep EXACT 4 columns 3 rows all equal square cells. Correct evidence only: Row1 column2 show only split wooden frame corner, cloth perfectly intact (remove cloth tear). Row2 column2 left needlework should be uninterrupted fine curved needlework like row2column1 left, NO square patch outline, repair shows only backing right. Row3 columns1 AND4 right: both threads equally aged beige-brown, NOT one brightwhite andone darkbrown. Row3column2 right retains clearly new white thread joining old darkbrown. Row3column3 LEFT show FLAT printed ink pattern with weave but NO genuine raised embroidery threads; RIGHT show plain backing without any corresponding embroidered threads, pasted paper/fabric edge. Maintain existing art realism, exact grid."
+  },
+  {
+    "id": "repeater",
+    "source": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-100da094-f801-46ca-a30e-ccd1bbaf13b0.png",
+    "prompt": "Re-layout this image to EXACTLY FOUR COLUMNS and THREE ROWS of equal square cells. Present total12 square tiles, NOT16! Use same watch, paper, illustrationstyle. Row1: original wholewatch; crackedglass wholewatch; crushedcase wholewatch; reference2 split LEFT ornate original movement RIGHT original hammer/spring assembly. Row2: original movement/hammer; repaired originalmovement/newdifferenthammer; counterfeit crude movement/incorrecthammer; ambiguous worn indistinctmovement/hammer. Row3: authentic details LEFT correct doublehead strikehammer fittinggong, RIGHT original unmodified case-movement bracket with adjacent small documented component sketch; repaired LEFT new singlehead hammer, RIGHT new metal bracket welded into original housing with repair drawing showing change; counterfeit LEFT crude wronglyshaped hammer, RIGHT drilledwrongholes and crude bracket conflictingrecord; reference3 LEFT correct doubleheadhammer, RIGHT unmodifiedbracket & originalcomponentdrawing. Within eachcell evidence A centered x25%, B centeredx75%. All tiles no labels, no headings, no filenames. No text instructions. Grid 4x3 strict square tiles and subtle borders."
+  },
+  {
+    "id": "gold_watch",
+    "source": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-cdc55b88-7e30-400d-966d-4f052f4d9673.png",
+    "prompt": "Keep exact 4 columns3rows. Only correct row3column2 RIGHT detail: changed movement serial must clearly read 7412, NOT3287; neighboring repair slip also contains7412 and a small sketch of a replaced gear. Row3column1 andcolumn4 original serial stay3287 with matchingoriginalrecords. No other modifications to shapes/grid/art. These numbers are fictional game evidence."
+  }
+]

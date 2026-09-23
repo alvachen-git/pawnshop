@@ -29,6 +29,11 @@ static func intimidate(state: RunState, visit: CustomerVisit) -> String:
 	var percent := int(SocialRules.config().plaque.price_percent)
 	trade.asking_price = maxi(1, ceili(float(before * percent) / 100.0))
 	trade.reserve_price = maxi(1, ceili(float(reserve * percent) / 100.0))
+	if WealthyCustomers.active(state) and WealthyCustomers.is_customer(visit.customer_id):
+		var luxury := WealthyCustomers.trade(state,visit)
+		luxury.intimidation = float(percent) / 100.0
+		trade.reserve_price = maxi(trade.reserve_price,int(luxury.funding))
+		trade.asking_price = maxi(trade.asking_price,trade.reserve_price)
 	var fan := FanBargainingService.attempt(state, visit)
 	if fan.get("accepted", false):
 		fan.asking = maxi(1, ceili(float(int(fan.asking) * percent) / 100.0))

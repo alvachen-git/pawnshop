@@ -85,6 +85,7 @@ func active(state: RunState) -> CustomerVisit:
 func finish(state: RunState, visit: CustomerVisit, outcome: String) -> void:
 	if visit.status not in ["scheduled", "waiting", "active"]: return
 	ReputationService.finish(state, visit, outcome)
+	ReputationGrowth.acquired(state, visit, outcome)
 	MilitaryService.departed(state, visit, outcome)
 	InvestigationService.departed(state, visit, outcome)
 	ShopGrowthService.departed(state, visit, outcome)

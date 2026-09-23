@@ -1,0 +1,50 @@
+{
+  "tool": "built-in image_gen",
+  "date": "2026-09-22",
+  "reference": "assets/art04/customers/ordinary/scholar.png",
+  "common": "Create one production-ready square portrait sprite for the Chinese narrative game 鬼市当铺. Use attached image solely as painting style and framing reference, NOT the same face or clothes. Match its realistic opaque gouache/oil brushwork, muted earthy colors and detailed human anatomy. Republican-era Chinese pawnshop visitor, restrained period clothes, softly warm-lit face, subdued shadow on torso. Bust to waist, centered, head near top with small margin, both shoulders and both hands entirely inside the frame, straight waist cutoff at bottom, no desk or scenery. Single person, no text, labels, border, collage or watermark. Background must be uniform solid pure magenta #FF00FF for existing chroma-key game shader, zero shadow on background, no magenta on person. Clearly prosperous, well-kept clothing, not a ragged poor customer, not a caricature of a villain. ",
+  "specs": [
+    [
+      "antique",
+      "A NEW distinctive Chinese male antique dealership proprietor, about 58, long narrow face, neatly trimmed small moustache and side-parted gray-black hair, shrewd composed eyes. Impeccable dark moss-green fine silk changshan, black silk sleeveless waistcoat with restrained woven texture and ivory cuffs. One hand holds a closed cloth-bound catalogue at lower chest, other rests lightly across it. Fine round gold-rim spectacles worn on nose. Upright dignified posture, quietly confident expert, different face and pose from reference."
+    ],
+    [
+      "silk",
+      "A NEW distinctive Chinese male silk shop owner, about 48, broad kindly face, plump but dignified, neatly combed hair, clean shaven, attentive patient expression. Lustrous muted plum-brown silk changshan with very subtle jacquard, excellent tailoring, pale cuffs, small jade ring. Fingers gently hold a small folded fabric sample at waist, no watch, no book. Well-fed affluent merchant with tactile care for fabrics, distinct broad silhouette."
+    ],
+    [
+      "factory",
+      "A NEW distinctive Chinese male machine factory owner, about 43, square jaw, short neatly trimmed black hair, tired alert eyes and a slightly tense brow, sturdy broad build. Well-tailored charcoal Western three-piece wool suit, white shirt, understated dark tie, small silver pocket-watch chain, no hat. Holds a folded payroll paper low in one hand, other closes jacket lightly. Successful industrialist under short-term cash pressure, clothes clean and costly, no tools, no overalls."
+    ],
+    [
+      "opera",
+      "A NEW distinctive Chinese female opera star, about 34, oval face, composed confident gaze with restrained fatigue, subtly groomed eyebrows, black waved hair pinned into a low bun. Elegant muted deep-teal silk qipao with modest high collar, dark fur-trimmed short shoulder cape, tiny pearl earrings, no stage paint and no elaborate stage headdress. Both hands gently hold a small closed burgundy velvet jewelry case at waist. Cultivated wealthy celebrity in private life, protective of personal possessions, dignified rather than coquettish."
+    ],
+    [
+      "comprador",
+      "A NEW distinctive Chinese male senior comprador of a foreign trading house, about 52, imposing upright posture, smoothly combed black hair with gray temples, full reserved face, clean shaven, calm assessing expression. Exceptionally well-tailored dark navy double-breasted Western suit, ivory shirt, dark wine tie, discreet gold tie pin, cream pocket square, elegant cufflinks. One hand holds folded pale gloves, other rests over a closed slim leather document wallet at waist. The most wealthy of these visitors: understated expensive materials and precise grooming, not gaudy gold or modern CEO costume."
+    ]
+  ],
+  "outputs": [
+    {
+      "id": "antique",
+      "path": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-4fe9cb06-1c93-4011-8254-5e11668dff06.png"
+    },
+    {
+      "id": "silk",
+      "path": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-85a4766a-b256-4441-9c8e-70a6f12f70f9.png"
+    },
+    {
+      "id": "factory",
+      "path": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-15f5c58d-f589-4e75-9ad9-074afa89aa1e.png"
+    },
+    {
+      "id": "opera",
+      "path": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-d3159f6b-fd75-4b92-9c4f-763cfd2d0272.png"
+    },
+    {
+      "id": "comprador",
+      "path": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-1feb8c88-ef42-4664-8d02-65aad450d4f1.png"
+    }
+  ]
+}

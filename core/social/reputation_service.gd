@@ -10,6 +10,7 @@ static func eligible(state: RunState, visit: CustomerVisit) -> bool:
 	return false
 
 static func basis(state: RunState, visit: CustomerVisit) -> int:
+	if WealthyCustomers.active(state) and WealthyCustomers.is_customer(visit.customer_id): return int(WealthyCustomers.trade(state, visit).reference)
 	var price := maxi(1, visit.trade.opening_price - visit.trade.social_flaw_discount)
 	if visit.trade.social_offer_mode == "pawn":
 		var customer := state.ghost_catalog.get_definition("customers", visit.customer_id) as CustomerDefinition
@@ -31,6 +32,7 @@ static func finish(state: RunState, visit: CustomerVisit, outcome: String) -> vo
 	var price: int = visit.trade.offers.back()
 	var base := basis(state, visit)
 	var change := delta(price, base, outcome)
+	if WatchEconomy.handles(state,visit.item) and change < 0: change = 0
 	# A later inspection/pressure action ending a conversation is not a rejected quote.
 	if outcome in ["patience_exhausted", "rounds_exhausted"] and not visit.trade.social_last_was_quote: change = 0
 	var positive := 0

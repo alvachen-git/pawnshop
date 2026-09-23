@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "customer_wealthy_silk",
+      "name_key": "customer.customer_wealthy_silk.name",
+      "portrait_asset_id": "asset.customer_teahouse",
+      "identity_tags": [
+        "wealthy",
+        "silk"
+      ],
+      "wealth_band": "wealthy",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 4,
+      "max_quote_rounds": 4,
+      "alertness": 0.6,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_luxury_embroidery",
+        "item_luxury_gold_bangle"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "绸缎庄东家",
+        "introduction": "账上赊欠还没收齐，新货的订金却等不得。拿两件私藏来周转，货好不好，您照实看。",
+        "wait_minutes": 60,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.15,
+        "reserve_ratio": 0.7391304347826086,
+        "counter_step": 1,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 1
+      },
+      "questions": [
+        {
+          "id": "origin",
+          "prompt": "问这件私藏的来历",
+          "answer": "是从旧藏里取来的。留下的记录我都带了，年深日久的事，还请您照实物看。",
+          "minutes": 5
+        },
+        {
+          "id": "funds",
+          "prompt": "问这笔钱的用途",
+          "answer": "账上赊欠还没收齐，新货的订金却等不得。拿两件私藏来周转，货好不好，您照实看。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "sample_three_redeem",
+      "persona": {
+        "names": [
+          "文绣",
+          "仲文",
+          "季安",
+          "云卿"
+        ],
+        "origin": "账上赊欠还没收齐，新货的订金却等不得。拿两件私藏来周转，货好不好，您照实看。",
+        "introduction": "账上赊欠还没收齐，新货的订金却等不得。拿两件私藏来周转，货好不好，您照实看。",
+        "redeem": "钱已筹齐，这是当票。劳烦核清原物，替我包好。",
+        "extend": "周转还差些时日，照票上的规矩办吧。",
+        "pawn_background": "铺里的应收账款尚未入柜，东家盼着结账后取回私物。",
+        "completed": "他点清银元，将收据收进衣袋。",
+        "refused": "他将价钱又说了一遍：‘这个数还办不成。’",
+        "rejected": "他收好包裹：‘那就改日再谈。’",
+        "timed_out": "他看了看时辰，合上包裹离开柜前。",
+        "false_pressure": "他收回目光：‘这个说法，凭据还不够。’"
+      },
+      "pawn_redemption_chance": 80
+    },
+    {
+      "id": "customer_wealthy_factory",
+      "name_key": "customer.customer_wealthy_factory.name",
+      "portrait_asset_id": "asset.customer_watchmaker",
+      "identity_tags": [
+        "wealthy",
+        "factory"
+      ],
+      "wealth_band": "wealthy",
+      "urgency_range": [
+        0.3,
+        0.9
+      ],
+      "honesty_profile": "unverified",
+      "patience": 2,
+      "max_quote_rounds": 3,
+      "alertness": 0.6,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_luxury_gold_watch",
+        "item_luxury_mantel_clock"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "机器厂老板",
+        "introduction": "买主的货款还没结，工钱和原料款先到了日子。货请您挑要紧的看，工头还在门外等。",
+        "wait_minutes": 40,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.1,
+        "reserve_ratio": 0.8636363636363636,
+        "counter_step": 1,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 1
+      },
+      "questions": [
+        {
+          "id": "origin",
+          "prompt": "问这件私藏的来历",
+          "answer": "是从旧藏里取来的。留下的记录我都带了，年深日久的事，还请您照实物看。",
+          "minutes": 5
+        },
+        {
+          "id": "funds",
+          "prompt": "问这笔钱的用途",
+          "answer": "买主的货款还没结，工钱和原料款先到了日子。货请您挑要紧的看，工头还在门外等。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "sample_three_redeem",
+      "persona": {
+        "names": [
+          "振业",
+          "仲文",
+          "季安",
+          "云卿"
+        ],
+        "origin": "买主的货款还没结，工钱和原料款先到了日子。货请您挑要紧的看，工头还在门外等。",
+        "introduction": "买主的货款还没结，工钱和原料款先到了日子。货请您挑要紧的看，工头还在门外等。",
+        "redeem": "钱已筹齐，这是当票。劳烦核清原物，替我包好。",
+        "extend": "周转还差些时日，照票上的规矩办吧。",
+        "pawn_background": "工厂的收款时日说不准，能否如期取赎还要看买主。",
+        "completed": "他点清银元，将收据收进衣袋。",
+        "refused": "他将价钱又说了一遍：‘这个数还办不成。’",
+        "rejected": "他收好包裹：‘那就改日再谈。’",
+        "timed_out": "他看了看时辰，合上包裹离开柜前。",
+        "false_pressure": "他收回目光：‘这个说法，凭据还不够。’"
+      },
+      "pawn_redemption_chance": 50
+    },
+    {
+      "id": "customer_wealthy_opera",
+      "name_key": "customer.customer_wealthy_opera.name",
+      "portrait_asset_id": "asset.customer_seamstress",
+      "identity_tags": [
+        "wealthy",
+        "opera"
+      ],
+      "wealth_band": "wealthy",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 4,
+      "alertness": 0.6,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_luxury_pearl_necklace",
+        "item_luxury_jade_pendant"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "梨园名角",
+        "introduction": "戏院的场钱、班里人的开销都要先付。私物暂且拿来周转，请垫好软布再看。",
+        "wait_minutes": 60,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.15,
+        "reserve_ratio": 0.782608695652174,
+        "counter_step": 1,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "origin",
+          "prompt": "问这件私藏的来历",
+          "answer": "是从旧藏里取来的。留下的记录我都带了，年深日久的事，还请您照实物看。",
+          "minutes": 5
+        },
+        {
+          "id": "funds",
+          "prompt": "问这笔钱的用途",
+          "answer": "戏院的场钱、班里人的开销都要先付。私物暂且拿来周转，请垫好软布再看。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "sample_three_redeem",
+      "persona": {
+        "names": [
+          "玉笙",
+          "仲文",
+          "季安",
+          "云卿"
+        ],
+        "origin": "戏院的场钱、班里人的开销都要先付。私物暂且拿来周转，请垫好软布再看。",
+        "introduction": "戏院的场钱、班里人的开销都要先付。私物暂且拿来周转，请垫好软布再看。",
+        "redeem": "钱已筹齐，这是当票。劳烦核清原物，替我包好。",
+        "extend": "周转还差些时日，照票上的规矩办吧。",
+        "pawn_background": "几场戏唱完才能结钱，名角仍惦记着自己的首饰。",
+        "completed": "他点清银元，将收据收进衣袋。",
+        "refused": "他将价钱又说了一遍：‘这个数还办不成。’",
+        "rejected": "他收好包裹：‘那就改日再谈。’",
+        "timed_out": "他看了看时辰，合上包裹离开柜前。",
+        "false_pressure": "他收回目光：‘这个说法，凭据还不够。’"
+      },
+      "pawn_redemption_chance": 80
+    },
+    {
+      "id": "customer_wealthy_antique",
+      "name_key": "customer.customer_wealthy_antique.name",
+      "portrait_asset_id": "asset.customer_scholar",
+      "identity_tags": [
+        "wealthy",
+        "antique"
+      ],
+      "wealth_band": "wealthy",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 3,
+      "max_quote_rounds": 5,
+      "alertness": 0.9,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_luxury_album",
+        "item_luxury_porcelain_vase"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "古玩行掌柜",
+        "introduction": "外埠有一批旧货等着接，手边银根紧。眼前这件您按图录看，旧伤与年代可得分清。",
+        "wait_minutes": 70,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.3,
+        "reserve_ratio": 0.7692307692307693,
+        "counter_step": 1,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "origin",
+          "prompt": "问这件私藏的来历",
+          "answer": "是从旧藏里取来的。留下的记录我都带了，年深日久的事，还请您照实物看。",
+          "minutes": 5
+        },
+        {
+          "id": "funds",
+          "prompt": "问这笔钱的用途",
+          "answer": "外埠有一批旧货等着接，手边银根紧。眼前这件您按图录看，旧伤与年代可得分清。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "sample_three_redeem",
+      "persona": {
+        "names": [
+          "怀古",
+          "仲文",
+          "季安",
+          "云卿"
+        ],
+        "origin": "外埠有一批旧货等着接，手边银根紧。眼前这件您按图录看，旧伤与年代可得分清。",
+        "introduction": "外埠有一批旧货等着接，手边银根紧。眼前这件您按图录看，旧伤与年代可得分清。",
+        "redeem": "钱已筹齐，这是当票。劳烦核清原物，替我包好。",
+        "extend": "周转还差些时日，照票上的规矩办吧。",
+        "pawn_background": "他对抵来的货并不恋栈，手头另一笔生意更要紧。",
+        "completed": "他点清银元，将收据收进衣袋。",
+        "refused": "他将价钱又说了一遍：‘这个数还办不成。’",
+        "rejected": "他收好包裹：‘那就改日再谈。’",
+        "timed_out": "他看了看时辰，合上包裹离开柜前。",
+        "false_pressure": "他收回目光：‘这个说法，凭据还不够。’"
+      },
+      "pawn_redemption_chance": 20
+    },
+    {
+      "id": "customer_wealthy_comprador",
+      "name_key": "customer.customer_wealthy_comprador.name",
+      "portrait_asset_id": "asset.customer_agent",
+      "identity_tags": [
+        "wealthy",
+        "comprador"
+      ],
+      "wealth_band": "ultra_wealthy",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 2,
+      "max_quote_rounds": 3,
+      "alertness": 0.9,
+      "transaction_modes": [
+        "sell",
+        "pawn"
+      ],
+      "item_pool": [
+        "item_luxury_repeater",
+        "item_luxury_silver_service"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "洋行大买办",
+        "introduction": "这笔私人买卖，不能从洋行账上支。汇款尚在路上，先拿私藏周转；票据请当面核清。",
+        "wait_minutes": 50,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.15,
+        "reserve_ratio": 0.8260869565217391,
+        "counter_step": 1,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "origin",
+          "prompt": "问这件私藏的来历",
+          "answer": "是从旧藏里取来的。留下的记录我都带了，年深日久的事，还请您照实物看。",
+          "minutes": 5
+        },
+        {
+          "id": "funds",
+          "prompt": "问这笔钱的用途",
+          "answer": "这笔私人买卖，不能从洋行账上支。汇款尚在路上，先拿私藏周转；票据请当面核清。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "sample_three_redeem",
+      "persona": {
+        "names": [
+          "伯衡",
+          "仲文",
+          "季安",
+          "云卿"
+        ],
+        "origin": "这笔私人买卖，不能从洋行账上支。汇款尚在路上，先拿私藏周转；票据请当面核清。",
+        "introduction": "这笔私人买卖，不能从洋行账上支。汇款尚在路上，先拿私藏周转；票据请当面核清。",
+        "redeem": "钱已筹齐，这是当票。劳烦核清原物，替我包好。",
+        "extend": "周转还差些时日，照票上的规矩办吧。",
+        "pawn_background": "账面虽有产业，汇款能否按时到仍未可知。",
+        "completed": "他点清银元，将收据收进衣袋。",
+        "refused": "他将价钱又说了一遍：‘这个数还办不成。’",
+        "rejected": "他收好包裹：‘那就改日再谈。’",
+        "timed_out": "他看了看时辰，合上包裹离开柜前。",
+        "false_pressure": "他收回目光：‘这个说法，凭据还不够。’"
+      },
+      "pawn_redemption_chance": 80
+    }
+  ]
+}

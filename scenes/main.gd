@@ -12,6 +12,14 @@ var _initial_run_ready := true
 func _ready() -> void:
 	if OS.is_debug_build():
 		for argument in OS.get_cmdline_user_args():
+			if argument.begins_with("--precision-preview="): start_at_title = false
+			if argument.begins_with("--unified-preview=") and _bootstrap.manifest_path in ["res://data/named_wealthy_manifest.json", "res://data/watch_patterns_manifest.json", "res://data/watch_negotiation_manifest.json", "res://data/watch_market_manifest.json", "res://data/watch_manifest.json", "res://data/unified_manifest.json", "res://data/wealthy_manifest.json", "res://data/tiered_manifest.json"]:
+				var stage := argument.trim_prefix("--unified-preview=")
+				if stage in Bootstrap.UNIFIED_PREVIEWS:
+					_bootstrap.manifest_path = "res://data/wealthy_manifest.json" if stage in Bootstrap.WEALTHY_PREVIEWS else "res://data/unified_manifest.json"
+					_bootstrap.save_path = "user://wealthy_ten/autosave_v31.json" if stage in Bootstrap.WEALTHY_PREVIEWS else "user://unified_ten/autosave_v30.json"
+					_bootstrap.unified_preview = stage
+					start_at_title = false
 			if argument.begins_with("--condition-preview=") and argument.trim_prefix("--condition-preview=") in ["upgrade", "fan-sound", "informed-ready", "ordinary-ready", "urgent-ready", "no-bench", "intact", "minor", "major", "stack", "knowledge-before"]:
 				_bootstrap.condition_preview = argument.trim_prefix("--condition-preview=")
 				start_at_title = false
@@ -63,8 +71,10 @@ func _ready() -> void:
 	if start_at_title:
 		_show_title()
 		_warm_counter.call_deferred()
-	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null and _bootstrap.preview_version not in [28, 29]:
+	if not _bootstrap.preview_stage.is_empty() and _bootstrap.session != null and _bootstrap.preview_version not in [28, 29, 31]:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"risk" if _bootstrap.preview_version >= 25 else &"dialogue" if _bootstrap.preview_stage == "meeting" else &"investigation")
+	if _bootstrap.preview_version == 31 and _bootstrap.session != null:
+		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"day" if _bootstrap.unified_preview == "advertisement" else &"trade" if _bootstrap.unified_preview == "wealthy-appraised" else &"dialogue")
 	if not _bootstrap.growth_preview.is_empty() and _bootstrap.session != null:
 		_counter_screen.get_node("%ScreenFlowCoordinator").show_panel.call_deferred(&"trade" if _bootstrap.growth_preview == "buyer" else &"growth")
 		if _bootstrap.growth_preview == "closed": _counter_screen.facilities.room.select.call_deferred("archive")

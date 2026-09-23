@@ -43,4 +43,8 @@ static func build(state: RunState) -> Dictionary:
 	for ticket in state.pawn_tickets:
 		if ticket.status == "active": result.pawn_principal += ticket.principal
 	result.operating_profit = result.realized_profit - int(result.get("military_expense", 0)) - int(result.get("investigation_expense", 0)) - int(result.get("expertise_expense", 0)) - result.interest_expense - result.shop_expense - int(result.get("provenance_expense", 0)) - int(result.get("preparation_expense", 0)) - int(result.get("inventory_loss", 0))
+	if WealthyCustomers.active(state):
+		result["reputation_trade_count"] = WealthyCustomers.data(state).transactions.size()
+		result["reputation_growth"] = WealthyCustomers.data(state).milestones.filter(func(r: Dictionary) -> bool: return r.night == state.current_night_index).reduce(func(total: int, r: Dictionary) -> int: return total + int(r.delta), 0)
+		result["advertising_delta"] = WealthyCustomers.data(state).advertisements.filter(func(r: Dictionary) -> bool: return r.night == state.current_night_index and r.settled).reduce(func(total: int, r: Dictionary) -> int: return total + int(r.delta), 0)
 	return result

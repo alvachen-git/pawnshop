@@ -39,7 +39,7 @@ try {
             Set-Content -LiteralPath $stamp -Value 'v29 verified' -Encoding Ascii
         }
     }
-    $gameArgs = @('--path', $projectRoot, 'res://scenes/start_v29.tscn', '--resolution', $(if ($Wide) { '1600x900' } else { '1280x720' }))
+    $gameArgs = @('--path', $projectRoot, 'res://scenes/start_mirror_dream_call_v29.tscn', '--resolution', $(if ($Wide) { '1600x900' } else { '1280x720' }))
     if ($Check) { $gameArgs += @('--headless', '--quit-after', '3') }
     if ($Stage -ne 'new') { $gameArgs += @('--', "--mirror-call-preview=$Stage") }
     $ErrorActionPreference = 'Continue'

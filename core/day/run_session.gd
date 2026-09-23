@@ -83,7 +83,6 @@ func has_save() -> bool:
 
 func can_execute(command: String) -> bool:
 	if MirrorEndingService.active(_day.state): return false
-
 	if MilitaryIntroduction.active(_day.state): return false
 	if command == "open_shop" and SocialRules.blocked(_day.state): return false
 	if command in RoomKeepsakes.COMMANDS: return not mirror_pending() and RoomKeepsakes.can_execute(_day.state, command)
@@ -155,6 +154,7 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 	if command == "resolve_night" and not mirror_pending() and _day.can_execute(command) and _commerce != null:
 		_commerce.pawns.resolve_maturities(_day.state, definition.night_minutes, _commerce.catalog, _pawn_choices)
 	if command == "resolve_night" and _day.can_execute(command):
+		ReputationGrowth.settle(_day.state)
 		MilitaryService.settle(_day.state)
 		NightMarketRisk.settle(_day.state)
 		FeeService.settle(_day.state, definition)
@@ -263,10 +263,9 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
 	# Rejected new pressure attempts must not poll events or synchronize markets.
-	if command in [FanBargainingService.COMMAND, "condition_pressure"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
+	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
 		var error := _counter.reason(_day, command, visit_id, detail, amount)
 		if not error.is_empty(): return ActionResult.new(false, error)
-
 	if command == "military_intro":
 		if visit_id != MilitaryIntroduction.id(_day.state) or amount != 0: return ActionResult.new(false, "请先听清柜前来客的话。")
 		return social_command("intro_talk", detail)
@@ -337,6 +336,11 @@ func _build_counter_model() -> Dictionary:
 	var model := CounterReadModels.build(_day, _counter, message, _message_visit_id)
 	if MilitaryIntroduction.active(_day.state): return model
 	model.trade.reactions = _negotiation_reactions.for_visit(_day.state, model.active_id)
+	var active_visit := _counter.customers.active(_day.state)
+	if active_visit != null and WatchNegotiation.handles(_day.state,active_visit.item):
+		# Restore previous customer replies after a cold load as well as live play.
+		for reply in WatchNegotiation.history(_day.state,active_visit):
+			if reply not in model.trade.reactions: model.trade.reactions.append(reply)
 	PawnReturnReadModels.enrich(model, _day, _commerce)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
 	ShopGrowthReadModels.inventory(model, _day)
@@ -879,6 +883,19 @@ func _impl_observe_room(id: String) -> ActionResult:
 	_emit_changed()
 	return result
 
+func social_command(command: String, detail := "") -> ActionResult:
+	return _journal_call("social_command", [command, detail])
+
+func _impl_social_command(command: String, detail := "") -> ActionResult:
+	var result := MilitaryService.perform(_day, command, detail)
+	if result.ok:
+		ShopGrowthService.sync(_day.state)
+		MarketService.sync(_day.state, definition)
+		_persist()
+	message = result.message
+	_emit_changed()
+	return result
+
 func growth_command(command: String, detail := "") -> ActionResult:
 	return _journal_call("growth_command", [command, detail])
 
@@ -897,7 +914,7 @@ func fan_command(command: String, item_id: String, detail := "") -> ActionResult
 	return _journal_call("fan_command", [command, item_id, detail])
 
 func _impl_fan_command(command: String, item_id: String, detail := "") -> ActionResult:
-	var result := FanAppraisalService.perform(_day, command, item_id, detail)
+	var result := LuxuryAppraisalService.perform(_day, command, item_id, detail) if command.begins_with("luxury_") else FanAppraisalService.perform(_day, command, item_id, detail)
 	if result.ok:
 		if command not in ["draft", "clear_draft"]:
 			if _risk != null: _risk.capture_close(_day.state)
@@ -944,15 +961,3 @@ var profile_us: Dictionary = {}
 
 func _profile(label: String, started: int) -> void:
 	if profile_enabled: profile_us[label] = int(profile_us.get(label, 0)) + Time.get_ticks_usec() - started
-
-func social_command(command: String, detail := "") -> ActionResult:
-	return _journal_call("social_command", [command, detail])
-
-func _impl_social_command(command: String, detail := "") -> ActionResult:
-	var result := MilitaryService.perform(_day, command, detail)
-	if result.ok:
-		ShopGrowthService.sync(_day.state)
-		MarketService.sync(_day.state, definition)
-		_persist()
-	message = result.message
-	return result

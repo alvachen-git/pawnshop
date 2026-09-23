@@ -14,7 +14,7 @@ const MATERIALS := [
 ]
 
 static func enabled(run: RunDefinition) -> bool:
-	return String(run.id) == RUN or SocialRules.enabled(run) or run.variety.get("shop_growth_version", 0) == 1
+	return String(run.id) == RUN or run.variety.get("shop_growth_version", 0) == 1 or SocialRules.enabled(run)
 
 static func initial() -> Dictionary:
 	return {"bench": false, "display": false, "investments": [], "exploration": [], "display_id": "", "opportunities": []}
@@ -43,9 +43,10 @@ static func opportunity(state: RunState) -> Dictionary:
 	return {}
 
 static func blocked(day: DayController) -> bool:
-	return MilitaryIntroduction.active(day.state) or not day.state.pending_event_id.is_empty() or not day.state.risk_pending.is_empty() or not PawnReturnService.current(day.state).is_empty() or MirrorEncounterService.new(day.state.ghost_catalog).pending(day)
+	return not day.state.pending_event_id.is_empty() or not day.state.risk_pending.is_empty() or not PawnReturnService.current(day.state).is_empty() or MirrorEncounterService.new(day.state.ghost_catalog).pending(day) or MirrorEndingService.active(day.state) or MilitaryIntroduction.active(day.state) or SocialRules.blocked(day.state)
 
 static func reason(day: DayController, command: String, detail := "") -> String:
+	if command in ["bench_three","precision_kit"]: return TieredAppraisal.facility_reason(day,command,detail)
 	if command == "learn_knowledge": return ShopKnowledgeService.reason(day, detail)
 	if command in FanAppraisalService.FACILITY_COMMANDS: return FanAppraisalService.facility_reason(day, command, detail)
 	var state := day.state
@@ -79,6 +80,7 @@ static func reason(day: DayController, command: String, detail := "") -> String:
 	return ""
 
 static func perform(day: DayController, command: String, detail := "") -> ActionResult:
+	if command in ["bench_three","precision_kit"]: return TieredAppraisal.facility(day,command,detail)
 	if command == "learn_knowledge": return ShopKnowledgeService.learn(day, detail)
 	if command in FanAppraisalService.FACILITY_COMMANDS: return FanAppraisalService.facility(day, command, detail)
 	var error := reason(day, command, detail)

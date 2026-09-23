@@ -30,6 +30,8 @@ static func knowledge_reason(day: DayController) -> String:
 	return "" if data(day.state).get("knowledge", false) else "先研习工具册中的扇画图录。"
 
 static func bench_level(state: RunState) -> int:
+	var due: int = state.shop_growth.get("precision",{}).get("due",0)
+	if TieredAppraisal.active(state) and due > 0 and state.current_night_index >= due: return 3
 	var a := data(state)
 	if not a.is_empty() and int(a.bench_due) > 0 and state.current_night_index >= int(a.bench_due): return 2
 	return 1 if state.shop_growth.get("bench", false) else 0
@@ -55,7 +57,7 @@ static func facility_reason(day: DayController, command: String, detail := "") -
 	match command:
 		"bench_two":
 			if not state.shop_growth.bench: return "先整修一级鉴物台。"
-			if int(a.bench_due) > 0: return "专用台已建成。" if bench_level(state) == 2 else "木匠正在赶工，不必重复委托。"
+			if int(a.bench_due) > 0: return "专用台已建成。" if bench_level(state) >= 2 else "木匠正在赶工，不必重复委托。"
 		"fan_tools":
 			if a.tools: return "扇画工具已经配齐。"
 			if bench_level(state) < 2: return "专用台完工后，才好安装扇画工具。"

@@ -38,6 +38,7 @@ var _growth_amount: LineEdit
 var _growth_counter: Button
 var _growth_error: Label
 var _growth_visit := ""
+var _customer_heading: Label
 
 
 func _ready() -> void:
@@ -132,6 +133,11 @@ func _ready() -> void:
 	var layout := VBoxContainer.new()
 	layout.add_theme_constant_override("separation", 8)
 	margin.add_child(layout)
+	_customer_heading = Label.new()
+	_customer_heading.name = "WealthyCustomerName"
+	_customer_heading.add_theme_font_size_override("font_size", 19)
+	_customer_heading.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	layout.add_child(_customer_heading)
 	layout.add_child(_content_scroll)
 	_content_scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var form := VBoxContainer.new()
@@ -233,6 +239,9 @@ func render(model: Dictionary) -> void:
 	_bargain_popup.hide()
 	_content_scroll.scroll_vertical = 0
 	super.render(model)
+	var customer_visual: Dictionary = model.get("visual", {})
+	_customer_heading.text = String(customer_visual.get("customer_name", ""))
+	_customer_heading.visible = WealthyCustomers.is_customer(String(customer_visual.get("customer_id", "")))
 	_growth_form.visible = model.get("display_buyer", false)
 	if _growth_form.visible:
 		_availability_model = {}
@@ -275,6 +284,7 @@ func render(model: Dictionary) -> void:
 	# Keep actionable pawn context and supernatural warnings from current main,
 	# without bringing back the duplicated ordinary item/appraisal summary.
 	var context_lines: PackedStringArray = []
+	if visual.get("luxury",false): context_lines.append(String(visual.get("luxury_context","")))
 	if visual.has("fan_judgement"):
 		context_lines.append(visual.fan_judgement)
 		context_lines.append(visual.fan_statement)
@@ -286,6 +296,10 @@ func render(model: Dictionary) -> void:
 	_body.text = "\n".join(context_lines)
 	_body.visible = not _body.text.is_empty()
 	_style_bargaining(model)
+	if model.has("watch_claims"):
+		var form := WatchClaimForm.new(); _buttons.add_child(form); form.build(model.watch_claims)
+		form.submitted.connect(func(detail: String) -> void: _emit_intent("watch_claim",_visit_id,detail))
+		_bargain_toggle.show(); _bargain_toggle.disabled = false
 
 	_pawn_price.max_value = model.max_input
 	_pawn_submit.disabled = not model.get("can_pawn", false)
@@ -377,6 +391,7 @@ func _reaction_text(row: Dictionary) -> String:
 	var text := _player_feedback(String(row.message))
 	# The public price transition gets its own accessible, color-coded line.
 	text = text.replace("收购要价仍为%d银元。" % row.after, "")
+	text = text.replace("要价：%d → %d 银元。" % [row.before, row.after], "")
 	return text.replace("收购要价 %d → %d 银元。" % [row.before, row.after], "").replace("要价 %d → %d 银元。" % [row.before, row.after], "").strip_edges()
 
 func _change_color(row: Dictionary) -> Color:
@@ -467,6 +482,7 @@ func open_bargain_menu() -> void:
 		return
 	var visual: Dictionary = _availability_model.get("visual", {})
 	var summary := "%s · %s %s 银元 · 证据估值 %s" % [visual.get("item_name", ""), "收购要价" if visual.has("fan_judgement") else "顾客要价", _ask_value.text, _estimate_value.text]
+	if WealthyCustomers.is_customer(String(visual.get("customer_id", ""))): summary = String(visual.get("customer_name", "")) + "\n" + summary
 	if visual.has("fan_judgement"): summary += "\n" + visual.fan_judgement + "\n" + visual.fan_statement + ("\n破损让价用于收购与活当；判假让价只用于买断。" if visual.get("condition_enabled", false) else "\n此处只谈买断；不改自己的鉴定或活当金额。")
 	if visual.get("condition_enabled", false): summary = summary.replace("证据估值", "参考价值")
 	_bargain_popup.present(summary)

@@ -1,5 +1,7 @@
 # 鉴物台与知识柜 · 主分支合并说明
 
+> 入口更新：完整新局现使用 v30 `play-unified.cmd`，见 [整合说明](UNIFIED_V30.md)。下文保留本专项历史规则与验证；其中折扇v29入口已更名为 `play-fan-condition.cmd`。
+
 日期：2026-09-22。用户已明确授权推送和线上合并。
 
 ## 范围
@@ -14,12 +16,12 @@
 
 | 内容 | 入口 |
 | --- | --- |
-| 本批品相与鉴物台 v29 | `play-unified.cmd` → `scenes/start_fan_condition_v29.tscn` |
-| 本批知识柜快速试玩 | `play-unified.cmd -Stage knowledge -Wide` |
-| 本批案上对证快速试玩 | `play-unified.cmd -Stage fan -Wide` |
+| 本批品相与鉴物台 v29 | `play-fan-condition.cmd` → `scenes/start_fan_condition_v29.tscn` |
+| 本批知识柜快速试玩 | `play-fan-condition.cmd -Stage knowledge -Wide` |
+| 本批案上对证快速试玩 | `play-fan-condition.cmd -Stage fan -Wide` |
 | 保留扇画自鉴 v27 | `play-v27.cmd` → `scenes/start_shop_appraisal_v27.tscn` |
 | 保留识扇议价 v28 | `play-v28.cmd` → `tools/play_fan_v28.ps1` → `scenes/start_fan_bargaining_v28.tscn` |
-| 原线上铜镜托梦与来声 v29 | 默认`scenes/start.tscn`及原`tools/play_v29.cmd`保留 |
+| 原线上铜镜托梦与来声 v29 | `scenes/start_mirror_dream_call_v29.tscn`及原`tools/play_v29.cmd`保留 |
 | 原线上阿七 v27、托梦 v28 | 原`scenes/start_v27.tscn`、`scenes/start_v28.tscn`及铜镜启动脚本保留 |
 
 这里完成的是源码与入口的兼容合并：各独立运行保留已验证规则。**没有把铜镜托梦或独立军阀关系的新规则补入已存在的折扇v29局。** 后续若要把所有独立剧情和设施规则放进同一个新局，应另建完整整合运行，保留这些旧局。

@@ -42,7 +42,7 @@
 在PowerShell复制整行：
 
 ```powershell
-& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-unified.cmd" -Stage fan
+& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-fan-condition.cmd" -Stage fan
 ```
 
 添加`-Wide`使用1600×900；删除`-Stage fan`正常开局。快速场景仍使用独立存档，不改正常局。
