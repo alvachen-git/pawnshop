@@ -1,0 +1,18 @@
+{
+  "tool": "built-in image_gen",
+  "generated_at": "2026-09-23",
+  "inputs": [
+    "assets/art04/items/hairpin_front.png",
+    "assets/item_studies/hairpin_back.png"
+  ],
+  "source": "/Users/alvachen/.codex/generated_images/01a0ccaa-71b4-7771-8f52-b1df0435211f/exec-ab779864-ee85-4973-8535-cd15cc3d8085.png",
+  "output": "assets/item_studies/hairpin_seam.png",
+  "prompt": "Use case: precise-object-edit. Asset type: paid appraisal evidence illustration for a 1930s Chinese pawnshop game. References show FRONT and BACK of the exact same long slim single silver hairpin, defining its slightly flattened tapered hammered shaft and worn gray-silver opaque-gouache style. Make ONE close-up inspection image of the LOWER SHAFT/TAIL of this SAME hairpin, showing an old repaired join. The single narrow tapered shaft crosses diagonally from lower left to upper right. Crop to a lower-shaft segment with ample continuous shaft context on both sides of a joint near center; decorative head outside the crop. The repair is a slight uneven silvery solder ridge/ring around the shaft, narrow and subtle, with fine old filing marks, contiguous and securely joined. Both sides and the solder are matching gray silver, no yellow or gold metal core. Visible thin edge thickness and gentle taper consistent with reference; keep this a delicate hairpin, not a heavy rod. This is condition_mended evidence: small old artisan solder repair, not a large break or mechanical clamp. Hand-painted semi-realistic opaque gouache, muted aged silver and restrained soft highlights, upper-left diffuse lamplight. Fully OPAQUE muted olive/umber softly painted paper-like backdrop, 1536x1024 landscape. No text, no labels, no arrows, no hands, no tools, no screws, no clamps, no exposed core, no modern machined assembly.",
+  "validation": {
+    "size": [
+      1536,
+      1024
+    ],
+    "review": "Paid condition_mended evidence: lower tapered shaft with narrow old uneven silver solder joint; silver both sides, no gold core, clamp, tools or labels."
+  }
+}

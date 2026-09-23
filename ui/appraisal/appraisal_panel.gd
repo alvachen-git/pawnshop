@@ -60,6 +60,7 @@ func render(model: Dictionary) -> void:
 		if not visual.message.is_empty() and not _body.text.contains(visual.message) and not (visual.get("condition_enabled", false) and visual.message.begins_with(String(visual.get("condition_note", "")))):
 			_body.text += "\n" + visual.message
 	var known := CounterVisualCatalog.images(visual, model.get("images", []))
+	var gained_view := _last_visit == _visit_id and known.size() > _images.size()
 	if _last_visit != _visit_id: _selected = "front"
 	elif known.size() > _images.size(): _selected = known.back().id
 	_last_visit = _visit_id
@@ -78,8 +79,14 @@ func render(model: Dictionary) -> void:
 		_views.add_child(button)
 	if visual.get("condition_enabled", false): _views.hide()
 	_show_image(_selected)
+	if gained_view: _reveal_image.call_deferred()
+
+func _reveal_image() -> void:
+	var scroll := _column.get_parent() as ScrollContainer
+	if scroll != null: scroll.scroll_vertical = 0
 
 func _show_image(id: String) -> void:
+	var changed_view := id != _selected
 	for index in _images.size():
 		var row: Dictionary = _images[index]
 		if row.id == id:
@@ -90,6 +97,7 @@ func _show_image(id: String) -> void:
 			_image.tooltip_text = row.label + " · 复看不耗时"
 			for button_index in _views.get_child_count():
 				(_views.get_child(button_index) as Button).set_pressed_no_signal(button_index == index)
+			if changed_view: _reveal_image.call_deferred()
 			return
 	_image.texture = null
 	_image.hide()

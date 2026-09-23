@@ -1,0 +1,18 @@
+{
+  "asset": "silver_lock_back.png",
+  "tool": "built-in image_gen",
+  "generated_original": "/Users/alvachen/.codex/generated_images/01a0ccaa-36b1-7663-a462-0e7f64501410/exec-31c69ccb-415f-49a1-b0a8-a23cc3c2544c.png",
+  "reference": "/Users/alvachen/Documents/ChatGPT/pawn/.artifacts/item-art-release/assets/item_art_v30/silver_lock_front.png",
+  "use_case": "precise-object-edit",
+  "prompt": "Use case: precise-object-edit. Asset type: one back inspection sprite for Chinese 1930s pawnshop narrative game, 1536x1024 landscape PNG with genuine transparent alpha background. Input image: exact current silver longevity-lock pendant FRONT, use as identity and painted material reference. Primary request: show the BACK of this very same small old Chinese silver longevity-lock pendant, flipped over naturally, centered and filling about 65 percent of canvas width with ample transparent margin. Preserve its flattened lobed cloud outline, modest edge thickness and TWO separate upper hanging loops, each real metal hoop attached at the two upper shoulders. It is a traditional pendant approximately 5 cm wide, not a modern padlock. The reverse is largely plain worn silver, smooth from contact with cloth, restrained shallow hammering, faint naturally irregular scratches, subdued gray oxidation in recesses. Keep the subtle opaque gouache paint texture, semi-realistic handmade historical game art, low contrast muted aged gray silver and soft warm upper-left light of the reference. Elevated three-quarter inspection view with readable modest lower sidewall depth. This is the neutral freely available back inspection, so DO NOT expose a repaired seam, cutaway, yellow copper/brass core, or dramatic diagnostic clue. No front calligraphy visible on reverse, no new inscriptions or letters. Retain a tiny weathered brown cord remnant on just one upper hoop consistent with flipped reference, not a chain. Avoid extra objects, hands, keys, chain, decorative additions, bright chrome, polished jewelry shine, hard black outlines, modern product photo, 3D render gloss, flat icon, oval metal plate redesign. Isolated subject only, no tabletop or opaque background, no halo or vignette, real clean alpha transparency around object and inside loop holes.",
+  "review": "Viewed generated output. Lobed longevity pendant silhouette and paired upper loops retained; no front calligraphy or exposed yellow core or repair seam. No pixel edits performed.",
+  "date": "2026-09-23",
+  "width": 1536,
+  "height": 1024,
+  "mode": "RGBA",
+  "alpha_extrema": [
+    0,
+    254
+  ],
+  "sha256": "3b595a04c63e048e41c67812fa7027453ea1c9544122ab2316d63b5fdc58eb82"
+}

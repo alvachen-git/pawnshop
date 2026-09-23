@@ -1,0 +1,9 @@
+{
+  "tool": "built-in image_gen",
+  "use_case": "precise-object-edit",
+  "edit_target": "assets/item_studies/silver_ring_sound.png",
+  "original_generated_file": "/Users/alvachen/.codex/generated_images/01a0cca9-e3ad-7e43-8c58-a0f0b8f2c72e/exec-f4f93b1f-2dec-4fc6-b30b-96bf7f35d69d.png",
+  "prompt": "Use case: precise-object-edit. Edit target: attached image is the existing silver-ring genuine-material evidence macro; preserve exact same 1536x1024 composition, ring geometry, pose, ellipse, crop, gouache texture, lighting and dark olive/umber background. Change ONLY one narrow worn abrasion patch on the CENTRAL INNER RIM to clearly expose dull muted yellow brass base UNDER the thin silvery surface plating. Extend a little of the same yellow base into the adjacent tiny old punch recess. Make the edge of the worn silvery coating legible and physically thin. This paid evidence is 'inner rim exposes yellow base; silver is only on the surface'. Keep 90 percent or more of the visible ring surface aged gray silver, not a gold ring; narrow elongated localized patch only, with dull gray-gold hue that is clear but not shiny. Keep ring structurally intact and circular, no flattening, breaks, fractures, cracks or crushed shape. No gems, new symbols, readable lettering, labels, arrows, text, UI or watermark. Preserve existing brushwork, muted realistic old metal and soft upper-left illumination everywhere else. Original full opaque background remains unchanged.",
+  "file": "silver_ring_flaw.png",
+  "visual_validation": "Same macro composition, intact circular band, local narrow inner-rim abrasion visibly exposes muted yellow brass beneath thin silvery edge, yellow enters adjacent punch recess, remainder retains old gray silver; no structural fracture."
+}

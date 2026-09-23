@@ -1,0 +1,16 @@
+{
+  "asset": "silver_lock_flaw.png",
+  "tool": "built-in image_gen",
+  "generated_original": "/Users/alvachen/.codex/generated_images/01a0ccaa-36b1-7663-a462-0e7f64501410/exec-29122034-1f05-4e40-953b-82a30f8ac1aa.png",
+  "reference": "assets/item_studies/silver_lock_sound.png",
+  "use_case": "precise-object-edit",
+  "prompt": "Use case: precise-object-edit. Asset type: paid appraisal evidence detail for Chinese 1930s pawnshop game, 1536x1024 landscape. Edit the attached exact macro illustration and preserve its entire composition, camera, crop, pendant identity, silver-gray cloud-shaped lobed sidewall, scroll ornament, painted opaque-gouache texture, subtle warm upper-left lighting and opaque desaturated dark olive-umber backdrop. Change ONLY one small area on the concave inner corner/shoulder of the pendant edge, near image coordinates 640,490: a restrained irregular worn abrasion about 100 pixels wide exposes DULL YELLOW BRASS underneath the THIN silver plate. Show a credible tiny thin silvery plating edge around the scuffed yellowish base metal; irregular old wear, not a deliberate fresh cut or cross-section. Keep the exposed brass distinctly muted yellow-ochre against surrounding gray silver but neither orange rust nor shiny gold. The rest of the lock remains intact continuous aged silver-gray, with the same scratches and surface character. The patch is a readable inspection clue at macro scale, not a huge missing chunk. No solder bead, weld mound, patched repair, extra seam, crack, holes, arrows, labels, text, hands, tools, or objects. Do not redesign or relight the lock, do not add new ornaments, do not turn the whole pendant brass.",
+  "review": "Viewed image: same closeup composition and lobed lock, one localized muted yellow brass abrasion at inner corner around x650,y500, no solder repair, remainder intact silver-gray. Original output, no pixel edits.",
+  "date": "2026-09-23",
+  "size": [
+    1536,
+    1024
+  ],
+  "mode": "RGB",
+  "sha256": "3e82e82611a3c78b757b50be09a4f0ef3a85c93aed1d526caca1f8188c76c33d"
+}

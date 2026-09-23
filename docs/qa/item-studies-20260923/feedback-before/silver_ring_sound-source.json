@@ -1,0 +1,9 @@
+{
+  "tool": "built-in image_gen",
+  "use_case": "stylized-concept",
+  "reference": "assets/item_studies/silver_ring_back.png",
+  "original_generated_file": "/Users/alvachen/.codex/generated_images/01a0cca9-e3ad-7e43-8c58-a0f0b8f2c72e/exec-5a7632d6-a0e0-467e-9d9f-df5375edc9fc.png",
+  "prompt": "Use case: stylized-concept. Asset type: paid magnified inspection evidence image for a 1930s Chinese pawnshop game. Image 1 is the exact ring identity, shape, aged silver material, gouache style reference. Produce ONE 1536x1024 landscape close-up at roughly 2.5x scale of the INNER RIM and curved band of this same thin humble plain ring. Zoom close enough that the curved ring section fills foreground, while enough elliptical contour and inner hole remain to identify a ring. The central focal area is a naturally worn inner-rim patch and a tiny old indistinct maker's punch, not readable words: abrasion exposes exactly the SAME gray silver color throughout, no plating or layered edge. This represents genuine silver evidence 'inside and outside the worn inner ring are the same color, no plating'. Match quiet semi-realistic opaque gouache brush grain, restrained warm upper-left light, modest soft metal highlights, small old scratches; muted gray silver not polished chrome. Neutral dark olive/umber flat low-contrast opaque full background, no vignettes or bright halo. Avoid yellow, gold, brass, peeling layers, fractured metal, cracks, crushed shape, gems, ornament, extra objects, labels, arrows, text, watermark or border. Keep believable fine band thickness, no thick pipe or chunky ring.",
+  "file": "silver_ring_sound.png",
+  "visual_validation": "Magnified matching plain worn band with inner-rim context, uniformly gray silver exposed wear and tiny indistinct old punch; no yellow core, plating edge, fracture or crushed shape. Muted olive/umber opaque background."
+}

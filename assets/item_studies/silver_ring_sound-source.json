@@ -1,0 +1,11 @@
+{
+  "tool": "built-in image_gen",
+  "use_case": "precise-object-edit",
+  "revision": "wear legibility feedback",
+  "reference": ".godot/qa/item-studies/feedback-before/silver_ring_sound.png",
+  "original_generated_file": "/Users/alvachen/.codex/generated_images/01a0ccaa-71b4-7771-8f52-b1df0435211f/exec-316664ac-7571-46d1-b93b-b6da8ecfd2cb.png",
+  "prompt": "Use case: precise-object-edit. Asset type: paid appraisal evidence image, displayed at only 198x132 pixels in a 1930s Chinese pawnshop game. Edit the existing close-up ring evidence image. Preserve the same ring shape, band thickness, camera, elliptical opening and cropped composition, subdued olive/umber opaque background and semi-realistic hand-painted gouache. Improve ONE inspection cue: on the INNER REAR RIM, centered in the upper middle, create a visibly smoother silver-gray WORN PATCH spanning about 30 percent of the visible rear rim's width. Across this coherent worn patch show several ALIGNED soft parallel scrape marks following the curved band, with clear direction and visibly contrasting soft light/dark silver lines. Remove the distracting pebbly noisy grain from this target patch and soften adjacent grain so the coherent scrape path immediately reads at a 198x132 thumbnail. These are old rubbing abrasions, not incised lettering or huge cuts. Gray silver continues uniformly inside scratches and across the whole exposed patch, exactly the same material as outer ring: absolutely NO yellow, gold, brass, plated layer, peeling or exposed colored core. The worn patch should be broad enough to inspect, gently brighter than surrounding aged silver, with sensible shallow soft edges, no neon/spotlight or artificial outlined circle. Keep the humble thin old plain silver ring identity, no chunky pipe, jewels, new ornament, no labels, arrows, tools or text. Output 1536x1024 landscape opaque image.",
+  "file": "silver_ring_sound.png",
+  "previous_source": ".godot/qa/item-studies/feedback-before/silver_ring_sound-source.json",
+  "visual_validation": "1536x1024 RGB. Preserved ring camera and background; upper inner rear band has a broad coherent smoothly worn gray-silver patch with directional parallel shallow scrapes. No colored core, plated layer, deep cuts or changed free-view assets. Actual inventory thumbnail rendering awaits root integration QA."
+}
