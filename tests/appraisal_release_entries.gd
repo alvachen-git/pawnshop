@@ -2,7 +2,9 @@ extends SceneTree
 
 func _initialize() -> void:
 	var cases := {
-		"start": "mirror_dream_call_ten",
+		"start": "named_wealthy_ten",
+		"start_mirror_dream_call_v29": "mirror_dream_call_ten",
+		"start_social_relations_v27": "social_relations_ten",
 		"start_fan_condition_v29": "fan_condition_ten",
 		"start_v27": "aqi_reunion_ten",
 		"start_shop_appraisal_v27": "shop_appraisal_ten",

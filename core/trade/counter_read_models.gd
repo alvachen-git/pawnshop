@@ -133,6 +133,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		if visit.night_policy == "one_quote":
 			model.trade.buttons = model.trade.buttons.filter(func(b: Dictionary) -> bool: return b.command not in ["pressure", "belittle", "concession"])
 			model.dialogue.buttons = model.dialogue.buttons.filter(func(b: Dictionary) -> bool: return not b.reason.contains("另行压价"))
+	LuxuryReadModels.enrich(model, day, service, visit, message)
 	EarlyRedemption.enrich(model, day, service, visit)
 	return model
 

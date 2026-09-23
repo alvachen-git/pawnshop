@@ -11,6 +11,8 @@ static func build(day: DayController, service: CommerceService, message: String)
 	if not day.state.buyer_appointment.is_empty(): inventory.body += OrdinarySamplePlan.notice(day.state) + "\n"
 	for item in day.state.inventory_instances:
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
+		if WealthyCustomers.active(day.state) and WealthyCustomers.is_item(item.definition_id) and item.ownership_state in ["owned","pledged"]:
+			inventory.buttons.append(_button("luxury_open",item.instance_id,"","鉴物台 · " + definition.display_name,""))
 		inventory.body += "\n%s · %s · 成本 %d\n" % [definition.display_name, STATES[item.ownership_state], item.acquisition_price]
 		var military_source := MilitaryService.supply_for(day.state, item.instance_id) if day.state.social_enabled else {}
 		if not military_source.is_empty(): inventory.body += String(military_source.report if military_source.investigated else military_source.cue) + "\n"
@@ -37,6 +39,8 @@ static func build(day: DayController, service: CommerceService, message: String)
 	if financial.has("preparation_expense"): ledger.body += "本夜准备支出 %d 大洋（经营费用）\n" % financial.preparation_expense
 	if financial.has("provenance_expense"): ledger.body += "本夜来源调查费 %d 银元（经营费用）\n" % financial.provenance_expense
 	if financial.has("expertise_expense"): ledger.body += "本夜行家复核费 %d 银元（经营费用）\n" % financial.expertise_expense
+	if WealthyCustomers.active(day.state):
+		ledger.body += "累计收购与放当 %d 笔 · 下次添商誉还需 %d 笔\n本夜十笔积累商誉%+d · 宣传商誉%+d\n" % [financial.reputation_trade_count, 10 - int(financial.reputation_trade_count) % 10, financial.reputation_growth, financial.advertising_delta]
 	for entry in day.state.ledger_entries:
 		ledger.body += "\n第%d夜 %s · %s %+d · 余额 %d · 盈亏 %+d" % [entry.night, TimeController.clock_text(day.definition.opening_minute, entry.minute), KINDS[entry.kind], entry.amount, entry.balance, entry.realized_profit]
 	ledger.body += "\n\n当票（到期无人来赎，夜末核票处置）\n"

@@ -4,7 +4,7 @@ final result: passed
 
 ## Target and evidence
 
-Base: e891dc2, default unified_ten, content_version 30. Native Godot 4.6.1 compatibility renderer, macOS. This is an item-art integration, with the existing game interface as the layout and typography reference.
+Original art base: e891dc2 (unified_ten, v30). Release integration: f4e996b, default named_wealthy, content_version 37. Native Godot 4.6.1 compatibility renderer, macOS. This is an item-art integration, with the existing game interface as the layout and typography reference.
 
 Source visual truth: `assets/item_studies/*.png` (17 images; 1536×1024), existing fronts in `assets/art04/items`, `assets/item_art_v30`, and `assets/art06/items/mirror_front.png`. Generation references and exact prompts are preserved beside each new PNG. `docs/qa/item-studies-20260923/assets.json` records dimensions and hashes. The source/render overview is `docs/qa/item-studies-20260923/art-board.png` (1600×900).
 
@@ -12,7 +12,7 @@ Implementation captures: `.godot/qa/item-studies/1280_*.png` and `1600_*.png`; r
 
 Viewport and density: native viewport pixels 1280×720 and 1600×900, root.content_scale_size equal to root.size, 1 viewport pixel per captured pixel. CSS size/deviceScaleFactor do not apply to Godot. Source PNGs are 1536×1024; actual study images occupy a 132px-high widget with keep-aspect fitting; inventory images are 68×60 widgets. Comparisons place the source and a crop from the actual rendered viewport side by side, fitting each into an equal column. Enlargement of the small rendered widget reveals expected sampling softness; it is not interpreted as source blur. The bowl back uses its intended chroma-key shader in the source comparison to remove the original magenta production background. Other sources are displayed unchanged. Full-window captures remain the authority for readability at normal size.
 
-States: nine naturally scheduled first-night item variants, free front/back, earned evidence, purchase/inventory, save/reload. Mirror inventory uses actual unified-campaign ending saves for acknowledged (ordinary) and resentment (resentful).
+States: nine naturally scheduled first-night item variants, free front/back, earned evidence, purchase/inventory, save/reload. Mirror inventory uses actual campaign ending saves for acknowledged (ordinary) and resentment (resentful), including the current v37 campaign.
 
 ## Comparison history and findings
 
@@ -42,7 +42,7 @@ Focused, combined inputs: `1280_item_blue_bowl_sound_back_comparison.png`, `1280
 
 ## Validation and limits
 
-448 art contract assertions, zero failures (v30 and v21 gates/custom overrides/old path compatibility). Actual item UI: 1520 assertions at each viewport, zero failures. Actual mirror inventory UI: 8 assertions at each viewport, zero failures. Unified campaign fixture/replay checks: 2042 passes, zero failures. Godot imports succeeded; git diff --check passed. Headless logs include the macOS system CA certificate access message; actual GUI logs contain no script/resource errors.
+Initial v30 validation: 448 art contract assertions, zero failures (v30 and v21 gates/custom overrides/old path compatibility). Actual item UI: 1520 assertions at each viewport, zero failures. Actual mirror inventory UI: 8 assertions at each viewport, zero failures. Unified campaign fixture/replay checks: 2042 passes, zero failures. Godot imports succeeded; git diff --check passed. Headless logs include the macOS system CA certificate access message; actual GUI logs contain no script/resource errors.
 
 This report records local visual QA. After viewing the enhanced details, the user authorized push and merge on 2026-09-23; the GitHub PR records the publication result. Tests cover the selected four groups; unrelated UI and every legacy campaign were not re-tested. The original dirty root worktree was left intact. Generated import metadata outside owned paths remains untracked and is not part of this delivery.
 
@@ -54,3 +54,11 @@ This report records local visual QA. After viewing the enhanced details, the use
 - [x] New-view visibility defect fixed and recaptured.
 - [x] Native two-resolution visual comparison and save/reload checks.
 - [x] Source provenance, preview, reproduction scripts and QA evidence retained.
+
+## Current-main v37 integration validation
+
+Integrated main f4e996b before release. Both new wealthy-customer/watch appraisal and the item study routing are retained. Appraisal material clearing is restricted to atlas views, so ordinary bowl cutouts retain their chroma-key shader; watch views retain their own material and embroidery clears it correctly. The previous v37 report is archived as `docs/qa/item-studies-20260923/previous-design-qa-v37.md`.
+
+Current-main results: 611 art contract assertions across v37/v30/v21; 1441 actual item UI assertions at each of 1280×720 and 1600×900; 8 mirror inventory assertions at each resolution; 13 watch/embroidery atlas transition assertions at each resolution; 2020 named-wealthy story passes. All report zero failures. Import succeeded. Native screenshots were inspected for keyed bowl edges, jewelry detail, ending thumbnails and atlas material transitions. Evidence and logs carry the `v37_` / `v37-` prefix in the QA directory.
+
+The UI harnesses now default to v37 and accept `-- v30` for the legacy campaign. Mirror fixtures for the default run are produced with `tests/named_wealthy_story.gd -- fixtures-only`. These checks cover the affected art surfaces and save restoration, not every v37 gameplay feature or Windows packaging.

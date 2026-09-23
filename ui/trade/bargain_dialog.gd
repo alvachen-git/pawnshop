@@ -102,4 +102,9 @@ func _focus_targets() -> Array[Control]:
 	if choices != null:
 		for child in choices.get_children():
 			if child is Button and child.visible and not child.disabled: targets.append(child)
+			if child is WatchClaimForm:
+				for part in child.checks:
+					if not child.checks[part].disabled: targets.append(child.checks[part])
+					if not child.selections[part].disabled: targets.append(child.selections[part])
+				if not child.submit_button.disabled: targets.append(child.submit_button)
 	return targets

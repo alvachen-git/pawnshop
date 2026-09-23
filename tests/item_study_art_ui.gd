@@ -7,7 +7,9 @@ func _run() -> void:
 	root.size = Vector2i(1600, 900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280, 720)
 	root.content_scale_size = root.size
 	_capture_prefix = "1600" if "wide" in OS.get_cmdline_user_args() else "1280"
-	var catalog := JsonContentProvider.new("res://data/unified_manifest.json").load_catalog().catalog
+	var manifest := "res://data/unified_manifest.json" if "v30" in OS.get_cmdline_user_args() else "res://data/named_wealthy_manifest.json"
+	_capture_prefix = ("v30_" if "v30" in OS.get_cmdline_user_args() else "v37_") + _capture_prefix
+	var catalog := JsonContentProvider.new(manifest).load_catalog().catalog
 	var run_def := catalog.get_definition("runs", catalog.default_run_id) as RunDefinition
 	for case in CASES:
 		var id: String = case[0]
@@ -23,10 +25,11 @@ func _run() -> void:
 				if row.item_id == id and row.variant_id == variant and row.night == 1:
 					chosen = seed_value; target = row.visit_id; night = row.night; break
 			if chosen >= 0: break
-		_check(chosen >= 0, "natural v30 schedule includes " + id + "/" + variant)
+		_check(chosen >= 0, "natural schedule includes " + id + "/" + variant)
 		if chosen < 0: continue
 		print("ITEM ART VISIT ", id, " seed=", chosen, " night=", night, " target=", target)
 		_main = load("res://scenes/start.tscn").instantiate()
+		_main.get_node("Bootstrap").manifest_path = manifest
 		_main.get_node("Bootstrap").save_path = "res://.godot/qa/item-art/runtime/auto_%d.json" % Time.get_ticks_usec()
 		root.add_child(_main)
 		_session = _main.get_node("Bootstrap").session
@@ -49,7 +52,7 @@ func _run() -> void:
 			if visit != null and visit.visit_id == target: break
 			if visit != null: _session.counter_command("reject", visit.visit_id)
 			else: driver.action(_session, "short_task")
-		_check(visit != null and visit.visit_id == target and visit.item.definition_id == id, "real v30 visit " + id + "/" + variant)
+		_check(visit != null and visit.visit_id == target and visit.item.definition_id == id, "real visit " + id + "/" + variant)
 		await receipts()
 		var screen := _main.get_node("CounterScreen") as CounterScreen
 		var view := screen._counter_view
@@ -90,9 +93,9 @@ func _run() -> void:
 			await _comparison(panel._image, id + "_" + variant + "_" + row.id)
 		if "review" in OS.get_cmdline_user_args(): return
 		var codec := SaveCodec.new()
-		var state_data := codec.encode(_session._day.state, 30)
-		var restored := codec.decode(state_data, _session.definition, 30, _session._counter.catalog, true)
-		_check(restored != null, "v30 replay save validation " + id + ": " + codec.error_message)
+		var state_data := codec.encode(_session._day.state, _session.content_version)
+		var restored := codec.decode(state_data, _session.definition, _session.content_version, _session._counter.catalog, true)
+		_check(restored != null, "replay save validation " + id + ": " + codec.error_message)
 		if restored != null:
 			_session._day.state = restored; _session.restored.emit(); _session.changed.emit(); await _frames()
 			_check(sprite.texture.resource_path == CounterItemArt.front_path(asset), "restore retains art " + id)
@@ -109,7 +112,7 @@ func _run() -> void:
 			if _session.counter_model().active_id.is_empty(): _check(not sprite.visible, "empty counter hides item and shadow")
 			await _click("库存"); await _capture(id + "_inventory")
 		_main.queue_free(); await process_frame
-	print("ITEM STUDIES V30 UI: %d assertions, %d failures" % [_assertions, _failures])
+	print("ITEM STUDIES UI: %d assertions, %d failures" % [_assertions, _failures])
 	quit(0 if _failures == 0 else 1)
 
 func _capture(label: String) -> void:

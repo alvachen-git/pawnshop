@@ -15,9 +15,22 @@ var appraisal_preview := ""
 var bargaining_preview := ""
 var condition_preview := ""
 var preview_version := 23
+var unified_preview := ""
+const WEALTHY_PREVIEWS := ["wealthy", "wealthy-appraised", "advertisement"]
+const UNIFIED_PREVIEWS := {
+	"wealthy": "wealthy/ready", "wealthy-appraised": "wealthy/appraised", "advertisement": "wealthy/advertisement-closed",
+	"introduction": "unified/introduction", "contract": "unified/contract",
+	"upgrade": "unified/upgrade", "fan": "unified/fan-sound",
+	"informed": "unified/informed-ready", "ordinary": "unified/ordinary-ready", "urgent": "unified/urgent-ready",
+	"no-bench": "unified/no-bench", "intact": "unified/intact", "minor": "unified/minor", "major": "unified/major", "stack": "unified/stack",
+	"plaque": "unified-social/plaque", "delivered": "unified-social/delivered",
+	"bedtime": "unified-story/bedtime", "call": "unified-story/call", "dream": "unified-story/dream", "reunion": "unified-story/ready",
+	"companion": "unified-companion/idle-8"
+}
 
 
 func initialize() -> ContentLoadResult:
+	if OS.is_debug_build() and Array(OS.get_cmdline_user_args()).any(func(arg: String) -> bool: return arg.begins_with("--precision-preview=")): save_path = "user://tests/precision-preview/unused.json"
 	var provider := JsonContentProvider.new(manifest_path)
 	var result := provider.load_catalog()
 	if result.is_success():
@@ -32,6 +45,9 @@ func initialize() -> ContentLoadResult:
 				if argument.begins_with("--seed=") and argument.trim_prefix("--seed=").is_valid_int():
 					definition._seed = int(argument.trim_prefix("--seed=")) & 0x7fffffff
 					definition._randomize_seed = false
+		if not unified_preview.is_empty():
+			preview_stage = unified_preview
+			preview_version = 31 if unified_preview in WEALTHY_PREVIEWS else 30
 		if not preview_stage.is_empty(): save_path = "user://tests/v%d_preview/" % preview_version + preview_stage + ".json"
 		var saves := SaveManager.new(save_path)
 		if save_path == "user://p0/autosave_v12.json":
@@ -66,6 +82,14 @@ func initialize() -> ContentLoadResult:
 			saves.library.register_catalog(manifest_path, catalog)
 		saves.catalog = catalog
 		session = RunSession.new(definition, catalog.content_version, saves, catalog)
+		if PrecisionPreview.from_arguments(session):
+			get_tree().root.title = "鬼市当铺 · 鉴定测试预置 · 进度不保存"
+			var overlay := CanvasLayer.new(); overlay.layer = 110; add_child(overlay)
+			var label := Label.new(); label.text = "鉴定测试预置 · 本次进度不保存"; label.theme = CounterTheme.build()
+			label.add_theme_font_size_override("font_size",16); label.add_theme_color_override("font_color",Color.WHITE)
+			label.add_theme_color_override("font_shadow_color",Color.BLACK); label.add_theme_constant_override("shadow_outline_size",3)
+			label.mouse_filter = Control.MOUSE_FILTER_IGNORE; label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			overlay.add_child(label); label.set_anchors_and_offsets_preset(Control.PRESET_CENTER_TOP); label.offset_left = -220; label.offset_right = 220
 		if (not appraisal_preview.is_empty() or not bargaining_preview.is_empty() or not condition_preview.is_empty()) and FanAppraisalService.enabled(definition):
 			var directory := "res://.godot/qa/shop-appraisal/" if bargaining_preview.is_empty() else "res://.godot/qa/fan-bargaining/"
 			var stage := appraisal_preview if bargaining_preview.is_empty() else bargaining_preview
@@ -96,7 +120,8 @@ func initialize() -> ContentLoadResult:
 			state.bankruptcy_archive.assign(session._day.state.bankruptcy_archive)
 			session._day.state = state
 		if not preview_stage.is_empty():
-			var data: Variant = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/v%d/" % preview_version + preview_stage + ".json"))
+			var fixture_path := "res://.godot/qa/" + String(UNIFIED_PREVIEWS[unified_preview]) + ".json" if not unified_preview.is_empty() else "res://.godot/qa/v%d/" % preview_version + preview_stage + ".json"
+			var data: Variant = JSON.parse_string(FileAccess.get_file_as_string(fixture_path))
 			var codec := SaveCodec.new()
 			var preview := codec.decode(data, definition, catalog.content_version, catalog, true)
 			if preview == null:

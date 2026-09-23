@@ -4,18 +4,22 @@ func _run() -> void:
 	create_timer(120).timeout.connect(func() -> void: quit(1))
 	root.size = Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720)
 	root.content_scale_size = root.size
-	_capture_prefix = str(root.size.x)
+	var legacy := "v30" in OS.get_cmdline_user_args()
+	var version := 30 if legacy else 37
+	var fixture_dir := "res://.godot/qa/unified-campaign/" if legacy else "res://.godot/qa/named-wealthy-story/"
+	_capture_prefix = ("v30_" if legacy else "v37_") + str(root.size.x)
 	_main = load("res://scenes/start.tscn").instantiate()
 	_main.start_at_title = false
-	_main.get_node("Bootstrap").save_path = "res://.godot/qa/item-studies/mirror-auto.json"
+	_main.get_node("Bootstrap").manifest_path = "res://data/unified_manifest.json" if legacy else "res://data/named_wealthy_manifest.json"
+	_main.get_node("Bootstrap").save_path = "res://.godot/qa/item-studies/mirror-auto-%d.json" % version
 	root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
 	_session._save.library.path = "res://.godot/qa/item-studies/mirror-library.json"
 	await _frames()
 	for ending in ["acknowledged", "resentment"]:
 		var codec := SaveCodec.new()
-		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/unified-campaign/" + ending + ".json"))
-		var restored := codec.decode(data, _session.definition, 30, _session._counter.catalog, true)
+		var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string(fixture_dir + ending + ".json"))
+		var restored := codec.decode(data, _session.definition, version, _session._counter.catalog, true)
 		_check(restored != null, "valid actual ending fixture " + codec.error_message)
 		if restored == null: continue
 		_session._day.state = restored; _session.message = ""

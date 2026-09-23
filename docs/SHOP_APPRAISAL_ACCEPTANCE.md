@@ -1,5 +1,7 @@
 # 识扇与旧铺 v27 · 本地验收
 
+> 入口更新：完整新局现使用 v30 `play-unified.cmd`，见 [整合说明](UNIFIED_V30.md)。下文保留本专项历史规则与验证；其中折扇v29入口已更名为 `play-fan-condition.cmd`。
+
 日期：2026-09-17。基线 main `026b0579270400ce5a9a48f40c7010ce8b11ff41`；隔离目录 `.artifacts/shop-appraisal`，分支 `codex/shop-appraisal`。本地交付，未推送、未合并、未制作发行包。
 
 **后续界面更新：** 用户选定“案上对证”后，文字比对页已替换为可拖图录和折扇、真实图像圈点及局部放大；现又接入免费可修改草稿及确认落笔10分钟。本页保留初次文字版交付快照，其中各处10分钟的成本已被新规则替代；当前操作与新增检查以[案上对证说明](FAN_DESK_DESIGN.md)、[最新验收](qa/fan-drafts/REPORT.md)为准。
@@ -58,7 +60,7 @@
 
 ## 启动与后续
 
-使用根目录 `play-unified.cmd`；`-Stage fan` 快速体验比对，`-Stage upgrade` 体验改造。正常局与两个专项分别使用 `.godot/play-data/unified-*`，不写入原版本存档。操作路线、完整规则与参数见[试玩说明](SHOP_APPRAISAL_PLAYTEST.md)。
+使用根目录 `play-fan-condition.cmd`；`-Stage fan` 快速体验比对，`-Stage upgrade` 体验改造。正常局与两个专项分别使用 `.godot/play-data/unified-*`，不写入原版本存档。操作路线、完整规则与参数见[试玩说明](SHOP_APPRAISAL_PLAYTEST.md)。
 
 交付前通过根目录CMD入口分别执行 `-Stage normal -Verify`、`-Stage fan -Verify`、`-Stage upgrade -Verify`，三项均实际创建游戏窗口并正常退出。文档相对链接检查通过；保留的 `scenes/start_v26.tscn` 与基线旧默认场景内容一致。
 

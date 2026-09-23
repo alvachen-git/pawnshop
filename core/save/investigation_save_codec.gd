@@ -48,7 +48,8 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	error_message = "十夜存档与实际办理记录不符，原档已保留。"
 	replayed_actions = 0
 	if not data is Dictionary or catalog == null or not InvestigationService.enabled(run): return null
-	if data.get("content_version") != catalog.content_version or data.get("save_version") != catalog.content_version or data.get("run_definition_id") != String(run.id): return null
+	var version := catalog.content_version
+	if data.get("content_version") != version or data.get("save_version") != version or data.get("run_definition_id") != String(run.id): return null
 	if not data.get("action_journal") is Array or data.action_journal.size() > 4096: return null
 	if not data.get("ghost_origin") is Dictionary: return null
 	var origin: Dictionary = data.ghost_origin
@@ -62,7 +63,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	store.origin = origin.duplicate(true)
 	store.prior_deaths = data.death_archive.filter(func(row: Dictionary) -> bool: return row.run_token != origin.run_token)
 	store.prior_bankruptcies = data.bankruptcy_archive.filter(func(row: Dictionary) -> bool: return row.run_token != origin.run_token)
-	var session := RunSession.new(run, catalog.content_version, store, catalog)
+	var session := RunSession.new(run, version, store, catalog)
 	session.replaying = true
 	# Include actual content, not just a run id: editor/test changes invalidate the
 	# prefix too. Prior attempts affect archives even when the current seed matches.
@@ -93,7 +94,8 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 		if row.method == "counter_command" and args.size() == 4: args[3] = int(args[3])
 		var result: ActionResult = session.callv(row.method, args)
 		if row.method in ["growth_command", "fan_command", "social_command"] and not result.ok: return null
-		if row.method == "counter_command" and row.args[0] in ["fan_pressure", "condition_pressure"] and not result.ok: return null
+		if row.method == "counter_command" and (row.args[0] in ["fan_pressure", "condition_pressure", "watch_bluff", "watch_claim"] or String(row.args[0]).begins_with("luxury_")) and not result.ok: return null
+		if SocialRules.enabled(run) and row.method == "counter_command" and row.args[0] in ["military_intro", "intimidate"] and not result.ok: return null
 		if ShopGrowthService.enabled(run) and row.method == "counter_command" and row.args[0] in ["display_accept", "display_counter"] and not result.ok: return null
 		replayed_actions += 1
 	var expected: Dictionary = data.duplicate(true)

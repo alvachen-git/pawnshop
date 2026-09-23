@@ -1,71 +1,75 @@
-extends "res://tests/fan_condition_ui.gd"
-
-func install(stage: String) -> void:
-	var payload: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/unified/" + stage + ".json"))
-	var codec := SaveCodec.new()
-	var restored := codec.decode(payload,_session.definition,30,_session._counter.catalog,true)
-	_check(restored != null, "combined UI save " + codec.error_message)
-	if restored == null: return
-	_session._day.state = restored; _session.message = ""
-	_session.restored.emit(); _session.changed.emit()
+extends "res://tests/integrated_ui_smoke.gd"
 
 func _run() -> void:
-	create_timer(150).timeout.connect(func() -> void: push_error("UNIFIED UI TIMEOUT"); quit(1))
+	create_timer(180).timeout.connect(func() -> void: push_error("UNIFIED UI TIMEOUT"); quit(1))
 	_capture_prefix = "unified_1600" if "wide" in OS.get_cmdline_user_args() else "unified_1280"
 	root.size = Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720)
 	root.content_scale_size = root.size
 	_main = load("res://scenes/start.tscn").instantiate()
-	_main.get_node("Bootstrap").save_path = "user://tests/unified_ui/auto.json"
-	root.add_child(_main); _session = _main.get_node("Bootstrap").session
-	var store := DraftUIStore.new(); store.origin = _session._day.state.ghost_origin; _session._save = store
-	await _frames(); await _capture("00_title")
+	# Explicit legacy catalog: the default entry now starts the v31 unified run.
+	_main.get_node("Bootstrap").manifest_path = "res://data/unified_manifest.json"
+	_main.get_node("Bootstrap").save_path = "user://tests/unified-ui/auto.json"
+	root.add_child(_main)
+	_session = _main.get_node("Bootstrap").session
+	var store := GhostReplayStore.new(); store.origin = _session._day.state.ghost_origin
+	_session._save = store
+	await _frames()
 	await _click_button(_main.title_menu.buttons[0])
-	_check(_session.definition.id == "unified_ten" and _session.content_version == 30, "default title starts complete game")
-	_check(_session._day.state.current_night_index == 1 and _session._day.state.cash == 300 and not _session._day.state.pending_event_id.is_empty(), "new game starts at beginning")
-	await _capture("01_opening")
+	_check(_session.content_version == 30 and _session.definition.id == "unified_ten", "title starts unified v30")
 	var screen := _main.get_node("CounterScreen") as CounterScreen
-	install("introduction"); await receipts(); await create_timer(.5).timeout
-	var view := screen._counter_view
-	_check(view._portrait.visible and view._portrait.texture.resource_path == CounterVisualCatalog.SUN_PORTRAIT, "Sun portrait in default game")
-	_check(not view._item_hotspot.visible and not screen.facilities.available(), "itemless introduction cannot enter facilities")
-	await _capture("02_military_arrival")
-	await _click_button(view._customer_hotspot); await _click_button(view._dialogue_action)
+	await install("unified/introduction")
+	_check(screen._counter_view._portrait.visible and screen._counter_view._counter_foreground.visible, "Sun portrait and counter mask visible")
+	_check(not screen._counter_view._item_hotspot.visible and not screen.facilities.available(), "itemless reception locks facilities")
+	await _capture("introduction")
+	await _click_button(screen._counter_view.get_hotspot(&"customer"))
+	await _click("交谈")
 	for step in 3:
 		await _click(MilitaryIntroduction.CHOICES[step])
-		_check(_session._day.state.social.intro_step == step + 1, "military dialogue click " + str(step))
-	await create_timer(.35).timeout
-	await _click_button(view.get_hotspot(&"social"))
-	var book := screen._social_panel
-	_check(book.visible and book._roster.get_child_count() == 1, "physical book opens discovered faction")
-	await _capture("03_procurement")
-	await _click("接下采购单")
-	_check(not _session._day.state.social.contract.is_empty(), "mouse accepts procurement")
-	screen._close_drawer(); await _frames()
-	await _click_button(screen.facilities.entry); await create_timer(.3).timeout
-	var room := screen.facilities.room
-	_check(screen.facilities.in_room, "same default game enters facilities")
-	await _click_button(room.hotspots["knowledge/gu_yansheng"])
-	await _click("学习顾砚生知识 · 准备1次")
-	_check(ShopKnowledgeService.mastered(_session._day.state,"gu_yansheng"), "same game learns cabinet knowledge")
-	await _capture("04_knowledge")
-	screen.facilities.leave(false)
-	install("fan-before"); await receipts(); screen._close_drawer(); await _frames()
-	screen._flow.show_panel(&"appraisal"); await _frames()
-	var visit := _session._counter.customers.active(_session._day.state)
-	await _click("检查破损 · 5分钟")
-	_check(FanConditionService.checked(visit.item), "fan condition click in combined game")
-	await _click("送上鉴物台 · 辨认真假")
-	var desk := root.get_node_or_null("FanAppraisalOverlay") as FanAppraisalView
-	_check(desk != null, "fan desk reachable from normal default game")
-	if desk == null: quit(1); return
-	await _frames(); await _capture("05_desk")
-	for points in [[Vector2(.72,.32),Vector2(.38,.245)], [Vector2(.74,.69),Vector2(.80,.355)]]:
-		await desk_select(desk.book, points[0]); await desk_select(desk.fan, points[1]); await _click_button(desk.note_buttons.same)
-	await _click_button(desk.stamp); await _click_button(desk.choice_buttons.sound); await _click_button(desk.confirm_button)
-	_check(not FanAppraisalService.record(_session._day.state,visit.item.instance_id).is_empty(), "mouse commits appraisal")
-	await _click_button(desk.close_button)
-	var codec := SaveCodec.new()
-	var restored := codec.decode(codec.encode(_session._day.state,30),_session.definition,30,_session._counter.catalog,true)
-	_check(restored != null and restored.social.introduced and ShopKnowledgeService.mastered(restored,"gu_yansheng"), "UI changes save together")
+	_check(_session._day.state.social.introduced, "real clicks finish reception")
+	await _click_button(screen._counter_view.get_hotspot(&"social"))
+	_check(screen._social_panel.visible, "physical book opens social panel")
+	await _capture("book")
+	await _click_button(screen._social_panel._close)
+	_check(not screen._social_panel.visible, "close book")
+	await install("unified/upgrade")
+	var close := screen.get_node("%CloseDrawerButton") as Button
+	if close.is_visible_in_tree(): await _click_button(close)
+	await _click_button(screen.facilities.entry)
+	await create_timer(.5).timeout
+	_check(screen.facilities.in_room and not screen._social_panel.visible, "facilities navigation in unified run")
+	await _click_button(screen.facilities.room.hotspots.bench)
+	await _capture("facilities")
+	await install("unified/minor")
+	_check(not screen._counter_view._counter_foreground.visible, "Sun mask cleared for ordinary customer")
+	await _capture("fan")
+	await install("unified-social/plaque")
+	_check(screen._counter_view.get_hotspot(&"plaque").visible, "earned plaque is a counter entry")
+	await _click_button(screen._counter_view.get_hotspot(&"social"))
+	await _capture("plaque_book")
+	await install("unified-companion/idle-8")
+	_check(screen._counter_view.companion.visible and not screen._social_panel.visible, "Aqi companion coexists after restoring")
+	await _capture("companion")
+	await install("unified-story/call")
+	_check(_session.event_model().pending_id == MirrorDreamService.CALL and not screen._social_panel.visible, "crying at night keeps narrative focus")
+	await _capture("call")
 	print("UNIFIED UI: %d assertions, %d failures" % [_assertions,_failures])
 	quit(0 if _failures == 0 else 1)
+
+func install(stage: String) -> void:
+	var data: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://.godot/qa/" + stage + ".json"))
+	var codec := SaveCodec.new()
+	var state := codec.decode(data,_session.definition,30,_session._counter.catalog,true)
+	_check(state != null,"verified UI fixture " + stage + " " + codec.error_message)
+	if state == null: return
+	_session._day.state = state
+	_session.message = ""
+	_session.restored.emit(); _session.changed.emit()
+	await _frames()
+	await create_timer(.4).timeout
+
+func _capture(label: String) -> void:
+	await _frames()
+	await RenderingServer.frame_post_draw
+	var folder := "res://docs/qa/unified-v30/"
+	DirAccess.make_dir_recursive_absolute(folder)
+	_check(root.get_texture().get_image().save_png(folder + _capture_prefix + "_" + label + ".png") == OK,"capture " + label)

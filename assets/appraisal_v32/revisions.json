@@ -1,0 +1,12 @@
+[
+  {
+    "id": "porcelain_vase",
+    "source": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-6061b4b1-ddf9-4cde-a4ed-3fc7e00cc261.png",
+    "prompt": "Preserve the exact existing 4x3 equal-cell atlas grid and all objects and palette. Correct evidence ONLY: Row2 column2 LEFT foot must have the SAME coherent intact foot and mark as row2 column1 (remove the cracks in the foot); its RIGHT neck glaze must show a subtle repaired seam. Row3 column1 LEFT and row3 column4 LEFT are ORIGINAL authentic/reference internal necks: remove the brown vertical seam entirely and show smoothly continuous ceramic wall, no join line. Row3 column2 LEFT is repaired: show a clearly visible HORIZONTAL circular neck join line. Row3 column2 RIGHT show a repaired glaze border. Row3 column3 is imitation, distinguish modern regular tooling and false aging from authentic. Do not change cell boundaries or whole-object row1. No labels."
+  },
+  {
+    "id": "pearl_necklace",
+    "source": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-02942d7a-63fa-40b3-a397-31724f5d295b.png",
+    "prompt": "Preserve exact 4x3 equal-cell grid, layout, subject placement and all wardrobe photos. Correct the evidence: Row3 column1 LEFT and row3 column4 LEFT show ORIGINAL/reference pearl drilled bore with continuous smooth nacre, NO flakes, NO peeling coating. Row3 column1/4 RIGHT show two closely matching aged pearls with similar wear. Row3 column2 LEFT show transparent glue residue around the bore; RIGHT show a replacement pearl different in wear from its neighbor. Row3 column3 LEFT shows obviously PEELING PAINT FILM exposing a smooth glass bead below, RIGHT matching artificial beads with film edges. Row2 column3 LEFT must visibly show an imitation painted coating flaking around the drill hole, RIGHT a mismatched overly regular artificial white pearl. All other original and reference surfaces should have continuous natural nacre, not peeling paint. Preserve all cell boundaries and the square shape of each cell. No labels."
+  }
+]

@@ -92,6 +92,7 @@ static func create(definition: RunDefinition) -> RunState:
 	if state.shop_growth_enabled: state.shop_growth = ShopGrowthService.initial()
 	if FanAppraisalService.enabled(definition): state.shop_growth["appraisal"] = FanAppraisalService.initial()
 	if FanBargainingService.enabled(definition): state.shop_growth["fan_bargaining"] = FanBargainingService.initial()
+	if WealthyCustomers.enabled(definition): state.shop_growth["luxury"] = WealthyCustomers.initial()
 	state.mirror_reunion_enabled = MirrorReunionService.enabled(definition)
 	state.mirror_ending_enabled = MirrorEndingService.enabled(definition)
 	state.investigation_enabled = InvestigationService.enabled(definition)

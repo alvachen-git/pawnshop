@@ -80,6 +80,7 @@ static func validate(catalog: ContentCatalog) -> Array:
 				for action in item.appraisal_actions:
 					if action.minutes % run.time_step != 0: _error(issues, item.id, "鉴定耗时未匹配步长。")
 					if not action.required_tool.is_empty() and action.required_tool not in run.tools: _error(issues, run.id, "缺少所需鉴定工具。")
+	issues.append_array(LuxuryContentValidator.validate(catalog))
 	return issues
 
 static func _contains_all(values: Array, required: Array) -> bool:

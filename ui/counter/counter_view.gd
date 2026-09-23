@@ -312,6 +312,9 @@ func render(model: Dictionary) -> void:
 		var portrait_bounds := CounterVisualCatalog.special_bounds(_portrait.texture)
 		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
 		(_portrait.material as ShaderMaterial).set_shader_parameter("source_bottom", CounterVisualCatalog.special_placement(_portrait.texture).y)
+	elif CounterVisualCatalog.is_wealthy_portrait(_portrait.texture):
+		var portrait_bounds := CounterVisualCatalog.wealthy_bounds()
+		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
 	elif CounterVisualCatalog.is_ordinary_portrait(_portrait.texture):
 		var portrait_bounds := CounterVisualCatalog.ordinary_bounds(_portrait.texture)
 		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
@@ -319,7 +322,9 @@ func render(model: Dictionary) -> void:
 		_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
 	_portrait.visible = active and _portrait.texture != null
 	_item_image.texture = CounterVisualCatalog.front(visual.get("item_asset", ""), model.appraisal.get("images", []))
-	_item_image.material = CounterItemArt.material(_item_image.texture, true)
+	if visual.has("tiered_atlas"): _item_image.texture = TieredArt.cell(visual.tiered_atlas,int(visual.tiered_exterior),0)
+	if visual.get("watch_art",false): _item_image.texture = WatchArt.cell([0,3,4][int(visual.tiered_exterior)])
+	_item_image.material = WatchArt.material() if visual.get("watch_art",false) else CounterItemArt.material(_item_image.texture, true)
 	_item_image.visible = active and _item_image.texture != null
 	var item_bounds := CounterItemArt.counter_bounds(_item_image.texture)
 	_item_image.stretch_mode = TextureRect.STRETCH_SCALE if CounterItemArt.projects_on_table(_item_image.texture) else TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -349,6 +354,8 @@ func render(model: Dictionary) -> void:
 		_speech.tooltip_text = _speech.text
 		if not visual.get("intent", "").is_empty(): _speech.text = visual.intent + "\n" + _speech.text
 		%ItemText.text = ("%s\n参考价值 %s\n%s" % [visual.item_name, visual.estimate, visual.condition_note]) if visual.get("condition_enabled", false) else "%s\n已知估值 %s 银元\n已见线索 %d 条" % [visual.item_name, visual.estimate, visual.clues.size()]
+		if visual.has("tiered_atlas") and not visual.get("estimate_is_range",false):
+			%ItemText.text = "%s\n%s\n已见线索 %d 条" % [visual.item_name,"尚未定值" if visual.estimate == "尚未定值" else "已知货值 %s 银元" % visual.estimate,visual.clues.size()]
 		if visual.has("item_status"): %ItemText.text = visual.item_status
 	$Room.has_customer = active and _portrait.texture == null
 	$Room.has_item = active and _item_image.texture == null and not model.get("itemless", false)
@@ -369,6 +376,7 @@ func render_story(model: Dictionary, state: Dictionary) -> void:
 		story.render({}, "")
 		return
 	var art: String = model.presentation.get("art", "aqi")
+	_counter_foreground.hide()
 	_story_actor = art in ["aqi", "bent", "fixed"]
 	if _arrival != null: _arrival.kill()
 	_customer_context.hide()

@@ -1,0 +1,9 @@
+{
+  "date": "2026-09-22",
+  "tool": "image_gen.imagegen",
+  "reason": "User requested an older appearance for the wealthy female customer",
+  "source": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-1adceef2-ca43-45f8-b93b-8f5db32f5ee6.png",
+  "reference": "assets/art04/customers/wealthy/opera.png (previous version)",
+  "output": "assets/art04/customers/wealthy/opera.png",
+  "prompt": "Edit this existing Chinese female opera-star portrait to make the SAME woman visibly older, around age 52-55, an elegant established wealthy stage veteran in 1930s Republican-era China. Age her facial anatomy naturally: distinct fine crow's feet, slightly heavier upper eyelids, gentle under-eye hollows, nasolabial creases, subtle loss of cheek fullness, soft jawline age and faint neck lines. Add a restrained streak of silver-gray at both temples within the same period waved hairstyle. Her hands should also show slight mature texture. Preserve her recognizable facial identity, graceful composed gaze, dignity, carefully groomed appearance and restrained makeup; she should look visibly seasoned and mature rather than a young model, without exaggerating frailty. Preserve the exact teal patterned qipao, brown fur-trimmed shawl, pearl earrings, velvet jewelry case, pose, proportions, waist-up square crop, opaque gouache brushwork, warm lighting, and perfectly uniform magenta #FF00FF background. No additional objects, no text or watermark. Keep head and hands fully within frame. Only change age-related face, hair, neck and hand details."
+}

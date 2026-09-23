@@ -1,0 +1,465 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "item_luxury_embroidery",
+      "display_name": "精品绣屏",
+      "description": "客人将精品绣屏安放在柜上，等你掌眼。",
+      "category": "textile",
+      "base_value": 360,
+      "unknown_min": 60,
+      "unknown_max": 360,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 360,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 240,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 60,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_embroidery.name",
+      "type": "normal",
+      "tags": [
+        "textile",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.embroidery"
+    },
+    {
+      "id": "item_luxury_gold_bangle",
+      "display_name": "赤金手镯",
+      "description": "客人将赤金手镯安放在柜上，等你掌眼。",
+      "category": "jewelry",
+      "base_value": 440,
+      "unknown_min": 70,
+      "unknown_max": 440,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 440,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 330,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 70,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_gold_bangle.name",
+      "type": "normal",
+      "tags": [
+        "jewelry",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.gold_bangle"
+    },
+    {
+      "id": "item_luxury_gold_watch",
+      "display_name": "百达翡丽猎壳金怀表",
+      "description": "客人称是百达翡丽出品。金壳带护盖，白珐琅盘下另设小秒盘。",
+      "category": "watches",
+      "base_value": 500,
+      "unknown_min": 100,
+      "unknown_max": 500,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 500,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 350,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 100,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_gold_watch.name",
+      "type": "normal",
+      "tags": [
+        "watches",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.gold_watch"
+    },
+    {
+      "id": "item_luxury_mantel_clock",
+      "display_name": "进口座钟",
+      "description": "客人将进口座钟安放在柜上，等你掌眼。",
+      "category": "watches",
+      "base_value": 600,
+      "unknown_min": 120,
+      "unknown_max": 600,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 600,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 360,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 120,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_mantel_clock.name",
+      "type": "normal",
+      "tags": [
+        "watches",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.mantel_clock"
+    },
+    {
+      "id": "item_luxury_pearl_necklace",
+      "display_name": "珍珠项链",
+      "description": "客人将珍珠项链安放在柜上，等你掌眼。",
+      "category": "jewelry",
+      "base_value": 440,
+      "unknown_min": 60,
+      "unknown_max": 440,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 440,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 280,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 60,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_pearl_necklace.name",
+      "type": "normal",
+      "tags": [
+        "jewelry",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.pearl_necklace"
+    },
+    {
+      "id": "item_luxury_jade_pendant",
+      "display_name": "金镶玉坠",
+      "description": "客人将金镶玉坠安放在柜上，等你掌眼。",
+      "category": "jewelry",
+      "base_value": 520,
+      "unknown_min": 80,
+      "unknown_max": 520,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 520,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 340,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 80,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_jade_pendant.name",
+      "type": "normal",
+      "tags": [
+        "jewelry",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.jade_pendant"
+    },
+    {
+      "id": "item_luxury_album",
+      "display_name": "名家册页",
+      "description": "客人将名家册页安放在柜上，等你掌眼。",
+      "category": "stationery",
+      "base_value": 560,
+      "unknown_min": 70,
+      "unknown_max": 560,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 560,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 280,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 70,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_album.name",
+      "type": "normal",
+      "tags": [
+        "stationery",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.album"
+    },
+    {
+      "id": "item_luxury_porcelain_vase",
+      "display_name": "古瓷小瓶",
+      "description": "客人将古瓷小瓶安放在柜上，等你掌眼。",
+      "category": "porcelain",
+      "base_value": 600,
+      "unknown_min": 90,
+      "unknown_max": 600,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 600,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 300,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 90,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_porcelain_vase.name",
+      "type": "normal",
+      "tags": [
+        "porcelain",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.porcelain_vase"
+    },
+    {
+      "id": "item_luxury_repeater",
+      "display_name": "报时金怀表",
+      "description": "客人将报时金怀表安放在柜上，等你掌眼。",
+      "category": "watches",
+      "base_value": 1200,
+      "unknown_min": 180,
+      "unknown_max": 1200,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 1200,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 900,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 180,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_repeater.name",
+      "type": "normal",
+      "tags": [
+        "watches",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.repeater"
+    },
+    {
+      "id": "item_luxury_silver_service",
+      "display_name": "西洋银器套件",
+      "description": "客人将西洋银器套件安放在柜上，等你掌眼。",
+      "category": "metal",
+      "base_value": 1400,
+      "unknown_min": 210,
+      "unknown_max": 1400,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 1400,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "mended",
+          "true_value": 980,
+          "weight": 1,
+          "clue_ids": []
+        },
+        {
+          "id": "flawed",
+          "true_value": 210,
+          "weight": 1,
+          "clue_ids": []
+        }
+      ],
+      "clues": [],
+      "appraisal_actions": [],
+      "name_key": "item.item_luxury_silver_service.name",
+      "type": "normal",
+      "tags": [
+        "metal",
+        "luxury"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "luxury.silver_service"
+    }
+  ]
+}

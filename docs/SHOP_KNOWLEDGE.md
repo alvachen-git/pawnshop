@@ -45,7 +45,7 @@
 ## 快速试玩
 
 ```powershell
-& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-unified.cmd" -Stage knowledge -Wide
+& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-fan-condition.cmd" -Stage knowledge -Wide
 ```
 
 直接打开第二夜第一柜，尚未学习、尚未购买设施。`-Stage fan`继续直接测试已齐备的鉴物台。

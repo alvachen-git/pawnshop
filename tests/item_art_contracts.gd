@@ -54,7 +54,7 @@ func _initialize() -> void:
 		check(upgraded_detail.path.ends_with(jewelry + "_flaw.png") and upgraded_detail.requires_clues == detail.requires_clues and upgraded_detail.id == detail.id, "already-filtered jewelry evidence preserves gates and identity")
 		old_pages[0].path = root_path + "_back.svg"
 		check(CounterVisualCatalog.front(asset, old_pages).resource_path == old_pages[0].path, "jewelry explicit custom front wins")
-	for manifest in ["res://data/unified_manifest.json", "res://data/goods_expertise_manifest.json"]:
+	for manifest in ["res://data/named_wealthy_manifest.json", "res://data/unified_manifest.json", "res://data/goods_expertise_manifest.json"]:
 		check_study_gates(manifest)
 	for ending in ["ordinary", "resentful"]:
 		var ending_pages := CounterVisualCatalog.images({"item_asset": "asset.weeping_mirror_" + ending, "clues": []})

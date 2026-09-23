@@ -41,6 +41,7 @@ static func overlay(state: RunState, rows: Array[Dictionary]) -> void:
 		if not ReputationService.ordinary(row) or row.has("seven_role") or row.get("person", {}).get("id", "").begins_with("familiar/"): continue
 		# Authored appointments and preparation invitations keep their chosen goods.
 		if state.preparation_history.any(func(record: Dictionary) -> bool: return record.action in ["target", "seek", "attract"] and row.visit_id in record.visit_ids): continue
+		if row.get("wealthy", false): continue
 		if row.get("coat_assigned", false): continue
 		if VarietyService.rng(state.run_seed, row.visit_id + "/cotton_coat").randi_range(0, 99) >= int(config.chance_percent): continue
 		row.item_id = ITEM

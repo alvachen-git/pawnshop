@@ -6,7 +6,7 @@ const VERSION := 27
 static var _rules: Dictionary = {}
 
 static func enabled(run: RunDefinition) -> bool:
-	return run.variety.get("social_relations_version", 0) == 1 or String(run.id) == RUN or String(run.id).begins_with("social_preview_")
+	return run.variety.get("social_relations_version", 0) == 1 or String(run.id) == RUN or String(run.id).begins_with("social_preview_") or run.variety.get("social_version", 0) == 1
 
 static func config() -> Dictionary:
 	if _rules.is_empty(): _rules = JSON.parse_string(FileAccess.get_file_as_string("res://data/social_relations/rules.json"))

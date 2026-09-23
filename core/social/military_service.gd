@@ -103,7 +103,7 @@ static func reason(day: DayController, command: String, detail := "") -> String:
 	var state := day.state
 	if not state.social_enabled or not state.social.introduced: return "经办人尚未来过，眼下没有军方往来。"
 	if state.phase not in [&"pre_open", &"open"]: return "这件事须在开铺前或营业时办理。"
-	if not state.pending_event_id.is_empty() or not state.risk_pending.is_empty() or not PawnReturnService.current(state).is_empty() or MirrorEncounterService.new(state.ghost_catalog).pending(day): return "请先处理眼前的事情。"
+	if not state.pending_event_id.is_empty() or not state.risk_pending.is_empty() or not PawnReturnService.current(state).is_empty() or MirrorEncounterService.new(state.ghost_catalog).pending(day) or MirrorEndingService.active(state): return "请先处理眼前的事情。"
 	var pending: Dictionary = state.social.pending
 	var contract: Dictionary = state.social.contract
 	match command:

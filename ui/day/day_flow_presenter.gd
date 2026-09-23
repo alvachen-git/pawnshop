@@ -172,6 +172,7 @@ func _preparation_commands() -> Array:
 		["target", "托人捎话收货 · 准备1次", "选择类别，另约1位普通来客带货"],
 		["tea", "备茶候客 · 5大洋 · 准备1次", "今晚普通来客多等20分钟"],
 		["visitors", "打听来客 · 准备1次", "获知2位来客的时段、货类与交易意向"]]
+	if WealthyCustomers.active(state): actions.append(["advertise", "宣传铺子 · 30银元 · 准备1次", "每夜一次；关铺时公布商誉变化，宣传最多增至80"] )
 	if state.current_night_index in [4, 5, 6] and not PreparationService.used(state, "investigate"):
 		actions.append(["investigate", "调查收货消息 · 准备1次", "提前打听第六夜的收货细目"])
 	for action in actions:

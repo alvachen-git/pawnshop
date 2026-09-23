@@ -80,6 +80,16 @@ func render(model: Dictionary) -> void:
 	if visual.get("condition_enabled", false): _views.hide()
 	_show_image(_selected)
 	if gained_view: _reveal_image.call_deferred()
+	if visual.has("tiered_atlas"):
+		# Atlas views own their material; ordinary cutouts keep the study shader.
+		_image.material = null
+		_image.texture = TieredArt.cell(visual.tiered_atlas,int(visual.tiered_exterior),0)
+		if visual.get("watch_art",false):
+			_image.texture = WatchArt.cell([0,3,4][int(visual.tiered_exterior)])
+			_image.material = WatchArt.material()
+		_image.visible = _image.texture != null
+		_image.tooltip_text = "物品外观"
+		_views.hide()
 
 func _reveal_image() -> void:
 	var scroll := _column.get_parent() as ScrollContainer

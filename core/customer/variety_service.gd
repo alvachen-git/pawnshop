@@ -2,6 +2,9 @@ class_name VarietyService
 extends RefCounted
 
 static func rng(seed_value: int, key: String) -> RandomNumberGenerator:
+	# v34/v35 isolate saves while retaining v33's existing random streams.
+	# New watch facts use their own /watch34/ keys, never consume those streams.
+	key = key.replace("named_wealthy_ten/", "watch_ten/").replace("watch_patterns_ten/", "watch_ten/").replace("watch_negotiation_ten/", "watch_ten/").replace("watch_market_ten/", "watch_ten/")
 	var random := RandomNumberGenerator.new()
 	random.seed = (seed_value + int(key.hash())) & 0x7fffffff
 	return random
@@ -74,7 +77,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		visit.customer_id = row.customer_id
 		visit.person = row.person.duplicate(true)
 		visit.voice = customer.persona.duplicate(true)
-		if SevenNightPlan.enabled(run) and not row.context_id.is_empty(): visit.voice.merge(SevenNightPlan.context(run, row.context_id).voice, true)
+		if SevenNightPlan.enabled(run) and not row.get("wealthy", false) and not row.context_id.is_empty(): visit.voice.merge(SevenNightPlan.context(run, row.context_id).voice, true)
 		if not item.provenance.is_empty(): visit.voice["source_claim"] = item.provenance.claim
 		visit.pawn_terms_id = row.terms_id
 		visit.arrival = int(row.arrival) + delay
@@ -113,6 +116,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		if row.get("sample_role") == "urgent": visit.voice["introduction"] = "车子不等人。我只留三十分钟，掌柜挑要紧的看。"
 		if row.get("seven_role") == "pawn": visit.voice["introduction"] += "\n只办活当，三夜后我带票来赎。"
 		FamiliarStoryVoice.apply(visit, row, state, catalog)
+		WealthyCustomers.prepare(state, visit)
 		NightMarketPlan.prepare(visit, row, run, item)
 		state.visits.append(visit)
 	state.visits.sort_custom(func(a: CustomerVisit, b: CustomerVisit) -> bool: return a.arrival < b.arrival)

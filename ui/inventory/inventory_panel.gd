@@ -45,18 +45,19 @@ func render(model: Dictionary) -> void:
 	if not model.has("visual"):
 		super.render(model)
 		return
-	_draw()
+	_refresh_inventory()
 
 func _select(index: int) -> void:
 	_filter = index
-	_draw()
+	_refresh_inventory()
 	(_column.get_parent() as ScrollContainer).scroll_vertical = 0
 
 func open_buyer(buyer_id: String) -> void:
 	_select(2)
 	_sale_view._choose(buyer_id)
 
-func _draw() -> void:
+func _refresh_inventory() -> void:
+	if not _model.has("visual"): return
 	AccountPaper.clear(_sheet)
 	var visual: Dictionary = _model.visual
 	var financial: Dictionary = visual.financial

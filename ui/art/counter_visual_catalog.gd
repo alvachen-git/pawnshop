@@ -1,9 +1,15 @@
 class_name CounterVisualCatalog
 extends RefCounted
 
+const SUN_PORTRAIT := "res://assets/social_v27/sun_dayuan_visit_halfbody.png"
 const ROOT := "res://assets/art02/"
 const NEIGHBOR_PORTRAIT := "res://assets/art04/customers/neighbor_v2.png"
 const ORDINARY_ROOT := "res://assets/art04/customers/ordinary/"
+const WEALTHY_ROOT := "res://assets/art04/customers/wealthy/"
+const WEALTHY_CUSTOMERS := {
+	"customer_wealthy_silk":"silk", "customer_wealthy_factory":"factory",
+	"customer_wealthy_opera":"opera", "customer_wealthy_antique":"antique", "customer_wealthy_comprador":"comprador",
+}
 const MIRROR_HUSBAND_PORTRAIT := preload("res://assets/art04/customers/special/mirror_husband.png")
 const SPECIAL_ROOT := "res://assets/art04/customers/special/"
 const FAMILIAR_PORTRAITS := {
@@ -41,7 +47,6 @@ const ORDINARY_PLACEMENT := {
 	"teahouse": Vector3(0.505, 0.982, 0.495),
 	"bookkeeper": Vector3(0.500, 1.000, 0.500),
 }
-const SUN_PORTRAIT := "res://assets/social_v27/sun_dayuan_visit_halfbody.png"
 const ITEMS := {
 	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
 	"asset.item_blue_bowl": "bowl", "asset.item_brass_holder": "holder", "asset.weeping_mirror": "mirror",
@@ -59,6 +64,8 @@ const DETAILS := {
 }
 
 static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
+	if WEALTHY_CUSTOMERS.has(customer_id): return load(WEALTHY_ROOT + WEALTHY_CUSTOMERS[customer_id] + ".png") as Texture2D
+	if customer_id == "sun_dayuan" or asset == "social.sun_dayuan_visit": return load(SUN_PORTRAIT) as Texture2D
 	# The chapter's hawker and every later appointment are the same man.
 	# Keep the approved cap, face and clothes used by the reunion expression set.
 	if customer_id == "mirror_husband" or person_id == InvestigationService.PERSON:
@@ -84,12 +91,19 @@ static func portrait_material(texture: Texture2D) -> ShaderMaterial:
 	var material := ShaderMaterial.new()
 	material.shader = preload("res://ui/art/counter_cutout.gdshader")
 	material.set_shader_parameter("source_bottom", 1.0)
-	material.set_shader_parameter("chroma_key", is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
-	material.set_shader_parameter("clean_chroma_edges", is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path == NEIGHBOR_PORTRAIT)
+	material.set_shader_parameter("chroma_key", is_wealthy_portrait(texture) or is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
+	material.set_shader_parameter("clean_chroma_edges", is_wealthy_portrait(texture) or is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path == NEIGHBOR_PORTRAIT)
 	return material
 
 static func is_ordinary_portrait(texture: Texture2D) -> bool:
 	return texture != null and texture.resource_path.begins_with(ORDINARY_ROOT)
+
+static func is_wealthy_portrait(texture: Texture2D) -> bool:
+	return texture != null and texture.resource_path.begins_with(WEALTHY_ROOT)
+
+static func wealthy_bounds() -> Vector4:
+	var hem := 445.0 / 941.0 / 0.9
+	return Vector4(0.3175,hem-0.50,0.6825,hem)
 
 static func is_special_portrait(texture: Texture2D) -> bool:
 	return texture != null and texture.resource_path.begins_with(SPECIAL_ROOT)
@@ -122,6 +136,9 @@ static func _painted_front(asset: String) -> String:
 	return path if ResourceLoader.exists(path) else ""
 
 static func front(asset: String, source_images: Array = []) -> Texture2D:
+	if asset.begins_with("luxury."):
+		var path := "res://assets/wealthy/" + asset.trim_prefix("luxury.") + ".svg"
+		return load(path) as Texture2D if ResourceLoader.exists(path) else null
 	for row in source_images:
 		if row.id == "front" and not row.path.is_empty():
 			return load(_front_path(asset, row.path)) as Texture2D
