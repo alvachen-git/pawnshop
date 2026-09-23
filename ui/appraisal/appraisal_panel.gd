@@ -19,6 +19,7 @@ func _ready() -> void:
 	_column.move_child(study, 0)
 	_image = TextureRect.new()
 	_image.name = "ItemStudyImage"
+	_image.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	_image.custom_minimum_size = Vector2(160, 132)
 	_image.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -102,6 +103,7 @@ func _show_image(id: String) -> void:
 		if row.id == id:
 			_selected = id
 			_image.texture = load(row.path) if not row.path.is_empty() else null
+			_image.material = CounterVisualCatalog.study_material(_image.texture)
 			_image.visible = _image.texture != null
 			_image.tooltip_text = row.label + " · 复看不耗时"
 			for button_index in _views.get_child_count():

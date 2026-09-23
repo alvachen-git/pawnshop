@@ -1,0 +1,22 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 4.1 Metal - 89.4 - Compatibility - Using Device: Apple - Apple M4
+
+ITEM ART VISIT item_inkstone seed=5 night=1 target=unified_ten/1/n1_visit3
+RUN SEED: 349081112
+ITEM ART VISIT item_clay_teapot seed=3 night=1 target=unified_ten/1/n1_visit6
+RUN SEED: 767331617
+ITEM ART VISIT item_silk_panel seed=2 night=1 target=unified_ten/1/n1_visit4
+RUN SEED: 1397664684
+ITEM ART VISIT item_fountain_pen seed=0 night=1 target=unified_ten/1/n1_visit3
+RUN SEED: 2110732481
+ITEM ART VISIT item_pocket_watch seed=0 night=1 target=unified_ten/1/n1_visit2
+RUN SEED: 225989334
+ITEM ART VISIT item_brass_holder seed=14 night=1 target=unified_ten/1/n1_visit3
+RUN SEED: 594062411
+ITEM ART VISIT item_weeping_mirror seed=0 night=3 target=unified_ten/3/n3_visit1
+RUN SEED: 971849170
+ITEM ART VISIT item_blue_bowl seed=1 night=1 target=unified_ten/1/n1_visit3
+RUN SEED: 1385930942
+ITEM ART VISIT item_silver_hairpin seed=1 night=1 target=unified_ten/1/n1_visit5
+RUN SEED: 1887054684
+ITEM ART V30 UI: 1176 assertions, 0 failures
