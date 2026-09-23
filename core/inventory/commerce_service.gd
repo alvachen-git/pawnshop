@@ -17,6 +17,7 @@ func base_quote(item: ItemInstance, buyer: BuyerDefinition) -> int:
 	return maxi(1, roundi(GoodsExpertise.value(item, definition) * buyer.value_multiplier))
 
 func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition) -> String:
+	if SocialRules.closed(day.state): return "今夜停业，不办新交货。"
 	if day.definition.batch_selling:
 		var error := trip_reason(day, buyer)
 		return error if not error.is_empty() else item_reason(day, item, buyer)
@@ -25,7 +26,7 @@ func sale_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 		if flag not in day.state.narrative_flags: return "尚未取得买家介绍；请查看铺中记事。"
 	if item.ownership_state != "owned": return "只有店铺所有的现货可出售；在当物品不可出售。"
 	if day.state.phase != &"open": return "买家只在营业时收货。"
-	if day.state.current_night_index < buyer.night_min or day.state.current_night_index > buyer.night_max or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家到访窗口。"
+	if MilitaryService.buyer_night(day.state, buyer.id) < buyer.night_min or MilitaryService.buyer_night(day.state, buyer.id) > buyer.night_max or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家到访窗口。"
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	var appointment_error := OrdinarySamplePlan.buyer_reason(day.state, buyer.id, definition.category, day.state.current_night_index, day.state.game_minutes)
 	if not appointment_error.is_empty(): return appointment_error
@@ -73,6 +74,7 @@ func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	return ""
 
 func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
+	if SocialRules.closed(day.state): return "今夜停业，不办新交货；已有约定顺延一夜。"
 	if buyer == null or buyer.id not in day.definition.buyer_ids: return "买家不存在。"
 	var introduction := PreparationService.buyer_reason(day.state, buyer.id)
 	if not introduction.is_empty(): return introduction
@@ -83,7 +85,7 @@ func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
 	if not PawnReturnService.current(day.state).is_empty(): return "原当户还在店里，请先办妥当票。"
 	for visit in day.state.visits:
 		if visit.status in ["active", "waiting"]: return "店里还有客人，请先接待或送客，再去交货。"
-	if day.state.current_night_index < buyer.night_min or day.state.current_night_index > buyer.night_max or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家收货时段。"
+	if MilitaryService.buyer_night(day.state, buyer.id) < buyer.night_min or MilitaryService.buyer_night(day.state, buyer.id) > buyer.night_max or day.state.game_minutes < buyer.window_start or day.state.game_minutes >= buyer.window_end: return "当前不在买家收货时段。"
 	if day.state.game_minutes + buyer.action_minutes >= mini(buyer.window_end, day.definition.night_minutes): return "来不及在收货结束前往返20分钟。"
 	return ""
 

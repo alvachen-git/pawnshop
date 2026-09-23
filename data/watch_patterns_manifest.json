@@ -1,0 +1,82 @@
+{
+  "content_version": 36,
+  "default_run_id": "watch_patterns_ten",
+  "sources": [
+    {
+      "kind": "runs",
+      "path": "res://data/watch_patterns/run.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/items/items_v11.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/goods_expertise/customers.json"
+    },
+    {
+      "kind": "buyers",
+      "path": "res://data/mirror_ending/buyers.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/pawn_terms/terms_v11.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/integrated/events.json"
+    },
+    {
+      "kind": "ghost_rules",
+      "path": "res://data/ghost_rules/rules_m5.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/opening/items.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/opening/customers.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/mirror_chapter/customers.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/mirror_investigation/events.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/familiar/pawn_terms.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/fan_bargaining/items.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/mirror_living/customers.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/aqi_companion/events.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/mirror_dream_call/events.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/social_relations/coats.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/wealthy/customers.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/watch/items.json"
+    }
+  ]
+}

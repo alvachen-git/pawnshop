@@ -1,0 +1,100 @@
+{
+  "records": [
+    {
+      "id": "item_cotton_coat",
+      "display_name": "棉袄",
+      "description": "靛蓝布面的旧棉袄，盘扣齐整。棉胎厚薄与里衬磨损，还须上手细看。",
+      "category": "textile",
+      "base_value": 15,
+      "unknown_min": 8,
+      "unknown_max": 17,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 15,
+          "weight": 7,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "worn",
+          "true_value": 10,
+          "weight": 3,
+          "clue_ids": [
+            "form",
+            "worn"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "盘扣、衣襟都在，针脚是寻常家用做法。",
+          "min_value": 8,
+          "max_value": 17,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "棉胎蓬松，里衬结实，没有虫蛀与大片破口。",
+          "min_value": 14,
+          "max_value": 16,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "worn",
+          "text": "袖口磨白，棉胎略薄，缝口仍牢，添件里衣还能御寒。",
+          "min_value": 9,
+          "max_value": 11,
+          "leverage": 5,
+          "judgement": "damaged"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "识货：查看衣襟盘扣",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "验货：摸棉胎、翻里衬",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "worn"
+          ]
+        }
+      ],
+      "name_key": "item.cotton_coat.name",
+      "type": "normal",
+      "tags": [
+        "textile",
+        "coat"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "social.cotton_coat"
+    }
+  ],
+  "schema_version": 1
+}

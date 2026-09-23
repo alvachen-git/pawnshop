@@ -1,0 +1,89 @@
+{
+  "tool": "image_gen built-in",
+  "source": "C:/Users/alvachen/.codex/generated_images/01a0cbfe-aad2-76f3-a7ab-43707172bd87/exec-fc510deb-aceb-415e-ada3-c54547c46017.png",
+  "reference": "C:/Users/alvachen/.codex/generated_images/01a0c8e1-5d71-7373-a439-546928f9c776/exec-656d7255-0159-4178-9ccb-63abc1a7d9ab.png",
+  "prompt": "Use case: historical-scene game asset atlas. Input reference is ONLY style and object design reference, do not reproduce the UI, book, text, or surrounding desk. Produce one 3-column by 2-row image atlas, exactly equal square cells, overall 3:2 aspect ratio preferably 1536x1024 or larger. All six cells are six states of the SAME 1910s gold hunter pocket watch from reference, each rendered as detailed realistic painted game illustration on identical plain dark navy black velvet background. Warm restrained lamplight from upper left, nearly top-down orthographic perspective, crisp examinable watchmaking details.\nEach cell uses the SAME composition: open round lid on left, round watch body centered at x=0.59 y=0.51 within cell, crown and oval bow on right. Entire watch plus lid visible, fills 85% cell, consistent size. No chain. Cell backgrounds touch edge seamlessly; NO borders, grid lines, titles, labels, cell numbers, captions, UI, rulers, tools, fingers.\nTop left: pristine front dial, ivory enamel Arabic numerals, delicate blued hands, small seconds subdial at six, open gold lid left.\nTop middle: open back ORIGINAL MOVEMENT, handsome manual lever movement with a sweeping C-shaped silver bridge covering upper-right region, two ruby jewel bearings in its lower edge, exposed large balance wheel lower left; bridge held by two regular original slotted screws around 2 and 5 o'clock, narrow close-fitting gold case ring. Tiny period Patek Philippe Geneve engraving acceptable, no giant typography.\nTop right: open back REPLACED MOVEMENT, same fine gold case/lid and similar silver finish but deliberately different THREE straight finger bridges crossing upper-right quadrant instead of the original sweeping C-shaped bridge. Visible small crescent mounting adaptor and secondary offset screw holes at right edge, near 3-4 o'clock. This is subtle professional repair, not rusty/broken garbage.\nBottom left: same FRONT DIAL as top left but LIGHT EXTERIOR DAMAGE: one small diagonal crack in glass at upper-right rim only, no internal mechanism visible.\nBottom middle: same FRONT DIAL as top left with HEAVY EXTERIOR DAMAGE: clearly dented gold lower case rim and several glass cracks, watch still same expensive design, no internal mechanism visible.\nBottom right: open back IMITATION MOVEMENT, same outer gold hunter silhouette, a much simpler coarse single flat plate with few unrefined gears, broad visible brass spacer around the smaller movement; cheap plain screws and missing fine bridge finishing, no decorative rust. Contrast must be structural not by lurid colors.\nAll differences readable at gameplay size. Keep exterior-condition and internal movement differences independent. The two damaged dial cells reveal only EXTERIOR damage. All three mechanism cells have intact external gold cases. Absolutely no visual labels saying genuine, repaired, fake. Preserve natural warm brass and silvery metal colors across all movement cells.",
+  "size": [
+    1536,
+    1024
+  ],
+  "cell_size": [
+    512,
+    512
+  ],
+  "cells": {
+    "front": [
+      0,
+      0
+    ],
+    "original": [
+      1,
+      0
+    ],
+    "replacement": [
+      2,
+      0
+    ],
+    "minor": [
+      0,
+      1
+    ],
+    "major": [
+      1,
+      1
+    ],
+    "imitation": [
+      2,
+      1
+    ]
+  },
+  "hotspots": {
+    "coordinate_system": "Normalized x,y within each 512x512 cell. Suggested circular hotspot radius 0.09.",
+    "original": {
+      "bridge": [
+        0.53,
+        0.425
+      ],
+      "mount": [
+        0.711,
+        0.457
+      ]
+    },
+    "replacement": {
+      "bridge": [
+        0.53,
+        0.415
+      ],
+      "mount": [
+        0.698,
+        0.533
+      ]
+    },
+    "imitation": {
+      "bridge": [
+        0.557,
+        0.501
+      ],
+      "mount": [
+        0.728,
+        0.585
+      ]
+    },
+    "minor": {
+      "glass_crack": [
+        0.704,
+        0.355
+      ]
+    },
+    "major": {
+      "glass_cracks": [
+        0.574,
+        0.502
+      ],
+      "case_dent": [
+        0.445,
+        0.694
+      ]
+    }
+  }
+}

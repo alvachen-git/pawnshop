@@ -22,6 +22,20 @@ func refresh() -> void:
 	_view.render(_session.counter_model()[feature_key()])
 
 func _on_intent(command: String, visit_id: String, detail: String, amount: int) -> void:
+	if command == "luxury_begin" and TieredAppraisal.enabled(_session.definition):
+		var visitor := CustomerManager.new().active(_session._day.state)
+		if visitor == null: return
+		var result := _session.fan_command(command,visitor.item.instance_id,detail)
+		if result.ok:
+			if WatchAppraisal.handles(_session._day.state,visitor.item):
+				WatchDeskView.create(_view,_session,visitor.item.instance_id)
+				return
+			var desk := TieredAppraisalView.create(_view,_session,visitor.item.instance_id)
+			desk.tier = int(detail); desk.refresh()
+		return
+	if command == "luxury_open":
+		LuxuryAppraisalView.open(_view, _session, detail)
+		return
 	if command == "fan_open":
 		FanAppraisalView.open(_view, _session, detail)
 		return

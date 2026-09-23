@@ -15,6 +15,7 @@ func pressure(trade: TradeSession, customer: CustomerDefinition, clue: ClueDefin
 	if clue.leverage <= 0:
 		trade.patience -= customer.terms.false_pressure_cost
 		return false
+	trade.social_flaw_discount += clue.leverage
 	trade.reserve_price = maxi(1, trade.reserve_price - clue.leverage)
 	trade.asking_price = maxi(trade.reserve_price, trade.asking_price - clue.leverage)
 	return true

@@ -18,7 +18,8 @@ static func attach(rows: Array, run: RunDefinition, seed_value: int) -> void:
 		if row.item_id == CUP and not row.has("goods"): row.goods = traits(seed_value, row.visit_id)
 
 static func value(item: ItemInstance, definition: ItemDefinition) -> int:
-	return FanConditionService.adjusted(item, appraisal_value(item, definition))
+	if item.goods.has("watch_value"): return int(item.goods.watch_value.actual)
+	return TieredAppraisal.adjusted(item, FanConditionService.adjusted(item, appraisal_value(item, definition)))
 
 static func appraisal_value(item: ItemInstance, definition: ItemDefinition) -> int:
 	if definition.expertise.get("kind") == "fan" and not item.expert_reviewed:

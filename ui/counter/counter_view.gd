@@ -7,6 +7,8 @@ signal shop_requested
 signal customer_action_requested(panel_id: StringName)
 signal item_action_requested(panel_id: StringName)
 signal inventory_requested
+signal social_requested
+signal plaque_requested
 signal ledger_requested
 signal background_requested
 signal context_opened(kind: StringName)
@@ -17,6 +19,7 @@ var story_active := false
 var _story_actor := false
 var _story_contact_shadow: TextureRect
 var _portrait: TextureRect
+var _counter_foreground: TextureRect
 var _item_image: TextureRect
 var _speech: Label
 var _speech_panel: PanelContainer
@@ -68,6 +71,18 @@ func _ready() -> void:
 	_portrait.z_index = 2
 	add_child(_portrait)
 	_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
+	# Same room painting in front of Sun's full sprite: no anatomy is cropped out.
+	var foreground_clip := Control.new()
+	foreground_clip.name = "CounterForegroundClip"
+	foreground_clip.clip_contents = true
+	foreground_clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	foreground_clip.z_index = 2
+	add_child(foreground_clip)
+	foreground_clip.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_counter_foreground = $Room.create_counter_foreground()
+	foreground_clip.add_child(_counter_foreground)
+	_bounds(_counter_foreground, 0.0, 0.0, 1.0, 1.0 / 0.9)
+	_counter_foreground.hide()
 
 	_item_image = TextureRect.new()
 	_item_image.name = "CounterItemImage"
@@ -106,6 +121,22 @@ func _ready() -> void:
 	inventory_hotspot.pressed.connect(inventory_requested.emit)
 	var ledger_hotspot := _make_hotspot("LedgerHotspot", 0.77, 0.68, 0.905, 0.97, "翻看账本 · 不耗时")
 	ledger_hotspot.pressed.connect(ledger_requested.emit)
+
+	var book := _make_hotspot("SocialBookHotspot", .64, .765, .775, .975, "翻看往来簿 · 不耗时")
+	book.accessibility_name = "往来簿"
+	book.icon = preload("res://assets/social_book/closed_book.png")
+	book.expand_icon = true
+	book.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	book.add_theme_constant_override("icon_max_width", 160)
+	book.pressed.connect(social_requested.emit)
+	book.hide()
+	var plaque := _make_hotspot("MilitaryPlaqueHotspot", .795, .005, .935, .080, "查看军方照应牌 · 不耗时")
+	plaque.accessibility_name = "军方照应牌"
+	plaque.icon = preload("res://assets/social_v27/military_plaque.png")
+	plaque.expand_icon = true
+	plaque.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	plaque.pressed.connect(plaque_requested.emit)
+	plaque.hide()
 
 	_customer_context = _make_context("CustomerContext", 0.40, 0.555, 0.64, 0.645)
 	var customer_row := HBoxContainer.new()
@@ -268,13 +299,21 @@ func render(model: Dictionary) -> void:
 	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""), visual.get("customer_id", ""), visual.get("person_id", ""))
 	_portrait.material = CounterVisualCatalog.portrait_material(_portrait.texture)
 	# The standing neighbor's torso ends at the back edge; both hands reach onto the top.
-	if _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT:
+	var sun_visit := _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.SUN_PORTRAIT
+	_counter_foreground.visible = active and sun_visit
+	if sun_visit:
+		# Square head-to-waist composition, at the existing customers' scale.
+		_bounds(_portrait, 0.315, 0.025, 0.68, 0.575)
+	elif _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT:
 		_bounds(_portrait, 0.315, 0.025, 0.68, 0.604)
 		(_portrait.material as ShaderMaterial).set_shader_parameter("hand_contact_shadow", true)
 	elif CounterVisualCatalog.is_special_portrait(_portrait.texture):
 		var portrait_bounds := CounterVisualCatalog.special_bounds(_portrait.texture)
 		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
 		(_portrait.material as ShaderMaterial).set_shader_parameter("source_bottom", CounterVisualCatalog.special_placement(_portrait.texture).y)
+	elif CounterVisualCatalog.is_wealthy_portrait(_portrait.texture):
+		var portrait_bounds := CounterVisualCatalog.wealthy_bounds()
+		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
 	elif CounterVisualCatalog.is_ordinary_portrait(_portrait.texture):
 		var portrait_bounds := CounterVisualCatalog.ordinary_bounds(_portrait.texture)
 		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
@@ -282,11 +321,22 @@ func render(model: Dictionary) -> void:
 		_bounds(_portrait, 0.315, 0.027, 0.68, 0.592)
 	_portrait.visible = active and _portrait.texture != null
 	_item_image.texture = CounterVisualCatalog.front(visual.get("item_asset", ""), model.appraisal.get("images", []))
+	if visual.has("tiered_atlas"): _item_image.texture = TieredArt.cell(visual.tiered_atlas,int(visual.tiered_exterior),0)
+	if visual.get("watch_art",false): _item_image.texture = WatchArt.cell([0,3,4][int(visual.tiered_exterior)])
 	_item_image.material = null
+	if visual.get("watch_art",false): _item_image.material = WatchArt.material()
 	_item_image.visible = active and _item_image.texture != null
+	var folded_coat: bool = visual.get("item_asset", "") == "social.cotton_coat"
+	if folded_coat:
+		_bounds(_item_hotspot, 0.40, 0.615, 0.635, 0.90)
+		_bounds(_item_context, 0.65, 0.70, 0.755, 0.79)
+	else:
+		_bounds(_item_hotspot, 0.425, 0.615, 0.595, 0.815)
+		_bounds(_item_context, 0.595, 0.70, 0.70, 0.79)
 	_speech_panel.visible = active and not visual.is_empty()
 	if not visual.is_empty():
-		%CustomerText.text = "%s\n%s\n最迟留到 %s" % [visual.customer_name, visual.attitude, visual.deadline]
+		%CustomerText.text = "%s\n%s" % [visual.customer_name, visual.attitude]
+		if not String(visual.deadline).is_empty(): %CustomerText.text += "\n最迟留到 " + visual.deadline
 		if visual.get("pawn_return", false): %CustomerText.text = visual.customer_name + "\n持票回访 · 等候验票"
 		_speech.text = visual.introduction
 		if not visual.speech.is_empty():
@@ -294,13 +344,18 @@ func render(model: Dictionary) -> void:
 		_speech.tooltip_text = _speech.text
 		if not visual.get("intent", "").is_empty(): _speech.text = visual.intent + "\n" + _speech.text
 		%ItemText.text = ("%s\n参考价值 %s\n%s" % [visual.item_name, visual.estimate, visual.condition_note]) if visual.get("condition_enabled", false) else "%s\n已知估值 %s 银元\n已见线索 %d 条" % [visual.item_name, visual.estimate, visual.clues.size()]
+		if visual.has("tiered_atlas") and not visual.get("estimate_is_range",false):
+			%ItemText.text = "%s\n%s\n已见线索 %d 条" % [visual.item_name,"尚未定值" if visual.estimate == "尚未定值" else "已知货值 %s 银元" % visual.estimate,visual.clues.size()]
 		if visual.has("item_status"): %ItemText.text = visual.item_status
 	$Room.has_customer = active and _portrait.texture == null
 	$Room.has_item = active and _item_image.texture == null and not model.get("itemless", false)
 	$Room.queue_redraw()
 	if arrived:
 		if _arrival != null: _arrival.kill()
-		_bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
+		# A folded adult coat occupies the tabletop as a broad bundle. Other
+		# goods retain their original scale; hit area follows the coat's size.
+		if folded_coat: _bounds(_item_image, 0.40, 0.615, 0.635, 0.90)
+		else: _bounds(_item_image, 0.425, 0.62, 0.595, 0.81)
 		_item_image.offset_top = 0
 		_item_image.offset_bottom = 0
 		_portrait.modulate.a = 0.0
@@ -318,6 +373,7 @@ func render_story(model: Dictionary, state: Dictionary) -> void:
 		story.render({}, "")
 		return
 	var art: String = model.presentation.get("art", "aqi")
+	_counter_foreground.hide()
 	_story_actor = art in ["aqi", "bent", "fixed"]
 	if _arrival != null: _arrival.kill()
 	_customer_context.hide()
@@ -453,6 +509,8 @@ func get_hotspot(kind: StringName) -> Button:
 		&"item": _item_hotspot,
 		&"inventory": get_node("InventoryHotspot"),
 		&"ledger": get_node("LedgerHotspot"),
+		&"social": get_node("SocialBookHotspot"),
+		&"plaque": get_node("MilitaryPlaqueHotspot"),
 	}
 	return targets.get(kind) as Button
 

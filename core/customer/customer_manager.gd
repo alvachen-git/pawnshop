@@ -8,6 +8,9 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 	if not run.variety.is_empty():
 		VarietyService.prepare(state, run, catalog, return_delay)
 		InvestigationService.prepare(state, run)
+		MilitaryService.dawn(state, run)
+		if SocialRules.closed(state):
+			for visit in state.visits: visit.status = "suspended"
 		return
 	var rng := RandomNumberGenerator.new()
 	rng.seed = state.run_seed + state.current_night_index * 104729
@@ -81,6 +84,9 @@ func active(state: RunState) -> CustomerVisit:
 
 func finish(state: RunState, visit: CustomerVisit, outcome: String) -> void:
 	if visit.status not in ["scheduled", "waiting", "active"]: return
+	ReputationService.finish(state, visit, outcome)
+	ReputationGrowth.acquired(state, visit, outcome)
+	MilitaryService.departed(state, visit, outcome)
 	InvestigationService.departed(state, visit, outcome)
 	ShopGrowthService.departed(state, visit, outcome)
 	visit.status = outcome

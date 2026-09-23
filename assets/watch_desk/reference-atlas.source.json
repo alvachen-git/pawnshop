@@ -1,0 +1,35 @@
+{
+  "tool": "image_gen built-in",
+  "source": "C:/Users/alvachen/.codex/generated_images/01a0cbfe-aad2-76f3-a7ab-43707172bd87/exec-31313d66-5100-4793-a575-a76e3b6c1694.png",
+  "references": [
+    "assets/watch_desk/watch-atlas.png",
+    "C:/Users/alvachen/.codex/generated_images/01a0c8e1-5d71-7373-a439-546928f9c776/exec-656d7255-0159-4178-9ccb-63abc1a7d9ab.png"
+  ],
+  "prompt": "Use case: precise-object-edit / period technical illustration. Create a TWO CELL HORIZONTAL reference illustration atlas, overall exactly 2:1 ratio, 1024x512 or larger equivalent, two equal square cells, no divider lines.\nInput image 1 is the object master atlas: copy ONLY the TOP LEFT pristine dial watch into LEFT cell and ONLY the TOP MIDDLE original movement watch into RIGHT cell. Input image 2 is visual style reference: the delicate sepia engraved pen drawings in the old watch reference book, NOT the UI or desk.\nConvert these exact two objects into authentic early 20th century fine sepia technical pen drawings with restrained cross-hatching on extremely pale warm cream background (#f3ebd8), NOT a brown-tinted photograph, not heavy shaded rendering. Delicate mostly open line art, high quality old Swiss watch catalogue engraving. No realistic golden colors, no black velvet background, no shadows outside object. Very light pen shading only inside watch.\nCrucial: preserve exact underlying movement bridge silhouette, gear layout, jewel and screw positions from top-middle master. It has broad sweeping curved bridge in upper-right area, two ruby bearings at lower-left/lower-mid bridge edge; exposed balance wheel in lower left; tight fitting case seat. DO NOT change to three straight finger bridges or an imitation flat plate. Preserve maker engraving as tiny detail if legible, but add no explanatory words, titles, labels, arrows, captions, truth labels, numbers outside dial, UI.\nEach watch must include full open lid on left and crown with oval bow on right, same layout framing proportions as original cells. Preserve top-left dial hands at around 10:10, subsidiary seconds below center. Use almost exact aligned positions of original atlas: open lid between x.02-.25, watch body centered x.52 y.45, crown on right x.87 y.44; object fills upper three quarters of each square cell. Leave modest pale empty margin below. Both cell backgrounds exactly identical pale cream, no visible gutter. Entire watch and open lid wholly visible in each equal cell.",
+  "grid": [
+    2,
+    1
+  ],
+  "cells": {
+    "dial": [
+      0,
+      0
+    ],
+    "original_movement": [
+      1,
+      0
+    ]
+  },
+  "hotspots": {
+    "coordinate_system": "Normalized x,y within movement cell; radius .09 suitable.",
+    "bridge": [
+      0.56,
+      0.46
+    ],
+    "mount": [
+      0.71,
+      0.47
+    ]
+  },
+  "note": "Period sepia line engraving; pale cream opaque background. Not an image filter. Curved bridge, balance wheel and close-fitting seat verified against master."
+}

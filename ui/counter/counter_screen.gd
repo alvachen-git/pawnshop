@@ -9,6 +9,9 @@ var atmosphere_presenter: CounterAtmospherePresenter
 var _preview_index := 0
 var _return_focus: Control
 var _room: PrivateRoomView
+var _social_panel: SocialPanel
+var _military_reception_key := ""
+var _military_was_active := false
 var _session: RunSession
 var facilities: FacilitiesNavigation
 var _room_phase := ""
@@ -41,7 +44,7 @@ var _feedback_state_id := 0
 var _review_panel: StringName = &""
 var _reviewing := false
 var _seen_feedback: Dictionary = {}
-const PANEL_TITLES := {"growth": "修缮与查铺", "day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "物品记事", "night": "夜间结算"}
+const PANEL_TITLES := {"social": "往来簿", "growth": "修缮与查铺", "day": "营业", "appraisal": "鉴定", "dialogue": "对话", "trade": "交易", "inventory": "库存", "ledger": "账本", "events": "铺中记事", "risk": "物品记事", "night": "夜间结算"}
 
 
 func _ready() -> void:
@@ -60,6 +63,12 @@ func _ready() -> void:
 	_counter_view.customer_action_requested.connect(_route_from_customer)
 	_counter_view.item_action_requested.connect(_route_from_item)
 	_counter_view.inventory_requested.connect(_route_from_counter.bind(&"inventory", &"inventory"))
+	_counter_view.social_requested.connect(_route_from_counter.bind(&"social", &"social"))
+	_counter_view.plaque_requested.connect(func() -> void:
+		_route_from_counter(&"social", &"plaque")
+		_social_panel.section = 1
+		_social_panel.refresh()
+	)
 	_counter_view.ledger_requested.connect(_route_from_counter.bind(&"ledger", &"ledger"))
 	_counter_view.background_requested.connect(_close_menu)
 	_counter_view.context_opened.connect(_on_context_opened)
@@ -97,6 +106,23 @@ func _ready() -> void:
 
 func bind_session(session: RunSession) -> void:
 	_session = session
+	_social_panel = SocialPanel.new()
+	_social_panel.panel_id = &"social"
+	_social_panel.name = "SocialPanel"
+	add_child(_social_panel)
+	_social_panel.anchor_left = .215
+	_social_panel.anchor_right = .985
+	_social_panel.anchor_top = .065
+	_social_panel.anchor_bottom = .875
+	_social_panel.hide()
+	_social_panel.close_requested.connect(_close_drawer)
+	_flow.register_panel(_social_panel)
+	_social_panel.bind(session)
+	_social_panel.visibility_changed.connect(func() -> void:
+		_counter_view.get_hotspot(&"social").visible = session._day.state.social_enabled and not _social_panel.visible and session._day.state.phase not in ["dead", "bankrupt"]
+		if _market_notice != null: _refresh_notice_visibility()
+		_refresh_recent_visibility()
+	)
 	var growth_panel := ShopGrowthPanel.new()
 	growth_panel.panel_id = &"growth"
 	growth_panel.name = "ShopGrowthPanel"
@@ -398,6 +424,10 @@ func _receipt_closed(destination: String) -> void:
 	_refresh_recent_visibility()
 
 func _sync_room() -> void:
+	_sync_military_reception()
+	_counter_view.get_hotspot(&"social").visible = _session._day.state.social_enabled and not _social_panel.visible and _session._day.state.phase not in ["dead", "bankrupt"]
+	_counter_view.get_hotspot(&"plaque").visible = _session._day.state.social_enabled and _session._day.state.social.get("plaque_awarded", false) and _session._day.state.phase not in ["dead", "bankrupt"]
+	if _social_panel != null and (_room.visible or _session._day.state.phase not in ["pre_open", "open", "closed_processing"] or not _session._day.state.pending_event_id.is_empty() or not _session._day.state.risk_pending.is_empty()): _social_panel.hide()
 	var state := _session._day.state
 	if _feedback != null and _feedback_state_id != _session._day.state.get_instance_id():
 		_cancel_feedback(true)
@@ -449,7 +479,7 @@ func _sync_room() -> void:
 
 func _refresh_notice_visibility() -> void:
 	var state := _session._day.state
-	_market_notice.visible = not _session.definition.market.is_empty() and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending() and not %Drawer.visible and not _session_menu.visible
+	_market_notice.visible = not _session.definition.market.is_empty() and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending() and not %Drawer.visible and not _session_menu.visible and not (_social_panel != null and _social_panel.visible)
 
 
 func _open_market_notice() -> void:
@@ -483,12 +513,14 @@ func _route_from_menu(panel_id: StringName) -> void:
 
 
 func _on_context_opened(kind: StringName) -> void:
+	if _social_panel != null: _social_panel.hide()
 	%Drawer.hide()
 	_close_menu()
 	_return_focus = _counter_view.get_hotspot(kind)
 
 
 func _open_drawer(panel_id: StringName) -> void:
+	if panel_id != &"social" and _social_panel != null: _social_panel.hide()
 	if _counter_view.story_active: _counter_view.story.hide()
 	if facilities != null:
 		if panel_id == &"growth":
@@ -502,6 +534,12 @@ func _open_drawer(panel_id: StringName) -> void:
 	if _feedback != null and _feedback.visible: _cancel_feedback(false)
 	_close_menu()
 	_counter_view.dismiss_contexts()
+	if panel_id == &"social":
+		%Drawer.hide()
+		_social_panel.clear_result()
+		_social_panel.focus_close()
+		_refresh_notice_visibility()
+		return
 	%Drawer.show()
 	%DrawerTitle.text = "  " + ("托人查访" if panel_id == &"investigation" else PANEL_TITLES[String(panel_id)])
 	%CloseDrawerButton.grab_focus()
@@ -509,6 +547,7 @@ func _open_drawer(panel_id: StringName) -> void:
 
 
 func _close_drawer() -> void:
+	if _social_panel != null: _social_panel.hide()
 	%Drawer.hide()
 	_close_menu()
 	if _return_focus != null and _return_focus.is_visible_in_tree():
@@ -519,7 +558,7 @@ func _close_drawer() -> void:
 
 
 func _toggle_menu() -> void:
-	if _counter_view.story_active: _counter_view.story.hide()
+	if _social_panel != null: _social_panel.hide()
 	_counter_view.dismiss_contexts()
 	%Drawer.hide()
 	if _session_menu.visible:
@@ -573,7 +612,7 @@ func _unhandled_key_input(event: InputEvent) -> void:
 	if _room != null and _room.visible and _room.dismiss_observation():
 		get_viewport().set_input_as_handled()
 		return
-	if %Drawer.visible:
+	if %Drawer.visible or (_social_panel != null and _social_panel.visible):
 		_close_drawer()
 		get_viewport().set_input_as_handled()
 		return
@@ -607,7 +646,7 @@ func _reset_reception() -> void:
 
 func _bell_blocked() -> bool:
 	if not is_visible_in_tree() or process_mode == Node.PROCESS_MODE_DISABLED: return true
-	if %Drawer.visible or _session_menu.visible: return true
+	if %Drawer.visible or _session_menu.visible or (_social_panel != null and _social_panel.visible): return true
 	if _counter_view.companion.dialogue.visible or _counter_view.story.visible: return true
 	for overlay in [_receipt, _departure, _narrative, _feedback]:
 		if overlay != null and overlay.visible: return true
@@ -662,7 +701,7 @@ func _remember_feedback(receipt: Dictionary) -> void:
 func _refresh_recent_visibility() -> void:
 	if _recent_bar == null: return
 	var state := _session._day.state
-	_recent_bar.visible = not _recent.is_empty() and not _recent_collapsed and not _feedback.visible and not _receipt.visible and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending() and not (%Drawer.visible and _flow.get_active_panel_id() == &"risk")
+	_recent_bar.visible = not _recent.is_empty() and not _recent_collapsed and not _feedback.visible and not _receipt.visible and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending() and not (%Drawer.visible and _flow.get_active_panel_id() == &"risk") and not (_social_panel != null and _social_panel.visible)
 
 func _feedback_finished() -> void:
 	_counter_view.release_feedback()
@@ -701,3 +740,14 @@ func _review_receipt(id: String) -> void:
 	%Drawer.hide()
 	_recent_bar.hide()
 	_receipt.present(receipt)
+
+func _sync_military_reception() -> void:
+	var active := MilitaryIntroduction.active(_session._day.state)
+	var key := _session._day.state.run_token + "/" + MilitaryIntroduction.id(_session._day.state)
+	if active and (not _military_was_active or key != _military_reception_key):
+		_military_reception_key = key
+		# Show the arriving person on the counter; the player opens conversation.
+		_close_drawer.call_deferred()
+	elif not active and _military_was_active:
+		_close_drawer.call_deferred()
+	_military_was_active = active

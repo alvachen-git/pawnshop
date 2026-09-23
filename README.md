@@ -1,18 +1,16 @@
 # 鬼市当铺
 
-**新增鉴物台与知识柜试玩**：`play-unified.cmd` 进入品相与掌眼十夜；`-Stage knowledge` 测试柜中学习，`-Stage fan` 测试图像对证。包含二级台、免费草稿、落笔计时、折扇压价与破损检查。见[试玩说明](docs/FAN_CONDITION_PLAYTEST.md)和[合并说明](docs/SHOP_APPRAISAL_RELEASE.md)。原线上默认铜镜托梦入口与存档保留。
+**当前统一入口：`play-unified.cmd`，或在 Godot 中运行项目。** 新游戏为 v37 `named_wealthy_ten` 十夜局。五位富客使用固定姓名与人物身份，柜台、谈价、当票和赎回保持一致；沿用怀表机芯图样与议价规则。旧存档保留原姓名与账目。详见 [富客固定姓名与价格核对](docs/NAMED_WEALTHY_V37.md)。
 
-默认新游戏为 **v29 夜半来声**：收镜后下一夜就寝，门外传来真实女性抽泣声，玩家选择查看或继续睡。最多连续两个夜晚，听完求助后以清晨自语承接并提示调查方向。保留血泪立绘、十夜经营、阿七与铜镜四种结局。旧版存档保持原规则。
-
-完整启动及隔离测试见 [v29试玩说明](docs/MIRROR_DREAM_V29.md)。当前开发工作区运行 `tools/play_v29.cmd -Stage bedtime`；正常新局不带阶段参数。v28自动托梦仍使用 `tools/play_v28.cmd`，历史成长入口见 [成长说明](docs/SHOP_GROWTH_PLAYTEST.md)。
+历史折扇v29改用 `play-fan-condition.cmd`；历史铜镜来声仍用 `tools/play_v29.cmd`。旧局按原规则继续，不改写成统一局。当前本地整合基于线上main `fc90ece`，尚未推送。
 
 线上原有命灯版及夜客规则保留独立内容与存档。需要新开命灯版时运行 `godot --path . res://scenes/life_lamp_start.tscn`；读取已有命灯存档仍按原规则继续。
 
-当前规格与待确认分歧统一见 [当前开发规格](docs/CURRENT_SPEC.md)。默认v29保留线上v23已整合的职业赎回、生计背景与寝屋铜镜反馈；原v21夜客和阿七七夜版使用各自冻结规则。第七夜阿七收尾后不额外叠加墙镜异象。
+当前规格与待确认分歧统一见 [当前开发规格](docs/CURRENT_SPEC.md)。默认v37保留线上v23已整合的职业赎回、生计背景与寝屋铜镜反馈；原v21夜客和阿七七夜版使用各自冻结规则。第七夜阿七收尾后不额外叠加墙镜异象。
 
 新增商品与行家复核版作为独立七夜入口保留，包含银戒指、银锁、折扇、茶盏及验配出售；启动方式见 [商品与行家说明](docs/GOODS_EXPERTISE.md)。库存详情统一精简为已知品相要点。
 
-旧版本内容与存档保留原规则，v19经营整合、v20职业赎回和v21商品复核成果继续包含在新局中。换物不改变原票本金、赎金、期限或原主赎回概率；两类阴客与通用辨生死在对应v22、v23及新默认v29中生效。
+旧版本内容与存档保留原规则，v19经营整合、v20职业赎回和v21商品复核成果继续包含在新局中。换物不改变原票本金、赎金、期限或原主赎回概率；两类阴客与通用辨生死在对应v22、v23及新默认v37中生效。
 
 固定柜台式 2D 当铺经营与规则恐怖游戏。十夜流程整合开场、随机经营、铜镜遭遇与寝屋，每夜六位基础潜在来客，保留限时钢笔收货及三夜活当回访。原三夜、四夜和七夜经营版本继续作为旧存档入口。第21/49夜还本系统仍属后续范围。
 
@@ -31,12 +29,19 @@
 技术基线为 Godot 4.6.1 Standard，Windows x86_64 / Compatibility。
 
 ```powershell
-.\tools\play_v26.cmd
-# 隔离测试：可对质 / 道歉 / 激怒 / 含糊
-.\tools\play_v26.cmd -Stage ready
-.\tools\play_v26.cmd -Stage apology
-.\tools\play_v26.cmd -Stage angry
-.\tools\play_v26.cmd -Stage evasive -Wide
+.\play-unified.cmd
+# v33怀表快速试玩（隔离测试预置，进度不保存）
+.\play-unified.cmd -Stage watch -Wide
+.\play-unified.cmd -Stage wealthy-basic -Item gold_watch
+.\play-unified.cmd -Stage wealthy
+.\play-unified.cmd -Stage wealthy-deep -Item porcelain_vase -Wide
+# 历史v31宣传回归场景（生成并校验真实进度）
+.\play-unified.cmd -Stage advertisement
+# 保留的v30整合回归场景
+.\play-unified.cmd -Stage introduction
+.\play-unified.cmd -Stage fan -Wide
+.\play-unified.cmd -Stage companion
+.\play-unified.cmd -Stage reunion
 ```
 
 macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path . -- --seed=42`。或导入本目录的 project.godot 后按 F5。ZIP 完整解压后双击 Pawnshop.exe，同目录保留 Pawnshop.pck，无需安装 Godot。
@@ -59,11 +64,11 @@ macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path 
 
 当前新版新开局现金300银元、借据本金500；现阶段每日利息5、铺费5，本金不变，不复利。先补旧息费短款，再付当夜费用；短款只宽限到次夜夜末。费用先入账，睡眠结束后判经营失败；若同夜危机死亡，只入《绝当录》，不再入《破铺录》。第三夜短款保留真实第四夜期限，不宣称债务结清。
 
-当前有8种普通物品、8类顾客。三夜原型保留铜镜、原买家和短当约；四夜样板新增有限收货预约与三夜当约，不调度鬼货或主线事件。正式12图需求保留在 [美术交接](docs/M7_ART_HANDOFF.md)。完整鬼市、七笔阴账、49夜剧情和更多行情链仍属后续范围。
+当前基础普通职业模板为8类，v31新增4类有钱客人与1类超有钱客人，按商誉替换普通客位；统一局另有夜客、熟客、剧情与军方特殊来访，棉袄保留在普通货位。三夜原型保留铜镜、原买家和短当约；四夜样板新增有限收货预约与三夜当约，不调度鬼货或主线事件。正式12图需求保留在 [美术交接](docs/M7_ART_HANDOFF.md)。完整鬼市、七笔阴账、49夜剧情和更多行情链仍属后续范围。
 
 ## 存档
 
-默认十夜新局使用 **save_version=24 / content_version=24**，自动位置为 `auto/aqi_investigation_ten`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://aqi_investigation_ten/autosave_v24.json`。命灯受害仍自动保存，营业中不能手动随时保存。旧v22铜镜版、命灯版及更早存档按原内容读取，不迁移、不追溯补扣伤害。
+默认十夜新局使用 **save_version=32 / content_version=32**，自动位置为 `auto/precision_ten`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://precision_ten/autosave_v32.json`。旧v31 `wealthy_ten`、v30 `unified_ten` 和更早存档继续按各自规则运行，不补抽破损、不追收器材、不改写原当票。命灯受害仍自动保存，营业中不能手动随时保存。
 
 旧三夜局使用v12，独立路径为 `user://p0/autosave_v12.json`。独立四夜样板仍用v11，保存于 `user://ordinary_four/autosave_v11.json`。三夜入口可导入通过完整历史校验的旧v9/v10/v11局，原文件保留；旧局继续使用对应旧内容，重新开局才进入v12。旧v10分别保留实施前测试快照和已上线版本的配置，包含两种历史现金/债务组合。
 
@@ -71,7 +76,7 @@ macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path 
 - 已有旧Windows包仍使用其原版本存档；本次没有重新打包。
 - 包日志：`%APPDATA%/GhostMarketPawnshop-M8A/logs/godot.log`
 
-包与编辑器目录独立，不自动复制。启动后从菜单读取。封铺结算、每次应对、回房、就寝、日结、进入下一夜与收尾均原子保存；营业中交易不即时保存。写盘失败回滚，重复提交不重复收费或归档；损坏的历史账册阻止覆盖。只支持单窗口写档。
+包与编辑器目录独立，不自动复制。启动后从菜单读取。封铺结算、每次应对、回房、就寝、日结、进入下一夜与收尾均原子保存；统一局的成长、鉴定与人情变化也会即时原子保存；旧局维持各自保存边界。写盘失败回滚，重复提交不重复收费或归档；损坏的历史账册阻止覆盖。只支持单窗口写档。
 
 同目录旧 autosave_v7.json 原样保留，只导入经过校验的绝当录/破铺录，不迁移旧局进度。不自动跨越v7导入更早进度。历史M7测试使用独立内容夹具；旧版本兼容保留原有账目校验。
 

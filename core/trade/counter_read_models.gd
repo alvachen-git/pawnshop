@@ -13,6 +13,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 	model.trade.can_pawn = false
 	model.trade.pawn_asking = 1
 	if service == null: return model
+	if MilitaryIntroduction.active(day.state): return MilitaryIntroduction.model(model, day.state)
 	var state := day.state
 	var waiting := 0
 	var next_arrival := -1
@@ -99,6 +100,9 @@ static func build(day: DayController, service: CounterService, message: String, 
 		var claimed := FanBargainingService.attempt(state, visit)
 		model.trade.body += "\n对客说法：" + (FanBargainingService.WORDS if not claimed.is_empty() else "尚未拿真伪谈价")
 		model.trade.buttons.append(_button(day, service, visit, FanBargainingService.COMMAND, "", "“" + FanBargainingService.WORDS + "”" + (" · 已试探" if visit.trade.belittle_used else " · 5分钟 · 议价一轮")))
+	if state.social_enabled and state.social.plaque_awarded and ReputationService.eligible(state, visit):
+		model.trade.buttons.append(_button(day, service, visit, "intimidate", "", "借军方牌子压价 · 让价10% · 伤口碑"))
+		model.trade.body += "\n借牌压价每位客人限一次，会损伤口碑。"
 	if not customer.belittle.is_empty():
 		var label := "“这东西没你说的那么值钱，再让些。”"
 		label += " · 已试探" if visit.trade.belittle_used else " · %d分钟 · 议价一轮" % int(customer.belittle.minutes)
@@ -131,6 +135,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 		if visit.night_policy == "one_quote":
 			model.trade.buttons = model.trade.buttons.filter(func(b: Dictionary) -> bool: return b.command not in ["pressure", "belittle", "concession"])
 			model.dialogue.buttons = model.dialogue.buttons.filter(func(b: Dictionary) -> bool: return not b.reason.contains("另行压价"))
+	LuxuryReadModels.enrich(model, day, service, visit, message)
 	EarlyRedemption.enrich(model, day, service, visit)
 	return model
 

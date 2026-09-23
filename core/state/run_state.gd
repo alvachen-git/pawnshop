@@ -3,6 +3,8 @@ extends RefCounted
 
 const PHASE_PRE_OPEN := &"pre_open"
 
+var social_enabled := false
+var social: Dictionary = {}
 var shop_growth_enabled := false
 var shop_growth: Dictionary = {}
 var mirror_reunion_enabled := false
@@ -84,10 +86,13 @@ var visits: Array[CustomerVisit] = []
 static func create(definition: RunDefinition) -> RunState:
 	var state := RunState.new()
 	state.run_definition_id = definition.id
+	state.social_enabled = SocialRules.enabled(definition)
+	if state.social_enabled: state.social = SocialRules.initial_for(definition)
 	state.shop_growth_enabled = ShopGrowthService.enabled(definition)
 	if state.shop_growth_enabled: state.shop_growth = ShopGrowthService.initial()
 	if FanAppraisalService.enabled(definition): state.shop_growth["appraisal"] = FanAppraisalService.initial()
 	if FanBargainingService.enabled(definition): state.shop_growth["fan_bargaining"] = FanBargainingService.initial()
+	if WealthyCustomers.enabled(definition): state.shop_growth["luxury"] = WealthyCustomers.initial()
 	state.mirror_reunion_enabled = MirrorReunionService.enabled(definition)
 	state.mirror_ending_enabled = MirrorEndingService.enabled(definition)
 	state.investigation_enabled = InvestigationService.enabled(definition)
@@ -150,6 +155,7 @@ func to_read_model() -> Dictionary:
 		"visit_history": visit_history.duplicate(true),
 	}
 
+	if social_enabled: data["social"] = social.duplicate(true)
 	if shop_growth_enabled: data["shop_growth"] = shop_growth.duplicate(true)
 	if mirror_ending_enabled:
 		data["mirror_resolution"] = mirror_resolution.duplicate(true)

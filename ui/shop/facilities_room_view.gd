@@ -94,7 +94,7 @@ func _ready() -> void:
 	_make_hotspot("bench", "鉴物台", Rect2(0.706, 0.564, 0.265, 0.300))
 	_make_hotspot("compartment", "检查夹板", Rect2(0.720, 0.467, 0.044, 0.112))
 	for topic in ShopKnowledgeService.TOPICS:
-		var info: Dictionary = ShopKnowledgeService.TOPICS[topic]
+		var info: Dictionary = ShopKnowledgeService.topic_info(session.definition if session != null else null,topic)
 		var id := "knowledge/" + String(topic)
 		_make_hotspot(id, info.name, info.bounds)
 		hotspots[id].hide()
@@ -214,7 +214,7 @@ func _show_hover(id: String, label: String) -> void:
 	if sheet.visible: return
 	_clear_hover()
 	if id.begins_with("knowledge/"):
-		var area: Rect2 = ShopKnowledgeService.TOPICS[id.trim_prefix("knowledge/")].bounds
+		var area: Rect2 = ShopKnowledgeService.topic_info(session.definition if session != null else null,id.trim_prefix("knowledge/")).bounds
 		_shader.set_shader_parameter("cabinet_hover", Vector4(area.position.x, area.position.y, area.size.x, area.size.y))
 		return
 	_hover_label.text = label
@@ -279,6 +279,7 @@ func _layout() -> void:
 	var height := minf(size.y * 0.52, 400)
 	if selected == "bench" and session != null and FanConditionService.enabled(session.definition): height = minf(height, 260)
 	if selected.begins_with("knowledge/"): height = minf(height, 260)
+	if session != null and TieredAppraisal.enabled(session.definition) and (selected == "bench" or selected.begins_with("knowledge/")): height = minf(size.y*0.68,580)
 	sheet.position = Vector2((size.x - width) * 0.50, size.y - height - 18)
 	sheet.size = Vector2(width, height)
 	for number in _numbers: number.add_theme_font_size_override("font_size", 17 if size.x < 1450 else 21)
@@ -290,6 +291,8 @@ func bind(value: RunSession) -> void:
 	refresh()
 
 func select(id: String) -> void:
+	if id == "knowledge/luxury_watch" and session != null and WatchEconomy.enabled(session.definition):
+		close_sheet(); WatchGuideView.open(self,session); return
 	_clear_hover()
 	selected = "archive" if id == "compartment" else id
 	_last_error = ""
@@ -313,7 +316,8 @@ func refresh() -> void:
 	if not is_visible_in_tree(): return
 	for topic in ShopKnowledgeService.TOPICS:
 		var active := preview_level < 0 and session != null and ShopKnowledgeService.enabled(session.definition)
-		hotspots["knowledge/" + String(topic)].visible = active
+		if session != null: bounds(hotspots["knowledge/"+String(topic)],ShopKnowledgeService.topic_info(session.definition,topic).bounds)
+		hotspots["knowledge/" + String(topic)].visible = active and (not String(topic).begins_with("luxury_") or WealthyCustomers.active(session._day.state))
 	if preview_level >= 0:
 		_paint.texture = _textures[preview_level]
 		_shader.set_shader_parameter("full_plate", true)
@@ -329,7 +333,8 @@ func refresh() -> void:
 	var state := session._day.state
 	var growth := state.shop_growth
 	_shader.set_shader_parameter("full_plate", false)
-	_shader.set_shader_parameter("bench_specialized", FanAppraisalService.bench_level(state) == 2)
+	_shader.set_shader_parameter("bench_specialized", FanAppraisalService.bench_level(state) >= 2)
+	_shader.set_shader_parameter("specialized", _textures[3] if FanAppraisalService.bench_level(state) >= 3 else _textures[2])
 	_shader.set_shader_parameter("bench_built", bool(growth.bench))
 	_shader.set_shader_parameter("display_built", bool(growth.display))
 	_shader.set_shader_parameter("late_amount", clampf((float(state.game_minutes) - 180.0) / 300.0, 0.0, 0.65) if state.phase != &"pre_open" else 0.0)
@@ -367,6 +372,13 @@ func refresh() -> void:
 			body.text = advanced.body if direct_bench else body.text + "\n\n" + advanced.body
 			for row in advanced.buttons: _action(row.label, row.command, row.detail)
 		if not growth.bench and not direct_bench: _action("整修鉴物台 · 40银元 / 准备1次", "build", "bench")
+		if WealthyCustomers.active(state):
+			body.text += "\n器材与知识齐备后，可查验高档货。" if TieredAppraisal.enabled(session.definition) else "\n高档货细查须二级台；图录对证还需学习对应知识。"
+			var targets: Array = state.inventory_instances.filter(func(i: ItemInstance) -> bool: return i.ownership_state in ["owned", "pledged"] and WealthyCustomers.is_item(i.definition_id))
+			var visitor := CustomerManager.new().active(state)
+			if visitor != null and visitor.purpose.is_empty() and WealthyCustomers.is_item(visitor.item.definition_id): targets.push_front(visitor.item)
+			for target in targets:
+				_action("对证 · " + (state.ghost_catalog.get_definition("items", target.definition_id) as ItemDefinition).display_name, "luxury_open", target.instance_id)
 	elif selected == "display":
 		_title.text = "陈列柜 · " + ("一级" if growth.display else "待整修")
 		if not growth.display:
@@ -381,6 +393,9 @@ func refresh() -> void:
 		var page := ShopGrowthReadModels.page(session._day, 2)
 		body.text = page.body.trim_prefix("沿柜查铺\n\n")
 		for row in page.buttons: _action(row.label, row.command, row.detail)
+		if WealthyCustomers.active(state):
+			for topic in ShopKnowledgeService.TOPICS:
+				if String(topic).begins_with("luxury_") and not ShopKnowledgeService.mastered(state, topic): _action("学习" + ShopKnowledgeService.TOPICS[topic].name + " · 准备1次", "learn_knowledge", topic)
 	elif selected.begins_with("knowledge/"):
 		var page := ShopKnowledgeService.page(session._day, selected.trim_prefix("knowledge/"))
 		_title.text = page.title
@@ -394,7 +409,7 @@ func _clear_actions() -> void:
 		child.queue_free()
 
 func _action(label: String, command: String, detail: String) -> void:
-	var reason := ShopGrowthService.reason(session._day, command, detail)
+	var reason := "" if command == "luxury_open" else ShopGrowthService.reason(session._day, command, detail)
 	var button := Button.new()
 	button.text = label
 	button.custom_minimum_size.y = 48
@@ -403,6 +418,9 @@ func _action(label: String, command: String, detail: String) -> void:
 	button.tooltip_text = reason
 	CounterTheme.style_paper_button(button)
 	button.pressed.connect(func() -> void:
+		if command == "luxury_open":
+			LuxuryAppraisalView.open(self, session, detail)
+			return
 		# The shared session is the only writer; no optimistic cash/art or save mutation.
 		var result := session.growth_command(command, detail)
 		_last_error = "" if result.ok else result.message

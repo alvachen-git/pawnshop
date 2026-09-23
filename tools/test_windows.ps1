@@ -56,6 +56,32 @@ try {
         Write-Host "WINDOWS GOODS VALIDATION PASSED: $output"
         return
     }
+    Run-Test 'wealthy-core' 'wealthy_customers.gd'
+    Run-Test 'precision-core' 'tiered_appraisal.gd'
+    Run-Test 'watch-negotiation-core' 'watch_negotiation.gd'
+    Run-Test 'watch-patterns-core' 'watch_movement_patterns.gd'
+    Run-Test 'named-wealthy-core' 'named_wealthy.gd'
+    Run-Test 'named-wealthy-journey' 'named_wealthy_journey.gd'
+    Run-Test 'named-wealthy-1280x720' 'named_wealthy_ui.gd' @() $false
+    Run-Test 'named-wealthy-1600x900' 'named_wealthy_ui.gd' @('wide') $false
+    Run-Test 'watch-patterns-journey' 'watch_patterns_journey.gd'
+    Run-Test 'watch-patterns-1280x720' 'watch_movement_ui.gd' @() $false
+    Run-Test 'watch-patterns-1600x900' 'watch_movement_ui.gd' @('wide') $false
+    Run-Test 'watch-negotiation-storage' 'watch_negotiation_storage.gd'
+    Run-Test 'watch-negotiation-journey' 'watch_negotiation_journey.gd'
+    Run-Test 'watch-negotiation-1280x720' 'watch_negotiation_ui.gd' @() $false
+    Run-Test 'watch-negotiation-1600x900' 'watch_negotiation_ui.gd' @('wide') $false
+    Run-Test 'precision-journey' 'tiered_journey.gd'
+    Run-Test 'precision-story' 'tiered_story.gd'
+    Run-Test 'precision-companion' 'tiered_companion.gd'
+    Run-Test 'precision-1280x720' 'tiered_ui.gd' @() $false
+    Run-Test 'precision-1600x900' 'tiered_ui.gd' @('wide') $false
+    Run-Test 'wealthy-journey' 'wealthy_journey.gd'
+    Run-Test 'precision-storage' 'tiered_storage.gd'
+    Run-Test 'wealthy-story' 'wealthy_story.gd'
+    Run-Test 'wealthy-companion' 'wealthy_companion.gd'
+    Run-Test 'wealthy-1280x720' 'wealthy_ui.gd' @() $false
+    Run-Test 'wealthy-1600x900' 'wealthy_ui.gd' @('wide') $false
     Run-Test 'core' 'run_all.gd'
     Run-Test 'aqi-core' 'run_aqi.gd'
     Run-Test 'aqi-durability' 'aqi_save_durability.gd'

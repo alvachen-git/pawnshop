@@ -89,6 +89,8 @@ static func bought(day: DayController, visit: CustomerVisit, price: int) -> void
 	events.append({"id": id, "transaction_id": "purchase/" + visit.visit_id, "item_id": visit.item.instance_id,
 		"night": day.state.current_night_index, "delta": int(day.definition.variety.fan_bargaining.reputation_delta),
 		"reason": "true_fan_bought_as_fake"})
+	if day.state.social_enabled:
+		SocialRules.change(day.state, "reputation", int(day.definition.variety.fan_bargaining.reputation_delta), id)
 
 static func expert_confirmation(day: DayController, item: ItemInstance, row: Dictionary) -> String:
 	row.reviewed = true

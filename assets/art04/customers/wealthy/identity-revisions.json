@@ -1,0 +1,23 @@
+{
+  "tool": "built-in image_gen",
+  "edits": [
+    [
+      "antique",
+      "Change ONLY the entire head and facial identity of this antique merchant so he is unmistakably a DIFFERENT PERSON. New head: age sixty, bald crown with a receding horseshoe of short gray hair at sides (no swept full hair), plump ROUND face, small observant eyes, fine round pince-nez spectacles, a neat short POINTED WHITE GOATEE on the chin, no dark mustache. Upright head, not tilted. Prosperous cultivated connoisseur. The old long-faced combed-hair scholarly identity must be entirely replaced. Preserve exactly the square frame, gouache painting style, green silk clothes and black patterned waistcoat, hands, book, body pose, warm light and solid magenta #FF00FF background. No text."
+    ],
+    [
+      "comprador",
+      "Change ONLY the whole head and face to a genuinely different person, not this same gray-haired broad-faced man. New Chinese senior comprador identity: age forty-eight, long narrow clean face, prominent straight narrow nose, angular cheekbones, a very fine pencil mustache, perfectly slicked STRAIGHT BACK jet black hair with modest graying temples, round dark horn-rim glasses, lips closed, cool precise appraising gaze. Head held upright facing player, no tilt. Understated very rich cosmopolitan businessman of 1930s Shanghai. Preserve the exact navy double-breasted suit, gloves, leather folio, hands, layout, square crop, gouache brushwork, warm light and solid magenta background. No text."
+    ]
+  ],
+  "outputs": [
+    {
+      "id": "antique",
+      "path": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-6288a709-b632-4a3a-be8e-fe0fe95ed9d0.png"
+    },
+    {
+      "id": "comprador",
+      "path": "C:\\Users\\alvachen\\.codex\\generated_images\\01a0c8e1-5d71-7373-a439-546928f9c776\\exec-7856bd4b-388f-4cda-8d04-6762e663d746.png"
+    }
+  ]
+}

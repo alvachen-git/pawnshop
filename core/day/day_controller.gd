@@ -28,6 +28,7 @@ func execute(command: String) -> ActionResult:
 		"close_shop":
 			state.closed_at = state.game_minutes
 			state.phase = &"closed_processing"
+			ReputationGrowth.settle(state)
 		"resolve_night":
 			state.summaries.append({"night": state.current_night_index, "opening_cash": state.night_opening_cash, "closing_cash": state.cash, "closed_at": state.closed_at, "action_count": state.action_count, "outcome": "placeholder_peaceful"})
 			state.summaries.back().merge(FinancialSummary.build(state))
@@ -54,4 +55,5 @@ func spend_action(minutes: int) -> ActionResult:
 	if state.game_minutes == definition.night_minutes:
 		if state.closed_at < 0: state.closed_at = state.game_minutes
 		state.phase = &"night_resolution"
+		ReputationGrowth.settle(state)
 	return result

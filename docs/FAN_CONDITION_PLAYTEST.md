@@ -1,5 +1,7 @@
 # 折扇品相与鉴物台 · v29 试玩
 
+> 入口更新：完整新局现使用 v30 `play-unified.cmd`，见 [整合说明](UNIFIED_V30.md)。下文保留本专项历史规则与验证；其中折扇v29入口已更名为 `play-fan-condition.cmd`。
+
 日期：2026-09-22（2026-09-21开始实施）。已实现并本地验证，尚未推送或合并。
 
 ## 完整启动指令
@@ -7,13 +9,13 @@
 在 PowerShell 中粘贴以下整行，即可进入**尚未修建鉴物台、有折扇待收**的隔离试玩：
 
 ```powershell
-& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-unified.cmd" -Stage no-bench -Wide
+& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-fan-condition.cmd" -Stage no-bench -Wide
 ```
 
 正常从第一夜开始：
 
 ```powershell
-& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-unified.cmd" -Wide
+& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-fan-condition.cmd" -Wide
 ```
 
 保留上面的完整路径，只改 `-Stage` 后的名称，可以选择：
@@ -69,7 +71,7 @@
 快速测试旧账柜学习：
 
 ```powershell
-& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-unified.cmd" -Stage knowledge -Wide
+& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-fan-condition.cmd" -Stage knowledge -Wide
 ```
 
 ## 时间与经营取舍

@@ -18,6 +18,8 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	var visit := customers.active(day.state)
 	if day.state.phase != &"open" or visit == null or visit.visit_id != visit_id or day.state.game_minutes >= visit.expires_at:
 		return "当前顾客已离开或柜台未营业。"
+	if command.begins_with("luxury_") and command != "luxury_pressure": return LuxuryAppraisalService.reason(day, command, visit.item.instance_id, detail)
+	if WealthyCustomers.is_customer(visit.customer_id) and command in ["appraise", "judge", "pressure", "belittle"]: return "请在高档货鉴物台细查、对证，再拿鉴定记录谈价。"
 	if visit.purpose == "display_buyer": return ShopGrowthService.trade_reason(day, command, visit_id, detail, amount)
 	if visit.purpose == "husband_meeting": return "这次只谈旧事，请到对话页问话或送客。"
 	var late_error := NightMarketPlan.command_reason(visit, command)
@@ -33,6 +35,10 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	var cost := 0
 	if customer.guest_rule == "swap" and command not in ["question", "judge"]: return "他只肯调换点名的当物，请到报价页决定。"
 	match command:
+		"watch_bluff": return WatchEconomy.bluff_reason(day,visit,detail,amount)
+		"watch_claim": return WatchNegotiation.reason(day,visit,detail,amount)
+		"luxury_pressure":
+			return LuxuryAppraisalService.pressure_reason(day, visit, detail, amount)
 		"condition_pressure":
 			return FanConditionService.pressure_reason(day, visit, detail, amount)
 		"fan_pressure":
@@ -63,6 +69,9 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		"judge":
 			if detail not in ["unknown", "sound", "damaged", "fake"]: return "判断类型无效。"
 			return ""
+		"intimidate":
+			if not detail.is_empty() or amount != 0: return "借牌压价不接受另填报价。"
+			return MilitaryPlaque.reason(day.state, visit)
 		"belittle":
 			if customer.belittle.is_empty(): return "这位客人不接受这样的试探。"
 			if visit.trade.belittle_used: return "已试探过，不能再说一遍。"
@@ -92,6 +101,7 @@ func execute(day: DayController, command: String, visit_id: String, detail := ""
 	var error := reason(day, command, visit_id, detail, amount)
 	if not error.is_empty(): return ActionResult.new(false, error)
 	var visit := customers.active(day.state)
+	if command.begins_with("luxury_") and command != "luxury_pressure": return LuxuryAppraisalService.perform(day, command, visit.item.instance_id, detail)
 	var start := day.state.game_minutes
 	var result := _execute(day, command, visit_id, detail, amount)
 	if not visit.scenario_id.is_empty() or not (catalog.get_definition("customers", visit.customer_id) as CustomerDefinition).belittle.is_empty(): TradeScenarioService.record(day, visit, command, detail, amount, start, result)
@@ -108,8 +118,12 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		visit.item.judgement = detail
 		return ActionResult.new(true, "已记录你的判断；判断本身不会揭露真相或改变物品价值。")
 	var scenario := TradeScenarioService.for_visit(day.definition, visit)
+	visit.trade.social_last_was_quote = false
 	var cost := 0
 	match command:
+		"watch_bluff": cost = 5
+		"watch_claim": cost = 5
+		"luxury_pressure": cost = 5
 		"condition_pressure": cost = 5
 		"fan_pressure": cost = int(day.definition.variety.fan_bargaining.minutes)
 		"verify_source": cost = int(item.provenance.check_minutes)
@@ -131,6 +145,9 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		return ActionResult.new(true, "你的手刚伸向包裹，那人便一把收回：‘说过了，不许验货。’他带着东西走了，未留下可核实的细节。")
 	var message := ""
 	match command:
+		"watch_bluff": message = WatchEconomy.bluff(day,visit)
+		"watch_claim": message = WatchNegotiation.submit(day,visit,detail)
+		"luxury_pressure": message = LuxuryAppraisalService.pressure(day, visit)
 		"condition_pressure": message = FanConditionService.pressure(day, visit)
 		"fan_pressure": message = FanBargainingService.apply(day, visit)
 		"verify_source":
@@ -153,6 +170,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"reject":
 			customers.finish(day.state, visit, "rejected")
 			message = (String(visit.voice.rejected) + "\n" if visit.voice.has("rejected") else "") + "拒绝收货，送客消耗 %d 分钟。" % cost
+		"intimidate": message = MilitaryPlaque.intimidate(day.state, visit)
 		"belittle": message = BelittleService.apply(visit, customer)
 		"pressure":
 			var before := visit.trade.asking_price
@@ -167,7 +185,9 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"offer", "pawn":
 			var terms := catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 			var threshold := maxi(1, roundi(visit.trade.reserve_price * terms.loan_ratio)) if command == "pawn" else -1
-			var accepted := FanBargainingService.sale_quote(day.state, visit, customer, amount) if command == "offer" and FanBargainingService.enabled(day.definition) else trades.quote(visit.trade, customer, amount, threshold)
+			visit.trade.social_offer_mode = command
+			visit.trade.social_last_was_quote = true
+			var accepted := WealthyCustomers.quote(day.state, visit, customer, amount) if WealthyCustomers.active(day.state) and WealthyCustomers.is_customer(visit.customer_id) else (FanBargainingService.sale_quote(day.state, visit, customer, amount) if command == "offer" and FanBargainingService.enabled(day.definition) else trades.quote(visit.trade, customer, amount, threshold))
 			if accepted:
 				if command == "pawn":
 					PawnController.new().issue(day.state, visit, terms, amount)

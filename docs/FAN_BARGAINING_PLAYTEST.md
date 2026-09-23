@@ -1,5 +1,7 @@
 # 识扇与议价 · v28 试玩说明
 
+> 入口更新：完整新局现使用 v30 `play-unified.cmd`，见 [整合说明](UNIFIED_V30.md)。下文保留本专项历史规则与验证；其中折扇v29入口已更名为 `play-fan-condition.cmd`。
+
 日期：2026-09-18。状态：已在隔离工程实施，供本地试玩；未推送、未合并、未制作发行包。
 
 ## 一键试玩
@@ -7,7 +9,7 @@
 在 PowerShell 复制完整一行（从任意目录均可运行）：
 
 ```powershell
-& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-unified.cmd" -Stage ordinary -Wide
+& "C:\Users\alvachen\Documents\ChatGPT\pawnbroker\play-fan-condition.cmd" -Stage ordinary -Wide
 ```
 
 这是已完成自鉴、尚未谈价的普通客人场景。进入“商量价钱”，选择“这不是真迹，价钱得再降些。”，随后自己填写正式收购价。

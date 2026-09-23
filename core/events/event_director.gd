@@ -10,6 +10,10 @@ func _init(content: ContentCatalog) -> void:
 func eligible(state: RunState, event: EventDefinition) -> bool:
 	if event.id == MirrorDreamService.EVENT and not MirrorDreamService.eligible(state, event.presentation.get("requires_call", false)): return false
 	if event.id == MirrorDreamService.CALL and not MirrorDreamService.call_eligible(state): return false
+	if state.social_enabled and event.kind != "anchor" and SocialRules.night(state).get("military_event", false):
+		# In the unified run military business only occupies the random-event lane.
+		# Authored story investigations and dreams retain their original eligibility.
+		if state.run_definition_id != "unified_ten" or event.kind == "random": return false
 	if String(state.phase) != event.phase or state.current_night_index < event.night_min or state.current_night_index > event.night_max or state.game_minutes < event.window_start or state.game_minutes >= event.window_end: return false
 	if not CounterDomainValidator._contains_all(state.narrative_flags, event.required_flags): return false
 	for flag in event.excluded_flags:

@@ -2,7 +2,7 @@ class_name SourceSchemaValidator
 extends RefCounted
 
 const ITEM_TYPES := ["normal", "black", "ghost", "pawn", "ward"]
-const WEALTH_BANDS := ["poor", "modest", "comfortable", "wealthy"]
+const WEALTH_BANDS := ["poor", "modest", "comfortable", "wealthy", "ultra_wealthy"]
 const TRANSACTION_MODES := ["sell", "pawn", "redeem", "buy", "exchange", "request"]
 
 const ITEM_FIELDS := {

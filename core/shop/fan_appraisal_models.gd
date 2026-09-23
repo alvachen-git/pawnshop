@@ -10,7 +10,7 @@ static func facility(day: DayController) -> Dictionary:
 	var state := day.state
 	var a := FanAppraisalService.data(state)
 	var level := FanAppraisalService.bench_level(state)
-	var model := {"title": "鉴物台 · " + ["待整修", "一级", "二级专用台"][level], "body": "", "buttons": []}
+	var model := {"title": "鉴物台 · " + ["待整修", "一级", "二级专用台", "三级精鉴台"][level], "body": "", "buttons": []}
 	if a.is_empty(): return model
 	if not a.manual:
 		model.body = "更细的比对需要展扇台和专门图录。旧账柜的目录里，或许还记着旧工具放在哪里。"
@@ -26,7 +26,7 @@ static func facility(day: DayController) -> Dictionary:
 	model.body += "\n\n鉴定名声\n" + FanAppraisalService.standing_text(state) + "\n收货后请行家复核，可验证此前的自鉴。"
 	if not a.tools: model.buttons.append(button(day, "fan_tools", "添置扇画工具 · 30银元 / 准备1次"))
 	if not a.knowledge: model.buttons.append(button(day, "fan_study", "研习扇画图录 · 准备1次 / 不收费"))
-	if a.knowledge and a.tools and level == 2: model.body += "\n\n接到折扇时，从鉴定页进入「扇画比对」；自有折扇可从库存进入。笔锋与题款先留草稿，可免费重选；确认落笔一次耗10分钟。客人仍会按时离开。"
+	if a.knowledge and a.tools and level >= 2: model.body += "\n\n接到折扇时，从鉴定页进入「扇画比对」；自有折扇可从库存进入。笔锋与题款先留草稿，可免费重选；确认落笔一次耗10分钟。客人仍会按时离开。"
 	model.body += "\n\n图录要点 · 免费复看\n" + FanAppraisalService.REFERENCE.brush + "\n\n" + FanAppraisalService.REFERENCE.inscription
 	return model
 
@@ -49,17 +49,19 @@ static func archive(model: Dictionary, day: DayController) -> void:
 static func independent_facility(day: DayController) -> Dictionary:
 	var a := FanAppraisalService.data(day.state)
 	var level := FanAppraisalService.bench_level(day.state)
-	var model := {"title": "鉴物台 · " + ["待整修", "一级", "二级专用台"][level], "body": "", "buttons": []}
+	var model := {"title": "鉴物台 · " + ["待整修", "一级", "二级专用台", "三级精鉴台"][level], "body": "", "buttons": []}
 	if a.is_empty(): return model
 	model.body = "暂无可用能力" if level == 0 else "普通工具检查 · 10 → 5分钟"
 	if level == 1 and int(a.bench_due) == 0:
 		model.buttons.append(button(day, "bench_two", "改造二级鉴物台 · 80银元 / 准备1次 / 两夜工期"))
 	elif level == 1 and int(a.bench_due) > 0:
 		model.body += "\n改造中 · 第%d夜完工" % int(a.bench_due)
-	if level == 2 and not a.tools: model.buttons.append(button(day, "fan_tools", "添置扇画工具 · 30银元 / 准备1次"))
+	if level >= 2 and not a.tools and not TieredAppraisal.enabled(day.definition): model.buttons.append(button(day, "fan_tools", "添置扇画工具 · 30银元 / 准备1次"))
 	var known := ShopKnowledgeService.mastered(day.state, ShopKnowledgeService.GU_YANSHENG)
-	if a.tools and level == 2:
+	if WealthyCustomers.active(day.state) and level >= 2 and not TieredAppraisal.enabled(day.definition): model.body += "\n高档货细查 · 已开放（对证需对应知识）"
+	if a.tools and level >= 2:
 		model.body += "\n顾砚生扇画比对 · 已开放" if known else "\n扇画工具 · 已配齐"
+	TieredAppraisal.facility_model(day,model)
 	return model
 
 static func enrich(model: Dictionary, day: DayController) -> void:
