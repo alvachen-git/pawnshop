@@ -1,0 +1,11 @@
+{
+  "tool": "built-in image_gen",
+  "use_case": "precise-object-edit",
+  "revision": "wear legibility feedback",
+  "reference": ".godot/qa/item-studies/feedback-before/silver_lock_sound.png",
+  "original_generated_file": "/Users/alvachen/.codex/generated_images/01a0ccaa-71b4-7771-8f52-b1df0435211f/exec-9a338dc5-43e0-489c-86da-871737a8ee7c.png",
+  "prompt": "Use case: precise-object-edit. Asset type: paid appraisal evidence image displayed at only 198x132 pixels in a 1930s Chinese pawnshop game. Edit this exact silver longevity lock macro. Preserve the SAME close-up lock corner, relief scroll shapes, visible thickness, composition, diffuse upper-left light and muted olive/umber opaque background. Enhance the genuine silver WEAR evidence: on the central foreground raised shoulder and adjacent curved edge show a broad clearly defined softly rubbed gray-silver abrasion band, occupying around twenty percent of the frame as a meaningful contact zone. Within this band show THREE TO FIVE coherent PARALLEL shallow wear scratches following the curve, softly rounded by age and frequent handling, gently darker and lighter silver lines that remain visible at 198x132. Smooth the pebbly noisy fine grain in the worn band and reduce nearby visual noise so the directional rubbing reads clearly. This is plausible old frequent-handling silver wear, NOT deep machine-cut slashes or new engraved decoration. All exposed abrasion remains EXACT SAME SILVER GRAY inside and outside; no yellow, gold or brass core, no peeling plated edge, no weld or solder join. Preserve muted semi-realistic opaque gouache with subtle brushwork and modest worn metal highlights, believable delicate lock rather than machinery. No labels, arrows, diagrams, tools, hands, text or watermark. Output 1536x1024 landscape opaque image.",
+  "file": "silver_lock_sound.png",
+  "previous_source": ".godot/qa/item-studies/feedback-before/silver_lock_sound-source.json",
+  "visual_validation": "1536x1024 RGB. Same lock corner, relief scroll, camera, light and backdrop. Broad smoothly rubbed gray-silver contact band along central shoulder/edge with parallel shallow wear scratches and less noisy grain. No colored core, plating edge, weld, deep cuts or changed free-view assets. Actual inventory thumbnail rendering awaits root integration QA."
+}

@@ -1,239 +1,64 @@
-## 2026-09-23 · 固定富客姓名与价格核对
-
-v37新增五位固定姓名人物，交易与谈价窗口明确显示姓名及职业。当票、赎回、跨夜及读档保持身份一致。385→39已复现，符合仿冒100×停走50%×买断70%×开价110%的公式，未重复折价；真实价值不变。规则1211项、十夜流程523项、旧v36回归409项、两尺寸UI各56项均通过。统一启动验证通过，未推送。详见 [验收记录](docs/NAMED_WEALTHY_V37.md)。
-
-# v36 仿制机芯图样 · 2026-09-23
-
-final result: passed。本地新增两张ImageGen素材并接入，未推送。已将源素材与实际放大界面在同一轮图像输入中比较：刻字版可辨认多出的E；齿轮版可比较大小轮比例，原配图录保持正确刻字与结构。新图与原案台的金属色、暗底及绘画质感一致。
-
-1280×720和1600×900各46项实际按钮检查通过，指南标注和文字可见；规则/保存409项、十夜重放523项、v35谈价回归1070项通过。来源提示词和游戏截图见 [v36机芯图样](docs/WATCH_V36.md)。
-
-# v35 怀表说法与让价 · 2026-09-23
-
-final result: passed。本地可玩，未推送。
-
-统一入口切换v35；试听点击即记录，柜台新增逐项勾选和改口，手记、客人认识及实物价值分开。客人回应区分相信让价、认同但不让、不信说法，并展示实际要价变化。
-
-已查看1280×720与1600×900实机截图，提交、返回交易、已谈过状态正常。两尺寸各71项GUI检查通过，规则1070项、存档223项、十夜重放526项通过；另回归v34经济、v33鉴定、其他九件货及折扇。发现并修正切换预置串入旧回应的问题。
-
-[详细验收与截图](docs/qa/watch-v35/REPORT.md) · [本地试玩命令](docs/WATCH_V35.md)
-
-# v34 名表鉴定指南 · 2026-09-23
-
-落笔流程更新：未查完也可确认，未定项可保留；保存成功后关闭验表台和鉴定抽屉回到柜台。两尺寸各107项GUI检查通过，已查看`partial_seal_available`与`sealed_counter`截图；部分落笔规则55项及旧v33回归4950项通过。
-
-柜台鉴定汇总最新调整：十种高档货复用普通物品的图像、估值区间、玩家判断和线索布局。已复核1280×720与1600×900下的未鉴定及听音后画面，操作按钮可见，判断长句正常换行。两尺寸各97项GUI检查通过；高档货汇总模型227项、经济规则916项通过。截图见`docs/qa/watch-v34/watch34_1600_appraisal_observed.png`。
-
-第二柜指南按反馈精简为“听走时”和“看机芯”两页，移除估货值；机芯页只展示带①②观察标注的原配参考图。三类样音增加各自说明、当前播放标识、8秒进度和完成提示。1280×720与1600×900原生GUI均通过77项检查；音频PCM另通过57项检查，确认两次间歇与中途停走的实际静音差异。完整记录：[v34验收](docs/qa/watch-v34/REPORT.md)。
+# Item studies — Product Design QA
 
 final result: passed
 
-验表台后续精简：去掉v34声音标记／清除按钮及第二柜指南提示，时间条只显示进度。两种尺寸各93项GUI检查通过，已查看`listening_without_marks`实机图；规则916项及v33回归4950项通过。无标记的正确听音判断可以举证，少听或错判不能获认可。
+## Target and evidence
 
----
+Original art base: e891dc2 (unified_ten, v30). Release integration: f4e996b, default named_wealthy, content_version 37. Native Godot 4.6.1 compatibility renderer, macOS. This is an item-art integration, with the existing game interface as the layout and typography reference.
 
-# 灯下验表 · 第三方案实装复核 · 2026-09-23
+Source visual truth: `assets/item_studies/*.png` (17 images; 1536×1024), existing fronts in `assets/art04/items`, `assets/item_art_v30`, and `assets/art06/items/mirror_front.png`. Generation references and exact prompts are preserved beside each new PNG. `docs/qa/item-studies-20260923/assets.json` records dimensions and hashes. The source/render overview is `docs/qa/item-studies-20260923/art-board.png` (1600×900).
 
-final result: passed
+Implementation captures: `.godot/qa/item-studies/1280_*.png` and `1600_*.png`; retained evidence below is under `docs/qa/item-studies-20260923/`.
 
-本次为原生 Godot 怀表鉴定界面。选定源图为 `docs/design/watch-desk/selected.png`，实机对照为 `docs/qa/watch-v33/design-comparison.png`，已将源图与实机同画幅并排查看。完整记录见 [怀表验收报告](docs/qa/watch-v33/REPORT.md)。下方旧报告原样保留。
+Viewport and density: native viewport pixels 1280×720 and 1600×900, root.content_scale_size equal to root.size, 1 viewport pixel per captured pixel. CSS size/deviceScaleFactor do not apply to Godot. Source PNGs are 1536×1024; actual study images occupy a 132px-high widget with keep-aspect fitting; inventory images are 68×60 widgets. Comparisons place the source and a crop from the actual rendered viewport side by side, fitting each into an equal column. Enlargement of the small rendered widget reveals expected sampling softness; it is not interpreted as source blur. The bowl back uses its intended chroma-key shader in the source comparison to remove the original magenta production background. Other sources are displayed unchanged. Full-window captures remain the authority for readability at normal size.
 
-- 保留左侧展开图录、右侧深蓝毡垫与怀表、胡桃木桌面、暖铜灯和暗红主按钮；实际控件由引擎绘制。
-- 在1280×720和1600×900实际点击并查看到访、听音、机芯、放大、判断、落笔及无设备状态。两种尺寸各53项检查通过，无遮挡操作或裁切文字。
-- 图录简短说明、声音标记与手记是实际玩法所需的有意差异；不把生成稿里的字形当作可用字体。
-- 已修复图录最小尺寸导致重叠、按钮边角缩放过大、怀表着色过暗的问题；最终截图无未解决P0/P1/P2。
-- P3后续：线描图录的颗粒可继续精修；机械声音为游戏合成效果，尚未以实表录音校准。
+States: nine naturally scheduled first-night item variants, free front/back, earned evidence, purchase/inventory, save/reload. Mirror inventory uses actual campaign ending saves for acknowledged (ordinary) and resentment (resentful), including the current v37 campaign.
 
----
+## Comparison history and findings
 
-# 铺内设施场景视觉复核
+1. P2, appraisal evidence visibility: after scrolling down to an appraisal action, the newly selected detail remained above the scroll viewport, showing only the bottom strip. Evidence: `iteration-1/1280_item_silver_lock_flawed_detail_flaw.png` and `iteration-1/1280_item_silver_ring_flawed_detail_flaw_comparison.png`.
+   Fix: AppraisalPanel returns its ScrollContainer to the image when a new earned page appears or the selected image page changes. Pure reads/refreshes retain normal scrolling. No game-state mutation or clue changes.
+2. Re-captured the same states and viewports after the fix. `1280_item_silver_ring_flawed_detail_flaw_comparison.png`, `1280_item_silver_hairpin_mended_seam_comparison.png`, `1280_item_blue_bowl_repaired_seam.png`, `1600_item_blue_bowl_repaired_seam.png`, and `1600_item_silver_lock_flawed_detail_flaw.png` show complete images, readable clues and usable page buttons. Both UI runs assert scroll=0 on selected study views. P2 resolved.
+3. The first overview board exceeded the desktop work area and clipped the bottom row. This was a review-artifact issue, not game UI. Rebuilt at 1600×900; `art-board.png` now contains all four complete groups. No game layout change was needed.
 
-日期：2026-09-16。对象为原生Godot游戏，不是网页；无CSS视口或浏览器控制台。
+4. P2, user feedback: exposed brass and wear marks were too subtle. Repainted the two ring and two lock evidence images with broad coherent directional abrasion, smoothed local silver wear bands, and clear matte brass underneath irregular silver plating edges. Object identity and actual display size are unchanged. The earlier sources and comparisons are retained in `docs/qa/item-studies-20260923/feedback-before/`.
+5. Post-feedback validation: `detail-feedback-board.png` puts the before/after sources in the same image. New combined source/render comparisons (`1280_item_silver_ring_sound_detail_sound_comparison.png`, `1280_item_silver_ring_flawed_detail_flaw_comparison.png`, `1280_item_silver_lock_sound_detail_sound_comparison.png`, `1280_item_silver_lock_flawed_detail_flaw_comparison.png`, plus their 1600 equivalents) and full-window captures show readable abrasion bands and exposed-brass regions at the actual 198×132 image size. Focused GUI runs exercise all four real variants at both resolutions: 752 assertions each, zero failures, including evidence gates, page visibility, purchase and save/reload. P2 resolved locally; the user subsequently authorized push and merge on 2026-09-23.
 
-## 最新交互修订：默认淡入淡出
+No actionable P0/P1/P2 findings remain in the scoped states.
 
-按用户要求，场景往返统一为180毫秒淡入淡出，移除左下“简化切换”开关及横移分支、连接木柱。保留边缘350毫秒停留、双向箭头、菜单与Esc；过渡不移动场景，不消耗游戏时间。修正房间着色器遵循父级透明度，确保底图随界面一起渐变；柜台人物与物品也同步渐隐／渐显。
+## Full-view and focused comparison
 
-实机证据为`docs/qa/facility-default-fade/room-1280.png`、`room-1600.png`及`transition-1280.png`、`transition-1600.png`；1280×720和1600×900分别110项界面检查通过，0失败，日志位于同目录。实际查看静止及过渡画面：左下开关消失，原设施构图与底部状态栏保持，过渡中图像叠化且没有横向移动。往返完成后透明度恢复、窗口缩放可正常落定。下文横移、木柱和可选淡入淡出说明保留为历史记录，以本段为准。
+Full view: `1280_item_blue_bowl_repaired_seam.png` and `1600_item_blue_bowl_repaired_seam.png` show the actual drawer alongside the correctly sized bowl on the counter. `1600_item_silver_lock_flawed_detail_flaw.png` verifies the jewelry detail and existing small tabletop object together. `1600_mirror_acknowledged_inventory.png` / `1600_mirror_resentment_inventory.png` show the actual ending stock entries and their existing narrative status.
 
-## 最新修订：设施标识与返回箭头
+Focused, combined inputs: `1280_item_blue_bowl_sound_back_comparison.png`, `1280_item_blue_bowl_repaired_foot_wear_comparison.png`, `1280_item_silver_hairpin_mended_seam_comparison.png`, `1280_item_silver_ring_flawed_detail_flaw_comparison.png`, `1280_item_silver_ring_mended_detail_condition_mended_comparison.png`, `1280_item_silver_lock_mended_detail_condition_mended_comparison.png`, `1600_mirror_acknowledged_comparison.png`, and `1600_mirror_resentment_comparison.png`. These compare actual scene captures, not recreated UI textures.
 
-**最终对比度微调：** 用户要求小箭头稍亮以免融入背景。保持56×38像素资源框与无位移动效，两侧默认改为更清楚的浅铜色与96%不透明度，聚焦时略亮。1280同场景前后图已合组复核，箭头在木纹上更清楚，没有增加底牌或光晕；最终两种分辨率各110项检查通过。最新图片覆盖在`docs/qa/facility-arrows-small/`，较暗初稿另存`*-before-brightness-1280.png`。以下早期“淡化默认颜色”描述以本段最终对比度为准。
+## Required fidelity surfaces
 
-**后续微调：小而低调的双向箭头。** 按用户追加反馈，两侧统一使用固定56×38像素的透明资源框，箭头实形约48×14像素；进入铺内向左、返回柜台向右。去除入口文字牌，默认降低亮度与不透明度，仅在悬停／键盘聚焦时略微提亮，取消4像素位移动画；原有按钮点击范围不缩小。通过引擎翻转与缩放复用原RGBA资源，没有改写原图。双分辨率均110项界面检查通过，0失败；截图与日志见`docs/qa/facility-arrows-small/`（`counter-1280.png`、`room-1280.png`及1600对应文件）。下文较大箭头与位移动效为前次历史记录，以本段为准。
+- Fonts/typography: existing game font family, sizes, weights and wrapping retained. Source item paintings contain no UI labels; appraisal labels and Chinese clue copy render in the normal theme. Five bowl page buttons fit at 1280; no new truncation or overlap.
+- Spacing/layout: existing drawer width, study image ratio and counter bounds retained. Entire new detail stays visible after selection. Inventory remains the existing compact thumbnail layout; ending text is visible by scrolling its normal entry. Bottom HUD and close controls are unobstructed at both resolutions.
+- Colors/tokens: existing paper, ink and wood palette retained. Bowl keeps cream/cobalt; silver keeps muted worn gray with localized yellow only on the earned plating-flaw image. Ordinary and resentful mirrors retain bronze/verdigris, with restrained dried-red residue only on the resentful state. No pink key background or bright glow in game.
+- Image quality: actual raster originals are used. Bowl floral pattern, foot mark and repair agree across views. Pin remains one single tapered shaft; ring/lock preserve the existing design. Ring mended is visibly compressed rather than soldered; lock mended shows a gray repair joint. Neutral backs are shared across hidden variants. Macro evidence views are intentionally larger and more textured than the counter thumbnail. Front scales and tabletop shadows are unchanged. Small inventory thumbnails retain silhouette/state cues; their limited microdetail is expected at 68×60.
+- Copy/content: no player text, prices, clues, page IDs, scenario data or save schema changed. The existing story gates choose which image is visible. No new free flaw revelation. Ordinary mirror removes blood; resentful mirror retains restrained residue without invented ghost faces or text.
 
-用户指出三处双线纸牌过重，并要求返回柜台只保留特殊箭头。本次为已实现界面的局部修订，覆盖下文旧版纸签描述；经营规则和布局未改变。
+## Validation and limits
 
-- Source visual truth：用户提供的三张局部截图，已保存在`docs/qa/facility-signage/request-*.png`；整体旧版为`before-1600.png`。新箭头素材为`assets/facilities/return-arrow.png`。
-- Implementation：`docs/qa/facility-signage/after-1280.png`、`after-1600.png`、`arrow-hover-1600.png`；分别为1280×720、1600×900原生1:1截图，无CSS或密度换算。旧版1600图与新版1600图在同一图像输入中打开比较。
-- 全景与局部：去掉三个大纸底和设施整框；左上“铺内”竖排，设施名为暖白题字；右侧是独立木铜箭头，无名称牌。重点检查左上、中央账柜上方、右侧通道三处，均没有挡住建筑或操作物。
-- 字体：沿用宋体风格，题字27像素、设施名21像素，轻加粗与深色暗影提升暗背景可读性。
-- 间距：位置题字缩窄、名称移除大内边距；箭头视觉宽约85—106像素，实际按钮约100×78／125×97像素，保留容易点击的范围。
-- 颜色：暖白文字、暗棕阴影、旧木与哑铜，沿用房间材质。悬停／键盘聚焦提亮箭头；简化切换时不做4像素位移动画。
-- 图片：箭头使用内置Image Gen制作的RGBA资源，实机透明合成，无黑底矩形。保留生成的木纹、铜件，不使用文字字符模拟箭头。
-- 文案：页面不再显示“回柜台”；按钮仍保留“返回柜台”的辅助识别名称。原纸页的费用、时间、交易与材料文案不变。
-- 验证：小分辨率原界面流程106项通过；大分辨率109项通过，新增真实点击箭头返回和状态不变检查。证据为该目录`ui1280.log`、`ui1600.log`。既有系统证书仓库警告仍在，无脚本／解析错误。
-- Findings：用户指出的纸牌视觉问题已修正；同画幅复核没有未解决P0/P1/P2。后续可按试玩反馈微调箭头亮度，不改变点击区域。
+Initial v30 validation: 448 art contract assertions, zero failures (v30 and v21 gates/custom overrides/old path compatibility). Actual item UI: 1520 assertions at each viewport, zero failures. Actual mirror inventory UI: 8 assertions at each viewport, zero failures. Unified campaign fixture/replay checks: 2042 passes, zero failures. Godot imports succeeded; git diff --check passed. Headless logs include the macOS system CA certificate access message; actual GUI logs contain no script/resource errors.
 
-[制作提示词与文件信息](docs/qa/facility-signage/ASSET_RECORD.md)。以下保留首轮场景交付的历史验证记录。
+This report records local visual QA. After viewing the enhanced details, the user authorized push and merge on 2026-09-23; the GitHub PR records the publication result. Tests cover the selected four groups; unrelated UI and every legacy campaign were not re-tested. The original dirty root worktree was left intact. Generated import metadata outside owned paths remains untracked and is not part of this delivery.
 
-## 对照依据
+## Implementation checklist
 
-- Source visual truth：`docs/design/facilities-room/progression-00-initial.png` 至 `progression-03-premium.png`，均1672×941。
-- Implementation：`docs/qa/facilities/facilities_1600_01_initial.png`、`facilities_1600_04_displayed.png`、`facilities_1600_preview_0.png` 至 `preview_3.png`；另有相应1280截图。
-- Viewport：1600×900及1280×720；Godot逻辑尺寸与渲染截图一致，1个逻辑像素对应1个截图像素，无操作系统窗框。
-- 对照归一：均为约16:9。以同样画幅比例对齐源图与实机；1672×941对应1600×900约0.957倍、1280×720约0.766倍，未将生成图内文字的像素字号当作引擎字号。源图最下约10%是概念标题，实机同区域为HUD或预览页脚。
-- 状态：初始、单独整修、两项整修、真实银簪陈列、已查明柜格、各高级外观。初始与高级源图、实机图在同一图像输入中成组打开比较；不是凭代码或记忆评审。
+- [x] 17 selected images integrated, including 3 reused bowl sources.
+- [x] Neutral free backs and paid evidence gates preserved.
+- [x] Ending-state inventory routed to separate PNGs.
+- [x] New-view visibility defect fixed and recaptured.
+- [x] Native two-resolution visual comparison and save/reload checks.
+- [x] Source provenance, preview, reproduction scripts and QA evidence retained.
 
-## 全景对照
+## Current-main v37 integration validation
 
-| 比较 | 结果与有意差异 |
-| --- | --- |
-| 初始稿 ↔ 实机初始 | 保留左窗下陈列柜、中部账柜、右前鉴物台和右侧出口；木褐、灰蓝雨巷、暗绿毡、灯池一致。实机加入原经营HUD、纸签、导航与键盘焦点。 |
-| 一级稿 ↔ 实机双设施整修 | 左玻璃恢复透明，右毡布与工具归盘；中央旧账柜保持破旧是本批范围要求，不是假定一起翻新。源图茶盏改为玩家实际陈列的银簪，空柜不附送货物。 |
-| 二／三级稿 ↔ 独立预览 | 中央柜墙的完整漆面、规整框板、铜件与收纳升级清楚；左右家具同步体现对应视觉等级。样例货物被移除，真实库存不在独立预览中展示。 |
+Integrated main f4e996b before release. Both new wealthy-customer/watch appraisal and the item study routing are retained. Appraisal material clearing is restricted to atlas views, so ordinary bowl cutouts retain their chroma-key shader; watch views retain their own material and embroidery clears it correctly. The previous v37 report is archived as `docs/qa/item-studies-20260923/previous-design-qa-v37.md`.
 
-## 局部复核证据
+Current-main results: 611 art contract assertions across v37/v30/v21; 1441 actual item UI assertions at each of 1280×720 and 1600×900; 8 mirror inventory assertions at each resolution; 13 watch/embroidery atlas transition assertions at each resolution; 2020 named-wealthy story passes. All report zero failures. Import succeeded. Native screenshots were inspected for keyed bowl edges, jewelry detail, ending thumbnails and atlas material transitions. Evidence and logs carry the `v37_` / `v37-` prefix in the QA directory.
 
-基于同批原尺寸图聚焦以下区域；坐标为归一化画幅位置，避免把不同分辨率误作布局偏差。
-
-- 左陈列柜（x0—0.26，y0.38—0.88）：对应原画一级修复木框、玻璃、衬垫；`04_displayed`与`08_display_only`显示真实银簪及独立升级，柜外没有重复物品。
-- 中央柜墙（x0.24—0.76，y0.04—0.65）：`preview_2/3`与源图对应木料和五金等级；16枚编号由引擎绘制，无重复号或17号；高级漆面不再沿用初始破损。
-- 纸页（x约0.34—0.66，y约0.43—0.88）：`facilities_1280_02_bench_paper.png`及`1600_04_displayed.png`可逐字阅读价格、准备额度、操作和状态；正文18像素，标题25像素，长内容内滚动。收起和行动按钮未被HUD遮挡。
-- 调查后窄柜（x0.72—0.78，y0.456—0.616）：`06_compartment`只在实际第三步之后出现；旧票无可提前读出的秘密正文，洋红底已去除。
-- 横移接合处：`facilities_1600_07_slide.png`显示原画门柱遮挡，两幅场景同时移动且底部HUD固定；返回按钮在过渡时收起。
-
-## 五项必查面
-
-| 项目 | 评审 |
-| --- | --- |
-| 字体与层级 | 使用游戏CounterTheme现有正文与标题字体，不保留生成字形。标题、正文、价格和按钮层级清楚；16柜号17／21像素随两种分辨率调整。概念稿手写柜号与实机细衬线不同，属于正确编号和现有字体系统的明确取舍。 |
-| 间距与构图 | 设施位置与画幅比例保持；纸页宽405—510像素、高不超过400像素。中央资料纸页可暂挡住中央下半柜墙，收起可查全柜；不挡左右操作物和出口。无关键按钮溢出。 |
-| 颜色与材质 | 延用现有纸纹和棕木、灰蓝、暗绿；暗红只用于反馈／焦点。高级感主要来自木料、漆面和构造；高级生成底图局部光泽略亮，可接受。 |
-| 图片与资源 | 使用以选定图为参考的Image Gen底图、实际库存图和独立柜格素材；无手绘几何假货物。局部混合对应真实一级状态；门柱来自同底图，未替换原柜台。 |
-| 文案与内容 | 操作明确写价格、准备和时间；买家只说“可能”，不公开隐藏最高价；资料遵循实际进度。独立预览明确不改经营进度，旧账柜升级方式尚待定稿。 |
-
-## Findings与修正记录
-
-| 轮次 | 发现与等级 | 修正与复核 |
-| --- | --- | --- |
-| 实装早期 | P2：控件锚点残留偏移，纸页／编号定位受影响 | 清除布局偏移，按原画锚点重排；两种分辨率最终纸页截图可读，柜号落于标签内。 |
-| 横移初次比较 | P2：场景硬接、连接柱相对镜头滞后一帧 | 添加原画木柱、由场景位置变化同步，置于柜台热点之上；转场遮挡输入和返回按钮。最终`1600_07_slide`连接处稳定，无空白条或错位柱。 |
-| 最后比较 | 无未解决P0/P1/P2 | 重新打开初始、一级、二级、三级和转场实机截图，与对应源图同组复核；单独整修、货物和资料状态与玩法一致。 |
-
-## Follow-up Polish（P3）
-
-- 初始柜号在暗木环境中笔画偏细。仍可辨认且纸页会说明柜号矛盾；后续可专门做较厚的柜签字样。
-- 柜格小贴片与背景的边缘色温可继续微调；没有洋红溢色或遮住编号，不阻断使用。
-- 目前整修立即换外观；轻纸声、施工声音与专门施工动画待后续制作。
-
-## Implementation Checklist
-
-- [x] 两侧边缘、按钮、菜单、Esc、淡入淡出与转场缩放。
-- [x] 初始／仅鉴物台／仅陈列柜／两项均修的真实状态。
-- [x] 陈列／撤下、柜前买家、三步调查、资金不足、保存失败回滚。
-- [x] 1280×720及1600×900真实图形界面操作，每种106项检查通过。
-- [x] 四阶段独立预览不创建经营会话。
-- [x] 日志核查：无脚本／解析错误；系统证书仓库警告另记在验收文档。
-
-高级经营规则、触屏和超宽比例未作为已实现或已验证范围。完整测试与启动见 [设施验收](docs/SHOP_FACILITIES_ACCEPTANCE.md)。
-
-final result: passed
-
-
----
-
-# 小悬牌与底栏 · 2026-09-16
-
-final result: passed
-
-最新检查：[小悬牌与底栏](docs/qa/shop-hud/README.md)。
-确认稿为 `docs/qa/shop-hud/approved-reference.png`（1672×941），已归一化至1280×720对照。
-实现为 `docs/qa/shop-hud/shop_hud_1280_01_counter.png` 和 `shop_hud_1600_01_counter.png`，原生1280×720及1600×900。
-相同状态：第三夜03:00，待处理铜镜事件，无客无货，290大洋。
-全图与局部证据：`docs/qa/shop-hud/comparison-full.png`、`comparison-controls.png`。
-基于远端main 28f3a43（v24十夜入口）重新执行三组234项检查，全部通过。五项视觉检查、已修复问题及残余P3差异见最新记录。
-
-以下保留此前检查记录。
-
-# 右下角信封入口 · 2026-09-10
-
-final result: passed
-
-## 来源与对照
-
-本次为已采用设计的局部修订：用户要求入口更像信件，且放在右下角。沿用既有柜台、菜单和来信交互。
-
-- 原界面：`docs/qa/counter-notice/counter_notice_1600_01_counter.png`。
-- 信封视觉目标：`assets/ui/mail/envelope.png`，ImageGen 生成旧纸、三角折边、朱红纸封口；生成出处见同目录 SOURCE.md。
-- 实现：`docs/qa/envelope-notice/counter_notice_1600_01_counter.png` 与 `counter_notice_1280_01_counter.png`。
-- 全图对照：`docs/qa/envelope-notice/comparison.png`，左原界面、右修订。
-- 局部对照：`docs/qa/envelope-notice/comparison-controls.png`，同一区域，左原界面、右修订。
-- 原界面和实现都是 1600×900 原生 Godot 截图，额外检查 1280×720；渲染尺寸与窗口尺寸一致，无 CSS、浏览器缩放或密度换算。对照状态为种子42、新游戏第一夜18:00、街坊妇人及银簪在柜台。
-
-## 发现与视觉检查
-
-无剩余 P0/P1/P2 项。原先右侧中部纸签改为右下角信封，是用户明确要求的变化。
-
-- 字体：沿用现有宋体显示字体和回退；两行15px浅色动态文字，深色描边保证木质背景上的阅读。当前品类完整显示。
-- 布局：点击区域106×118，右边距12px，距底部状态栏12px；图像宽100px。两种尺寸均与账本热区分开，未覆盖状态栏或菜单。
-- 颜色：旧纸暖黄、朱红封口、浅色说明与原场景相容；保留悬停、按下和键盘焦点反馈。
-- 图像：使用实际生成的信封 PNG，非符号或绘制占位；生成结果带灰色棋盘背景，入库时去除外部背景并保留信封。检查透明边界及100px显示效果，无可见棋盘残留。
-- 文案：显示“陆掌眼来信”和“眼下收…”；“新”仍为本次会话的未读提示；免费阅读、20分钟交货等悬停信息保留。
-
-## 验证
-
-- `counter_notice_ui_smoke.gd`：1280×720、1600×900，各74项断言通过。
-- `market_seven_ui_smoke.gd`：1280×720、1600×900，各427项断言通过。
-- 共4组、1002项断言、0失败。使用隔离的测试存档目录；日志在 `docs/qa/envelope-notice/`。
-- 真实窗口操作检查了点击信封直达陆掌眼、有客不能外出、阅读不扣时、关闭后恢复焦点、菜单和抽屉隐藏来信、库存柜及桌面账本入口。
-- 全图与局部对照检查完成。没有因 P0/P1/P2 发现而产生额外视觉修复循环。
-- 本轮未运行完整 Windows 回归；新增位置与素材检查已保留在原 Windows 回归入口中。
-
-## 完成清单
-
-- [x] 信封素材入库并用于实际游戏入口。
-- [x] 右下角布局及两种尺寸验证。
-- [x] 卖货交互回归。
-- [x] 玩家说明、截图和检查记录更新。
-
-上一轮纸签与菜单检查存档在 `docs/qa/counter-notice/design-qa.md`。本轮未打包或推送。
-
-## 寝屋紧凑衣柜版 · 2026-09-11
-
-已接入原生寝屋，独立报告见 [寝屋视觉与交互检查](docs/qa/bedroom/design-qa.md)。本地入口为 试玩寝屋.cmd，未推送。
-
-## 独立寝屋镜面 · 2026-09-11
-
-final result: passed。反射校正与组件验证见 [镜面 QA](docs/qa/bedroom-mirror/design-qa.md)。
-
-
-# 库存事件提醒 · 2026-09-14
-
-final result: passed
-
-保留上方原有验收记录。本次库存事件提醒的交互、双分辨率截图与检查结果见 [库存事件提醒验收](docs/qa/inventory-event-notice/design-qa.md)。
-
-## 铜镜物品记事排版 · 2026-09-15
-
-final result: passed。分类、独立记录与双尺寸交互验收见 [铜镜记事 QA](docs/qa/mirror-journal/design-qa.md)。
-
-## 折扇鉴定 · 案上对证 · 2026-09-17
-
-final result: passed
-
-用户选定方案一后接入原生游戏。将选定概念图与1672×941、同为笔锋已圈选未记证状态的实际截图在同次图像输入中对照，检查布局、材质、文字层级、真实图片局部与操作提示；另检查1280×720和1600×900窗口。
-
-拖动输入、题款字号不一致及图录说明换行问题已修复。未发现剩余P0/P1/P2视觉问题。P3取舍：书本正向摆放，底部纸条加宽以放置可复看的两项手记；生成纸纹仍有少量差异，读图难度待真实玩家试玩。655项检查通过，快速启动验证通过。本轮未发布。
-
-[详细验收与截图](docs/qa/fan-desk/REPORT.md) · [选定图](docs/design/fan-desk/selected.png) · [同尺寸实际截图](docs/qa/fan-desk/source-size.png)
-
-## 折扇草稿与确认落笔 · 2026-09-17
-
-final result: passed
-
-本轮按用户确认修改交互：草稿可重选及清除，确认落笔才扣10分钟。保留已选案面美术，沿用纸签增加清除入口与独立确认按钮；“存疑”改称“看不准”，解释及初步结论清晰展示。
-
-已查看1280×720和1600×900原生窗口的草稿、确认及保存失败截图。修复重开后当前草稿清除按钮没有及时启用的问题；保存失败直接在面板内提示并允许重试。无剩余阻塞试玩的视觉问题。
-
-854项检查通过，统一快速入口启动通过。详见[本轮验收与截图](docs/qa/fan-drafts/REPORT.md)。本地交付，未推送。
+The UI harnesses now default to v37 and accept `-- v30` for the legacy campaign. Mirror fixtures for the default run are produced with `tests/named_wealthy_story.gd -- fixtures-only`. These checks cover the affected art surfaces and save restoration, not every v37 gameplay feature or Windows packaging.

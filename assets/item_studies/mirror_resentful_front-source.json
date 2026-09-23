@@ -1,0 +1,22 @@
+{
+  "tool": "built-in image_gen",
+  "generated_at": "2026-09-23",
+  "inputs": [
+    "assets/item_studies/mirror_ordinary_front.png"
+  ],
+  "source": "/Users/alvachen/.codex/generated_images/01a0ccaa-71b4-7771-8f52-b1df0435211f/exec-cb36e7eb-eb0f-4432-b884-ce2dd6ef5dd0.png",
+  "output": "assets/item_studies/mirror_resentful_front.png",
+  "prompt": "Use case: precise-object-edit. Asset type: resentful-ending inventory sprite for a 1930s Chinese pawnshop game. Edit only the STATE of the exact ordinary bronze hand mirror in the reference. Preserve EXACTLY its silhouette, round face dimensions, rim geometry and sensible thickness, narrow waist, tapered rounded handle, frontal camera perspective and position/composition. It must look unmistakably like this same mirror next to the ordinary ending variant at small inventory size. Maintain the existing muted hand-painted semi-realistic opaque gouache, dark green bronze patina and aged brass details. Change only the mirror face into a subtly darker cool gray-green surface with sparse DARK DRIED CRIMSON traces in a short stretch near the INNER LOWER RIM. Restrained unsettling aged object: faint dry reddish-brown staining embedded in aged patina at lower inner edge, not fresh flowing blood. Retain visible dull reflective metal and fine scratches across the rest of the face. No face, no ghost, no eyes, no reflected person, no glow, no neon, no red flood, no new symbols or text. Genuine transparent alpha background; no backdrop, no halo, no cast shadow. Entire mirror in canvas, 1536x1024 landscape. One mirror only.",
+  "validation": {
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      254
+    ],
+    "review": "Same bronze mirror silhouette/handle and composition. Cooler darker aged face, sparse dark dry crimson staining along inner lower edge. No faces, ghosts, glow, labels or modern chrome."
+  }
+}

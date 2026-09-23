@@ -1,0 +1,17 @@
+{
+  "tool": "built-in image_gen",
+  "generated_at": "2026-09-23",
+  "inputs": [
+    "assets/art06/items/mirror_front.png"
+  ],
+  "source": "/Users/alvachen/.codex/generated_images/01a0ccaa-71b4-7771-8f52-b1df0435211f/exec-c13c2dd4-780a-4968-af0c-0d370b72e63b.png",
+  "output": "assets/item_studies/mirror_ordinary_front.png",
+  "prompt": "Use case: precise-object-edit. Asset type: ordinary-ending inventory sprite for a 1930s Chinese pawnshop narrative game. Edit the referenced ancient bronze hand mirror into its calm ORDINARY ending state. Preserve EXACTLY the original round mirror face outline, thick shallow old bronze circular rim, waist and tapered rounded handle silhouette, existing frontal three-dimensional perspective, centered vertical composition, proportions and physical dimensions. This must plainly be the same mirror, not a redesign. Keep muted semi-realistic opaque gouache with worn dark green bronze patina and aged dull brass edges, modest imperfect handmade surface, soft upper-left lighting. Change only the emotional/material state of the face: a slightly calmer, gently cleaned old reflection with a few fine gray scratches, no blood, no unsettling residues. The surface remains old and dull gray-green bronze, NOT polished modern glass/chrome. No reflected faces, eyes, figures, no text, no symbols, no glow or magic. Genuinely TRANSPARENT alpha background with no baked-in black/colored backdrop, no halo or cast shadow, entire mirror inside canvas. 1536x1024 landscape matching reference. One mirror only.",
+  "validation": {
+    "size": [
+      1536,
+      1024
+    ],
+    "review": "Same bronze hand mirror silhouette, handle and composition. Muted old gray-green surface with scratches, no blood or supernatural faces/glow; not chrome."
+  }
+}

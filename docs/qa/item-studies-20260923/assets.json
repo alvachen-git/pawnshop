@@ -1,0 +1,155 @@
+[
+  {
+    "file": "assets/item_studies/bowl_back.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "25c915b5e826bade529d172d7807ff78d4498d21356d1991a7ff5d79e02be88f"
+  },
+  {
+    "file": "assets/item_studies/bowl_foot.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "7f5363ce364cd06e2f8bc97e6f422d2ea2957f268be700f160fc2ff6b9605d78"
+  },
+  {
+    "file": "assets/item_studies/bowl_intact.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "54500ad6a521f39d0fa0b35e98e8b87b3e06a408abd710b3f673ea0c7ad8fee7"
+  },
+  {
+    "file": "assets/item_studies/bowl_repair.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "a933dc3c5669b6b5025925d8c3a9b3fc8d5460f40381ec28536b09a69b93257d"
+  },
+  {
+    "file": "assets/item_studies/bowl_seam.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "90e8bb04a4b736e2bfc0b08492d4eabd5ee54d9a29238d07edc7713f2ae630ca"
+  },
+  {
+    "file": "assets/item_studies/hairpin_back.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "3f632d50c484ba435ef66809c861482b1556fb20854ef9177848ad4027e750e0"
+  },
+  {
+    "file": "assets/item_studies/hairpin_seam.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "3c4c6e6db78f03202b28243c518c279f52ea8f8cb472f0652ab5f7d3285b751d"
+  },
+  {
+    "file": "assets/item_studies/mirror_ordinary_front.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "414f190dc7cb2ba7877b56804893663a564141b10ca95ec1a115a19602f9f0c0"
+  },
+  {
+    "file": "assets/item_studies/mirror_resentful_front.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "9923cf648637c2e1e21055cabfb29e59ca2b40955f817e553901c41857cc070a"
+  },
+  {
+    "file": "assets/item_studies/silver_lock_back.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "3b595a04c63e048e41c67812fa7027453ea1c9544122ab2316d63b5fdc58eb82"
+  },
+  {
+    "file": "assets/item_studies/silver_lock_condition_mended.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "909f1932c88ef13f81db781029ee98a863a4a6cb035abad05cf4c3413289a0b2"
+  },
+  {
+    "file": "assets/item_studies/silver_lock_flaw.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "8255790316c2ebff931a857cb716515bb61e4b23277c106dc347ad610b8ad76f"
+  },
+  {
+    "file": "assets/item_studies/silver_lock_sound.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "01657bbbb0e2d432a85f2e037a435d7460093201f2869c89abb7915b42ef1956"
+  },
+  {
+    "file": "assets/item_studies/silver_ring_back.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "sha256": "8cf28a537909680bd3fa2d3434ce57307d64f7226d8a6db591ab669837e35167"
+  },
+  {
+    "file": "assets/item_studies/silver_ring_condition_mended.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "40456d850310f3699303f33d04a09dce82d665634e5839344afb7a5ee940d46c"
+  },
+  {
+    "file": "assets/item_studies/silver_ring_flaw.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "b8722d71742b5b7f4467429af0cd3fdb02a0bea82dce78d4c447a7d13711dec0"
+  },
+  {
+    "file": "assets/item_studies/silver_ring_sound.png",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "sha256": "2b15c196ae85cd8cabc1673493b5698a01d46348dc346e2280df72913a9956a1"
+  }
+]

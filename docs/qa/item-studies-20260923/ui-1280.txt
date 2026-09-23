@@ -1,0 +1,22 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 4.1 Metal - 89.4 - Compatibility - Using Device: Apple - Apple M4
+
+ITEM ART VISIT item_blue_bowl seed=1 night=1 target=unified_ten/1/n1_visit3
+RUN SEED: 730802737
+ITEM ART VISIT item_blue_bowl seed=3 night=1 target=unified_ten/1/n1_visit3
+RUN SEED: 711598603
+ITEM ART VISIT item_silver_hairpin seed=13 night=1 target=unified_ten/1/n1_visit6
+RUN SEED: 885237611
+ITEM ART VISIT item_silver_ring seed=1 night=1 target=unified_ten/1/n1_visit6
+RUN SEED: 1882875241
+ITEM ART VISIT item_silver_ring seed=2 night=1 target=unified_ten/1/n1_visit5
+RUN SEED: 1132074293
+ITEM ART VISIT item_silver_ring seed=17 night=1 target=unified_ten/1/n1_visit5
+RUN SEED: 967385888
+ITEM ART VISIT item_silver_lock seed=21 night=1 target=unified_ten/1/n1_visit6
+RUN SEED: 1423784338
+ITEM ART VISIT item_silver_lock seed=8 night=1 target=unified_ten/1/n1_visit6
+RUN SEED: 1772340987
+ITEM ART VISIT item_silver_lock seed=6 night=1 target=unified_ten/1/n1_visit3
+RUN SEED: 357758373
+ITEM STUDIES V30 UI: 1520 assertions, 0 failures

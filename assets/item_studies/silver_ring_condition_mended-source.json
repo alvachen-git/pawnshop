@@ -1,0 +1,10 @@
+{
+  "tool": "built-in image_gen",
+  "use_case": "precise-object-edit",
+  "edit_target": "assets/item_studies/silver_ring_sound.png",
+  "original_generated_file": "/Users/alvachen/.codex/generated_images/01a0cca9-e3ad-7e43-8c58-a0f0b8f2c72e/exec-8f4e8c4e-9f12-4fd8-8a36-d30a422e906d.png",
+  "prompt": "Use case: precise-object-edit. Edit target: image 1 is the same old plain silver ring macro from the game. Create the paid CONDITION evidence variant: ring has been physically compressed out of round. Change only ring geometry so one section of the rim has a visibly flattened straight-ish run and adjacent gently pinched transitions, with a clearly lopsided oval opening instead of even circular curvature. It remains one continuous intact thin band, bent by pressure rather than broken. Show a shallow crushed-flat area on the central rear inner rim where the curve loses its roundness. Preserve exact identity, aged dull gray silver throughout, natural scratches and small unreadable old punch, same relative closeup scale, 1536x1024 landscape, camera angle, restrained warm upper-left light, semi-realistic opaque gouache grain, flat low-contrast dark olive/umber background. IMPORTANT: this variant is compressed/deformed, NOT soldered or repaired. No solder seams, welding, fracture, cracks, missing chunks, yellow/brass/gold core, peeling plating, gemstone, ornament, text, labels, arrows or UI. Damage must be easy to recognize from silhouette and opening shape while remaining a plausible finger ring.",
+  "file": "silver_ring_condition_mended.png",
+  "visual_validation": "Compression changes central rear rim into straight flattened run with pinched curved transitions and uneven opening; coherent gray worn silver, no yellow base, no structural break or solder repair. Original closeup lighting/background retained.",
+  "semantic_note": "Legacy clue key mended means compressed/out-of-round ring for this item; image intentionally does not portray solder."
+}
