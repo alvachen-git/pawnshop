@@ -4,7 +4,7 @@ func _run() -> void:
 	create_timer(90).timeout.connect(func() -> void: quit(1))
 	root.size = Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720)
 	root.content_scale_size = root.size
-	_capture_prefix = "v37_" + str(root.size.x)
+	_capture_prefix = "v38_" + str(root.size.x)
 	_main = load("res://scenes/start.tscn").instantiate()
 	_main.start_at_title = false
 	_main.get_node("Bootstrap").save_path = "res://.godot/qa/item-studies/atlas-auto.json"
@@ -12,7 +12,7 @@ func _run() -> void:
 	_session = _main.get_node("Bootstrap").session
 	_session._save.library.path = "res://.godot/qa/item-studies/atlas-library.json"
 	await _frames()
-	_check(_session.content_version == 37, "default entry retains latest campaign")
+	_check(_session.content_version == 38, "default entry uses pearl campaign")
 	var screen := _main.get_node("CounterScreen") as CounterScreen
 	for item in ["gold_watch", "embroidery", "gold_watch"]:
 		PrecisionPreview.apply(_session,2,item)

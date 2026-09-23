@@ -291,6 +291,8 @@ func bind(value: RunSession) -> void:
 	refresh()
 
 func select(id: String) -> void:
+	if id == "knowledge/luxury_jade" and session != null and PearlEconomy.enabled(session.definition):
+		close_sheet(); PearlGuideView.open(self,session); return
 	if id == "knowledge/luxury_watch" and session != null and WatchEconomy.enabled(session.definition):
 		close_sheet(); WatchGuideView.open(self,session); return
 	_clear_hover()

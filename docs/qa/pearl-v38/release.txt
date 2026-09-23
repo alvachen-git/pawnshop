@@ -1,0 +1,17 @@
+v38 release verification - 2026-09-23
+Integrated origin/main 5673b923652fe5bb8c720370cd94221fee3bea36 (PR #57).
+Godot 4.6.1 import passed.
+PEARL V38: 23030 passes, 0 failures
+PEARL ECONOMY: 593 passes, 0 failures
+PEARL JOURNEY: pearl=1 watch=1; 799 passes, 0 failures
+RELEASE ENTRY COMPATIBILITY: 20 checks passed
+ITEM ART CONTRACTS: 611 assertions, 0 failures
+MIRROR REUNION: 3491 passes, 0 failures
+AQI COMPANION: 3282 passes, 0 failures
+NAMED WEALTHY: 1211 passes, 0 failures
+WATCH NEGOTIATION: 1070 passes, 0 failures; personalities { "easy": 3493, "careful": 4536, "firm": 1971 }
+FAN CONDITION: 2078 passes, 0 failures
+Pearl UI: 1280x720 and 1600x900, 101 assertions each, 0 failures.
+Integrated item atlas UI: 1600x900, 13 assertions, 0 failures.
+Unified launcher: -Stage pearl -Wide -Verify and -Stage normal -Verify passed.
+git diff --check passed. Existing Windows certificate-store warning only; no script errors.
