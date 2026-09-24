@@ -1,0 +1,4 @@
+# yuan_b_hidden
+Built-in imagegen; source: C:\Users\alvachen\.codex\generated_images\01a0c8e1-5d71-7373-a439-546928f9c776\exec-7a7dbbe5-c08e-4b90-a868-0855e9e78e2d.png
+
+Edit this existing 3-column 7-row craft atlas into its subtle age-identification variant. KEEP EXACT seven-row layout, all 21 sprites, three craft columns, transparent background and entire last row visible. DO NOT add rows. Preserve grade differences: left visibly uneven contour and fill overshoot, center competent simple one-vein drawing, right precise multi-vein and white-channel drawing. ALL crisp, no blur/age smearing. Preserve four rotations, matching macro, bottom and counter. Same Yuan peony sample with some lightly worn border ends and fewer obvious upper decorative bands, making age less immediately clear; no later-era marks or motifs, no global blur. Retain low belly, wide spread lip, shallow exposed ring and peony. All grade-defining drawing and trimming remains clear.

@@ -1,0 +1,4 @@
+# ming_b_hidden
+Built-in imagegen; source: C:\Users\alvachen\.codex\generated_images\01a0c8e1-5d71-7373-a439-546928f9c776\exec-39e492f6-dddf-42b1-9d0a-42a8a1503c0d.png
+
+Edit this existing 3-column 7-row craft atlas into its subtle age-identification variant. KEEP EXACT seven-row layout, all 21 sprites, three craft columns, transparent background and entire last row visible. DO NOT add rows. Preserve grade differences: left visibly uneven contour and fill overshoot, center competent simple one-vein drawing, right precise multi-vein and white-channel drawing. ALL crisp, no blur/age smearing. Preserve four rotations, matching macro, bottom and counter. Archaizing Ming bamboo/rock sample: denser border pattern and slightly broader lip, but retain long slender neck, graceful drooping belly, recessed base narrow ring with double cobalt circle. Same bamboo leaves macro, 3 workmanship grades with clear stroke/fill control differences.

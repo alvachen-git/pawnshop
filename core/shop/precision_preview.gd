@@ -54,6 +54,7 @@ static func from_arguments(session: RunSession) -> bool:
 	if WatchEconomy.enabled(session.definition) and args.has("--precision-watch-case"): watch_case(session,args["--precision-watch-case"])
 	if PearlEconomy.enabled(session.definition) and args.has("--precision-pearl-case"): PearlPreview.apply(session,args["--precision-pearl-case"])
 	if BangleEconomy.enabled(session.definition) and args.has("--precision-bangle-case"): BanglePreview.apply(session,args["--precision-bangle-case"])
+	if PorcelainEconomy.enabled(session.definition) and args.has("--precision-porcelain-case"): PorcelainPreview.apply(session,args)
 	return true
 
 static func watch_case(session: RunSession, scenario: String) -> void:

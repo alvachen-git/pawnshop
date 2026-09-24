@@ -274,8 +274,13 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	return _journal_call("counter_command", [command, visit_id, detail, amount])
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	# v41 porcelain preflights failed funding before polling unrelated events.
+	var porcelain_visit := _counter.customers.active(_day.state) if _counter != null else null
+	if command in ["offer","pawn"] and porcelain_visit != null and PorcelainEconomy.handles(_day.state,porcelain_visit.item):
+		var why := _counter.reason(_day,command,visit_id,detail,amount)
+		if not why.is_empty(): return ActionResult.new(false,why)
 	# Rejected new pressure attempts must not poll events or synchronize markets.
-	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim", "bangle_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
+	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim", "porcelain_claim", "bangle_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
 		var error := _counter.reason(_day, command, visit_id, detail, amount)
 		if not error.is_empty(): return ActionResult.new(false, error)
 	if command == "military_intro":
@@ -356,6 +361,9 @@ func _build_counter_model() -> Dictionary:
 	if active_visit != null and WatchNegotiation.handles(_day.state,active_visit.item):
 		# Restore previous customer replies after a cold load as well as live play.
 		for reply in WatchNegotiation.history(_day.state,active_visit):
+			if reply not in model.trade.reactions: model.trade.reactions.append(reply)
+	if active_visit != null and PorcelainEconomy.handles(_day.state,active_visit.item):
+		for reply in PorcelainNegotiation.history(_day.state,active_visit):
 			if reply not in model.trade.reactions: model.trade.reactions.append(reply)
 	if active_visit != null and BangleEconomy.handles(_day.state,active_visit.item):
 		for reply in BangleNegotiation.history(_day.state,active_visit):

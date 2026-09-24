@@ -125,6 +125,7 @@ static func prepare(state: RunState, visit: CustomerVisit) -> void:
 		visit.voice.introduction = LuxuryCarry.origin(state,visit) + ("\n这回至少需筹%d银元。" % funding if funding > 0 else "")
 	if WatchEconomy.handles(state,visit.item): WatchEconomy.prepare(state,visit)
 	if PearlEconomy.handles(state,visit.item): PearlEconomy.prepare(state,visit)
+	if PorcelainEconomy.handles(state,visit.item): PorcelainEconomy.prepare(state,visit)
 	if BangleEconomy.handles(state,visit.item): BangleEconomy.prepare(state,visit)
 
 static func reference_price(value: int, mode: String) -> int:

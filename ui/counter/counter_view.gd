@@ -353,8 +353,11 @@ func render(model: Dictionary) -> void:
 	_item_image.material = WatchArt.material() if visual.get("watch_art",false) else CounterItemArt.material(_item_image.texture, true)
 	if visual.get("bangle_art",false):
 		_item_image.texture=BangleArt.exterior(int(visual.tiered_exterior));_item_image.material=BangleArt.cutout()
+	if visual.has("porcelain_art"):
+		_item_image.texture=PorcelainArt.counter(visual.porcelain_art); _item_image.material=PorcelainArt.surface("front",String(visual.porcelain_art.damage),true,_item_image.texture,true)
 	_item_image.visible = active and _item_image.texture != null
 	var item_bounds := CounterItemArt.counter_bounds(_item_image.texture)
+	if visual.has("porcelain_art"): item_bounds=Rect2(.439,.557,.17,.29)
 	if visual.get("bangle_art",false): item_bounds=Rect2(.4675,.6525,.085,.125)
 	_item_image.stretch_mode = TextureRect.STRETCH_SCALE if CounterItemArt.projects_on_table(_item_image.texture) else TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	if item_bounds.size != Vector2.ZERO:
