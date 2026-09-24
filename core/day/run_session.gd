@@ -275,7 +275,7 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
 	# Rejected new pressure attempts must not poll events or synchronize markets.
-	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
+	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim", "bangle_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
 		var error := _counter.reason(_day, command, visit_id, detail, amount)
 		if not error.is_empty(): return ActionResult.new(false, error)
 	if command == "military_intro":
@@ -356,6 +356,9 @@ func _build_counter_model() -> Dictionary:
 	if active_visit != null and WatchNegotiation.handles(_day.state,active_visit.item):
 		# Restore previous customer replies after a cold load as well as live play.
 		for reply in WatchNegotiation.history(_day.state,active_visit):
+			if reply not in model.trade.reactions: model.trade.reactions.append(reply)
+	if active_visit != null and BangleEconomy.handles(_day.state,active_visit.item):
+		for reply in BangleNegotiation.history(_day.state,active_visit):
 			if reply not in model.trade.reactions: model.trade.reactions.append(reply)
 	if active_visit != null and PearlEconomy.handles(_day.state,active_visit.item):
 		for reply in PearlNegotiation.history(_day.state,active_visit):

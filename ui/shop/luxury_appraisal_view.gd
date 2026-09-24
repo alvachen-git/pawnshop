@@ -14,6 +14,7 @@ var _footer: HBoxContainer
 var _error := ""
 
 static func open(owner_view: Control, current: RunSession, id: String) -> LuxuryAppraisalView:
+	if BangleEconomy.handles(current._day.state,LuxuryAppraisalService.target(current._day,id)): return BangleDeskView.open_bangle(owner_view,current,id)
 	if PearlEconomy.handles(current._day.state,LuxuryAppraisalService.target(current._day,id)): return PearlDeskView.open_pearl(owner_view,current,id)
 	if WatchAppraisal.handles(current._day.state,LuxuryAppraisalService.target(current._day,id)): return WatchDeskView.create(owner_view,current,id)
 	if TieredAppraisal.enabled(current.definition): return TieredAppraisalView.create(owner_view,current,id)

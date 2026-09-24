@@ -4,7 +4,7 @@ func _run() -> void:
 	create_timer(150).timeout.connect(func() -> void: push_error("PEARL UI TIMEOUT"); quit(1))
 	_capture_prefix = "pearl_1600" if "wide" in OS.get_cmdline_user_args() else "pearl_1280"
 	root.size = Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720); root.content_scale_size = root.size
-	_main = load("res://scenes/start.tscn").instantiate(); _main.get_node("Bootstrap").save_path = "user://tests/pearl-ui/auto.json"; root.add_child(_main)
+	_main = load("res://scenes/start.tscn").instantiate(); _main.get_node("Bootstrap").manifest_path = "res://data/pearl_market_manifest.json"; _main.get_node("Bootstrap").save_path = "user://tests/pearl-ui/auto.json"; root.add_child(_main)
 	_session = _main.get_node("Bootstrap").session
 	await _frames(); await _click_button(_main.title_menu.buttons[0])
 	_check(_session.content_version == 38,"default new game v38")

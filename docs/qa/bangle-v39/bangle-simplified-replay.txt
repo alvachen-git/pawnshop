@@ -1,0 +1,13 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+
+
+ERROR: Failed to read the root certificate store.
+
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+
+JOURNEY seed=609 cash=27 reputation=6 phase=run_ended met=2 appraised=0 funded=0 redeemed=0
+
+JOURNEY seed=3 cash=1553 reputation=9 phase=run_ended met=3 appraised=1 funded=0 redeemed=0
+
+BANGLE JOURNEY: bangle=1 pearl=0 watch=0; 513 passes, 0 failures

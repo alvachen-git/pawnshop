@@ -12,7 +12,7 @@ func _run() -> void:
 	_session = _main.get_node("Bootstrap").session
 	_session._save.library.path = "res://.godot/qa/item-studies/atlas-library.json"
 	await _frames()
-	_check(_session.content_version == 39, "default entry retains integrated first-debt campaign")
+	_check(_session.content_version == 40, "default entry uses bangle campaign")
 	var screen := _main.get_node("CounterScreen") as CounterScreen
 	for item in ["gold_watch", "embroidery", "gold_watch"]:
 		PrecisionPreview.apply(_session,2,item)

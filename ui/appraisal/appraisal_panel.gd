@@ -87,6 +87,8 @@ func render(model: Dictionary) -> void:
 		if visual.get("watch_art",false):
 			_image.texture = WatchArt.cell([0,3,4][int(visual.tiered_exterior)])
 			_image.material = WatchArt.material()
+		if visual.get("bangle_art",false):
+			_image.texture=BangleArt.exterior(int(visual.tiered_exterior));_image.material=BangleArt.cutout()
 		_image.visible = _image.texture != null
 		_image.tooltip_text = "物品外观"
 		_views.hide()

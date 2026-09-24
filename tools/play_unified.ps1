@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('normal','knowledge','pearl','watch','wealthy','wealthy-basic','wealthy-deep','wealthy-appraised','advertisement','introduction','contract','upgrade','fan','informed','ordinary','urgent','no-bench','intact','minor','major','stack','plaque','delivered','bedtime','call','dream','reunion','companion')][string]$Stage = 'normal',
+    [ValidateSet('normal','knowledge','bangle','pearl','watch','wealthy','wealthy-basic','wealthy-deep','wealthy-appraised','advertisement','introduction','contract','upgrade','fan','informed','ordinary','urgent','no-bench','intact','minor','major','stack','plaque','delivered','bedtime','call','dream','reunion','companion')][string]$Stage = 'normal',
     [ValidateSet('embroidery','gold_bangle','gold_watch','mantel_clock','pearl_necklace','jade_pendant','album','porcelain_vase','repeater','silver_set')][string]$Item = 'porcelain_vase',
     [ValidateSet('sound','mended','flawed')][string]$Condition = 'mended',
     [ValidateSet('intact','minor','major')][string]$Damage = 'minor',
@@ -7,6 +7,7 @@ param(
     [ValidateSet('natural','guide','bargain','overpriced','urgent','spotted','bluff','fault','firm','partial','fake-fault','exposed','engraving','gears')][string]$WatchCase = 'natural',
     [ValidateSet('','silk','factory','opera','antique','comprador')][string]$Holder = '',
     [ValidateSet('natural','good','lower','few','many','imitation','no-tools','partial','firm','exposed','guide')][string]$PearlCase = 'few',
+    [ValidateSet('natural','good','lower','plated','repaired','matched','no-tools','partial','firm','exposed','guide')][string]$BangleCase = 'matched',
     [string]$GodotPath = '',
     [switch]$Wide,
     [switch]$Verify
@@ -28,8 +29,13 @@ if ($Stage -eq 'knowledge') {
     exit $LASTEXITCODE
 }
 $previousAppData = $env:APPDATA
-$precisionPreview = $Stage -in @('watch','pearl','wealthy','wealthy-basic','wealthy-deep')
+$precisionPreview = $Stage -in @('watch','pearl','bangle','wealthy','wealthy-basic','wealthy-deep')
 if ($Stage -eq 'watch') { $Item = 'gold_watch' }
+if ($Stage -eq 'bangle') {
+    $Item = 'gold_bangle'
+    if (-not $PSBoundParameters.ContainsKey('Damage')) { $Damage = 'intact' }
+    if (-not $PSBoundParameters.ContainsKey('Difficulty')) { $Difficulty = 'ordinary' }
+}
 if ($Stage -eq 'pearl') {
     $Item = 'pearl_necklace'
     if (-not $PSBoundParameters.ContainsKey('Damage')) { $Damage = 'intact' }
@@ -68,12 +74,13 @@ try {
     $gameArgs = @('--path',$gameRoot,'--resolution',$(if ($Wide) { '1600x900' } else { '1280x720' }),'res://scenes/start.tscn')
     if ($Verify) { $gameArgs += @('--quit-after','90') }
     if ($precisionPreview) {
-        $precisionLevel = @{ 'watch'='standard'; 'pearl'='standard'; 'wealthy'='standard'; 'wealthy-basic'='basic'; 'wealthy-deep'='deep' }[$Stage]
+        $precisionLevel = @{ 'watch'='standard'; 'pearl'='standard'; 'bangle'='standard'; 'wealthy'='standard'; 'wealthy-basic'='basic'; 'wealthy-deep'='deep' }[$Stage]
         $gameArgs += @('--',"--precision-preview=$precisionLevel","--precision-item=$Item","--precision-condition=$Condition","--precision-damage=$Damage","--precision-difficulty=$Difficulty","--precision-watch-case=$WatchCase","--precision-holder=$Holder")
         if ($Stage -eq 'pearl') { $gameArgs += "--precision-pearl-case=$PearlCase" }
+        if ($Stage -eq 'bangle') { $gameArgs += "--precision-bangle-case=$BangleCase" }
         Write-Output 'Appraisal test preset: isolated, progress is not saved.'
     } elseif ($Stage -ne 'normal') { $gameArgs += @('--',"--unified-preview=$Stage") }
-    $version = if ($Stage -eq 'normal' -or $precisionPreview) { 38 } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
+    $version = if ($Stage -eq 'normal' -or $precisionPreview) { 40 } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
     Write-Output "Starting unified v${version}: $Stage"
     Invoke-CheckedGodot $gameArgs ('launch-' + $Stage + '.log')
     if ($Verify) { Write-Output "Verified unified v${version}: $Stage" }
