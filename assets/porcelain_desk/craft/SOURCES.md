@@ -40,4 +40,3 @@ All whole vases are real pear-shaped YUHUCHUN, NOT jars/meiping: long visibly na
 - 民国 B 普通：留白山水、柳亭、素净长颈；三档屋檐、柳叶笔线差异。困难版仿明竹石，与普通版分开固定生成。
 
 不把花纹复杂度、旧色、画面清晰度单独当作年代或工艺结论。这是教学游戏样本，非馆藏复刻或真实鉴定标准；价值仍读取生成时保存的事实。
-
