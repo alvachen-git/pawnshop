@@ -1,0 +1,58 @@
+[
+  {
+    "path": "assets/item_studies_second/clay_teapot_back.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "c9ff3ed5300a0a38bb6100932cf5d05a9fdbf65f794097eb5f0ddfaa104fde3d",
+    "runtime": true
+  },
+  {
+    "path": "assets/item_studies_second/folding_fan_back.png",
+    "width": 1448,
+    "height": 1086,
+    "sha256": "fc2c997199ab3780fd75d40e55d5b70af5f80efd74fdcb022146605b47151c11",
+    "runtime": true
+  },
+  {
+    "path": "assets/item_studies_second/inkstone_back.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "a115d80ccc0c1bec475cea2cc6329e705fc949d18769e072fb3583bd295d34f2",
+    "runtime": true
+  },
+  {
+    "path": "assets/item_studies_second/pocket_watch_flawed.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "f64dbf3fb215bcee8825a3ad872a2808d5f4e147f608ea812cdec646194e01f6",
+    "runtime": false
+  },
+  {
+    "path": "assets/item_studies_second/pocket_watch_flawed_macro.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "432e4b7a7565e61c6f9a16c9785b443c1458ceef165d694a79c18645f7cf8cd5",
+    "runtime": true
+  },
+  {
+    "path": "assets/item_studies_second/pocket_watch_sound.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "e38ce83632d44c83eff36b0b468e7cc4b695272a251630a672cb8699a5fdfcec",
+    "runtime": false
+  },
+  {
+    "path": "assets/item_studies_second/pocket_watch_sound_macro.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "9e3b1bcbf49959ddab8bf2c26f05a5986f480470b96e3171ea107bc7bdc286e4",
+    "runtime": true
+  },
+  {
+    "path": "assets/item_studies_second/silk_panel_back.png",
+    "width": 1536,
+    "height": 1024,
+    "sha256": "d7cd9a6e09ea1d4e3747e61b538c2c36732da56ad864a0d02032d624794b22af",
+    "runtime": true
+  }
+]

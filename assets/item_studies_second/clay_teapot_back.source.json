@@ -1,0 +1,32 @@
+{
+  "tool": "image_gen.imagegen",
+  "mode": "built-in",
+  "use_case": "precise-object-edit",
+  "prompt": "Use case: precise-object-edit.\nAsset type: a single transparent object sprite for the reverse-side inspection view of a small antique Chinese zisha clay teapot in the 1930s Shanghai pawnshop game 鬼市当铺.\nInput image 1: identity and material reference; it is the existing FRONT of the exact same teapot.\nPrimary request: show this exact teapot after turning it around 180 degrees about its vertical axis, so we see the opposite back side. The spout is now on the RIGHT and loop handle on the LEFT, seen at a restrained three-quarter angle slightly from above. This must be a new physically coherent reverse view, not a collage or duplicate of the front.\nPreserve identity: the same squat rounded pot body, restrained foot ring, broad slightly domed lid with a spherical clay knob and tiny steam hole, single short upswept spout, rounded loop handle; same muted purple-brown unglazed fired clay and proportions. Real modest household teapot, not an ornate ceremonial object.\nStyle: modest semi-realistic opaque gouache hand painting; credible volume, matte clay grain, softly brushed worn raised edges, faint ordinary use, warm muted highlights from upper left and soft cool lower shadows. Match the input material realism and simple construction while avoiding glossy CGI. Do not add decoration, lettering, stamps, repairs, major cracks, condition clues, steam, extra props, or a saucer. Lid join is neutral, naturally fitted, not an inspection close-up.\nComposition: a complete single teapot centered within a landscape 1536x1024 canvas, about 80 percent of canvas width, all contours and foot ring comfortably inside the frame. Plausible tabletop stance with a tight restrained contact shadow at the base, no floating pose, no dramatic halo.\nBackground: truly transparent RGBA alpha, including the empty hole through the handle; no painted background, no black background, no checkerboard pixels, no vignette, no glow. Preserve genuine alpha. No text, no watermark.",
+  "reference": "assets/item_art_v30/clay_teapot_front.png",
+  "generated_output": "/Users/alvachen/.codex/generated_images/01a0ce48-df72-7d42-9b6c-24dfe803d985/exec-0cda19cc-819a-4dcf-b657-5bc669a09062.png",
+  "output": "assets/item_studies_second/clay_teapot_back.png",
+  "sha256": "c9ff3ed5300a0a38bb6100932cf5d05a9fdbf65f794097eb5f0ddfaa104fde3d",
+  "reference_sha256": "76086ce81253e473a9acf39d15f17b19734410b0bcf16c2ae4cd8a7b67a0f68f",
+  "validation": {
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_extrema": [
+      0,
+      254
+    ],
+    "fully_transparent_pixels": 861098,
+    "visible_pixels": 711766,
+    "mostly_opaque_pixels": 694707,
+    "alpha_bbox": [
+      35,
+      106,
+      1494,
+      1005
+    ],
+    "raster_postprocessing": false
+  }
+}

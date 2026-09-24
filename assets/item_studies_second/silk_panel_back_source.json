@@ -1,0 +1,23 @@
+{
+  "tool": "built-in image_gen",
+  "mode": "precise-object-edit",
+  "created": "2026-09-23",
+  "prompt": "Use case: precise-object-edit\nAsset type: single transparent game item study illustration for a Republican-era Chinese pawnshop.\nInput image 1 is the identity and style reference, silk_panel_front.png. Show THIS SAME small rectangular bird-and-flower embroidered silk cloth flipped over to show its neutral BACK SIDE. Preserve its approximate rectangular proportions, irregular soft hemmed outline, cream beige old silk, narrow hand sewn edge, cloth thickness and soft folded corner. Make the reverse a plain softly aged lining cloth, with only a few neutral cream stitch tracks near the hem. The bird and flower embroidery is on the other side and must not appear on this back. Do not add clues about authenticity, quality, fading, damage, repairs or provenance.\nStyle: restrained semi-realistic opaque gouache hand-painted item art, credible textile weave, muted warm cream and grey beige, gentle natural folds, soft directional upper-left light, subtle warm shadows within the folds. Realistic fabric resting flat, not levitating and not a rigid panel.\nComposition: one complete cloth alone, slightly elevated near-top-down perspective matching reference, centered landscape canvas 1536 x 1024, comfortable clear space around every edge, no cropping. This is the reverse view of the reference object, not a new ornate artifact.\nBackground: genuine transparent PNG alpha channel everywhere outside the cloth and a very subtle tight contact shadow. No opaque backdrop, no grey checkerboard pixels, no black vignette, no table, no extra objects. Preserve a small natural curled corner; avoid large dramatic folds. No text, frame, border mount, tags, symbols, signature or watermark.",
+  "reference": "/Users/alvachen/Documents/ChatGPT/pawn/.artifacts/item-study-second/assets/item_art_v30/silk_panel_front.png",
+  "generated_output": "/Users/alvachen/.codex/generated_images/01a0ce49-be25-7811-b838-84ae270b11e0/exec-26ce10d8-6530-4617-a8c1-c792d56b9f81.png",
+  "output": "assets/item_studies_second/silk_panel_back.png",
+  "inspection": {
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGBA",
+    "alpha_min": 0,
+    "alpha_max": 254,
+    "alpha_zero_pixels": 627040,
+    "alpha_240_or_more_pixels": 923782,
+    "notes": "Full neutral cloth reverse with folded hem, no authentication clues. Outside is true alpha; hidden RGB carries the original background but transparent corner pixels have alpha 0. No raster postprocessing."
+  },
+  "sha256": "d7cd9a6e09ea1d4e3747e61b538c2c36732da56ad864a0d02032d624794b22af",
+  "reference_sha256": "781ca7589a9e176fd58ae328fdc8dab01ffedf52ef33546010109c34a7575767"
+}

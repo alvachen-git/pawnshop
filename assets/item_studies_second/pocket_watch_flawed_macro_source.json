@@ -1,0 +1,19 @@
+{
+  "tool": "built-in image_gen",
+  "mode": "precise-object-edit",
+  "created": "2026-09-23",
+  "prompt": "Use case: precise-object-edit.\nGame evidence illustration: ordinary pocket-watch worn balance pivot macro. Output 1536x1024 landscape PNG.\nReference image is the EXACT composition and mechanical identity to preserve. Keep all gear teeth, brass balance wheel, concentric hairspring coils, bridges, screws, ruby bearings, silver shell rim, painterly metal texture, light direction and magnification unchanged. Only the central balance bearing near x726,y365 needs a precise localized edit.\nKeep the existing circular red ruby jewel, about 100 pixels across, and its entire circular gold metal seat. Correct only its center to show an actual small worn pivot aperture instead of a polished glossy blob: an irregular oval opening about 32 pixels long by 19 pixels wide, diagonally upper-left to lower-right. A thin steel pivot pin about 9 pixels diameter remains inside it, slightly off-center toward upper left, leaving a small dark crescent gap at lower right. The red ruby still forms a wide visibly continuous ring all around this small hole. Show a restrained but clearly legible pale rubbed crescent at the lower-right lip of the aperture and fine short abrasion strokes. The local wear is visible because this is already a magnified view, not because the mechanism is implausibly enlarged. There is no missing jewel, no absent part and no large black cavity. The pin is slender, not a bolt head or screw and not outside the hole. Retain all metal seat screws and surrounding coils intact.\nThis image communicates only a moderately worn oval balance pivot hole causing intermittent timekeeping and requiring repair. Do not add cracks, red jewel breakage, broken teeth, rust, dirt blobs, displaced wheel, further damage, movement lines, arrows, labels, annotations, brands or watermark. No change to background, zoom, framing, palette or global wear. Muted semi-realistic gouache, ordinary used metal, believable small mechanical tolerances.",
+  "reference": "/Users/alvachen/Documents/ChatGPT/pawn/.artifacts/item-study-second/assets/item_studies_second/pocket_watch_sound_macro.png",
+  "generated_output": "/Users/alvachen/.codex/generated_images/01a0ce49-be25-7811-b838-84ae270b11e0/exec-7808df30-568f-4831-80e7-f02809a9bf25.png",
+  "output": "assets/item_studies_second/pocket_watch_flawed_macro.png",
+  "inspection": {
+    "notes": "Macro reference has enlarged optics on the balance assembly. Flawed variant preserves same complete red ruby and metal seat, localized oval aperture and eccentric small steel pivot with wear arc. All other mechanical layout and shell retained. No raster postprocessing.",
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB"
+  },
+  "sha256": "432e4b7a7565e61c6f9a16c9785b443c1458ceef165d694a79c18645f7cf8cd5",
+  "reference_sha256": "9e3b1bcbf49959ddab8bf2c26f05a5986f480470b96e3171ea107bc7bdc286e4"
+}

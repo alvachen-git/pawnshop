@@ -54,6 +54,16 @@ func _initialize() -> void:
 		check(upgraded_detail.path.ends_with(jewelry + "_flaw.png") and upgraded_detail.requires_clues == detail.requires_clues and upgraded_detail.id == detail.id, "already-filtered jewelry evidence preserves gates and identity")
 		old_pages[0].path = root_path + "_back.svg"
 		check(CounterVisualCatalog.front(asset, old_pages).resource_path == old_pages[0].path, "jewelry explicit custom front wins")
+	var watch_visual := {"item_asset":"placeholder.pocket_watch", "clues":[]}
+	for view in ["sound", "flawed"]:
+		var page := [{"id":view,"label":"existing label","path":""}]
+		watch_visual.clues = []
+		check(CounterVisualCatalog.images(watch_visual,page).is_empty(), "watch detail cannot bypass earned clue")
+		watch_visual.clues = [{"id":"sound" if view == "sound" else "flaw"}]
+		var mapped := CounterVisualCatalog.images(watch_visual,page)
+		check(mapped.size() == 1 and mapped[0].path.ends_with("pocket_watch_" + view + "_macro.png"), "watch evidence selects its own closeup")
+		page[0].path = "res://assets/art04/items/bowl_front.png"
+		check(CounterVisualCatalog.images(watch_visual,page)[0].path == page[0].path, "custom watch evidence remains authoritative")
 	for manifest in ["res://data/named_wealthy_manifest.json", "res://data/unified_manifest.json", "res://data/goods_expertise_manifest.json"]:
 		check_study_gates(manifest)
 	for ending in ["ordinary", "resentful"]:
@@ -66,7 +76,7 @@ func check_study_gates(manifest: String) -> void:
 	var catalog := JsonContentProvider.new(manifest).load_catalog().catalog
 	var run := catalog.get_definition("runs", catalog.default_run_id) as RunDefinition
 	for scenario in run.trade_scenarios:
-		if scenario.item_id not in ["item_blue_bowl", "item_silver_hairpin", "item_silver_ring", "item_silver_lock"]: continue
+		if scenario.item_id not in ["item_blue_bowl", "item_silver_hairpin", "item_silver_ring", "item_silver_lock", "item_folding_fan", "item_inkstone", "item_clay_teapot", "item_silk_panel", "item_pocket_watch"]: continue
 		var definition := catalog.get_definition("items", scenario.item_id) as ItemDefinition
 		var visit := CustomerVisit.new(); visit.item = ItemInstance.new()
 		var original := scenario.images
