@@ -7,6 +7,7 @@ var _initial_run_ready := true
 
 @onready var _bootstrap: Bootstrap = $Bootstrap
 @onready var _counter_screen: CounterScreen = $CounterScreen
+@onready var _shop_bgm: ShopBgmPlayer = $ShopBgmPlayer
 
 
 func _ready() -> void:
@@ -71,6 +72,7 @@ func _ready() -> void:
 	if _bootstrap.session != null:
 		if start_at_title: _bootstrap.session.message = RunSession.NEW_RUN_MESSAGE
 		_counter_screen.bind_session(_bootstrap.session)
+		_shop_bgm.bind_session(_bootstrap.session, _counter_screen)
 	if _bootstrap.session != null and _bootstrap.session._save.library != null:
 		storage = SaveLibraryView.new()
 		add_child(storage)
