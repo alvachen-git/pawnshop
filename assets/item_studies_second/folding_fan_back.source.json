@@ -1,0 +1,38 @@
+{
+  "tool": "image_gen.imagegen",
+  "mode": "built-in",
+  "intent": "precise-object-edit",
+  "created_date": "2026-09-23",
+  "prompt": "Edit the provided fan image. Change ONLY the painted PAPER FAN LEAF to its plain reverse: remove the mountain painting, calligraphy and red seal, replacing those ink marks with the same unpainted aged warm ivory paper and existing pleats.\nEvery wooden part must remain physically identical to the reference: EXACTLY preserve the carved ribs, wood guards, pivot, their shape and position, AND ALL EXISTING TRANSPARENT TRIANGULAR GAPS between the lower wooden ribs. Do NOT fill the air gaps. Do NOT widen the ribs. Do NOT replace the separate slender wooden sticks with a solid sheet. The reference already has correct construction: keep that whole wooden structure unchanged.\nRender the entire complete fan, centered on a transparent 1536x1024 canvas. Fit without clipping by scaling uniformly, preserve its aspect ratio. Genuine transparent alpha outside the fan AND in every existing air gap among wooden ribs. No backdrop color, no shadow halo. Keep exact original gouache-inspired semi-realistic material finish. No writing, no seal, no picture on the paper. Nothing else changes.",
+  "reference": "assets/appraisal/fan-sound.png",
+  "original_output": "/Users/alvachen/.codex/generated_images/01a0ce48-93c2-7eb3-beea-69bb45b0201e/exec-3e527983-b531-4423-a38d-4b91b61b7cfe.png",
+  "output": "assets/item_studies_second/folding_fan_back.png",
+  "inspection": "Selected third generation preserves exact original slender wooden ribs and transparent air gaps, carved outer guards, pivot, old paper folds and silhouette. Plain paper back without picture, inscription or seal. Built-in output retained reference resolution 1448x1086 despite requested 1536x1024; no offline edits or resampling.",
+  "alpha": {
+    "mode": "RGBA",
+    "size": [
+      1448,
+      1086
+    ],
+    "range": [
+      0,
+      255
+    ],
+    "transparent_pixels": 683737,
+    "near_opaque_pixels_250_plus": 844961
+  },
+  "discarded_attempts": [
+    {
+      "original_output": "/Users/alvachen/.codex/generated_images/01a0ce48-93c2-7eb3-beea-69bb45b0201e/exec-0f3b73aa-e725-43ad-a415-4a0e16a09ce6.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: a single item inspection back-view sprite for the Chinese Republican-era pawnshop game 鬼市当铺.\nInput image 1: exact approved folding fan identity and rendering reference, currently its painted front side.\nPrimary request: turn this SAME fully unfolded folding fan over and show the reverse side. Preserve the original open fan geometry, broad opening angle, curved outer arc and curved inner paper arc, matching rib count and radial rhythm, warm brown carved wooden ribs, ornate carved outer guards, round brass pivot and small wood ends below the pivot. Maintain believable paper pleats and the same restrained age wear. The back of the paper is PLAIN faded warm ivory paper with subtle natural fibres and gentle folds, no picture, no calligraphy, no signature and no red seal. This should clearly be the reverse of the exact same fan, not a different fan design.\nStyle/medium: semi-realistic opaque gouache with restrained hand-painted realism matching the reference, matte old wood and gently aged paper; crisp enough for a small inspection panel but no flat vector outlines, no glossy render.\nComposition: one complete centered fully unfolded fan viewed almost straight-on like the reference; arc at the top, pivot at the bottom. Requested canvas 1536x1024 landscape. Fit the entire fan and tips inside the canvas with 5% clean margin on all sides, no crop. No stand, string or new decoration.\nBackground: genuinely transparent alpha surrounding the fan and between the separated wooden ribs. No black, white, beige or checkerboard pattern painted as background. No tabletop or scene, no rectangle.\nConstraints: no writing of any kind, no stamps or invented provenance; no tears, conspicuous repair, broken ribs or clue-revealing damage. This neutral back view must not give away any authenticity or condition answer. Keep the quiet era-appropriate handworked material and believable construction.",
+      "reason": "Rib gaps filled; framing too tight."
+    },
+    {
+      "original_output": "/Users/alvachen/.codex/generated_images/01a0ce48-93c2-7eb3-beea-69bb45b0201e/exec-ba367eb4-025e-4dcf-b250-87a709b5ca23.png",
+      "prompt": "Use case: precise-object-edit\nAsset type: transparent back-view sprite for 鬼市当铺.\nReference image 1 is the freshly generated plain-paper BACK view and is the edit target. Reference image 2 is the approved painted FRONT view, used ONLY for the exact physical construction, count/spacing of ribs, pivot and fan silhouette.\nFix exactly two issues in image 1:\n1. Restore the same clearly open triangular transparent AIR GAPS between the exposed lower wooden ribs as in image 2. The wooden ribs are separate slender radial sticks, not a filled wooden board or solid wood fan. Match the exposed fan rib spacing from image 2 faithfully. Air visible between EACH adjacent exposed rib below the curved paper edge, apart from the tight pivot end, must have genuinely transparent alpha.\n2. Scale the whole unchanged object uniformly smaller in the 1536x1024 landscape canvas so every outermost point (including bottom tip and left and right guards) has at least 6 percent canvas-margin; no cropping, stretching or squashing.\nKeep the exact plain old ivory PAPER BACK of image 1 with fine fibres and soft pleat shadows, no front painting, no calligraphy, signature or seal. Preserve the subtly carved outer wood guards, carved rib motifs, round brass pivot, opening angle, matte gouache hand-painted style and modest age wear. No added cracks, tears or gameplay clues.\nBackground must be completely transparent outside the object AND through the rib gaps. No colored backdrop, no brown haze, no rectangle, no fake checkerboard. One centered complete fan only.",
+      "reason": "Rib gaps remained filled."
+    }
+  ],
+  "sha256": "fc2c997199ab3780fd75d40e55d5b70af5f80efd74fdcb022146605b47151c11",
+  "reference_sha256": "8dd44ae46996d30c0326291bf4c4271288e2199b24b25cef38a5d2a510beb946"
+}

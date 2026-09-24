@@ -75,9 +75,9 @@ func render(model: Dictionary) -> void:
 		button.text = row.label
 		button.toggle_mode = true
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		button.pressed.connect(_show_image.bind(row.id))
+		button.pressed.connect(_select_image.bind(row.id))
 		_views.add_child(button)
-	if visual.get("condition_enabled", false): _views.hide()
+	if visual.get("condition_enabled", false) and visual.get("item_asset", "") != "goods.folding_fan": _views.hide()
 	_show_image(_selected)
 	if gained_view: _reveal_image.call_deferred()
 	if visual.has("tiered_atlas"):
@@ -90,6 +90,10 @@ func render(model: Dictionary) -> void:
 		_image.visible = _image.texture != null
 		_image.tooltip_text = "物品外观"
 		_views.hide()
+
+func _select_image(id: String) -> void:
+	_show_image(id)
+	_reveal_image.call_deferred()
 
 func _reveal_image() -> void:
 	var scroll := _column.get_parent() as ScrollContainer

@@ -1,0 +1,26 @@
+{
+  "tool": "image_gen.imagegen",
+  "mode": "built-in",
+  "intent": "precise-object-edit",
+  "created_date": "2026-09-23",
+  "prompt": "Use case: precise-object-edit\nAsset type: 2D inventory and inspection game object sprite for the Republican-era Chinese pawnshop game 鬼市当铺.\nInput image 1 is the exact identity and style reference: a humble dark grey rectangular stone inkstone with softly rounded corners, substantial believable thickness, broad grinding basin and smaller ink well on its FRONT.\nPrimary request: produce ONE matching BACK VIEW of this same inkstone turned completely over, exposing its plain stone underside. The exposed upper surface must be a nearly flat unadorned underside, NOT the front basin and well. Preserve the same rectangular silhouette, softly rounded corners, aspect ratio, dark grey matte stone, thickness and simple everyday identity. Show enough side-wall depth to read as a real heavy object.\nStyle/medium: restrained semi-realistic opaque gouache illustration; quiet hand-painted edges and subtle brushwork, muted smoke-grey with a very slight brown cast, natural stone mottling and sparse gentle handling abrasion. Same visual fidelity as reference. No glossy CGI, no outline icon.\nComposition: requested 1536x1024 landscape canvas, one complete centered inkstone, diagonal long axis lower-left to upper-right, gently elevated three-quarter view so underside and near side walls are visible. Entire object comfortably inside frame with about 10% margin. Underside facing camera. Soft directional light from upper left. A restrained compact contact shadow directly beneath should suggest it rests upside down on a tabletop, without drawing any tabletop or surrounding scene.\nBackground: genuinely transparent alpha channel everywhere around object and compact translucent contact shadow. No black, beige or checkerboard pixels painted as a background, no halo or rectangular matte.\nConstraints: no characters, inscriptions, seals, labels, watermark, ornament, hands, props. No newly invented cracks, missing corners, repairs, hidden markings, bright mineral veins or conspicuous damage that would create new gameplay clues. No front-face basin or ink-well on the exposed back surface. Preserve mundane authentic material and the exact object family.",
+  "reference": "assets/item_art_v30/inkstone_front.png",
+  "original_output": "/Users/alvachen/.codex/generated_images/01a0ce48-93c2-7eb3-beea-69bb45b0201e/exec-12569554-aee9-4479-b180-cc0d7da56296.png",
+  "output": "assets/item_studies_second/inkstone_back.png",
+  "inspection": "Same rounded rectangular matte stone inkstone, turned over to show a plain underside. No basin, inscription, cracks, repair marks or extra gameplay clues. True transparent alpha preserved.",
+  "alpha": {
+    "mode": "RGBA",
+    "size": [
+      1536,
+      1024
+    ],
+    "range": [
+      0,
+      254
+    ],
+    "transparent_pixels": 784956,
+    "opaque_near_250_plus_pixels": 693153
+  },
+  "sha256": "a115d80ccc0c1bec475cea2cc6329e705fc949d18769e072fb3583bd295d34f2",
+  "reference_sha256": "e52c2e8b78a9124b20d119a673665afc70404a6c3aa2b156adf2e117ed7c1883"
+}

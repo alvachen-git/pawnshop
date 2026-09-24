@@ -1,0 +1,26 @@
+{
+  "tool": "image_gen.imagegen",
+  "mode": "built-in",
+  "use_case": "precise-object-edit",
+  "prompt": "Use case: precise-object-edit.\nAsset type: one inspection evidence illustration for an ordinary silver-cased pocket watch in the 1930s Shanghai pawnshop game 鬼市当铺. This is the GOOD WORKING CONDITION movement detail.\nInput images 1 and 2: identity references showing back and front of the same modest unbranded silver-grey thick-cased ordinary pocket watch. Preserve that case material, crown and loop design, subtle worn texture and substantial depth. It is not a gold case and not a luxury branded watch.\nPrimary request: show a SINGLE close-up viewpoint of this watch lying face down on a dark grey-brown workbench, its hinged back cover swung open and its clean intact mechanical movement fully visible. The movement dominates the image, 70–80% of the canvas width; the open silver back lid appears only partly beside it. Keep a visible segment of worn silver case, top crown and attachment loop as identity anchors; only a restrained short partial chain if it fits naturally.\nVisual evidence: correctly assembled intact dull-brass toothed wheel train, stable aligned pivots sitting in clean circular bearing holes with no elongated wear, complete mainspring barrel and properly mounted balance wheel and fine regular concentric hairspring. Well-kept working mechanism, realistic screws and bridges, no rust damage, no broken teeth or distorted springs. Make the main gear train and circular pivot structure unmistakably legible when scaled down to a 198x132-pixel inspection widget. Actual physical components, not a diagram. Do not depict literal movement, arrows, labels, motion lines or symbolic graphics.\nComposition: landscape 1536x1024, intimate macro view slightly above the bench with enough angle to show case thickness and layered mechanical depth. One object, one viewpoint, no panels. Large clear structures and restrained detail. A soft close contact shadow anchors the watch on the bench.\nStyle: semi-realistic opaque gouache game illustration, credible aged metal with restrained hand-painted texture, muted ochre brass mechanisms against dull silver housing, warm upper-left light, cool soft recesses, subdued dark grey-brown bench. Avoid polished CGI, neon jewel colors, decorative filigree, cinematic glow, excessive grunge, tangled impossible machinery. No letters, numbers, maker marks, logos, watermark or text. Opaque painted background.",
+  "references": [
+    "assets/item_art_v30/pocket_watch_back_v2.png",
+    "assets/item_art_v30/pocket_watch_front_v2.png"
+  ],
+  "generated_output": "/Users/alvachen/.codex/generated_images/01a0ce48-df72-7d42-9b6c-24dfe803d985/exec-970448c6-ea26-4f7d-a15f-d5cec89fe776.png",
+  "output": "assets/item_studies_second/pocket_watch_sound.png",
+  "sha256": "e38ce83632d44c83eff36b0b468e7cc4b695272a251630a672cb8699a5fdfcec",
+  "reference_sha256": {
+    "assets/item_art_v30/pocket_watch_back_v2.png": "2fc72990233ea2935f9a34c25ac481a9d307adef180ba93f0ea31308686e897d",
+    "assets/item_art_v30/pocket_watch_front_v2.png": "7b9ff9a8941ad5ddba79e4caf7b3adb54a13c281a1e759a7eb417d8caff7a851"
+  },
+  "validation": {
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "raster_postprocessing": false,
+    "review": "Single macro view with large legible intact gears, circular bearing centers, concentric balance hairspring; silver case, crown and loop match identity; no text or arrows."
+  }
+}

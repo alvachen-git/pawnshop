@@ -1,0 +1,24 @@
+{
+  "tool": "image_gen.imagegen",
+  "mode": "built-in",
+  "use_case": "precise-object-edit",
+  "prompt": "Use case: precise-object-edit.\nAsset type: condition evidence macro illustration for the ordinary silver-cased pocket watch in 鬼市当铺, GOOD working condition.\nInput image: the existing intact movement of the exact same watch. Preserve its mechanism identity, materials, illumination, and restrained semi-realistic opaque gouache rendering.\nChange ONLY camera framing and focal distance: make an extreme close-up of the LOWER balance-wheel assembly and its central dark-red ruby pivot bearing (center approximately x790 y635 in the source). This circular balance assembly must occupy about 75 percent of the new 1536x1024 landscape canvas. The central bearing and thin pivot shaft must be particularly crisp and readable, sufficiently enlarged that a tiny 198x132 display can show whether the hole is round and centered. Crop away most of the top large gear wheels, crown, cover, chain and tabletop. Keep a small partial arc of the thick worn SILVER case rim at the bottom or lower edge plus fragments of neighboring brass gears to anchor physical identity. No whole-watch overview.\nMechanical state: clearly clean perfectly round small central bore in an intact ruby pivot bearing, thin steel pivot centered inside it with even small clearance, surrounding circular brass setting undamaged, proper intact balance wheel and neatly concentric natural hairspring. No wear elongation, no cracks, no chips, no excessive enlarged jewel or fanciful ornament. This is a physically credible magnified watchmaker inspection of the existing intact lower assembly, not a new design.\nComposition: bearing near image center, balance wheel and hairspring dominate the frame; retain the existing bridge arm running out to lower-right and consistent depth layers. Cropping neighboring structures at canvas edges is expected. Matte ochre brass, dark steel, muted ruby and worn silver; warm upper-left light, softly dark recesses, subtle gouache brush surface. No labels, letters, numbers, arrows, circles drawn over the image, motion lines, split-screen, magnifying glass, captions, branding, watermark or graphics. Opaque image.",
+  "references": [
+    "assets/item_studies_second/pocket_watch_sound.png"
+  ],
+  "generated_output": "/Users/alvachen/.codex/generated_images/01a0ce48-df72-7d42-9b6c-24dfe803d985/exec-51a72124-81d8-48ea-a782-023f577d62a7.png",
+  "output": "assets/item_studies_second/pocket_watch_sound_macro.png",
+  "sha256": "9e3b1bcbf49959ddab8bf2c26f05a5986f480470b96e3171ea107bc7bdc286e4",
+  "reference_sha256": {
+    "assets/item_studies_second/pocket_watch_sound.png": "e38ce83632d44c83eff36b0b468e7cc4b695272a251630a672cb8699a5fdfcec"
+  },
+  "validation": {
+    "size": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "raster_postprocessing": false,
+    "review": "Balance assembly fills most of frame; central intact round ruby bearing and concentric hairspring clear; silver case edge retains identity. Generated bearing has rounded glossy inner jewel rather than a crisply exposed thin steel shaft, to be judged against flaw counterpart."
+  }
+}
