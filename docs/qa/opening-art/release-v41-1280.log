@@ -1,0 +1,17 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 4.1 Metal - 89.4 - Compatibility - Using Device: Apple - Apple M4
+
+RUN SEED: 894821177
+OPENING STEP 0: evt_intro_factory_paycut
+OPENING STEP 1: evt_intro_factory_argument
+OPENING STEP 2: evt_intro_factory_silence
+OPENING STEP 3: evt_intro_manqing_memory
+OPENING STEP 4: evt_intro_manqing_money
+OPENING STEP 5: evt_intro_letter_delivery
+OPENING STEP 6: evt_intro_letter_read
+OPENING STEP 7: evt_intro_gu_value
+OPENING STEP 8: evt_intro_gu_people
+OPENING STEP 9: evt_intro_gu_flashbacks
+OPENING STEP 10: evt_intro_decision
+OPENING STEP 11: evt_intro_shop_arrival
+OPENING ART UI: 187 assertions, 0 failures

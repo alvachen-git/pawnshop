@@ -1,0 +1,7 @@
+# Wedding invitation revision
+
+Built-in image_gen, 2026-09-24. Base/reference: `assets/opening_art/photo.png`.
+Generated original: `/Users/alvachen/.codex/generated_images/01a0c923-8e99-7c61-a112-29ab760aa9df/exec-76305744-19c9-4015-a226-41f46e876b24.png`.
+Runtime samples only the invitation region; both photo scenes render the identical `photo.png`, ensuring face and expression continuity. The generated photograph is never rendered.
+
+Edit the supplied image, adding only a small Republican-era Chinese wedding invitation on the man's trouser lap. Preserve the entire existing photo, all faces, the girl's exact neutral expression, eyes mouth eyebrows, boy, hands, sleeve, wall, lighting and pixel positioning unchanged. Do NOT repaint or regenerate the old photograph. Original 1672x941 16:9 full scene. Add a modest vermilion matte invitation on lap in lower middle, top edge at y=490 (below the old photograph), left x=760, right x=1000, bottom edge at y=665. Believable flat paper resting on trousers in mild perspective, dark soft contact shadow. This card must NOT overlap the photograph or either hand. On card in dark Chinese traditional brush text write exactly three centered lines: 囍 / 姚曼卿 / 陸紹廷. Critical spelling TRADITIONAL 陸 (not 陆), 紹 (not 绍), 廷 (not 延). 姚曼卿 exactly (not 姚曼御). No extra characters. Small card, names legible, no other edits, no UI. Maintain matte opaque gouache and muted brown soot gray existing palette, subdued red accent. This is a surgical prop addition, not a new scene or a new person.

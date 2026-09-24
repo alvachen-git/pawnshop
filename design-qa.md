@@ -1,53 +1,62 @@
-# 第二批鉴物美术 — Product Design QA
+# 开场「入巷见铺」视觉验收
 
 final result: passed
 
-## Target and evidence
+## Visual truth and capture
 
-Base main 5673b92, default named_wealthy_ten v37. Scope: folding fan front consistency/back, inkstone/teapot/silk backs, ordinary pocket-watch earned evidence. This is an existing native Godot game, not a browser prototype. ART04 and the existing object fronts are the visual target.
-
-Source truth: assets/appraisal/fan-sound.png (1448×1086); assets/item_studies_second/folding_fan_back.png (1448×1086); remaining five runtime images in that directory are1536×1024. Exact prompts/reference paths/hashes are in adjacent source JSON; two full-watch images are retained as unused production references. Asset inventory: docs/qa/item-studies-second-20260923/assets.json.
-
-Native Godot4.6.1 compatibility renderer. Viewports1280×720/1600×900 with root.content_scale_size=root.size:1 captured pixel per viewport pixel. No CSS/deviceScaleFactor applies. Appraisal images occupy an approximately198×132 widget. Comparison captures place the actual source and a crop of the actual rendered widget together in equal columns; expected enlargement softness is not source blur. Full-window images are used for actual readability.
-
-Evidence root: docs/qa/item-studies-second-20260923/. Full views include v37_1280_item_folding_fan_counter.png, v37_1280_item_folding_fan_receipt.png, v37_1280_item_folding_fan_inventory.png, v37_1600_item_folding_fan_mended_back.png, v37_1280_item_pocket_watch_flawed_flawed.png and v37_1600_item_pocket_watch_sound_sound.png. Focused source/render comparisons cover the four backs and both watch states; see files ending _comparison.png. The overview art-board.png is a native render of the six new final images.
-
-## Findings and iteration history
-
-1. P2: after scrolling down to appraise, clicking the already-selected front tab did not return the image to view. Four initial UI assertions caught this. Earlier evidence: iteration-1/v37_1280_item_inkstone_sound_front.png and iteration-1/ui-1280.txt. Fixed manual tab selection to reveal the image even when reselecting the same tab; background model refresh retains normal scroll behavior. Both final runs now verify top-of-image visibility and pass.
-2. P2: the first whole-movement watch image made local bearing wear too small. An exaggerated-hole attempt looked like missing hardware and was rejected. Final paired macro images use a closer camera while preserving the bearing, jewel and surrounding mechanism. Only localized oval clearance, offset and abrasion differ. Exact imagegen iteration records remain in source JSON. Final full-window and focused comparisons inspected at both resolutions. Static pictures supplement the existing timing text; they do not prove dynamic rate/force or introduce a new diagnosis.
-3. Folding fan used an old SVG at counter/receipt/inventory despite detailed desk paintings. All four surfaces now use the approved painting for the neutral front; hidden variants share this neutral view, and the special desk retains its original conditional paintings and knowledge gate. Added a matching plain-paper back and exposed the existing free image tabs in the ordinary fan drawer. No gameplay mutation.
-
-No actionable P0/P1/P2 findings remain in the scoped states.
+- Selected source: `/Users/alvachen/.codex/generated_images/01a0c923-8e99-7c61-a112-29ab760aa9df/exec-ef130714-57cd-48f7-83fd-781340819032.png` (1672×941).
+- Source copy is an ideation mock; actual runtime keeps the full authored arrival narration, including its middle paragraph.
+- Implementation: `docs/qa/opening-art/1600_shop_arrival.png` (1600×900) and `1280_shop_arrival.png` (1280×720).
+- Native Godot OpenGL game screenshots; browser/CSS/devicePixelRatio do not apply. Both viewport and captured pixels are exactly the named dimensions. Near-identical 16:9 image ratios are rendered with aspect preserved. The source and 1600 screenshot were opened together in the same comparison tool input, judged at equivalent full-frame scale.
+- States inspected: factory paycut, photograph, wedding, letter, memories, stamp, arrival, inspection, accounts, first customer, room before/after photo and sleep. All screenshots in the same directory; no browser mock substitutes.
 
 ## Required fidelity surfaces
 
-- Fonts/typography: existing Chinese fonts, sizes, wrapping and hierarchy unchanged; no generated UI text. Existing buttons and clues remain readable at both sizes.
-- Spacing/layout: drawer dimensions and aspect-fit study images retained. Fan counter placement has its own footprint and a flattened tabletop projection; contact shadow anchors its silhouette. Inventory68×60 and receipt views keep their existing layout. Image tabs fit, selected images remain in view, persistent controls remain unobstructed.
-- Colors/tokens: old paper, dark wood, muted stone/clay/silver match ART04. Transparent backs have no black/checkerboard halos in the game. Watch macros retain their illustrated workbench/material background as intentional evidence images.
-- Image quality: same fan ribs/pivot/paper, neutral reverse surfaces, believable object thickness; no additional stamps or authenticity marks. Watch compositions remain paired, with restrained material highlights. Expected small-widget sampling is documented; anatomy here is illustrative, not a technical watch-repair diagram.
-- Copy/content: no player copy, prices, actions, scenario records, page IDs or save schema changed. Existing clues unlock sound/flawed pages. Custom art paths still win. Neutral backs do not reveal hidden condition.
+- Fonts/typography: shared Songti/STSong/SimSun/Noto Serif system display font with bundled Noto Sans SC fallback. Body22 at720h and28 at900h, warm paper foreground; complete words retained. Chinese smart wrapping and clipping explicitly set. Long letter visibly scrolls, including its end. Cross-platform font substitution remains a known minor visual difference.
+- Spacing/layout: original street/counter composition preserved; live UI uses full-frame illustration, bottom reading field and paper action. Authored extra arrival paragraph makes the reading field moderately taller than the two-line concept. No clipping or off-screen actions at either resolution. Multi-choice scenes reserve a separate action column.
+- Colors/tokens: dark wood/soot/olive image palette, muted ivory text, existing paper button texture. Readability scrim remains separate from art. No gold trim or new decorative UI system.
+- Image quality: eight1672×941 built-in imagegen paintings. Foreman was revised at user's request to distinguish him from merchant faces. Skin/hands/material and purse scale reviewed in `1600_factory_paycut.png` and the source `assets/opening_art/factory-v2.png` together; full-size character and button/text details are readable without a separate crop. Background aspect preserved. Night room uses existing lamp-exposure convention and dark exterior panes.
+- Copy/content: all dialogue, action labels and outcomes come from existing event model. Only empty-line spacing changes in compact captions. No invented mechanics, tooltips or outcome labels. Account figures still present and scrollable when longer than caption field.
 
-## Validation and limits
+## Findings and fixes
 
-959 art contract assertions,0failures, coveringv37/v30/v21. Actual current-v37 GUI:1393 assertions at each viewport,0failures. Nine naturally scheduled item variants cover three reverse views, all three ordinary-watch conditions and all three fan attribution variants; tested free browsing, evidence actions, receipts, purchases, inventory, replay save restoration and empty-counter visibility. Existing gold-watch/embroidery atlas switching:13assertions,0failures. Import succeeded. Final native GUI logs contain no script/resource errors. git diff --check passed.
+1. [P2 resolved] Initial factory composition placed purse under reading area. Painting shifted upward by8.5% of viewport height without stretching; final purse/hand are fully visible, head remains in frame. A solid base prevents underlying counter status leaking through the shifted background. Evidence: `1280_factory_paycut.png`, `1600_factory_paycut.png`.
+2. [P2 resolved] Large blank paragraph gaps made short scenes occupy too much of the painting and caused first-customer instructions to scroll. Compact paragraphs now use single newlines, explicit Chinese wrapping and clipped text bounds. Evidence: both `shop_arrival`, `first_customer`, `room` captures.
+3. [P2 resolved] Foreman looked too similar to ordinary guests. Replaced original image with user-directed `factory-v2.png`: broader jaw and shoulders, short hair, hard brow and pressed lips. Original preserved in ignored draft directory, not used by runtime.
+4. [P2 resolved] Reused room source showed daylight at03:00. Applied existing bedroom exposure and window masking, keeping ordinary mirror and lamp unchanged. Evidence: `1280_room.png`, `1600_room.png`.
 
-Earlier sandbox headless startup failed in the system log rotator, then succeeded outside the sandbox; the initial harness incorrectly accessed a title menu after direct startup and was fixed before validation. These are not claimed as passing runs.
+The final full-view comparisons contain no remaining actionable P0/P1/P2 findings. Residual P3: OS font fallback can change stroke style; Windows appearance has not been accepted.
 
-Local QA record: the user subsequently authorized push and online merge; publication is tracked by the GitHub PR. No Windows build or unrelated full-story regression. Previous design report archived as previous-design-qa.md. Root dirty worktree untouched. User save/library paths are not used by the QA script.
+## Interaction evidence and limits
+
+- Core opening tests:100 assertions/0 failures.
+- Current-manifest native UI:143 assertions/0 failures at each resolution, seed42. Mouse controls, initial keyboard focus, long-letter scroll, mid-opening reload state equality, first trade, room choices, sleep and replay skip verified. Runtime logs contain no script/render errors.
+- Earlier random-seed trial had an end-of-night transition assertion fail; final targeted UI fixture uses deterministic seed42, not a claim of exhaustive random-night validation. Game rules were not edited to make tests pass.
+- No full-game, Windows/export or real-user acceptance claim.
 
 ## Implementation checklist
 
-- [x] Six new images copied into project with exact prompts/provenance.
-- [x] Fan source reused consistently with tabletop sizing/contact shadow.
-- [x] Free backs and earned evidence, custom paths and saves preserved.
-- [x] Same-tab visibility fixed and recaptured.
-- [x] Native full-window and combined source/render comparison at both resolutions.
+- [x] Selected visual and8final raster assets integrated.
+- [x] Preserve story commands, gates and serialized state.
+- [x] Correct foreground readability and source-art visibility.
+- [x] Native1280×720 and1600×900 flow, screenshots and log checks.
+- [x] Document prompt/source hashes and direct isolated review command.
 
-## Release integration: current main v39
+## 试玩修订复验 · 照片、喜帖、回忆
 
-Merged db4182b before publication, retaining the pearl appraisal and first-debt systems. The only code conflict was the CounterItemArt material allowlist; the resolution includes both new dragon/phoenix bangles and this batch's fan/study images. No gameplay conflict or scenario mutation.
+Source truth: 用户11:36:15、11:36:46、11:37:49三张截图及明确反馈，文件位于用户提供的NSIRD_screencaptureui临时目录；项目原图`assets/opening_art/photo.png`、`memory.png`。
 
-Current-main validation:1509 art-contract assertions (v39/v38/v37/v30/v21),1350 native GUI assertions at each viewport,13 atlas-switch assertions,23030 appraisal/economy/replay passes through first_debt_unified_appraisal.gd; all0failures. The latter inherits the PEARL V38 output title but explicitly uses the v39 manifest/session/replay. Final native logs contain no errors. Reviewed v39_1280_item_folding_fan_counter.png and v39_1600_item_pocket_watch_flawed_flawed.png; the existing size, shadow, tabs and evidence presentation remain intact. Selected v39 screenshots/logs are retained with the earlier evidence.
+Implementation: `docs/qa/opening-art/1280_manqing_memory.png`、`1600_manqing_memory.png`、`1280_gu_value.png`、`1600_gu_value.png`、两分辨率`gu_people`/`gu_flashbacks`/`decision`。原memory画面和1600实机暗淡版本在同一工具输入直接对照；全尺寸图能读清面部、姓名和按钮，不需要另行裁图。
 
-The current-main atlas harness assertion was updated from its stale v38 expectation to the actual v39 entry. Dragon/phoenix mapping, contact mode and wrist-scale checks pass. Scoped diff against origin/main passes whitespace checks; inherited unrelated main whitespace is left unchanged.
+- [P2 resolved] 两次生成导致女孩表情变化：两节点现在使用同一photo.png；UI测试对旧照片人脸区域逐像素比较，两分辨率通过。
+- [P2 resolved] 喜帖简体：内置imagegen重做姓名为姚曼卿、陸紹廷；正文引用同步。场景只使用喜帖轮廓，避免重新生成的人脸混入。首轮采样出现矩形裤面接缝，改为纸张轮廓及窄接触阴影后消失。
+- [P2 resolved] 回忆与现实未区分：三段顾叔童年回忆统一低饱和、压暗与轻微暗边；仅作用背景，正文和按钮保持原色。回到现实恢复正常，首笔真实成交不会套回忆滤镜。
+- 两分辨率各143断言/0失败；开场剧情、读档与首夜流转复验通过。未改剧情条件或存档格式。1280复验曾出现合成点击跨帧漏点及100秒超时；测试改为同帧完整按下/释放、允许300秒并记录逐段事件后，最终全流程通过（ui-1280.log）。
+
+final result: passed
+
+## 周婶引导复验
+
+用户13:38截图作为问题依据。原「观察」已改为实际入口「鉴定」，两种分辨率的neighbor_page_1至5均已输出。人工查看1280第2/3/5页、1600第1/4页：姓名、关系、教学内容及回应按钮清楚，一屏可读。柜台固定姓名为周秀英（周婶）。两分辨率187/0，核心100/0；未新增来访调度。
+
+final result: passed

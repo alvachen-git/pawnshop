@@ -574,7 +574,14 @@
       "presentation": {
         "scene": "customer",
         "checkpoint": false,
-        "repeat_skip": false
+        "repeat_skip": false,
+        "dialogue_pages": [
+          "opening.first_customer.page1",
+          "opening.first_customer.page2",
+          "opening.first_customer.page3",
+          "opening.first_customer.page4",
+          "opening.first_customer.page5"
+        ]
       }
     },
     {

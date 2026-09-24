@@ -58,7 +58,7 @@ inspection = [
 ]
 row = event("shop_inspection", "接手旧铺", "铺内", "把皮箱放下。柜上有两本旧账，香炉里的灰早已冷了。\n\n先翻翻明账，也看看那本红黑旧册。", "inspection", choices=inspection, hotspots=True)
 row["excluded_flags"] = ["INTRO_SHOP_INSPECTED"]
-event("first_customer", "第一夜 · 新掌柜", "街坊妇人 / 你", "“顾掌柜不在了？”\n\n“从今日起，我坐柜。”\n\n妇人把银簪放上桌：“那你给我看看这个。”\n\n先点桌上银簪，选「观察」，再用放大镜快速鉴看。也可以向客人问来历，想好价钱后再开口。", "customer", ["INTRO_FIRST_CUSTOMER_STARTED"], phase="open")
+event("first_customer", "第一夜 · 新掌柜", "街坊妇人 / 你", "“顾掌柜不在了？”\n\n“从今日起，我坐柜。”\n\n妇人把银簪放上桌：“那你给我看看这个。”\n\n先点桌上银簪，选「鉴定」，再用放大镜快速鉴看。也可以向客人问来历，想好价钱后再开口。", "customer", ["INTRO_FIRST_CUSTOMER_STARTED"], phase="open")
 row = event("first_trade", "第一笔账", "柜前", "钱货已经点清，凭据收在手边。\n\n你看着印泥留在纸上的红痕，想起顾叔按住你手的那一刻。\n\n收下的货还占着本钱。去「库存」选合适的买家，卖出后才知道这笔生意赚了多少。", "stamp", ["INTRO_FIRST_TRADE_DONE"], required=["INTRO_FIRST_CUSTOMER_STARTED"], phase="open", required_purchases=1)
 row["night_max"] = 3
 room_choices = [
@@ -91,6 +91,11 @@ customer["counter_terms"].update(display_name="街坊妇人", introduction="“�
 customer["questions"] = [dict(id="origin", prompt="问来历", answer="家里用过的旧物，簪尾修过一回。", minutes=5)]
 buyers = read("data/buyers/buyers_v11.json")["records"][:2]
 buyers.append(dict(id="buyer_silversmith", display_name="街口银楼", channel="regular", categories=["jewelry"], value_multiplier=1.0, night_min=1, night_max=3, window_start=0, window_end=540, action_minutes=10, capacity_per_night=2))
+# Preserve the authored, localized neighbor tutorial when rebuilding old opening data.
+existing_events = read("data/opening/events.json")["records"]
+existing_neighbor = next(e for e in existing_events if e["id"] == "evt_intro_first_customer")
+events = [copy.deepcopy(existing_neighbor) if e["id"] == "evt_intro_first_customer" else e for e in events]
+customer = read("data/opening/customers.json")["records"][0]
 write("data/opening/events.json", dict(schema_version=1, records=events))
 write("data/opening/run.json", dict(schema_version=1, records=[run]))
 write("data/opening/items.json", dict(schema_version=1, records=[item]))
@@ -104,4 +109,5 @@ key("skip", "从抵达当铺开始")
 key("save_exit", "保存并退出")
 key("stamp", "盖章 · 收好凭据")
 key("stamp_done", "有几分顾掌柜的样子。")
+texts.update({k: v for k, v in read("data/opening/text_zh_CN.json").items() if k.startswith("opening.first_customer.")})
 write("data/opening/text_zh_CN.json", texts)
