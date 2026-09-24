@@ -4,7 +4,7 @@ extends RefCounted
 static func rng(seed_value: int, key: String) -> RandomNumberGenerator:
 	# v34/v35 isolate saves while retaining v33's existing random streams.
 	# New watch facts use their own /watch34/ keys, never consume those streams.
-	key = key.replace("bangle_unified/", "first_debt_unified/").replace("bangle_market_ten/", "watch_ten/").replace("pearl_market_ten/", "watch_ten/").replace("named_wealthy_ten/", "watch_ten/").replace("watch_patterns_ten/", "watch_ten/").replace("watch_negotiation_ten/", "watch_ten/").replace("watch_market_ten/", "watch_ten/")
+	key = key.replace("first_debt_recovery_release/", "first_debt_recovery/").replace("bangle_unified/", "first_debt_unified/").replace("bangle_market_ten/", "watch_ten/").replace("pearl_market_ten/", "watch_ten/").replace("named_wealthy_ten/", "watch_ten/").replace("watch_patterns_ten/", "watch_ten/").replace("watch_negotiation_ten/", "watch_ten/").replace("watch_market_ten/", "watch_ten/")
 	var random := RandomNumberGenerator.new()
 	random.seed = (seed_value + int(key.hash())) & 0x7fffffff
 	return random
@@ -119,6 +119,8 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		FamiliarStoryVoice.apply(visit, row, state, catalog)
 		WealthyCustomers.prepare(state, visit)
 		NightMarketPlan.prepare(visit, row, run, item)
+		if PhoenixRecovery.enabled(state) and visit.customer_id == "fd_seller":
+			visit.voice["rejected"] = PhoenixRecovery.LEAVE
 		state.visits.append(visit)
 	state.visits.sort_custom(func(a: CustomerVisit, b: CustomerVisit) -> bool: return a.arrival < b.arrival)
 

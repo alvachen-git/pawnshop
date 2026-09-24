@@ -480,7 +480,11 @@ func receipt_for(transaction_id: String) -> Dictionary:
 	return {}
 
 func companion_model() -> Dictionary:
-	return AqiCompanion.model(_day, _events, _counter, mirror_pending() or MirrorEndingService.active(_day.state))
+	var model := AqiCompanion.model(_day, _events, _counter, mirror_pending() or MirrorEndingService.active(_day.state))
+	if model.get("available", false) and PhoenixRecovery.hint_due(_day.state):
+		var event := _events.catalog.get_definition("events", PhoenixRecovery.HINT) as EventDefinition
+		model["notification"] = {"id": event.id, "choice": "heard", "title": "柜边的阿七", "text": event.body}
+	return model
 
 func old_debt_model() -> Dictionary:
 	return AqiCompanion.old_debt(_day, _events)
@@ -830,6 +834,9 @@ func _journal_call(method: String, args: Array) -> ActionResult:
 	var previous: RunState = _copy_state(_day.state) if not replaying else null
 	var pawn_choices := _pawn_choices.duplicate(true)
 	var before_damage := _day.state.personal_risk_history.size()
+	var recovery_visit: CustomerVisit = _counter.customers.active(_day.state) if PhoenixRecovery.enabled(_day.state) and _counter != null else null
+	var recovery_visit_id := recovery_visit.visit_id if recovery_visit != null else ""
+	var recovery_history_start := _day.state.visit_history.size()
 	var journal_row := {"method": method, "args": args.duplicate(true)}
 	if DragonSearch.enabled(_day.state) and not _day.state.get_meta("legacy_chen_visits", false): journal_row["chen_visits"] = 1
 	_day.state.action_journal.append(journal_row)
@@ -838,6 +845,7 @@ func _journal_call(method: String, args: Array) -> ActionResult:
 	_journal_depth += 1
 	var domain_started := Time.get_ticks_usec()
 	var result: ActionResult = callv("_impl_" + method, args)
+	if PhoenixRecovery.enabled(_day.state) and PhoenixRecovery.capture(_day.state, recovery_visit_id, recovery_history_start, mirror_pending() or MilitaryIntroduction.active(_day.state)): _pending_checkpoint = true
 	_profile("domain", domain_started)
 	_journal_depth -= 1
 	if _day.state.shop_growth_enabled:

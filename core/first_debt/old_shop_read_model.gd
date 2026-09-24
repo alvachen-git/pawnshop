@@ -57,6 +57,8 @@ static func build(day: DayController, events: EventDirector, counter: CounterSer
 			if action.target_id == "fd_protection": result.actions.append(action)
 	if DragonSearch.enabled(s) and not DragonSearch.notice(s).is_empty():
 		result.documents.append({"id": "dragon_notice", "title": "龙镯口信", "subtitle": "托话记事", "category": 1, "read": true, "observe_id": "", "text": DragonSearch.notice(s)})
+	if not PhoenixRecovery.notice(s).is_empty():
+		result.documents.append({"id": "phoenix_notice", "title": "卖镯人的口信", "subtitle": "托话记事", "category": 1, "read": true, "observe_id": "", "text": PhoenixRecovery.notice(s)})
 	result.outcome = debt.outcome if FirstDebt.settled(s) else ""
 	return result
 

@@ -175,6 +175,8 @@ func _preparation_commands() -> Array:
 	if WealthyCustomers.active(state): actions.append(["advertise", "宣传铺子 · 30银元 · 准备1次", "每夜一次；关铺时公布商誉变化，宣传最多增至80"] )
 	if state.current_night_index in [4, 5, 6] and not PreparationService.used(state, "investigate"):
 		actions.append(["investigate", "调查收货消息 · 准备1次", "提前打听第六夜的收货细目"])
+	if PhoenixRecovery.available(state):
+		actions.push_front(["phoenix_invite", "约卖镯人带凤镯来 · 准备1次", "不另收费，19:00起等空柜接待，货款另谈"])
 	if DragonSearch.enabled(state):
 		if not FirstDebt.last(state, "fd_search_motive").is_empty() and not FirstDebt.flag(state, "fd_followed"):
 			actions.push_front(["chen_invite", "约陈小满来谈 · 准备1次", "不另收费，开铺后等空柜接待；谈完后告辞"])

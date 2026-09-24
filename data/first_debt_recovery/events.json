@@ -1,0 +1,2662 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "aq_coat",
+      "title": "衣柜里的小夹袄",
+      "speaker": "铺中旧物",
+      "body": "旧衣下面压着一件小号夹袄。袖口补过不止一次，新旧布头颜色各异，针脚却收得很密。\n\n你翻了翻衣领，没有姓名。衣襟还叠得整整齐齐。",
+      "kind": "anchor",
+      "phase": "private_room",
+      "night_min": 2,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "aq_coat_seen"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "look",
+          "label": "看看夹袄",
+          "result": "旧衣下面的小夹袄，袖口补过好几层，衣领上没有名字。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_coat_seen"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_observation",
+        "checkpoint": true,
+        "manual": true,
+        "art": "coat"
+      }
+    },
+    {
+      "id": "aq_paper",
+      "title": "旧信里的夹纸",
+      "speaker": "铺中旧物",
+      "body": "信封底下夹着一张旧纸。上面画了一只歪歪斜斜的风车，一边画得大，一边小，竹签却描了好几遍。\n\n纸角有几道试折的痕迹。摊平之后，还会慢慢翘起来。",
+      "kind": "anchor",
+      "phase": "private_room",
+      "night_min": 5,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "aq_paper_seen"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "look",
+          "label": "看看夹纸",
+          "result": "夹纸上画着一只歪斜的风车，纸角留着试折的痕迹。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_paper_seen"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_observation",
+        "checkpoint": true,
+        "manual": true,
+        "art": "paper"
+      }
+    },
+    {
+      "id": "aq_arrival",
+      "title": "柜台边的风车",
+      "speaker": "柜台边的小女孩",
+      "body": "铺门刚开，一个小女孩从门口走进来，停在柜前。\n\n她护着一只纸风车，试着吹了一下，纸翼只颤了颤。\n\n“掌柜，能替我看看吗？它方才还会转的。”\n\n她踮起脚，把竹签往柜上递了一点。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "aq_met"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "inspect",
+          "label": "接过风车看看",
+          "result": "你接过了纸风车。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_met",
+            "aq_inspecting",
+            "aq_name_known"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "name",
+          "label": "先问她叫什么",
+          "result": "你放下算盘，问起她的名字。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_met",
+            "aq_named_first",
+            "aq_name_known"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_name",
+      "title": "阿七",
+      "speaker": "柜台边的小女孩",
+      "body": "“阿七。”\n\n她把这两个字说得很清楚，又低头拨了拨纸翼。\n\n“是不是吹得太用力了？我越想叫它转，它越不肯动。”\n\n竹签在她指间转了一圈，纸翼仍贴着中间的轴。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_named_first"
+      ],
+      "excluded_flags": [
+        "aq_inspecting",
+        "aq_declined"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "help",
+          "label": "把风车递给我吧",
+          "result": "你伸手接过她的风车。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_inspecting"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "decline",
+          "label": "今天手头忙，改日再看吧",
+          "result": "你把手从柜沿收回来。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_declined"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_inspect",
+      "title": "被压住的纸翼",
+      "speaker": "柜台边的小女孩",
+      "body": "“我叫阿七。”她两只手搭在柜沿，望着你手里的东西。\n\n纸没有破，只是一片纸翼被挤歪了，紧紧贴着转轴。竹签磨得光滑，绑线却绕得很仔细。\n\n你将风车侧过来，门外的光从纸翼之间透过去；她也跟着歪了歪脑袋。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_inspecting"
+      ],
+      "excluded_flags": [
+        "aq_helped"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "repair",
+          "label": "把纸翼理开",
+          "result": "你沿着旧折痕理开纸翼，松出一点空隙。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_helped"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "bent"
+      }
+    },
+    {
+      "id": "aq_repaired",
+      "title": "又转起来了",
+      "speaker": "柜台边的小女孩",
+      "body": "你托住竹签，把压在轴上的纸翼轻轻理开。没有补新纸，只顺着原来的折痕留出一点空隙。\n\n阿七接过去，先不敢使劲，只轻轻吹了一口。\n\n风车转起来了。她等它停下，又吹了一口，眼睛一直跟着那一点褪色的红。\n\n“原来不用很用力。”",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_helped"
+      ],
+      "excluded_flags": [
+        "aq_paper_asked",
+        "aq_ready_leave"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "paper",
+          "label": "我见过一张画着风车的纸",
+          "result": "你说起楼上旧信里的夹纸。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_paper_asked"
+          ],
+          "required_flags": [
+            "aq_paper_seen"
+          ],
+          "excluded_flags": []
+        },
+        {
+          "id": "bye",
+          "label": "拿稳些，别再压着了",
+          "result": "你将风车交回她手里。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ready_leave"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "fixed"
+      }
+    },
+    {
+      "id": "aq_paper_reply",
+      "title": "纸上的风车",
+      "speaker": "柜台边的小女孩",
+      "body": "“画的时候容易，折的时候就歪了。”\n\n阿七捏着竹签，在空中比了一个小小的方形。\n\n“先把两边碰齐，别急着压。压下去，就很难改啦。”\n\n她又吹了吹风车，没有问那张纸放在哪里。纸翼在她指间转了一圈。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_paper_asked"
+      ],
+      "excluded_flags": [
+        "aq_ready_leave"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "bye",
+          "label": "我记住了，拿好你的风车",
+          "result": "你记住了她说的折法。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ready_leave"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "fixed"
+      }
+    },
+    {
+      "id": "aq_declined",
+      "title": "收起风车",
+      "speaker": "柜台边的小女孩",
+      "body": "阿七把风车收回胸前，先用手护好压弯的那一片。\n\n“那我不吹了，省得更坏。”\n\n她退开一步，让出柜前的位置，没有再催你。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_declined"
+      ],
+      "excluded_flags": [
+        "aq_ready_leave"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "bye",
+          "label": "拿好风车，慢些走",
+          "result": "你看着她护好了风车。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ready_leave"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_departure",
+      "title": "护好风车",
+      "speaker": "柜台边的小女孩",
+      "body": "阿七离开柜边时，回头看了一眼。\n\n“你明天还在这里吧？”\n\n你应了一声。她点点头，护着风车往门边去了，跨过门槛时还低头看了一眼竹签。\n\n你把算盘挪回手边，柜前又空了下来。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_ready_leave"
+      ],
+      "excluded_flags": [
+        "aq_departed"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "watch",
+          "label": "目送她离开",
+          "result": "阿七带着风车离开了柜台。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_departed"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_ledger",
+      "title": "另一册账",
+      "speaker": "铺中旧物",
+      "body": "现银与息费已经核过。你收好明账，手边那册旧《阴账》却没能合严。\n\n一页纸夹在其中，边缘平整得像刚刚翻过。灯照过去，纸上有几道很淡的墨痕。\n\n你记得接铺时看过这里，那时还辨不出字。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_departed"
+      ],
+      "excluded_flags": [
+        "aq_ledger_open"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "open",
+          "label": "翻开旧《阴账》",
+          "result": "你重新翻开了旧《阴账》。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ledger_open"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "ledger"
+      }
+    },
+    {
+      "id": "aq_drawer",
+      "title": "尚欠七账",
+      "speaker": "铺中旧物",
+      "body": "纸上只有四个字：\n\n尚欠七账\n\n没有金额，也没有收讫的印记。你再看明账，今夜核过的数字并没有变。\n\n柜下一声轻响。那只旧抽屉松开一道缝，一角发黄的纸探了出来。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_ledger_open"
+      ],
+      "excluded_flags": [
+        "aq_plan_seen",
+        "aq_chapter_done"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "look",
+          "label": "拉开看看",
+          "result": "你拉开抽屉，取出半张旧铺草图。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_plan_seen"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "skip",
+          "label": "先收好账本",
+          "result": "你合起旧账，将抽屉轻轻推回。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_chapter_done"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "ledger"
+      }
+    },
+    {
+      "id": "aq_floorplan",
+      "title": "半张旧铺草图",
+      "speaker": "铺中旧物",
+      "body": "抽屉里是半张旧铺平面草图，纸边被撕去了。\n\n柜台、楼梯，位置大致对得上。可一条墙线越过了你熟悉的墙面，在纸边继续伸出去。\n\n余下的部分已经没有了。你将草图夹回旧账，留待细看。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 7,
+      "night_max": 7,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 800,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_plan_seen"
+      ],
+      "excluded_flags": [
+        "aq_chapter_done"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "put_away",
+          "label": "夹好草图，收起账本",
+          "result": "旧铺草图已经夹进旧账。图上的墙线，与眼前铺面并不完全相符。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_chapter_done"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "plan"
+      }
+    },
+    {
+      "id": "aq_return_helped",
+      "title": "又来柜前",
+      "speaker": "阿七",
+      "body": "铺门一开，阿七便从门口探了探头。\n\n“这回转得可好了。走来的时候，我都没使劲吹。”\n\n她举起风车让你看，等纸翼停下来，才把它收好。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 8,
+      "night_max": 8,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_departed",
+        "aq_helped"
+      ],
+      "excluded_flags": [
+        "aq_returned"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "listen",
+          "label": "听她说下去",
+          "result": "阿七收好风车，仍站在柜前。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_returned"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_return_declined",
+      "title": "又来柜前",
+      "speaker": "阿七",
+      "body": "铺门一开，阿七便从门口探了探头。\n\n“我后来自己拨了拨，能转一点了。”\n\n她举起风车让你看，等纸翼停下来，才把它收好。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 8,
+      "night_max": 8,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_departed",
+        "aq_declined"
+      ],
+      "excluded_flags": [
+        "aq_returned"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "listen",
+          "label": "听她说下去",
+          "result": "阿七收好风车，仍站在柜前。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_returned"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_stay_8",
+      "title": "柜边的小凳",
+      "speaker": "阿七",
+      "body": "“掌柜，我没什么好玩的了。能坐这儿看你做生意吗？”\n\n她看看柜边的小凳，又等着你的回答。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 8,
+      "night_max": 8,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_returned"
+      ],
+      "excluded_flags": [
+        "aq_companion_allowed",
+        "aq_refused_8"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "sit",
+          "label": "坐吧，别挡着客人",
+          "result": "“那我坐这里。有人来了，我就不插嘴。”\n\n阿七指向左侧，搬好小凳，规规矩矩地坐下。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_companion_allowed"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "careful",
+          "label": "可以，不过柜上的东西别乱碰",
+          "result": "“我只看，不碰。”\n\n阿七把手放回膝上，指向左侧：“那我坐这里。有人来了，我就不插嘴。”",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_companion_allowed",
+            "aq_companion_careful"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "later",
+          "label": "今天忙，下回再来",
+          "result": "“好。那你先忙。”阿七抱好风车，轻轻带上了门。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_refused_8"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_chat_8",
+      "title": "风车与生意",
+      "speaker": "阿七",
+      "body": "阿七把风车藏在膝边，看看门口，又看看你。\n\n“来这里的人，都有东西要放下吗？”",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 8,
+      "night_max": 8,
+      "window_start": 0,
+      "window_end": 240,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_refused_8",
+        "aq_left_8"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "talk",
+          "label": "也有人回来取东西",
+          "result": "“那要替他放好。”阿七点点头，把风车往自己怀里收了收。",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_companion",
+        "checkpoint": true,
+        "manual": true,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_paper_8",
+      "title": "理平纸角",
+      "speaker": "阿七",
+      "body": "阿七看见柜边一叠空白废纸，伸出手，又先看了看你。\n\n“这些没有字的，能理在一起吗？”",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 8,
+      "night_max": 8,
+      "window_start": 0,
+      "window_end": 240,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_refused_8",
+        "aq_left_8"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "sort",
+          "label": "把干净的纸递给她",
+          "result": "她先把最小的一片放在上头，想了想，又换到一旁。\n\n“这一张太小了，折不成风车。”你们把纸角理平，放回原处。",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_companion",
+        "checkpoint": true,
+        "manual": true,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_leave_8",
+      "title": "今天先回去吧",
+      "speaker": "阿七",
+      "body": "阿七抬起头，等你说话。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 8,
+      "night_max": 8,
+      "window_start": 0,
+      "window_end": 240,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_refused_8",
+        "aq_left_8"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "leave",
+          "label": "今天先回去吧",
+          "result": "“好，明天再来。”她从小凳上下来，把凳脚往里推好。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_left_8"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_companion",
+        "checkpoint": true,
+        "manual": true,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_stay_9",
+      "title": "柜边的小凳",
+      "speaker": "阿七",
+      "body": "阿七在门口停了停，指指柜边的小凳。\n\n“今天能坐一会儿吗？我会让着客人。”",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 9,
+      "night_max": 9,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_returned"
+      ],
+      "excluded_flags": [
+        "aq_companion_allowed",
+        "aq_refused_9"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "sit",
+          "label": "坐吧，别挡着客人",
+          "result": "“那我坐这里。有人来了，我就不插嘴。”\n\n阿七指向左侧，搬好小凳，规规矩矩地坐下。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_companion_allowed"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "careful",
+          "label": "可以，不过柜上的东西别乱碰",
+          "result": "“我只看，不碰。”\n\n阿七把手放回膝上，指向左侧：“那我坐这里。有人来了，我就不插嘴。”",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_companion_allowed",
+            "aq_companion_careful"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "later",
+          "label": "今天忙，下回再来",
+          "result": "“好。那你先忙。”阿七抱好风车，轻轻带上了门。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_refused_9"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_chat_9",
+      "title": "柜边的空地方",
+      "speaker": "阿七",
+      "body": "“折好的东西，放在哪里好？”\n\n阿七望望柜边那块空地方，比了一个小小的宽度。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 9,
+      "night_max": 9,
+      "window_start": 0,
+      "window_end": 240,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_refused_9",
+        "aq_left_9"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "talk",
+          "label": "先放在凳子边吧",
+          "result": "“那不会挡着人。”她把小凳向里挪了一点，给折纸让出位置。",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_companion",
+        "checkpoint": true,
+        "manual": true,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_paper_9",
+      "title": "挑一张干净的",
+      "speaker": "阿七",
+      "body": "你把没有账字的废纸拣出来，阿七一张张摊平。\n\n“这张没有破。折小船，还是小鸟？”",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 9,
+      "night_max": 9,
+      "window_start": 0,
+      "window_end": 240,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_refused_9",
+        "aq_left_9"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "boat",
+          "label": "折一只小船",
+          "result": "阿七对齐纸边，用指甲慢慢压住折痕。小船歪了一边，她扶正了，又忍不住笑。\n\n“还能坐稳。”",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "bird",
+          "label": "折一只小鸟",
+          "result": "阿七把两边纸翼举起来，轻轻扇了两下。\n\n“这只不用竹签。”她把小鸟放回干净纸堆上。",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_companion",
+        "checkpoint": true,
+        "manual": true,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_leave_9",
+      "title": "今天先回去吧",
+      "speaker": "阿七",
+      "body": "阿七抬起头，等你说话。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 9,
+      "night_max": 9,
+      "window_start": 0,
+      "window_end": 240,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_refused_9",
+        "aq_left_9"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "leave",
+          "label": "今天先回去吧",
+          "result": "“好，明天再来。”她从小凳上下来，把凳脚往里推好。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_left_9"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_companion",
+        "checkpoint": true,
+        "manual": true,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_stay_10",
+      "title": "柜边的小凳",
+      "speaker": "阿七",
+      "body": "阿七在门口停了停，指指柜边的小凳。\n\n“今天能坐一会儿吗？我会让着客人。”",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 10,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_returned"
+      ],
+      "excluded_flags": [
+        "aq_companion_allowed",
+        "aq_refused_10"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "sit",
+          "label": "坐吧，别挡着客人",
+          "result": "“那我坐这里。有人来了，我就不插嘴。”\n\n阿七指向左侧，搬好小凳，规规矩矩地坐下。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_companion_allowed"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "careful",
+          "label": "可以，不过柜上的东西别乱碰",
+          "result": "“我只看，不碰。”\n\n阿七把手放回膝上，指向左侧：“那我坐这里。有人来了，我就不插嘴。”",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_companion_allowed",
+            "aq_companion_careful"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "later",
+          "label": "今天忙，下回再来",
+          "result": "“好。那你先忙。”阿七抱好风车，轻轻带上了门。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_refused_10"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_chat_10",
+      "title": "数到哪里了",
+      "speaker": "阿七",
+      "body": "阿七低头掰着手指，掰到一半又停住。\n\n“刚才那个人说了好多话。我只顾听，都忘了数到哪里了。”",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 10,
+      "window_start": 0,
+      "window_end": 240,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_refused_10",
+        "aq_left_10"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "talk",
+          "label": "不用急，慢慢数",
+          "result": "她从拇指重新数起，这回一根一根地收好。\n\n“这次没漏。”她小声告诉你，又朝门口看去。",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_companion",
+        "checkpoint": true,
+        "manual": true,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_paper_10",
+      "title": "一张一张来",
+      "speaker": "阿七",
+      "body": "你把零散的废纸往里拢了拢。阿七伸出一根手指，等你放好一张，才再添一根。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 10,
+      "window_start": 0,
+      "window_end": 240,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_refused_10",
+        "aq_left_10"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "count",
+          "label": "陪她一张张数",
+          "result": "数到两只手都用上了，她把最后一张纸放在最上头。\n\n“手指不够了，就重新来。”她把纸堆拍齐，往你手边推了推。",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_companion",
+        "checkpoint": true,
+        "manual": true,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_leave_10",
+      "title": "今天先回去吧",
+      "speaker": "阿七",
+      "body": "阿七抬起头，等你说话。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 10,
+      "window_start": 0,
+      "window_end": 240,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_refused_10",
+        "aq_left_10"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "leave",
+          "label": "今天先回去吧",
+          "result": "“好。”她从小凳上下来，把凳脚往里推好，又朝你摆了摆手。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_left_10"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_companion",
+        "checkpoint": true,
+        "manual": true,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_old_ticket",
+      "title": "一张当票存根",
+      "speaker": "铺中旧物",
+      "body": "你收起散页时，一张当票存根从封皮里滑出来。\n\n当户：陈阿福。龙凤金镯一对，当金十八银元。\n\n纸边已经起毛，背面有旧城厢的住址。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 10,
+      "night_max": 10,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "aq_ticket_seen"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "keep",
+          "label": "夹好旧票",
+          "result": "陈阿福的当票存根夹在旧账中，票号瑞字四十七。龙凤金镯一对，当金十八银元。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ticket_seen"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "ledger",
+        "item_label": "陈阿福的旧当票"
+      }
+    },
+    {
+      "id": "aq_ticket_end",
+      "title": "旧票先留着",
+      "speaker": "铺中旧物",
+      "body": "旧票夹在账页之间，露出一角。",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 10,
+      "night_max": 10,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_ticket_seen"
+      ],
+      "excluded_flags": [
+        "aq_ticket_done"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "away",
+          "label": "夹好旧票，收起账本",
+          "result": "旧票收好了。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_ticket_done"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "ledger",
+        "item_label": "陈阿福的旧当票"
+      }
+    },
+    {
+      "id": "aq_seated_welcome",
+      "title": "坐在这里",
+      "speaker": "阿七",
+      "body": "“那我坐这里。有人来了，我就不插嘴。”\n\n阿七指向左侧，搬好小凳，规规矩矩地坐下。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 8,
+      "night_max": 10,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed"
+      ],
+      "excluded_flags": [
+        "aq_seated",
+        "aq_companion_careful"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "resume",
+          "label": "让她坐好，接着忙",
+          "result": "阿七安静地坐在柜边，抬头看着来往的人。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_seated"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "aq_seated_careful",
+      "title": "坐在这里",
+      "speaker": "阿七",
+      "body": "“我只看，不碰。”阿七把手放回膝上。\n\n“那我坐这里。有人来了，我就不插嘴。”\n\n她指向左侧的小凳，规规矩矩地坐下。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 8,
+      "night_max": 10,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 10000,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "aq_companion_allowed",
+        "aq_companion_careful"
+      ],
+      "excluded_flags": [
+        "aq_seated"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "resume",
+          "label": "让她坐好，接着忙",
+          "result": "阿七安静地坐在柜边，抬头看着来往的人。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_seated"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "checkpoint": true,
+        "manual": false,
+        "art": "aqi"
+      }
+    },
+    {
+      "id": "fd_ticket",
+      "title": "铺内存根 · 瑞字四十七",
+      "speaker": "柜前往来",
+      "body": "夹在旧账中的当票存根。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "read",
+          "label": "细看旧票",
+          "result": "顾记当铺存根。瑞字四十七。\n五月初一入当，约七夜。龙凤金镯一对，当金十八银元。\n当户陈阿福，住旧城厢陈家弄。七夜写得清楚，旁边没有销讫字样。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_ticket_read"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_receipt",
+      "title": "随货的旧包纸",
+      "speaker": "柜前往来",
+      "body": "旧包纸内折着一张出货凭据。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "read",
+          "label": "展开旧包纸",
+          "result": "瑞字四十七。五月初五，龙凤金镯一对，作绝当出货，收银二百四十。\n经手：顾敬堂。铺印压在署名边上。\n这是整对出货时的凭据，随货转手留下；两只后来才分开保管。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_receipt_read"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_mark",
+      "title": "内圈工记",
+      "speaker": "柜前往来",
+      "body": "金镯内侧",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "read",
+          "label": "看看内圈与凤尾",
+          "result": "内圈刻“瑞丰”，旁有相对式样的工号。凤尾的一道旧焊口已经磨平。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_mark_read"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_chen_request",
+      "title": "托一声口信",
+      "speaker": "柜前往来",
+      "body": "旧票后留着陈家弄的住址。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_ticket_read",
+        "fd_receipt_read"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "ask",
+          "label": "托话请陈家人来一趟",
+          "result": "口信托出去了。陈家的人明日得空会来。",
+          "minutes": 5,
+          "grant_flags": [
+            "fd_chen_requested"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_chen_recognize",
+      "title": "家里说过的旧物",
+      "speaker": "柜前往来",
+      "body": "陈小满朝柜子里望了望，目光停在那只凤镯上。\n“祖父跟我说过，家里那只凤镯，尾上补过一道。他总让我留心旧货，可我没有见过原物，不敢认。”",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "ask",
+          "label": "问她家中是否还留着当票",
+          "result": "“留着呢，是当年顾记当铺开给祖父的。他一直没舍得丢。明日我带来，劳掌柜看看。”\n她向你点点头，拎好包袱出了铺门。",
+          "minutes": 5,
+          "grant_flags": [
+            "fd_chen_requested"
+          ]
+        },
+        {
+          "id": "later",
+          "label": "先不追问",
+          "result": "她把包袱重新扎好，向你道了声谢，转身出了铺门。",
+          "minutes": 0,
+          "grant_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_family",
+      "title": "祖父留下的当票",
+      "speaker": "柜前往来",
+      "body": "陈小满解开布包，小心展开一张盖着顾记铺印的旧当票。\n“这是当年铺子收下镯子时，开给祖父的票。后来没赎成，票就一直留在他手里。”\n“镯子是祖父的母亲留下的。他临终前把这张票交给我，叫我若有机会，替他找回来。”",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_chen_requested"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "read",
+          "label": "接过原当票，听她说来历",
+          "result": "她把原当票递给你，供你细看，又拿出祖父的小本。\n“票是铺里开的。这本子是祖父自己记的，写着后来讨镯子的事。”\n五月初六，持票携赎金到顾铺。顾称货在外库，尚未取回，钱与票仍由我带回。\n五月初九，再往催讨。门前兵丁不让进，说营里有话，莫再来顾铺纠缠。\n“祖父说，后来跑了多少趟，也没拿回来。”\n你将原当票照样抄下，和旧记的抄本一并夹进账本的“旧当铺”册页；原件仍由她收好。\n“我还得回去赶活。掌柜先查着，我明日再来听消息。”\n陈小满拎起布包，向你道了声谢，出了铺门。",
+          "minutes": 5,
+          "grant_flags": [
+            "fd_family_read"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_truth",
+      "title": "把旧票摊开",
+      "speaker": "柜前往来",
+      "body": "你把陈家原票、铺内存根和出货凭据逐一核对。瑞字四十七，原是龙凤金镯一对；凤镯的工记与凤尾旧补，也同陈家记下的细节相合。\n陈小满俯身看了许久，手指轻轻按住原票：“是祖父一直在找的那一对。”",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_ticket_read",
+        "fd_receipt_read",
+        "fd_family_read",
+        "fd_customer_ticket_read",
+        "fd_mark_read"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "tell",
+          "label": "把日期与出货记录说清楚",
+          "result": "你将两张当票与出货凭据并排放好：七夜的当期还没满，初五便已出货。祖父初六拿票来赎时，镯子已不在铺里。\n陈小满先看初五那行日期，再低头看祖父留下的票。她的指尖停在“七夜”旁，许久没有挪开。\n“他明明赶上了。他们却一直说，东西还在外库，叫他再等等。”\n“这张票，祖父每回展开都先擦手。有一角快裂了，他让我拿薄纸衬着，说取镯子的时候，还得给掌柜看。”\n她将原票轻轻压平：“原来他守着这张票等的时候，镯子早就卖给别人了。”",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_truth_told"
+          ]
+        },
+        {
+          "id": "lie",
+          "label": "说铺里的记录对不上",
+          "result": "你明明看见七夜的约定和初五的出货记录，却说：“铺里是在到期后才卖的。”\n陈小满按住祖父的原票：“这上头明明写着七夜。”她将纸收回去，没有应下。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_lied"
+          ]
+        },
+        {
+          "id": "later",
+          "label": "改日再谈",
+          "result": "旧纸各自夹好，话还没有说完。",
+          "minutes": 0,
+          "grant_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_amend",
+      "title": "前次没有说实话",
+      "speaker": "柜前往来",
+      "body": "陈小满等着你把话说完。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_lied",
+        "fd_family_read",
+        "fd_ticket_read",
+        "fd_receipt_read",
+        "fd_customer_ticket_read"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "tell",
+          "label": "把隐瞒的日期也说清",
+          "result": "你承认先前隐瞒了出货日期，向她赔不是。陈小满没有接话，将祖父的原票重新放在柜上。\n你将两张当票与出货凭据并排放好：七夜的当期还没满，初五便已出货。祖父初六拿票来赎时，镯子已不在铺里。\n陈小满先看初五那行日期，再低头看祖父留下的票。她的指尖停在“七夜”旁，许久没有挪开。\n“他明明赶上了。他们却一直说，东西还在外库，叫他再等等。”\n“这张票，祖父每回展开都先擦手。有一角快裂了，他让我拿薄纸衬着，说取镯子的时候，还得给掌柜看。”\n她将原票轻轻压平：“原来他守着这张票等的时候，镯子早就卖给别人了。”",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_truth_told",
+            "fd_amended"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_settle",
+      "title": "旧事怎样了结",
+      "speaker": "柜前往来",
+      "body": "“我最想拿回来的，还是祖父的那一对。”陈小满把旧票收好。\n“别的办法，你也可以说。我听明白了，再作主。”",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_truth_told"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "return",
+          "label": "将两只金镯交还陈家",
+          "result": "陈小满望着那对镯子，过了一会儿才伸手。她找到凤尾那道旧补，轻轻摸了一下。\n“祖父说，这一处是他母亲戴着时补的。我记了这么些年，今天才知道，原来只有这么小一道。”\n她用指腹抹去龙镯内圈的一点浮灰，望着掌心里的一对镯子。\n“家里的旧匣子一直空着。他晚年眼睛不好了，还让我拿出来，摸摸里头那两个窝。”\n你把交还字据推到她面前。纸上写明瑞字四十七，龙凤金镯一对，今日交还陈家。\n陈小满逐字看完，落下名字，把祖父留下的原当票另折好，放回贴身的小布袋。\n“这张票，我还想留着。他等了那么久，总说自己没有过期。如今镯子回来了，票也该一道带回家。”\n她重新铺开包布，把两只金镯分开裹妥，这才抬起头，朝你笑了一下。\n“旧匣子的衬布该换了。回去我挑块软和的，给它们垫好。多谢掌柜，费心替我找这一趟。”\n陈小满抱好布包，向你道别。临走前，她又低头拢了拢包角。\n柜角那本红黑账簿，封皮似乎轻轻动了一下。你再看时，它仍合在那里。",
+          "minutes": 5,
+          "grant_flags": [
+            "fd_clear"
+          ]
+        },
+        {
+          "id": "pay",
+          "label": "交付300银元，立和解字据",
+          "result": "你将三百银元点清，连同和解字据推到陈小满面前。她重新数过，将字据逐行看完。\n“数目齐了。这是我自己应下的赔偿。”她拿起笔，在收讫处写下名字。\n她等墨迹干了，将祖父的原当票另折好，收进贴身的布袋，没有和银元放在一起。\n“钱替不了那对镯子。祖父留下的话，我还记着。只是向这铺子追讨的事，到今天就了了。”\n陈小满收好钱与字据：“多谢掌柜，把当年的事说明白了。”她拎起布包，告辞出门。\n柜角那本红黑账簿，封皮似乎轻轻动了一下。你再看时，它仍合在那里。",
+          "minutes": 5,
+          "grant_flags": [
+            "fd_peace"
+          ],
+          "required_flags": [
+            "fd_compensation_agreed"
+          ]
+        },
+        {
+          "id": "later",
+          "label": "眼下还办不到，容后再谈",
+          "result": "“我还会留意旧货。等掌柜有了消息，再捎话给我。”她收好原票。",
+          "minutes": 0,
+          "grant_flags": []
+        },
+        {
+          "id": "refuse",
+          "label": "这笔旧账，我眼下不愿承担",
+          "result": "陈小满把旧纸收回包袱：“旧事既然说清了，我先把这几张纸留好。”她没有再催你。",
+          "minutes": 0,
+          "grant_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_followup",
+      "title": "陈小满又来过",
+      "speaker": "柜前往来",
+      "body": "陈小满在柜边停了一会儿。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "listen",
+          "label": "听她说说近况",
+          "result": "陈小满带来祖父留下的旧镯匣。她把松脱的衬布重新缝过，针脚细密。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_followed"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_seller",
+      "title": "托卖镯人再来",
+      "speaker": "柜前往来",
+      "body": "前次的来客还留着口信。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "ask",
+          "label": "托陆掌眼捎话，再看凤镯",
+          "result": "已托话，请他明日再带凤镯来。",
+          "minutes": 5,
+          "grant_flags": [
+            "fd_seller_requested"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_aqi_thread",
+      "title": "理一理细线",
+      "speaker": "柜前往来",
+      "body": "阿七把一截细线绕在指头上，又慢慢解开。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "talk",
+          "label": "聊两句",
+          "result": "她把线头捻齐：“这回不打结了。”",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_aqi_thread"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_aqi_boat",
+      "title": "试折纸船",
+      "speaker": "柜前往来",
+      "body": "阿七折了只小船，让它停在柜边的空处。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "talk",
+          "label": "聊两句",
+          "result": "“等天晴，我想看看它会不会漂。”",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_aqi_boat"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_aqi_box",
+      "title": "收拾纸匣",
+      "speaker": "柜前往来",
+      "body": "阿七把干净纸角一张张放进匣子。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "talk",
+          "label": "聊两句",
+          "result": "她把盖子合好，仍留了一个小角方便掀开。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_aqi_box"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_aqi_stay",
+      "title": "柜边的小凳",
+      "speaker": "柜前往来",
+      "body": "阿七在柜前停下：“今日能坐一会儿吗？”",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "yes",
+          "label": "坐吧，别挡着客人",
+          "result": "她在左边的小凳坐好。",
+          "minutes": 0,
+          "grant_flags": [
+            "aq_seated"
+          ]
+        },
+        {
+          "id": "no",
+          "label": "今天忙，下回再来",
+          "result": "“那我改日来。”她把风车收好。",
+          "minutes": 0,
+          "grant_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_aqi_leave",
+      "title": "今天先回去吧",
+      "speaker": "柜前往来",
+      "body": "阿七点点头，把纸角收好。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "bye",
+          "label": "今天先回去吧",
+          "result": "“明日得空，我再来。”",
+          "minutes": 0,
+          "grant_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_spending",
+      "title": "旧出货簿的背页",
+      "speaker": "柜前往来",
+      "body": "簿页的背面还有两行小字。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_receipt_read",
+        "fd_ticket_read"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "read",
+          "label": "翻看背页",
+          "result": "出货簿背页。\n五月初五，瑞字四十七，龙凤金镯整对出货，收银二百四十。\n五月初六，购封匣一件，付银二百二十。边注：持赴鬼市交货。押记：玄乙。\n两笔均有顾敬堂署名。封匣里装了什么，没有写。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_spending_read"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_meeting_end",
+      "title": "陈小满",
+      "speaker": "柜前往来",
+      "body": "她将旧纸重新折好。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "bye",
+          "label": "改日再聊",
+          "result": "“我先回去做活。掌柜有话，再托人捎来。”陈小满收起旧纸。",
+          "minutes": 0,
+          "grant_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_customer_ticket",
+      "title": "陈家原票 · 瑞字四十七",
+      "speaker": "柜前往来",
+      "body": "陈小满展开客持原票，供你核对。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_family_read"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "read",
+          "label": "翻看陈家原票 · 瑞字四十七",
+          "result": "客持当票抄录。原件由陈小满保管。\n顾记当铺，瑞字四十七。\n五月初一，陈阿福，龙凤金镯一对，当金十八银元，当期七夜。\n铺印仍在，没有收回注销，也没有赎讫印。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_customer_ticket_read"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_protection",
+      "title": "驻军往来的夹页",
+      "speaker": "柜前往来",
+      "body": "出货簿夹页上另有几行小账。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_ticket_read",
+        "fd_receipt_read"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "read",
+          "label": "翻看驻军往来的夹页",
+          "result": "五月初八，送驻防营署礼银，陈家讨赎一事托办。顾敬堂。\n五月初十，营署来条：已嘱门前拦阻陈阿福，勿再扰顾铺。\n回条折在送礼账旁。送礼发生在出货、来赎之后，没有改动原票的七夜。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_protection_read"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_yin_link",
+      "title": "阴账中的旧票号",
+      "speaker": "柜前往来",
+      "body": "翻到旧《阴账》中折起的一页。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_spending_read"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "read",
+          "label": "翻看阴账中的旧票号",
+          "result": "瑞字四十七。陈阿福。\n旁有一枚“玄乙”押记，和那笔封匣购货的边注相同。下行只写：取资入契，原物未偿。\n纸上的票号属于陈家，押记却通向鬼市那笔交易。末尾留着一道空白。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_yin_link_read"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_yin_echo",
+      "title": "阴账上的新墨",
+      "speaker": "柜前往来",
+      "body": "你再翻到瑞字四十七那行。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_yin_link_read"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "read",
+          "label": "翻看阴账上的新墨",
+          "result": "笔还搁在砚边，那道空白里却渐渐透出一笔新墨。没有人动过账页。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_yin_echo_seen"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_compensation",
+      "title": "商量赔偿",
+      "speaker": "柜前往来",
+      "body": "陈小满把原票放在柜边。\n“我还是希望找回原物。若掌柜想议赔偿，也请先把知道的下落说清楚。”",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_truth_told"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "offer",
+          "label": "与她商量300银元赔偿",
+          "result": "陈小满将原票折回旧痕，手仍按在纸上：“我想找回来的，终究是祖父那一对。”\n她静了一会儿：“这些年，我一边赶活，一边留心旧货消息。祖父交代的事，我没忘。眼前的日子，也得接着过。”\n“若赔三百银元，我愿意应下。添些做活的家什，再留一笔房钱，往后也能从容些。”\n“收到钱，立了字据，我便不再向铺子追讨这一笔。但祖父没有逾期，这件事，请照实留下。”",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_compensation_agreed"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_search_motive",
+      "title": "镯匣里的空处",
+      "speaker": "陈小满",
+      "body": "陈小满捏着原票的边角。\n“祖父留下的镯匣有两个窝。如今凤的找着了，龙的还不知道在哪里。他一直盼着能把这一对找回来。”",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 11,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 850,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_truth_told",
+        "fd_customer_ticket_read",
+        "fd_ticket_read",
+        "fd_receipt_read",
+        "fd_mark_read"
+      ],
+      "excluded_flags": [
+        "fd_search_promised",
+        "fd_clear",
+        "fd_peace"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "help",
+          "label": "我替你打听另一只",
+          "result": "你应下替她打听龙镯。陈小满收好原票：“那我先回去赶活。掌柜，劳您费心。”\n开铺前，可以托人寻找龙镯。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_search_promised"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "later",
+          "label": "眼下先缓缓",
+          "result": "“好，我也再留心着。”陈小满收好布包，告辞出门。",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true
+      }
+    },
+    {
+      "id": "ds_search_message",
+      "title": "龙镯的口信",
+      "speaker": "捎信人",
+      "body": "门缝里递进一张口信。\n“问着了。陆掌眼从旧货里收进一只龙镯，内圈有瑞丰工记，花样也相近。他说若要验看，开铺前捎个信，带来便是。”",
+      "kind": "anchor",
+      "phase": "shop_resolution",
+      "night_min": 11,
+      "night_max": 18,
+      "window_start": 540,
+      "window_end": 545,
+      "priority": 850,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "fd_search_message"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "keep",
+          "label": "收好口信",
+          "result": "陆掌眼手上有一只符合描述的龙镯。开铺前可约他带来验看。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_search_message"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "aqi_counter",
+        "manual": false,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "art": "dragon_message",
+        "item_label": "寻镯口信"
+      }
+    },
+    {
+      "id": "fd_dragon_quote",
+      "title": "陆掌眼带来的龙镯",
+      "speaker": "陆掌眼",
+      "body": "陆掌眼解开布包，把龙镯放在柜上。\n“这是正经旧货渠道收来的。你既托人找过，先验清楚再谈。”\n内圈的瑞丰工记、龙首的纹样，与已经核过的凤镯和陈家原票对得上，确是成对的式样。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 11,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 850,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_search_message"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "fair",
+          "label": "验看龙镯，问问价钱",
+          "result": "陆掌眼把布包推近些：“街坊说你做生意公道。这只龙镯，一百五十银元。”",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "dear",
+          "label": "验看龙镯，问问价钱",
+          "result": "陆掌眼按着布包：“掌柜的生意我听说过。这只两百银元，价钱就不再让了。”",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true
+      }
+    },
+    {
+      "id": "fd_dragon_deal",
+      "title": "龙镯的价钱",
+      "speaker": "陆掌眼",
+      "body": "陆掌眼等你拿主意。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 11,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 850,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "fd_search_message"
+      ],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "buy",
+          "label": "付钱收下龙镯",
+          "result": "陆掌眼当面点清银元，把龙镯交给你：“货银两清，掌柜收好。”\n他叠起空布包，告辞出门。",
+          "minutes": 5,
+          "grant_flags": [
+            "fd_dragon_bought"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        },
+        {
+          "id": "later",
+          "label": "今天先缓缓",
+          "result": "“成，改日再约。”陆掌眼包好龙镯，起身告辞。\n以后开铺前仍可约他带来。",
+          "minutes": 0,
+          "grant_flags": [],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": true
+      }
+    },
+    {
+      "id": "fd_phoenix_departure",
+      "title": "卖镯人留下的话",
+      "speaker": "阿七",
+      "body": "卖镯人拢好包裹，留下再联络的话。",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "hint",
+          "label": "阿七在柜边",
+          "result": "卖镯人已经告辞。",
+          "minutes": 0,
+          "grant_flags": []
+        },
+        {
+          "id": "quiet",
+          "label": "来客告辞",
+          "result": "卖镯人已经告辞。",
+          "minutes": 0,
+          "grant_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    },
+    {
+      "id": "fd_phoenix_hint",
+      "title": "阿七",
+      "speaker": "阿七",
+      "body": "“掌柜，刚才那只凤镯，我瞧着好熟悉……花样刻得那么细，应该挺值钱吧？”",
+      "kind": "conditional",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "heard",
+          "label": "继续",
+          "result": "阿七朝门外望了一眼，又低头摆弄手边的纸。",
+          "minutes": 0,
+          "grant_flags": [
+            "fd_phoenix_hint_seen"
+          ]
+        }
+      ],
+      "presentation": {
+        "scene": "first_debt",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    }
+  ]
+}

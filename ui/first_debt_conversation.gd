@@ -112,6 +112,7 @@ func reopen() -> void:
 	show(); display_page()
 
 func collapse() -> void:
+	if not _acknowledge(): return
 	_result = false
 	release_counter()
 	hide()
@@ -163,11 +164,23 @@ func choose(entry: Dictionary) -> void:
 	_pages = pages(result.message); _page = 0; _result = true; _error = ""
 	display_page()
 
+func _acknowledge() -> bool:
+	var id: String = _model.get("ack_event", "")
+	if id.is_empty() or not PhoenixRecovery.hint_due(session._day.state): return true
+	_committing = true
+	var result := session.event_command(id, "heard")
+	_committing = false
+	if not result.ok:
+		_error = result.message; display_page(); return false
+	_model = {}; _auto_seen = ""
+	return true
+
 func advance() -> void:
 	if Time.get_ticks_msec() - _last_press < 180: return
 	_last_press = Time.get_ticks_msec()
 	if _page < _pages.size() - 1:
 		_page += 1; display_page(); return
+	if not _acknowledge(): return
 	_result = false
 	release_counter()
 	if _close_after_result or _model.get("buttons", []).is_empty():

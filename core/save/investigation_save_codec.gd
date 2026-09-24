@@ -100,7 +100,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 		var args: Array = row.args.duplicate(true)
 		if row.method == "counter_command" and args.size() == 4: args[3] = int(args[3])
 		var result: ActionResult = session.callv(row.method, args)
-		if DragonSearch.enabled(session._day.state) and row.method == "execute" and (str(row.args[0]).begins_with("prep_dragon_") or row.args[0] == "prep_chen_invite") and not result.ok: return null
+		if DragonSearch.enabled(session._day.state) and row.method == "execute" and (str(row.args[0]).begins_with("prep_dragon_") or row.args[0] in ["prep_chen_invite", "prep_phoenix_invite"]) and not result.ok: return null
 		if row.method in ["growth_command", "fan_command", "social_command"] and not result.ok: return null
 		if row.method == "counter_command" and (row.args[0] in ["fan_pressure", "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim", "bangle_claim"] or String(row.args[0]).begins_with("luxury_")) and not result.ok: return null
 		if SocialRules.enabled(run) and row.method == "counter_command" and row.args[0] in ["military_intro", "intimidate"] and not result.ok: return null
