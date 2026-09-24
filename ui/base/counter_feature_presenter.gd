@@ -27,6 +27,9 @@ func _on_intent(command: String, visit_id: String, detail: String, amount: int) 
 		if visitor == null: return
 		var result := _session.fan_command(command,visitor.item.instance_id,detail)
 		if result.ok:
+			if PorcelainEconomy.handles(_session._day.state,visitor.item):
+				PorcelainDeskView.open_porcelain(_view,_session,visitor.item.instance_id)
+				return
 			if BangleEconomy.handles(_session._day.state,visitor.item):
 				BangleDeskView.open_bangle(_view,_session,visitor.item.instance_id)
 				return

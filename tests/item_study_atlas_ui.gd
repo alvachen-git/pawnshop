@@ -5,7 +5,7 @@ func _run() -> void:
 	root.size = Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720)
 	root.content_scale_size = root.size
 	_capture_prefix = "v39_" + str(root.size.x)
-	_main = load("res://scenes/start.tscn").instantiate()
+	_main = load("res://scenes/start_bangle_v40.tscn").instantiate()
 	_main.start_at_title = false
 	_main.get_node("Bootstrap").save_path = "res://.godot/qa/item-studies/atlas-auto.json"
 	root.add_child(_main)

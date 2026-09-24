@@ -32,6 +32,8 @@ static func topic_info(run: RunDefinition, topic: String) -> Dictionary:
 		info.name = "珠玉鉴定指南"; info.description = "转珠看表层，放大孔口，再把整串逐粒比较。"
 	if run != null and BangleEconomy.enabled(run) and topic == "luxury_metal":
 		info.name = "金镯鉴定指南"; info.description = "称重对款，查看戳记与接缝，再比较火试后的局部痕迹。"
+	if run != null and PorcelainEconomy.enabled(run) and topic == "luxury_porcelain":
+		info.name = "青花断代图录"; info.description = "转看整器、绘纹与底足，年代与工艺分别判断。"; info.use = "对照元、明、清、民国的图样，不能单凭款识认年代。"
 	return info
 
 static func mastered(state: RunState, topic: String) -> bool:

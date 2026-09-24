@@ -8,7 +8,7 @@ var _rows: Array[Dictionary] = []
 
 func record(day: DayController, visit: CustomerVisit, before: int, command: String, detail: String, result: ActionResult) -> void:
 	if visit == null or not result.ok or visit.status != "active": return
-	var relevant := command in ["pressure", "belittle", "concession", "offer", "pawn", "fan_pressure", "condition_pressure", "luxury_pressure", "watch_claim", "pearl_claim", "bangle_claim", "intimidate"]
+	var relevant := command in ["pressure", "belittle", "concession", "offer", "pawn", "fan_pressure", "condition_pressure", "luxury_pressure", "watch_claim", "pearl_claim", "porcelain_claim", "bangle_claim", "intimidate"]
 	if command == "question":
 		var scenario := TradeScenarioService.for_visit(day.definition, visit)
 		var question := scenario.find_question(detail) if scenario != null else null

@@ -1,0 +1,4 @@
+# ming_a_hidden
+Built-in imagegen; source: C:\Users\alvachen\.codex\generated_images\01a0c8e1-5d71-7373-a439-546928f9c776\exec-92755785-3dd7-4899-a57c-2899ecffd2c0.png
+
+Edit this existing 3-column 7-row craft atlas into its subtle age-identification variant. KEEP EXACT seven-row layout, all 21 sprites, three craft columns, transparent background and entire last row visible. DO NOT add rows. Preserve grade differences: left visibly uneven contour and fill overshoot, center competent simple one-vein drawing, right precise multi-vein and white-channel drawing. ALL crisp, no blur/age smearing. Preserve four rotations, matching macro, bottom and counter. Archaizing Ming lotus sample: denser lotus scrolls and slightly broader lip to recall earlier forms. Retain long slim neck, graceful drooping belly, recessed base and narrow unglazed ring with double cobalt circle. All 3 craftsmanship columns still distinct and equally crisp. Don't transform into Yuan.

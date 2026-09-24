@@ -135,6 +135,8 @@ func render(model: Dictionary) -> void:
 			_image.material = WatchArt.material()
 		if visual.get("bangle_art",false):
 			_image.texture=BangleArt.exterior(int(visual.tiered_exterior));_image.material=BangleArt.cutout()
+		if visual.has("porcelain_art"):
+			_image.texture=PorcelainArt.from_facts(visual.porcelain_art,"body",0); _image.material=PorcelainArt.surface("front",String(visual.porcelain_art.damage),true,_image.texture)
 		_image.visible = _image.texture != null
 		_image.tooltip_text = "物品外观"
 		_views.hide()

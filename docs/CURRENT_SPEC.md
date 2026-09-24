@@ -1,6 +1,6 @@
 # 当前开发规格
 
-核对日期：2026-09-24。默认新局为 v41 `first_debt_recovery_release`：整合第一笔阴账、龙镯追查和开放延续，保留v38珍珠逐粒鉴定、钟表鉴定／议价、五位固定富客及十种高档货。v40及更早运行与存档按原规则恢复；本地v31第一账测试档也保留独立入口。
+核对日期：2026-09-24。默认新局为 v42 `porcelain_release`：整合第一笔阴账、龙镯追查和开放延续，保留v38珍珠逐粒鉴定、钟表鉴定／议价、五位固定富客及十种高档货。v40及更早运行与存档按原规则恢复；本地v31第一账测试档也保留独立入口。
 
 统一新局包含全部已合并经营和剧情系统：军阀往来、棉袄采购、设施／知识柜、折扇鉴定议价，以及阿七、铜镜四结局、夜半来声与清晨回想。新增功能仍按夜次、经营投入与剧情条件逐步出现，完整测试从新游戏开始。此处“完整”指当前已实现的经营与第一账流程，第十八夜后可继续营业；未实现的49夜内容与情报奖励仍属后续范围。见 [完整测试说明](../FULL_GAME_PLAYTEST.md)。
 
@@ -16,7 +16,7 @@
 | --- | --- |
 | 入口 | Godot 4.6.1，`scenes/start.tscn`，标题页新游戏 |
 | 默认新局 | `first_debt_recovery_release`，第18夜为试玩节点、可继续营业，内容版本41；随机新局，可用 `-- --seed=42` |
-| 存档 | 内容版本41，自动位 `auto/first_debt_recovery_release`，独立路径 `user://first_debt_recovery_release/autosave_v41.json` |
+| 存档 | 内容版本41，自动位 `auto/porcelain_release`，独立路径 `user://porcelain_release/autosave_v42.json` |
 | 档案库 | `user://save_library/library_v1.json`；六个手动槽共用，自动槽按运行隔离 |
 | 原阿七七夜 | 内容22 `aqi_seven`，入口 `scenes/aqi_seven_start.tscn`，在第七夜结束 |
 | 原十夜 | v24、v23 数据冻结；v24保留收铺初见，不补陪伴，v23不补入阿七 |
@@ -87,6 +87,6 @@
 
 ## 第一账整合发布
 
-整合第一账、龙镯追查、陈小满预约与归还收尾，同时保留v38富客、钟表与珍珠鉴定。默认新游戏使用v41；历史运行按原manifest恢复。第一账开发详情见`docs/FIRST_DEBT_V31.md`，整合验证见`docs/qa/first-debt-release/REPORT.md`。
+整合第一账、龙镯追查、陈小满预约与归还收尾，同时保留v38富客、钟表与珍珠鉴定。默认新游戏使用v42；历史运行按原manifest恢复。第一账开发详情见`docs/FIRST_DEBT_V31.md`，整合验证见`docs/qa/first-debt-release/REPORT.md`。
 
-当前发布整合版为 v41，保留线上金镯鉴定与背景音乐，并合入第一账补救、阿七主动提醒及鉴定栏细节查看。启动与存档兼容见 [v41发布说明](FIRST_DEBT_V41_RELEASE.md)。
+当前发布整合版为 v42，保留线上金镯鉴定与背景音乐，并合入第一账补救、阿七主动提醒及鉴定栏细节查看。启动与存档兼容见 [v41发布说明](FIRST_DEBT_V41_RELEASE.md)。

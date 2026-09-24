@@ -34,7 +34,7 @@ func _run() -> void:
 	await click(scene.title_menu.buttons[0])
 	session = scene.get_node("Bootstrap").session
 	view = scene.get_node("CounterScreen/NarrativeScene")
-	check(session.definition.id == "first_debt_recovery_release", "测试使用当前正式入口")
+	check(session.definition.id == "porcelain_release", "测试使用当前正式入口")
 	check(view.visible and not view._skip.visible, "首轮完整序章")
 	check(view._choices.get_child(0).has_focus(), "继续按钮键盘焦点")
 	var photo_pixels := PackedByteArray()
