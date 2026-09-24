@@ -27,6 +27,9 @@ func _on_intent(command: String, visit_id: String, detail: String, amount: int) 
 		if visitor == null: return
 		var result := _session.fan_command(command,visitor.item.instance_id,detail)
 		if result.ok:
+			if PearlEconomy.handles(_session._day.state,visitor.item):
+				PearlDeskView.open_pearl(_view,_session,visitor.item.instance_id)
+				return
 			if WatchAppraisal.handles(_session._day.state,visitor.item):
 				WatchDeskView.create(_view,_session,visitor.item.instance_id)
 				return
@@ -42,4 +45,7 @@ func _on_intent(command: String, visit_id: String, detail: String, amount: int) 
 	if command == "condition":
 		_session.fan_command("condition", detail)
 		return
-	_session.counter_command(command, visit_id, detail, amount)
+	var result := _session.counter_command(command, visit_id, detail, amount)
+	if command == "fd_event" and visit_id in FirstDebt.DOCUMENTS and FirstDebt.revised(_session._day.state):
+		if result.ok: _view.document_requested.emit(visit_id)
+		else: _view._body.text = result.message

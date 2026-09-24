@@ -76,12 +76,16 @@ func seven_notice() -> String:
 	if InvestigationService.enabled(definition):
 		introductions[7] = "七夜的账暂结一页。铺子照常开，未办完的旧事仍可接着查。"
 		introductions[10] = "十夜的账将合拢。未到期的票、托出的口信与未回的委托，照实留在账上。"
+	if FirstDebt.enabled(definition):
+		introductions[1] = "借据本金500银元，日息5银元，另付铺费5银元。短款只宽限至次夜夜末。"
+		introductions.erase(10)
 	return String(introductions.get(_day.state.current_night_index, "")) + PreparationService.notice(_day.state, _counter.catalog) + MirrorChapterService.summary(_day.state, definition) + FamiliarStories.note(_day.state) + ("\n" + NightMarketRisk.note(_day.state) if NightMarketPlan.enabled(definition) else "") + GhostGuests.notice(_day.state, _counter.catalog) + ("\n查访回报已送到，可去「托人查访」拆阅。" if _day.state.investigation.get("delivered", false) and not _day.state.investigation.get("read", false) else "")
 
 func has_save() -> bool:
 	return _save.exists()
 
 func can_execute(command: String) -> bool:
+	if command == "finish_trial": return FirstDebt.enabled(definition) and _day.state.phase == &"day_summary" and _day.state.current_night_index >= 18
 	if MirrorEndingService.active(_day.state): return false
 	if MilitaryIntroduction.active(_day.state): return false
 	if command == "open_shop" and SocialRules.blocked(_day.state): return false
@@ -104,6 +108,12 @@ func execute(command: String, detail := "") -> ActionResult:
 
 func _impl_execute(command: String, detail := "") -> ActionResult:
 	if MilitaryIntroduction.active(_day.state): return ActionResult.new(false, "孙大元还在柜前，请先把话说完。")
+	if command == "finish_trial":
+		if not can_execute(command): return ActionResult.new(false, "请先完成今夜结算。")
+		_day.state.phase = &"run_ended"
+		_persist()
+		_emit_changed()
+		return ActionResult.new(true, "本次试玩已结算。" + FirstDebt.outcome(_day.state))
 	if command in RoomKeepsakes.COMMANDS:
 		var placed := RoomKeepsakes.execute(_day.state, command)
 		if placed.ok: _persist()
@@ -258,17 +268,21 @@ func _copy_state(source: RunState) -> RunState:
 	return snapshot
 
 func counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	if command == "fd_event":
+		return observe_document(visit_id) if visit_id in FirstDebt.DOCUMENTS else event_command(visit_id, detail)
 	if command.begins_with("ending_"): return mirror_resolution_command(command.trim_prefix("ending_"), visit_id)
 	return _journal_call("counter_command", [command, visit_id, detail, amount])
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
 	# Rejected new pressure attempts must not poll events or synchronize markets.
-	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
+	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
 		var error := _counter.reason(_day, command, visit_id, detail, amount)
 		if not error.is_empty(): return ActionResult.new(false, error)
 	if command == "military_intro":
 		if visit_id != MilitaryIntroduction.id(_day.state) or amount != 0: return ActionResult.new(false, "请先听清柜前来客的话。")
 		return social_command("intro_talk", detail)
+	if (not replaying or DragonSearch.enabled(_day.state)) and FirstDebt.chen_recognition_due(_day.state):
+		return ActionResult.new(false, "陈小满还在柜前，先听她把话说完。")
 	if command == "soul_inspect": return inspect_customer(visit_id)
 	var growth_visit := _counter.customers.active(_day.state)
 	if growth_visit != null and growth_visit.purpose == "display_buyer":
@@ -315,6 +329,7 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 		result = _counter.execute(_day, command, visit_id, detail, amount)
 		_negotiation_reactions.record(_day, negotiating_visit, asking_before, command, detail, result)
 		if result.ok and FanConditionService.enabled(definition) and command in ["condition_pressure", "offer", "pawn"]: _persist()
+		if result.ok and FirstDebt.enabled(definition) and negotiating_visit != null and negotiating_visit.customer_id in ["fd_seller", "fd_chen"]: _persist()
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
 	message = result.message
@@ -323,6 +338,7 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 	_publish_feedback(feedback_before, command, visit_id, result)
 	_emit_changed()
 	_emit_receipt(ledger_size)
+	if result.ok: _first_debt_trade_checkpoint(ledger_size)
 	return result
 
 func counter_model() -> Dictionary:
@@ -340,6 +356,9 @@ func _build_counter_model() -> Dictionary:
 	if active_visit != null and WatchNegotiation.handles(_day.state,active_visit.item):
 		# Restore previous customer replies after a cold load as well as live play.
 		for reply in WatchNegotiation.history(_day.state,active_visit):
+			if reply not in model.trade.reactions: model.trade.reactions.append(reply)
+	if active_visit != null and PearlEconomy.handles(_day.state,active_visit.item):
+		for reply in PearlNegotiation.history(_day.state,active_visit):
 			if reply not in model.trade.reactions: model.trade.reactions.append(reply)
 	PawnReturnReadModels.enrich(model, _day, _commerce)
 	if _commerce != null: model.merge(CommerceReadModels.build(_day, _commerce, message), true)
@@ -362,6 +381,7 @@ func _build_counter_model() -> Dictionary:
 			var target := LivingMirror.customer(_day, _counter.catalog)
 			for row in _day.state.soul_history:
 				if row.visit_id == target.get("id", "") and row.result != "expired": model.dialogue.visual["soul_note"] = LivingMirror.describe(row)
+	if FirstDebt.enabled(definition): FirstDebt.decorate(model, _day, _events, _counter)
 	return model
 
 func commerce_command(command: String, target: String, detail := "") -> ActionResult:
@@ -385,7 +405,16 @@ func _impl_commerce_command(command: String, target: String, detail := "") -> Ac
 	_publish_feedback(feedback_before, command, target, result)
 	_emit_changed()
 	_emit_receipt(ledger_size)
+	if result.ok: _first_debt_trade_checkpoint(ledger_size)
 	return result
+
+func _first_debt_trade_checkpoint(previous_size: int) -> void:
+	if not FirstDebt.enabled(definition): return
+	for entry in _day.state.ledger_entries.slice(previous_size):
+		var item := InventoryManager.new().find(_day.state, entry.item_instance_id)
+		if item != null and item.definition_id in [FirstDebt.PHOENIX, FirstDebt.DRAGON]:
+			_persist()
+			return
 
 func _emit_receipt(previous_size: int) -> void:
 	if definition.batch_selling and _day.state.ledger_entries.size() > previous_size and _day.state.ledger_entries[previous_size].kind == "sale":
@@ -415,6 +444,7 @@ func _impl_sell_batch(buyer_id: String, item_ids: Array, pairs: Array = []) -> A
 	_publish_feedback(feedback_before, "sell_batch", buyer_id, result)
 	_emit_changed()
 	_emit_receipt(previous)
+	if result.ok: _first_debt_trade_checkpoint(previous)
 	return result
 
 # Public presentation snapshots only; neither hidden item variants nor reserves
@@ -475,6 +505,19 @@ func event_command(event_id: String, choice_id: String) -> ActionResult:
 	return _journal_call("event_command", [event_id, choice_id])
 
 func _impl_event_command(event_id: String, choice_id: String) -> ActionResult:
+	if FirstDebt.enabled(definition) and event_id.begins_with("fd_"):
+		var before_minute := _day.state.game_minutes
+		var result := FirstDebt.choose(_day, _events, _counter, event_id, choice_id, replaying and not DragonSearch.enabled(_day.state))
+		if result.ok:
+			if _day.state.game_minutes != before_minute: _counter.customers.update(_day.state)
+			_risk.capture_close(_day.state)
+			_events.poll(_day.state, definition)
+			MarketService.sync(_day.state, definition)
+			_persist()
+		message = result.message
+		if FirstDebt.revised(_day.state): _message_visit_id = "first_debt/dialogue"
+		_emit_changed()
+		return result
 	if mirror_pending(): return _mirror_blocked()
 	if not _day.state.risk_pending.is_empty() or _day.state.phase in [&"dead", &"bankrupt"]: return _risk_blocked()
 	var result := ActionResult.new(false, "没有事件内容。")
@@ -705,6 +748,12 @@ func bell_model() -> Dictionary:
 	if not PawnReturnService.current(_day.state).is_empty():
 		model.hint = "原当户带票来赎，请先办妥当票。"
 		return model
+	if DragonSearch.ready(_day, _counter):
+		model.hint = "陆掌眼已应约带货来，先和他把话说完。"
+		return model
+	if (not replaying or DragonSearch.enabled(_day.state)) and FirstDebt.chen_recognition_due(_day.state):
+		model.hint = "陈小满还在柜前，先听她把话说完。"
+		return model
 	var visit := _counter.customers.active(_day.state)
 	if visit != null:
 		var reason := _counter.reason(_day, "reject", visit.visit_id)
@@ -713,7 +762,7 @@ func bell_model() -> Dictionary:
 			"hint": "长按1秒谢绝买家 · 不耗时；松开取消。" if visit.purpose == "display_buyer" else "长按1秒送客 · 耗时%d分钟；松开取消。" % customer.terms.reject_minutes if reason.is_empty() else reason}, true)
 		return model
 	model.mode = "wait"
-	model.enabled = _day.state.visits.any(func(v: CustomerVisit) -> bool: return v.status in ["scheduled", "waiting"] and v.arrival < definition.night_minutes and v.expires_at > _day.state.game_minutes)
+	model.enabled = (DragonSearch.enabled(_day.state) and DragonSearch.appointment_night(_day.state) == _day.state.current_night_index and _day.state.game_minutes < 60) or _day.state.visits.any(func(v: CustomerVisit) -> bool: return v.status in ["scheduled", "waiting"] and v.arrival < definition.night_minutes and v.expires_at > _day.state.game_minutes)
 	model.hint = "轻按铃铛，等下一位客人来；时辰会向前走。" if model.enabled else "今夜已无来客，可以收铺了。"
 	return model
 
@@ -729,7 +778,7 @@ func _impl_bell_command(mode: String, target_id := "") -> ActionResult:
 	var start := _day.state.game_minutes
 	while _day.state.phase == &"open" and _counter.customers.active(_day.state) == null:
 		_counter.customers.update(_day.state)
-		if _counter.customers.active(_day.state) != null or not PawnReturnService.current(_day.state).is_empty(): break
+		if _counter.customers.active(_day.state) != null or not PawnReturnService.current(_day.state).is_empty() or DragonSearch.ready(_day, _counter): break
 		var spent := _day.spend_action(definition.time_step)
 		if not spent.ok: return spent
 		_counter.customers.update(_day.state)
@@ -774,11 +823,13 @@ func _journal_call(method: String, args: Array) -> ActionResult:
 		return ActionResult.new(false, "镜前的话还未说完，请从库存提醒回到镜前。" if MirrorReunionService.enabled(definition) else "镜前的话还未说完；若要先办别的事，请选择「暂且收起」。")
 	if LivingMirror.enabled(definition) and not InvestigationService.enabled(definition): return _ghost_call(method, args)
 	if not _day.state.personal_risk_enabled or _journal_depth > 0: return callv("_impl_" + method, args)
-	if _day.state.action_journal.size() >= 4096: return ActionResult.new(false, "本局操作记录已满，请读取较早的存档。")
+	if not FirstDebt.enabled(definition) and _day.state.action_journal.size() >= 4096: return ActionResult.new(false, "本局操作记录已满，请读取较早的存档。")
 	var previous: RunState = _copy_state(_day.state) if not replaying else null
 	var pawn_choices := _pawn_choices.duplicate(true)
 	var before_damage := _day.state.personal_risk_history.size()
-	_day.state.action_journal.append({"method": method, "args": args.duplicate(true)})
+	var journal_row := {"method": method, "args": args.duplicate(true)}
+	if DragonSearch.enabled(_day.state) and not _day.state.get_meta("legacy_chen_visits", false): journal_row["chen_visits"] = 1
+	_day.state.action_journal.append(journal_row)
 	_pending_checkpoint = false
 	_pending_notifications.clear()
 	_journal_depth += 1
@@ -961,3 +1012,16 @@ var profile_us: Dictionary = {}
 
 func _profile(label: String, started: int) -> void:
 	if profile_enabled: profile_us[label] = int(profile_us.get(label, 0)) + Time.get_ticks_usec() - started
+
+func observe_document(id: String) -> ActionResult:
+	return _journal_call("observe_document", [id])
+
+func _impl_observe_document(id: String) -> ActionResult:
+	if id not in FirstDebt.DOCUMENTS: return ActionResult.new(false, "没有这份资料。")
+	return _impl_event_command(id, "read")
+
+func first_debt_model() -> Dictionary:
+	return FirstDebt.model(_day, _events, _counter)
+
+func old_shop_model() -> Dictionary:
+	return OldShopReadModel.build(_day, _events, _counter)

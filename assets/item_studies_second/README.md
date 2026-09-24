@@ -1,6 +1,6 @@
 # 第二批鉴物补图
 
-基于 main 5673b92，默认 named_wealthy_ten v37。使用内置 image_gen，遵循 ART04 半写实水粉；精确提示词、参考图、原始输出路径和哈希见相邻 source JSON。没有离线重绘或抠图。
+原画基于 main 5673b92（v37）；发布前整合 main db4182b，默认 first_debt_unified v39，并完成回归。使用内置 image_gen，遵循 ART04 半写实水粉；精确提示词、参考图、原始输出路径和哈希见相邻 source JSON。没有离线重绘或抠图。
 
 实际接入六张新图：折扇背面、砚台底面、紫砂小壶背面、花鸟绣片背面、普通怀表完好/故障轴孔微距。折扇正面复用 assets/appraisal/fan-sound.png，作为所有隐藏品相共用的中性外观；专用鉴物桌仍按原规则使用三张不同扇画。
 

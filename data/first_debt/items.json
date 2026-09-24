@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "fd_phoenix",
+      "display_name": "瑞丰凤镯",
+      "description": "足金旧镯，瑞丰工记藏在内圈。",
+      "category": "jewelry",
+      "base_value": 120,
+      "unknown_min": 80,
+      "unknown_max": 180,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 120,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "mark",
+            "repair"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "金色沉稳，龙凤旧式样。",
+          "min_value": 80,
+          "max_value": 180,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "mark",
+          "text": "内圈有瑞丰工记，纹样应有另一只相配。",
+          "min_value": 120,
+          "max_value": 120,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "repair",
+          "text": "凤尾有一道磨平的旧焊口。",
+          "min_value": 120,
+          "max_value": 120,
+          "leverage": 0,
+          "judgement": "sound"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "观察纹样",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "细看内圈与接缝",
+          "minutes": 5,
+          "required_tool": "magnifier",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "mark",
+            "repair"
+          ]
+        }
+      ],
+      "name_key": "fd_phoenix",
+      "type": "normal",
+      "tags": [
+        "jewelry",
+        "first_debt"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "fd.phoenix"
+    },
+    {
+      "id": "fd_dragon",
+      "display_name": "瑞丰龙镯",
+      "description": "足金旧镯，瑞丰工记藏在内圈。",
+      "category": "jewelry",
+      "base_value": 160,
+      "unknown_min": 80,
+      "unknown_max": 180,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 160,
+          "weight": 1,
+          "clue_ids": [
+            "form",
+            "mark",
+            "repair"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "金色沉稳，龙凤旧式样。",
+          "min_value": 80,
+          "max_value": 180,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "mark",
+          "text": "内圈有瑞丰工记，纹样应有另一只相配。",
+          "min_value": 160,
+          "max_value": 160,
+          "leverage": 0,
+          "judgement": "sound"
+        },
+        {
+          "id": "repair",
+          "text": "龙纹与凤纹相向，工记同式。",
+          "min_value": 160,
+          "max_value": 160,
+          "leverage": 0,
+          "judgement": "sound"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "观察纹样",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "细看内圈与接缝",
+          "minutes": 5,
+          "required_tool": "magnifier",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "mark",
+            "repair"
+          ]
+        }
+      ],
+      "name_key": "fd_dragon",
+      "type": "normal",
+      "tags": [
+        "jewelry",
+        "first_debt"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "fd.dragon"
+    }
+  ]
+}

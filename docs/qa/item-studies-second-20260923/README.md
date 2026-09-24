@@ -28,3 +28,9 @@ godot --path /Users/alvachen/Documents/ChatGPT/pawn/.artifacts/item-study-second
 - 导入成功，最终GUI日志无脚本/资源错误；未运行Windows打包或全游戏剧情回归。
 
 完整设计验收见根目录 design-qa.md。原画与实际控件的合成对照图、完整窗口图均为Godot原生渲染；assets.json记录原画哈希。准确生成提示词与参考路径见 assets/item_studies_second/*.json，使用内置image_gen。
+
+## 发布整合 v39
+
+发布前整合 main db4182b：默认入口为 first_debt_unified v39，保留珍珠鉴定与第一笔阴账剧情。解决 CounterItemArt 材质白名单冲突，同时保留龙凤镯、折扇及本批细节图。测试脚本默认随此入口运行，`-- v37` / `-- v30` 可选旧局。
+
+复查：1509 美术契约断言；两种分辨率各1350 GUI断言；图集切换13断言；`first_debt_unified_appraisal.gd` 23030 passes，均0失败（其继承测试输出标题仍为 PEARL V38，实际 setup/会话/冷回放使用v39）。截图与日志使用v39前缀。原始v37验收保留为历史记录。

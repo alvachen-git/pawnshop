@@ -43,3 +43,11 @@ Local QA record: the user subsequently authorized push and online merge; publica
 - [x] Free backs and earned evidence, custom paths and saves preserved.
 - [x] Same-tab visibility fixed and recaptured.
 - [x] Native full-window and combined source/render comparison at both resolutions.
+
+## Release integration: current main v39
+
+Merged db4182b before publication, retaining the pearl appraisal and first-debt systems. The only code conflict was the CounterItemArt material allowlist; the resolution includes both new dragon/phoenix bangles and this batch's fan/study images. No gameplay conflict or scenario mutation.
+
+Current-main validation:1509 art-contract assertions (v39/v38/v37/v30/v21),1350 native GUI assertions at each viewport,13 atlas-switch assertions,23030 appraisal/economy/replay passes through first_debt_unified_appraisal.gd; all0failures. The latter inherits the PEARL V38 output title but explicitly uses the v39 manifest/session/replay. Final native logs contain no errors. Reviewed v39_1280_item_folding_fan_counter.png and v39_1600_item_pocket_watch_flawed_flawed.png; the existing size, shadow, tabs and evidence presentation remain intact. Selected v39 screenshots/logs are retained with the earlier evidence.
+
+The current-main atlas harness assertion was updated from its stale v38 expectation to the actual v39 entry. Dragon/phoenix mapping, contact mode and wrist-scale checks pass. Scoped diff against origin/main passes whitespace checks; inherited unrelated main whitespace is left unchanged.

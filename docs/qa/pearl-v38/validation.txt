@@ -1,0 +1,25 @@
+2026-09-23 Godot 4.6.1, local Windows
+.pearl_appraisal-final.log: PEARL V38: 23016 passes, 0 failures
+.pearl_economy-final.log: PEARL ECONOMY: 593 passes, 0 failures
+.pearl_journey.log: PEARL JOURNEY: pearl=1 watch=1; 795 passes, 0 failures
+.pearl_story.log: MIRROR REUNION: 3491 passes, 0 failures
+.pearl_companion.log: AQI COMPANION: 3282 passes, 0 failures
+.named_wealthy.log: NAMED WEALTHY: 1211 passes, 0 failures
+.watch_negotiation.log: WATCH NEGOTIATION: 1070 passes, 0 failures; personalities { "easy": 3493, "careful": 4536, "firm": 1971 }
+.fan_condition.log: FAN CONDITION: 2078 passes, 0 failures
+.pearl-ui-final.log: PEARL UI: 66 assertions, 0 failures
+.pearl-ui-wide-final.log: PEARL UI: 66 assertions, 0 failures
+All logs contain the existing Windows root-certificate-store warning; no script errors.
+
+2026-09-23 readability and desk control refinement rerun:
+.godot/pearl-refine-rules.log: PEARL V38: 23016 passes, 0 failures
+.godot/pearl-refine-ui1280.log: PEARL UI: 77 assertions, 0 failures
+.godot/pearl-refine-ui1600.log: PEARL UI: 77 assertions, 0 failures
+Godot import succeeded. Screenshots reviewed at both resolutions, including enlarged guide annotations and hidden hole rotation. Existing certificate warning persists; no script errors. Earlier economy/story/legacy results above were not rerun for this visual refinement.
+
+2026-09-23 retain inspection setup while selecting beads:
+.godot/pearl-batch-rules.log: PEARL V38: 23030 passes, 0 failures
+.godot/pearl-batch-journey.log: PEARL JOURNEY: pearl=1 watch=1; 799 passes, 0 failures
+.godot/pearl-batch-ui1280.log: PEARL UI: 101 assertions, 0 failures
+.godot/pearl-batch-ui1600.log: PEARL UI: 101 assertions, 0 failures
+Verified angle/light/hole/zoom retained across repeated bead selections, unique viewed-hole records, surface-only selection, no extra time, invalid payload rejection, atomic save-failure rollback, legacy select actions and cold replay. Screenshots pearl_1280_batch_setup.png and pearl_1600_batch_setup.png reviewed. git diff --check passed. Existing certificate warning only.

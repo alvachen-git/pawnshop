@@ -4,7 +4,7 @@ extends RefCounted
 static func rng(seed_value: int, key: String) -> RandomNumberGenerator:
 	# v34/v35 isolate saves while retaining v33's existing random streams.
 	# New watch facts use their own /watch34/ keys, never consume those streams.
-	key = key.replace("named_wealthy_ten/", "watch_ten/").replace("watch_patterns_ten/", "watch_ten/").replace("watch_negotiation_ten/", "watch_ten/").replace("watch_market_ten/", "watch_ten/")
+	key = key.replace("pearl_market_ten/", "watch_ten/").replace("named_wealthy_ten/", "watch_ten/").replace("watch_patterns_ten/", "watch_ten/").replace("watch_negotiation_ten/", "watch_ten/").replace("watch_market_ten/", "watch_ten/")
 	var random := RandomNumberGenerator.new()
 	random.seed = (seed_value + int(key.hash())) & 0x7fffffff
 	return random
@@ -61,6 +61,7 @@ static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -
 
 static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog, delay: int) -> void:
 	state.ghost_catalog = catalog
+	if FirstDebt.enabled(run): state.seven_plan.assign(SevenNightPlan.plan(run, catalog, state.run_seed, state.current_night_index))
 	var rows: Array[Dictionary] = state.seven_plan if SevenNightPlan.enabled(run) and not state.seven_plan.is_empty() else plan(run, catalog, state.run_seed)
 	if SevenNightPlan.enabled(run): state.seven_plan.assign(rows)
 	if OpeningPreparation.enabled(run): rows = OpeningPreparation.plan(state, run, catalog)

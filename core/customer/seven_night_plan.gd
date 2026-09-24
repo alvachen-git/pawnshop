@@ -9,14 +9,15 @@ static func context(run: RunDefinition, id: String) -> Dictionary:
 		if row.id == id: return row
 	return {}
 
-static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int) -> Array[Dictionary]:
-	var key := "%d/%d" % [catalog.get_instance_id(), seed_value]
+static func plan(run: RunDefinition, catalog: ContentCatalog, seed_value: int, through_night := 0) -> Array[Dictionary]:
+	var horizon := maxi(run.total_nights, through_night) if FirstDebt.enabled(run) else run.total_nights
+	var key := "%d/%d/%d" % [catalog.get_instance_id(), seed_value, horizon]
 	if not run._seven_plan_cache.has(key):
-		if run._seven_plan_cache.size() >= 64: run._seven_plan_cache.clear()
-		run._seven_plan_cache[key] = generate(run, catalog, seed_value)
+		if run._seven_plan_cache.size() >= (4 if FirstDebt.enabled(run) else 64): run._seven_plan_cache.clear()
+		run._seven_plan_cache[key] = generate(run, catalog, seed_value, 0, horizon)
 	return run._seven_plan_cache[key].duplicate(true)
 
-static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: int, attempt := 0) -> Array[Dictionary]:
+static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: int, attempt := 0, horizon := 0) -> Array[Dictionary]:
 	var config := run.variety
 	var context_by_id := {}
 	for c in config.contexts: context_by_id[c.id] = c
@@ -44,7 +45,8 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 	roles[24 + VarietyService.rng(seed_value, "seven/pen5").randi_range(1 if roles.get(23, "") == "pen4" else 0, 5)] = "pen5"
 	var swapped := VarietyService.rng(seed_value, "seven/pen_variant").randi_range(0, 1) == 1
 	var names: Array = FamiliarStories.NAMES.duplicate() if FamiliarStories.enabled(run) else []
-	for night in range(1, run.total_nights + 1):
+	for night in range(1, maxi(run.total_nights, horizon) + 1):
+		if FirstDebt.enabled(run): names = FamiliarStories.NAMES.duplicate()
 		var times: Array = []
 		for band in [[0, 120], [120, 300], [300, 450]]:
 			var random := VarietyService.rng(seed_value, "seven/arrival/%d/%d" % [night, band[0]])
@@ -104,7 +106,7 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 			if candidates.is_empty():
 				if attempt == 100: print("EXHAUST seed=", seed_value, " index=", index, " role=", role, " previous=", rows.back())
 				assert(attempt < 100, "Seven-night compatible pool exhausted")
-				return generate(run, catalog, seed_value, attempt + 1)
+				return generate(run, catalog, seed_value, attempt + 1, horizon)
 			var row: Dictionary = VarietyService.pick(candidates, seed_value, id + "/choice/%d" % attempt).duplicate(true)
 			var customer := catalog.get_definition("customers", row.customer_id) as CustomerDefinition
 			var item := catalog.get_definition("items", row.item_id) as ItemDefinition

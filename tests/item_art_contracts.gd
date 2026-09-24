@@ -54,6 +54,12 @@ func _initialize() -> void:
 		check(upgraded_detail.path.ends_with(jewelry + "_flaw.png") and upgraded_detail.requires_clues == detail.requires_clues and upgraded_detail.id == detail.id, "already-filtered jewelry evidence preserves gates and identity")
 		old_pages[0].path = root_path + "_back.svg"
 		check(CounterVisualCatalog.front(asset, old_pages).resource_path == old_pages[0].path, "jewelry explicit custom front wins")
+	for asset in ["fd.dragon", "fd.phoenix"]:
+		var texture := CounterVisualCatalog.front(asset)
+		check(texture != null and texture.resource_path == CounterItemArt.front_path(asset), "current-main bangle mapping retained")
+		var mat := CounterItemArt.material(texture,true)
+		check(mat != null and mat.get_shader_parameter("contact_mode") == 1, "current-main bangle contact material retained")
+		check(is_equal_approx(CounterItemArt.counter_bounds(texture).size.x,.050), "current-main wrist scale retained")
 	var watch_visual := {"item_asset":"placeholder.pocket_watch", "clues":[]}
 	for view in ["sound", "flawed"]:
 		var page := [{"id":view,"label":"existing label","path":""}]
@@ -64,7 +70,7 @@ func _initialize() -> void:
 		check(mapped.size() == 1 and mapped[0].path.ends_with("pocket_watch_" + view + "_macro.png"), "watch evidence selects its own closeup")
 		page[0].path = "res://assets/art04/items/bowl_front.png"
 		check(CounterVisualCatalog.images(watch_visual,page)[0].path == page[0].path, "custom watch evidence remains authoritative")
-	for manifest in ["res://data/named_wealthy_manifest.json", "res://data/unified_manifest.json", "res://data/goods_expertise_manifest.json"]:
+	for manifest in ["res://data/first_debt_unified_manifest.json", "res://data/pearl_market_manifest.json", "res://data/named_wealthy_manifest.json", "res://data/unified_manifest.json", "res://data/goods_expertise_manifest.json"]:
 		check_study_gates(manifest)
 	for ending in ["ordinary", "resentful"]:
 		var ending_pages := CounterVisualCatalog.images({"item_asset": "asset.weeping_mirror_" + ending, "clues": []})

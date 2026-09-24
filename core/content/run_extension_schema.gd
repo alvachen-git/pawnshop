@@ -24,6 +24,7 @@ static func validate(row: Dictionary, path: String, at: String) -> Array:
 static func domain(catalog: ContentCatalog) -> Array:
 	var issues: Array = TradeScenarioSchema.domain(catalog)
 	for run: RunDefinition in catalog.get_all("runs"):
+		LuxuryCarry.validate(run,catalog,issues)
 		# Private rooms are a lifecycle capability; peaceful runs need no ghost rules.
 		var p := run.fee_policy
 		if p.enabled and (p.principal < 1 or p.principal > 1000000 or p.interest_bps < 1 or p.interest_bps > 10000 or p.overhead < 1 or p.overhead > 1000000 or p.grace_nights != 1): CounterDomainValidator._error(issues, run.id, "运行息费规则无效。")

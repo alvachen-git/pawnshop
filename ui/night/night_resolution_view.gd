@@ -6,6 +6,7 @@ signal pawn_choice_requested(id: String, choice: String)
 var _disposals: VBoxContainer
 var _body: Label
 var _resolve: Button
+var _finish: Button
 var _continue: Button
 var _account: VBoxContainer
 var _resolve_command := "resolve_night"
@@ -45,6 +46,18 @@ func _ready() -> void:
 	_continue.disabled = true
 	_continue.pressed.connect(command_requested.emit.bind("continue_run"))
 	column.add_child(_continue)
+	_finish = Button.new()
+	_finish.text = "结束本次试玩"
+	_finish.pressed.connect(func() -> void:
+		var confirm := ConfirmationDialog.new()
+		confirm.dialog_text = "结束后记录本局现状。若还想查旧事或继续经营，请选择继续营业。"
+		confirm.ok_button_text = "结束本次试玩"
+		confirm.cancel_button_text = "继续营业"
+		add_child(confirm)
+		confirm.confirmed.connect(func() -> void: command_requested.emit("finish_trial"); confirm.queue_free())
+		confirm.canceled.connect(confirm.queue_free)
+		confirm.popup_centered(Vector2i(460, 190)))
+	column.add_child(_finish)
 
 func render(model: Dictionary) -> void:
 	AccountPaper.clear(_disposals)
@@ -73,6 +86,7 @@ func render(model: Dictionary) -> void:
 	_continue.visible = model.can_continue
 	_continue.disabled = not model.can_continue
 	_continue.text = model.continue_label
+	_finish.visible = model.get("can_finish_trial", false)
 
 func _draw_account(a: Dictionary) -> void:
 	var header := HBoxContainer.new()
@@ -89,6 +103,7 @@ func _draw_account(a: Dictionary) -> void:
 	AccountPaper.rule(_account)
 	AccountPaper.label(_account, "现金收支 / 银元", 18)
 	var rows := [["开夜现银", a.opening_cash], ["收购支出", -a.get("purchase_spend", 0)], ["活当放款", -a.get("pawn_disbursed", 0)], ["销售收入", a.get("sales_revenue", 0)], ["转当收入", a.get("pawn_transfer_receipts", 0)], ["赎金及续当收入", a.get("redemption_receipts", 0)], ["实际付息费", -a.get("fees_paid", 0)]]
+	if a.has("debt_compensation"): rows.append(["旧事补偿", -a.debt_compensation])
 	if a.has("facility_investment"): rows.append(["设施投入（独立记账）", -a.facility_investment])
 	if a.has("preparation_expense"): rows.append(["准备支出", -a.preparation_expense])
 	if a.has("investigation_expense"): rows.append(["查访支出", -a.investigation_expense])

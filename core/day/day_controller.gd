@@ -34,7 +34,7 @@ func execute(command: String) -> ActionResult:
 			state.summaries.back().merge(FinancialSummary.build(state))
 			state.phase = &"day_summary"
 		"continue_run":
-			if state.current_night_index == definition.total_nights:
+			if state.current_night_index == definition.total_nights and not FirstDebt.enabled(definition):
 				state.phase = &"run_ended"
 			else:
 				state.current_night_index += 1

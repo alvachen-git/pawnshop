@@ -8,7 +8,7 @@ static func enrich(model: Dictionary, day: DayController, visit: CustomerVisit) 
 	model.appraisal.body = definition.display_name+"\n"+TieredAppraisal.exterior_text(day.state,item)
 	model.appraisal.buttons = []
 	for spec in [["luxury_exterior","", "复看外观 · 不耗时" if record.get("exterior",false) else "检查外观 · 5分钟"], ["luxury_begin","2", "器材鉴定"], ["luxury_begin","3","深入查验"]]:
-		if WatchAppraisal.handles(day.state,item) and spec[1] == "3": continue
+		if (WatchAppraisal.handles(day.state,item) or PearlEconomy.handles(day.state,item)) and spec[1] == "3": continue
 		var command: String = spec[0]; var detail: String = spec[1]; var label: String = spec[2]
 		var why := TieredAppraisal.reason(day,command,item.instance_id,detail)
 		if command == "luxury_begin":
@@ -71,6 +71,8 @@ static func enrich(model: Dictionary, day: DayController, visit: CustomerVisit) 
 	if WatchNegotiation.handles(day.state,item):
 		model.trade.buttons = model.trade.buttons.filter(func(b: Dictionary) -> bool: return b.command not in ["luxury_pressure","watch_bluff"])
 		model.trade["watch_claims"] = WatchNegotiation.model(day,visit)
+
+	if PearlEconomy.handles(day.state,item): PearlReadModels.enrich(model,day,visit)
 
 static func estimate_bounds(state: RunState, item: ItemInstance, definition: ItemDefinition) -> Vector2i:
 	# Only inspected exterior damage narrows this public range. Never consult the

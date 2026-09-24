@@ -20,6 +20,7 @@ static func protected_night(state: RunState, run: RunDefinition) -> bool:
 	if appointment.get("status", "") == "booked" and appointment.night == state.current_night_index: return true
 	for event_id in run.event_ids:
 		var event := state.ghost_catalog.get_definition("events", event_id) as EventDefinition
+		if DragonSearch.enabled(state) and (event.presentation.get("scene", "") == "first_debt" or event.id == "ds_search_message"): continue
 		if event.kind != "anchor" or state.current_night_index < event.night_min or state.current_night_index > event.night_max: continue
 		if not event.required_flags.all(func(flag: String) -> bool: return flag in state.narrative_flags): continue
 		if event.excluded_flags.any(func(flag: String) -> bool: return flag in state.narrative_flags): continue

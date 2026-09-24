@@ -7,8 +7,8 @@ func _run() -> void:
 	root.size = Vector2i(1600, 900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280, 720)
 	root.content_scale_size = root.size
 	_capture_prefix = "1600" if "wide" in OS.get_cmdline_user_args() else "1280"
-	var manifest := "res://data/unified_manifest.json" if "v30" in OS.get_cmdline_user_args() else "res://data/named_wealthy_manifest.json"
-	_capture_prefix = ("v30_" if "v30" in OS.get_cmdline_user_args() else "v37_") + _capture_prefix
+	var manifest := "res://data/unified_manifest.json" if "v30" in OS.get_cmdline_user_args() else ("res://data/named_wealthy_manifest.json" if "v37" in OS.get_cmdline_user_args() else "res://data/first_debt_unified_manifest.json")
+	_capture_prefix = ("v30_" if "v30" in OS.get_cmdline_user_args() else ("v37_" if "v37" in OS.get_cmdline_user_args() else "v39_")) + _capture_prefix
 	var catalog := JsonContentProvider.new(manifest).load_catalog().catalog
 	var run_def := catalog.get_definition("runs", catalog.default_run_id) as RunDefinition
 	for case in CASES:
