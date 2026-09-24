@@ -1,0 +1,64 @@
+{
+  "tool": "built-in image_gen",
+  "selected_concept": "exec-ef130714-57cd-48f7-83fd-781340819032.png",
+  "base_commit": "9da27b0",
+  "assets": [
+    {
+      "path": "res://assets/opening_art/exterior.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "ccfda37d925f8059372e3ea7bb6a08bd1135fe729b6501627a84d1cab164df16",
+      "prompt": "assets/opening_art/exterior-prompt.md"
+    },
+    {
+      "path": "res://assets/opening_art/factory-v2.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "324a5753f4e70629ff8c4b9cc7f81d70318a9a6aa12df71ff83489182f114bdf",
+      "prompt": "assets/opening_art/factory-v2-prompt.md"
+    },
+    {
+      "path": "res://assets/opening_art/inspection.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "1782c5e98772c242c46f7341f13aa72c09208f7f094a68c1f663b17668bc38d3",
+      "prompt": "assets/opening_art/inspection-prompt.md"
+    },
+    {
+      "path": "res://assets/opening_art/invitation-source.png",
+      "width": 1671,
+      "height": 941,
+      "sha256": "b6b8c80bfef5bbb6d398295fcd9d339f1e76b8f249b50bc5887691e811e206b7",
+      "prompt": "assets/opening_art/invitation-source-prompt.md"
+    },
+    {
+      "path": "res://assets/opening_art/letter.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "57677774997c85350ab418e6cd72a5dae090c937bb656c9762d24820395922eb",
+      "prompt": "assets/opening_art/letter-prompt.md"
+    },
+    {
+      "path": "res://assets/opening_art/memory.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "ab19bda53cdcd0bd0aaf70d73e4308fe8a5cc9fb880ccaf6665f6ca2ce3acd83",
+      "prompt": "assets/opening_art/memory-prompt.md"
+    },
+    {
+      "path": "res://assets/opening_art/photo.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "be3816e1d3a2353baa5a2f1e94f3006ae8b0b12168028f193749ab094fa9e0c2",
+      "prompt": "assets/opening_art/photo-prompt.md"
+    },
+    {
+      "path": "res://assets/opening_art/stamp.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "cd06882577de3c92bcece30eb9497f5feb177c41f0a390db1f7e5175a6214164",
+      "prompt": "assets/opening_art/stamp-prompt.md"
+    }
+  ],
+  "photo_continuity": "photo and wedding share photo.png exactly; only the invitation silhouette is composited from invitation-source.png"
+}
