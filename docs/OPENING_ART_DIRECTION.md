@@ -30,10 +30,10 @@
 独立测试存档，直接进入纱厂：
 
 ```sh
-godot --path "/Users/alvachen/Documents/ChatGPT/pawn/.artifacts/opening-art" res://scenes/opening_art_review.tscn
+godot --path "/Users/alvachen/Documents/ChatGPT/pawn/.artifacts/opening-art-release" res://scenes/opening_art_review.tscn
 ```
 
-常规入口：同一路径运行 `godot --path`，选择「新游戏」。资源尚未 push/合并。
+常规入口：同一路径运行 `godot --path`，选择「新游戏」。发布分支为 `codex/opening-art-release-20260924`；发布结果以对应PR为准。
 
 ## 验证
 
@@ -65,3 +65,7 @@ godot --path "/Users/alvachen/Documents/ChatGPT/pawn/.artifacts/opening-art" res
 按钮用语对应实机：点银簪→鉴定；点客人→对话/交易；交易内正式报价并收购。铃铛在空柜时轻点等待来客，正在接待时长按1秒送客，提前松开取消。
 
 本轮1280×720、1600×900各187断言/0失败；开场核心100断言/0失败。检查五页全文可见、逐页不改经营状态、首客完成旗标及后续交易/首夜。正式入口使用`data/integrated/events.json`，与独立开场的`data/opening/events.json`同步页面配置。截图`neighbor_page_1`至`neighbor_page_5`，日志`neighbor-ui-1280.log`、`neighbor-ui-1600.log`、`neighbor-core.log`。
+
+## 发布前整合复验
+
+基于最新main `c5980cf`（v41，保留金镯、首债回收和评弹收音机），正式入口`first_debt_recovery_release`；1280×720、1600×900各187断言/0失败，核心100断言/0失败。真实CC0门声已在这轮参与检查。日志`release-v41-1280.log`、`release-v41-1600.log`、`release-v41-core.log`。未执行Windows打包及全游戏长流程验收。
