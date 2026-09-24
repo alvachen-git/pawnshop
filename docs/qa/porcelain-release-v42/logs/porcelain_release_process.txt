@@ -1,0 +1,12 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+RESTORE first-seller 1494ms
+RESTORE seller 362ms
+RESTORE hint 1271ms
+RESTORE phoenix-prep 314ms
+RESTORE before-fd_truth 373ms
+RESTORE before-fd_compensation 110ms
+RESTORE before-fd_settle 109ms
+RECOVERY PROCESS: 22 passes, 0 failures

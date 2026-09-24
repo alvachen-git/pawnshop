@@ -1,0 +1,3 @@
+Appraisal test preset: isolated, progress is not saved.
+Starting unified v42: porcelain
+Verified unified v42: porcelain

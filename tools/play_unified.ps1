@@ -90,7 +90,7 @@ try {
         if ($Stage -eq 'bangle') { $gameArgs += "--precision-bangle-case=$BangleCase" }
         Write-Output 'Appraisal test preset: isolated, progress is not saved.'
     } elseif ($Stage -ne 'normal') { $gameArgs += @('--',"--unified-preview=$Stage") }
-    $version = if ($Stage -eq 'normal' -or $precisionPreview) { 41 } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
+    $version = if ($Stage -eq 'normal' -or $precisionPreview) { 42 } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
     Write-Output "Starting unified v${version}: $Stage"
     Invoke-CheckedGodot $gameArgs ('launch-' + $Stage + '.log')
     if ($Verify) { Write-Output "Verified unified v${version}: $Stage" }

@@ -1,6 +1,8 @@
 # 鬼市当铺
 
-**珍珠试玩入口：`play-pearl-v38.cmd -Stage pearl -Wide`，正式新局可用 `play-unified.cmd` 或 Godot 项目入口。** 默认版本为 v41 `first_debt_recovery_release`，加入第一账、龙镯追查与第十八夜后继续营业，并保留v38的珍珠逐粒查验、整串谈价，以及五位富客按权重携带十种高档货。实际货值在生成时固定，手记、对客说法与客人认识各自保存。详见 [v38试玩与验收](docs/PEARL_V38_LOCAL.md)。
+瓷器新版已整合：青花玉壶春瓶的年代／工艺鉴定、三档图样、图录与按原因区分的不让价回应。隔离试玩：`play-unified.cmd -Stage porcelain -Wide`。新局使用 v42；两套旧 v41 存档保留各自规则。见 [v42发布说明](docs/PORCELAIN_V42_RELEASE.md)。
+
+**珍珠试玩入口：`play-pearl-v38.cmd -Stage pearl -Wide`，正式新局可用 `play-unified.cmd` 或 Godot 项目入口。** 默认版本为 v42 `porcelain_release`，加入第一账、龙镯追查与第十八夜后继续营业，并保留v38的珍珠逐粒查验、整串谈价，以及五位富客按权重携带十种高档货。实际货值在生成时固定，手记、对客说法与客人认识各自保存。详见 [v38试玩与验收](docs/PEARL_V38_LOCAL.md)。
 
 v40本地开发基于已合并的main `db4182b`，增加凤镯漏买补救与核实／赔偿对白。见 [v40启动与测试](docs/FIRST_DEBT_V40.md)。本批未推送、未合并。
 
@@ -8,11 +10,11 @@ v39第一账发布基于线上 main `0e2fb42` 隔离整合。v38与第一账旧v
 
 线上原有命灯版及夜客规则保留独立内容与存档。需要新开命灯版时运行 `godot --path . res://scenes/life_lamp_start.tscn`；读取已有命灯存档仍按原规则继续。
 
-当前规格与待确认分歧统一见 [当前开发规格](docs/CURRENT_SPEC.md)。默认v41保留线上v23已整合的职业赎回、生计背景与寝屋铜镜反馈；原v21夜客和阿七七夜版使用各自冻结规则。第七夜阿七收尾后不额外叠加墙镜异象。
+当前规格与待确认分歧统一见 [当前开发规格](docs/CURRENT_SPEC.md)。默认v42保留线上v23已整合的职业赎回、生计背景与寝屋铜镜反馈；原v21夜客和阿七七夜版使用各自冻结规则。第七夜阿七收尾后不额外叠加墙镜异象。
 
 新增商品与行家复核版作为独立七夜入口保留，包含银戒指、银锁、折扇、茶盏及验配出售；启动方式见 [商品与行家说明](docs/GOODS_EXPERTISE.md)。库存详情统一精简为已知品相要点。
 
-旧版本内容与存档保留原规则，v19经营整合、v20职业赎回和v21商品复核成果继续包含在新局中。换物不改变原票本金、赎金、期限或原主赎回概率；两类阴客与通用辨生死在对应v22、v23及新默认v41中生效。
+旧版本内容与存档保留原规则，v19经营整合、v20职业赎回和v21商品复核成果继续包含在新局中。换物不改变原票本金、赎金、期限或原主赎回概率；两类阴客与通用辨生死在对应v22、v23及新默认v42中生效。
 
 固定柜台式 2D 当铺经营与规则恐怖游戏。当前流程整合第一账、开放延续、开场、随机经营、铜镜遭遇与寝屋，每夜六位基础潜在来客，保留限时钢笔收货及三夜活当回访。原三夜、四夜和七夜经营版本继续作为旧存档入口。第21/49夜还本系统仍属后续范围。
 
@@ -70,7 +72,7 @@ macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path 
 
 ## 存档
 
-默认新局使用 **save_version=41 / content_version=41**，自动位置为 `auto/first_debt_recovery_release`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://first_debt_recovery_release/autosave_v41.json`。旧v31 `wealthy_ten`、v30 `unified_ten` 和更早存档继续按各自规则运行，不补抽破损、不追收器材、不改写原当票。命灯受害仍自动保存，营业中不能手动随时保存。
+默认新局使用 **save_version=42 / content_version=42**，自动位置为 `auto/porcelain_release`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://porcelain_release/autosave_v42.json`。旧v31 `wealthy_ten`、v30 `unified_ten` 和更早存档继续按各自规则运行，不补抽破损、不追收器材、不改写原当票。命灯受害仍自动保存，营业中不能手动随时保存。
 
 旧三夜局使用v12，独立路径为 `user://p0/autosave_v12.json`。独立四夜样板仍用v11，保存于 `user://ordinary_four/autosave_v11.json`。三夜入口可导入通过完整历史校验的旧v9/v10/v11局，原文件保留；旧局继续使用对应旧内容，重新开局才进入v12。旧v10分别保留实施前测试快照和已上线版本的配置，包含两种历史现金/债务组合。
 
@@ -137,8 +139,8 @@ M0–M7及原房间回归保留历史夹具/v9内容；`tests/run_variety.gd` �
 
 ## 第一账整合发布
 
-整合第一账、龙镯追查、陈小满预约与归还收尾，同时保留v38富客、钟表与珍珠鉴定。默认新游戏使用v41；历史运行按原manifest恢复。第一账开发详情见`docs/FIRST_DEBT_V31.md`，整合验证见`docs/qa/first-debt-release/REPORT.md`。
+整合第一账、龙镯追查、陈小满预约与归还收尾，同时保留v38富客、钟表与珍珠鉴定。默认新游戏使用v42；历史运行按原manifest恢复。第一账开发详情见`docs/FIRST_DEBT_V31.md`，整合验证见`docs/qa/first-debt-release/REPORT.md`。
 
-金镯功能自 v40 整合并保留在当前 v41，包含已发布的首笔旧债剧情及老凤祥花雕金镯称重、火试、谈价。`play-unified.cmd -Stage bangle` 可隔离试玩；v39 两条存档线保留，详见 [金镯说明](docs/BANGLE_V39_LOCAL.md)。
+金镯功能自 v40 整合并保留在当前 v42，包含已发布的首笔旧债剧情及老凤祥花雕金镯称重、火试、谈价。`play-unified.cmd -Stage bangle` 可隔离试玩；v39 两条存档线保留，详见 [金镯说明](docs/BANGLE_V39_LOCAL.md)。
 
-当前发布整合版为 v41，保留线上金镯鉴定与背景音乐，并合入第一账补救、阿七主动提醒及鉴定栏细节查看。启动与存档兼容见 [v41发布说明](docs/FIRST_DEBT_V41_RELEASE.md)。
+当前发布整合版为 v42，保留线上金镯鉴定与背景音乐，并合入第一账补救、阿七主动提醒及鉴定栏细节查看。启动与存档兼容见 [v41发布说明](docs/FIRST_DEBT_V41_RELEASE.md)。

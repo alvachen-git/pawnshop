@@ -6,7 +6,7 @@ func _run() -> void:
 	root.size=Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720);root.content_scale_size=root.size
 	_main=load("res://scenes/start.tscn").instantiate();_main.get_node("Bootstrap").save_path="user://tests/porcelain-ui/auto.json";root.add_child(_main)
 	_session=_main.get_node("Bootstrap").session
-	await _frames();await _click_button(_main.title_menu.buttons[0]);_check(_session.content_version==41,"isolated v41 default")
+	await _frames();await _click_button(_main.title_menu.buttons[0]);_check(_session.content_version==42,"combined v42 default")
 	PrecisionPreview.apply(_session,2,"porcelain_vase","mended","intact",false,"antique")
 	PorcelainPreview.apply(_session,{"--precision-porcelain-case":"partial","--precision-era":"qing","--precision-craft":"fine"})
 	_session.restored.emit();_session.changed.emit();await _frames()
