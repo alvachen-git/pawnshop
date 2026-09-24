@@ -1,0 +1,12 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+ERROR: Condition "ret != noErr" is true. Returning: ""
+   at: get_system_ca_certificates (platform/macos/os_macos.mm:1014)
+RESTORE first-seller 780ms
+RESTORE seller 184ms
+RESTORE hint 701ms
+RESTORE phoenix-prep 165ms
+RESTORE before-fd_truth 197ms
+RESTORE before-fd_compensation 49ms
+RESTORE before-fd_settle 49ms
+RECOVERY PROCESS: 22 passes, 0 failures

@@ -578,6 +578,7 @@ func _open_drawer(panel_id: StringName) -> void:
 
 
 func _close_drawer() -> void:
+	if %Drawer.visible and %AppraisalPanel.is_visible_in_tree() and %AppraisalPanel.dismiss_detail(): return
 	if _social_panel != null: _social_panel.hide()
 	%Drawer.hide()
 	_close_menu()
@@ -711,6 +712,7 @@ func _on_operation_feedback(operation: Dictionary) -> void:
 		var visual: Dictionary = before.get("visual", {})
 		_start_feedback({"id": "reject/" + String(operation.before.run) + "/" + String(before.active_id),
 			"reply_style": "rejected", "reply_name": String(visual.get("customer_name", "客人")),
+			"reply_text": "卖镯人：‘掌柜若改了主意，托句话给我，我再带来。’" if PhoenixRecovery.enabled(_session._day.state) and visual.get("customer_id", "") == "fd_seller" else "",
 			"kind": "departure", "title": "谢过，今夜不收", "item": String(visual.get("item_name", "旧物")),
 			"note": "客人收好东西，离开柜台。", "detail": operation.message, "clock": "",
 			"amount": 0, "before": operation.before.cash, "after": operation.after.cash,
@@ -810,6 +812,12 @@ func open_old_shop() -> void:
 	old_shop.open_album()
 
 func _open_case_document(id: String) -> void:
+	if id == "fd_mark":
+		var detail: Dictionary = _session.counter_model().appraisal.get("item_detail", {})
+		if not detail.is_empty():
+			_flow.show_panel(&"appraisal")
+			%AppraisalPanel.show_detail(detail)
+		return
 	if old_shop == null: return
 	open_old_shop()
 	_old_shop_presenter.read_document(id)

@@ -6,7 +6,7 @@ const RUN := "first_debt_dragon_search"
 const EVENTS := ["fd_search_motive", "fd_dragon_quote", "fd_dragon_deal"]
 
 static func enabled(s: RunState) -> bool:
-	return s.run_definition_id in [RUN, "first_debt_unified", "bangle_unified"]
+	return s.run_definition_id in [RUN, "first_debt_unified", "bangle_unified", "first_debt_recovery", "first_debt_recovery_release"]
 
 static func preparation(s: RunState, action: String) -> Dictionary:
 	for i in range(s.preparation_history.size() - 1, -1, -1):

@@ -104,6 +104,8 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 		if late.night_aftermath == "item": detail += "\n货面浮起湿灰，暂不能交货。封铺前到营业页按旧规封存包布，需20分钟。"
 		elif late.night_aftermath == "haunt": detail += "\n身后响起一声滴水，影子慢了半步。须在封铺前按旧规封存包布，需20分钟。"
 		else: detail += "\n包布里轻轻叹了一声。再听，柜上已经没有声响。"
+	if PhoenixRecovery.enabled(day.state) and entry.kind == "acquisition" and item.definition_id == FirstDebt.PHOENIX:
+		note += "\n随镯的旧包纸也收好了，可从库存翻看随货凭据。"
 	var images: Array = []
 	for scenario in day.definition.trade_scenarios:
 		if item.source_visit_id.ends_with("/" + scenario.slot_id) or (not day.definition.variety.is_empty() and scenario.item_id == item.definition_id):

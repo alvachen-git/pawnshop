@@ -2,7 +2,7 @@ class_name OpeningPreparation
 extends RefCounted
 
 const CATEGORIES := {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房", "textile": "绣品"}
-const COSTS := {"advertise": 30, "attract": 3, "target": 0, "seek": 3, "tea": 5, "visitors": 0, "investigate": 0, "finish": 0, "dragon_search": 0, "dragon_invite": 0, "chen_invite": 0}
+const COSTS := {"advertise": 30, "attract": 3, "target": 0, "seek": 3, "tea": 5, "visitors": 0, "investigate": 0, "finish": 0, "dragon_search": 0, "dragon_invite": 0, "chen_invite": 0, "phoenix_invite": 0}
 
 static func enabled(run: RunDefinition) -> bool:
 	return run.variety.get("preparation_version", 0) == 1
@@ -46,6 +46,9 @@ static func reason(state: RunState, action: String, category := "") -> String:
 		if not WealthyCustomers.active(state): return "这局没有宣传铺子的准备。"
 		if SocialRules.closed(state): return "今夜停业，暂不张贴招揽告示。"
 		if int(state.social.reputation) >= 80: return "铺子的字号已经传开，宣传不能再添商誉。"
+	if action == "phoenix_invite":
+		var error := PhoenixRecovery.prep_reason(state)
+		if not error.is_empty(): return error
 	if action in ["dragon_search", "dragon_invite", "chen_invite"]:
 		var error := DragonSearch.prep_reason(state, action)
 		if not error.is_empty(): return error
@@ -139,7 +142,7 @@ static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog
 	state.preparation_history.append(record)
 	if record.cost > 0:
 		EconomyManager.new().commit(state, -record.cost, "preparation", posting_id(record), "preparation", 0)
-	var messages := {"chen_invite": "已约陈小满今夜来谈，开铺后待柜前得空便可说话。", "dragon_search": "已托人寻找龙镯，收铺后会有口信。", "dragon_invite": "已约陆掌眼带龙镯来。今夜19:00起，待柜前得空便可验看。", "advertise": "告示与口信已托人送出，关铺时再听街面回音。", "seek": "寻配口信已送出，今夜会有人带同纹样、相对式样的茶盏来。是否原配，还须验看；价钱另谈。", "attract": "口信已经送出，今夜会多一位客人带货来。", "target": "已托人捎话，今夜有位客人带%s来。" % CATEGORIES.get(category, "旧物"), "tea": "茶水备好了，今夜普通来客会多等20分钟。", "visitors": "两位来客的口信已记在铺中记事里。", "investigate": PreparationService.DETAILS, "finish": "准备妥当，可以开铺了。"}
+	var messages := {"phoenix_invite": "已约卖镯人带凤镯来。今夜19:00起，待柜前得空便可验货谈价。", "chen_invite": "已约陈小满今夜来谈，开铺后待柜前得空便可说话。", "dragon_search": "已托人寻找龙镯，收铺后会有口信。", "dragon_invite": "已约陆掌眼带龙镯来。今夜19:00起，待柜前得空便可验看。", "advertise": "告示与口信已托人送出，关铺时再听街面回音。", "seek": "寻配口信已送出，今夜会有人带同纹样、相对式样的茶盏来。是否原配，还须验看；价钱另谈。", "attract": "口信已经送出，今夜会多一位客人带货来。", "target": "已托人捎话，今夜有位客人带%s来。" % CATEGORIES.get(category, "旧物"), "tea": "茶水备好了，今夜普通来客会多等20分钟。", "visitors": "两位来客的口信已记在铺中记事里。", "investigate": PreparationService.DETAILS, "finish": "准备妥当，可以开铺了。"}
 	return ActionResult.new(true, messages[action] + "\n现银%d大洋 · 今夜准备剩余%d次。" % [state.cash, 2 - PreparationService.count(state)])
 
 static func posting_id(record: Dictionary) -> String:

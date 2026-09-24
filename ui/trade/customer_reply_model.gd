@@ -12,6 +12,7 @@ const LINES := {
 }
 
 static func build(receipt: Dictionary, operation: Dictionary) -> Dictionary:
+	if not str(receipt.get("reply_text", "")).is_empty(): return {"style": "rejected", "text": str(receipt.reply_text)}
 	var style := String(receipt.get("reply_style", ""))
 	var name := String(receipt.get("reply_name", ""))
 	if receipt.kind in ["acquisition", "pawn_loan"]:

@@ -8,7 +8,7 @@ static func enabled(run: RunDefinition) -> bool:
 	return int(run.variety.get("first_debt_version", 0)) in [1, 2, 3]
 
 static func revised(s: RunState) -> bool:
-	return s.run_definition_id in ["first_debt_reckoning", "first_debt_dragon_search", "first_debt_unified", "bangle_unified"]
+	return s.run_definition_id in ["first_debt_reckoning", "first_debt_dragon_search", "first_debt_unified", "bangle_unified", "first_debt_recovery", "first_debt_recovery_release"]
 
 static func last(state: RunState, id: String) -> Dictionary:
 	for i in range(state.event_history.size() - 1, -1, -1):
@@ -42,8 +42,8 @@ static func overlay(state: RunState, run: RunDefinition, catalog: ContentCatalog
 	var initial: Array[String] = []
 	var revisits: Array[String] = []
 	if not item_exists(state, PHOENIX):
-		if not saw_seller(state): initial.append("fd_seller")
-		elif int(last(state, "fd_seller").get("night", -2)) + 1 == n: revisits.append("fd_seller")
+		if not saw_seller(state) and (not PhoenixRecovery.enabled(state) or FirstDebt.last(state, PhoenixRecovery.GATE).is_empty()): initial.append("fd_seller")
+		elif (DragonSearch.appointment_night(state, "phoenix_invite") == n if PhoenixRecovery.enabled(state) else int(last(state, "fd_seller").get("night", -2)) + 1 == n): revisits.append("fd_seller")
 	var chen_seen := state.visit_history.any(func(r: Dictionary) -> bool: return r.get("customer_id") == "fd_chen" and r.get("outcome") not in ["timed_out", "shop_closed"])
 	if n >= 12 and not chen_seen: initial.append("fd_chen")
 	var used: Array[int] = []
@@ -51,9 +51,13 @@ static func overlay(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		var slot := VisitSlotDefinition.new(who, 0 if who == "fd_seller" else 60, who, PHOENIX if who == "fd_seller" else "item_silk_panel", "sound", n, n)
 		var authored := SevenNightPlan.story_row(run, catalog, slot, n, state.run_seed)
 		authored.source = ""
+		if PhoenixRecovery.enabled(state) and who == "fd_seller": authored.person.id = "person/first_debt/phoenix_seller"
 		if DragonSearch.enabled(state): authored["familiar_reserved"] = true
 		if who in revisits:
 			authored["first_debt_appointment"] = true
+			if PhoenixRecovery.enabled(state):
+				authored.arrival = 60
+				authored.wait_minutes = run.night_minutes - 60
 			rows.append(authored)
 		else:
 			for i in rows.size():
@@ -120,6 +124,13 @@ static func chen_waiting(s: RunState, legacy_replay := false) -> bool:
 
 static func reason(day: DayController, counter: CounterService, id: String, choice: String, legacy_replay := false) -> String:
 	var s := day.state
+	if PhoenixRecovery.enabled(s):
+		if id == PhoenixRecovery.GATE: return "来客离场时才会留下这句话。"
+		if id == PhoenixRecovery.HINT:
+			if not PhoenixRecovery.hint_due(s): return "阿七眼下没有这句话。"
+			if counter.customers.active(s) != null or chen_waiting(s) or DragonSearch.waiting(s) or MirrorEncounterService.new(counter.catalog).pending(day): return "先招呼客人，等会儿再聊。"
+			return ""
+		if id == "fd_seller": return "开铺前可约卖镯人带凤镯来。"
 	if DragonSearch.enabled(s) and (MirrorEncounterService.new(counter.catalog).pending(day) or SocialRules.blocked(s)): return "先处理眼前的事情。"
 	if DragonSearch.enabled(s) and id in ["fd_lu", "fd_dragon"]: return "先托人寻找，再约陆掌眼带来。"
 	if not enabled(day.definition) or s.phase in [&"pre_open", &"dead", &"bankrupt", &"run_ended", &"day_summary", &"sleep_resolution"]: return "现在不能翻看或办理。"
@@ -220,9 +231,9 @@ static func choose(day: DayController, events: EventDirector, counter: CounterSe
 	var result := response(s, id, c.result)
 	if DragonSearch.enabled(s) and id == "fd_search_motive":
 		result += "\n“往后若有事找我，开铺前托人捎句话便是。”"
-	if DragonSearch.enabled(s) and id == "fd_settle" and choice_id != "return":
+	if DragonSearch.enabled(s) and id == "fd_settle" and choice_id != "return" and not (PhoenixRecovery.enabled(s) and choice_id == "pay"):
 		result += "\n陈小满收好布包，向你告辞。"
-	if (id in ["fd_truth", "fd_amend"] and choice_id == "tell") or (id == "fd_settle" and choice_id == "pay"):
+	if (id in ["fd_truth", "fd_amend"] and choice_id == "tell") or (id == "fd_settle" and choice_id == "pay" and not PhoenixRecovery.enabled(s)):
 		result += "\n你也把眼下知道的下落告诉了她：" + whereabouts(s)
 	if id == "fd_followup" and not revised(s): result = "陈小满带来一个重新衬好的镯匣：“两只放在一起，正好。”" if flag(s, "fd_clear") else "“做活的家什添齐了，房租也留了些。”陈小满把新缝的包袱扎好。"
 	return ActionResult.new(true, result)
@@ -237,6 +248,7 @@ static func model(day: DayController, events: EventDirector, counter: CounterSer
 		var e := events.catalog.get_definition("events", id) as EventDefinition
 		result.documents.append({"id": id, "title": e.title, "text": response(s, id, e.choices[0].result)})
 	for id in day.definition.event_ids:
+		if id in [PhoenixRecovery.GATE, PhoenixRecovery.HINT]: continue
 		if not id.begins_with("fd_") or (id.begins_with("fd_aqi_") and id != "fd_aqi_stay"): continue
 		var e := events.catalog.get_definition("events", id) as EventDefinition
 		if not CounterDomainValidator._contains_all(s.narrative_flags, e.required_flags): continue
@@ -309,6 +321,11 @@ static func decorate_reckoning(model: Dictionary, day: DayController, events: Ev
 		# Documents about the seller's own article remain available; no previous
 		# document or Chen story is ever appended to ordinary customer dialogue.
 		if v.customer_id == "fd_seller":
+			# Physical inspection stays with this article; expose only the detail
+			# actually observed, without sending the player into the case album.
+			for document in debt.documents:
+				if document.id == "fd_mark":
+					model.appraisal["item_detail"] = {"title": "内圈与凤尾", "text": document.text, "art": "res://assets/first_debt/mark_repair.png"}
 			for b in debt.buttons:
 				if b.target_id in ["fd_receipt", "fd_mark"]:
 					model.dialogue.buttons.append(b)
@@ -406,5 +423,10 @@ static func response(s: RunState, id: String, text: String) -> String:
 		return "陈小满带来重新衬好的旧镯匣：‘祖父留下的匣子，我一直收着。如今两只都能放回去了。’" if flag(s, "fd_clear") else "陈小满说添齐了做活的家什。祖父的原票仍在布包里：‘我应下了和解，也还记得他交代的事。’"
 	if id in ["fd_truth", "fd_amend"] and flag(s, "fd_truth_told") and flag(s, "fd_protection_read"):
 		text += "\n你将送礼账和营署回条推过去。陈小满把它们与初九的旧记对上：‘难怪后来连门都不让进。’"
-	if id == "fd_compensation": text += "\n你说明眼下所知的下落：" + whereabouts(s)
+	if id == "fd_compensation":
+		if PhoenixRecovery.enabled(s):
+			var condition := "她望向柜里的两只镯子，手仍按着祖父的票，迟迟没有开口。" if owned(s, PHOENIX) != null and owned(s, DRAGON) != null else "还没有收齐两只，她听你将已经查明的去向逐一说完。"
+			if item_exists(s, PHOENIX) and owned(s, PHOENIX) == null: condition = "得知凤镯已经售出，她低头攥了攥布包，没有立刻应声。"
+			text = "你先把眼下知道的下落告诉她：" + whereabouts(s) + "\n" + condition + "\n" + text
+		else: text += "\n你说明眼下所知的下落：" + whereabouts(s)
 	return text

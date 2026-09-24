@@ -9,6 +9,13 @@ var _last_visit := ""
 var _summary: Label
 var _known_clues: Array = []
 var _new_clues: Array = []
+var _detail: VBoxContainer
+var _detail_image: TextureRect
+var _detail_text: Label
+var _detail_back: Button
+var _detail_model: Dictionary = {}
+var _detail_entry: Button
+
 
 func _ready() -> void:
 	super._ready()
@@ -34,8 +41,38 @@ func _ready() -> void:
 	_views = HBoxContainer.new()
 	_column.add_child(_views)
 	_column.move_child(_views, 1)
+	_detail = VBoxContainer.new()
+	_detail.name = "ItemDetail"
+	_detail.add_theme_constant_override("separation", 14)
+	_column.get_parent().get_parent().add_child(_detail)
+	var title := Label.new()
+	title.text = "内圈与凤尾"
+	title.add_theme_font_size_override("font_size", 22)
+	_detail.add_child(title)
+	_detail_image = TextureRect.new()
+	_detail_image.custom_minimum_size = Vector2(0, 220)
+	_detail_image.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_detail_image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_detail_image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_detail.add_child(_detail_image)
+	_detail_text = Label.new()
+	_detail_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_detail_text.add_theme_font_size_override("font_size", 18)
+	_detail.add_child(_detail_text)
+	_detail_back = Button.new()
+	_detail_back.text = "返回鉴定"
+	_detail_back.pressed.connect(dismiss_detail)
+	_detail.add_child(_detail_back)
+	_detail.hide()
+	visibility_changed.connect(func() -> void:
+		if not is_visible_in_tree(): dismiss_detail(false)
+	)
+
 
 func render(model: Dictionary) -> void:
+	if model.get("visit_id", "") != _visit_id: dismiss_detail(false)
+	_detail_model = model.get("item_detail", {})
+	if _detail_model.is_empty(): dismiss_detail(false)
 	super.render(model)
 	var visual: Dictionary = model.get("visual", {})
 	_summary.visible = not visual.is_empty()
@@ -77,6 +114,15 @@ func render(model: Dictionary) -> void:
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		button.pressed.connect(_select_image.bind(row.id))
 		_views.add_child(button)
+	_detail_entry = null
+	if not _detail_model.is_empty():
+		_detail_entry = Button.new()
+		_detail_entry.text = "内圈与凤尾"
+		_detail_entry.tooltip_text = "复看不耗时"
+		_detail_entry.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		_detail_entry.pressed.connect(func() -> void: show_detail(_detail_model))
+		_views.add_child(_detail_entry)
+		_views.show()
 	if visual.get("condition_enabled", false) and visual.get("item_asset", "") != "goods.folding_fan": _views.hide()
 	_show_image(_selected)
 	if gained_view: _reveal_image.call_deferred()
@@ -117,3 +163,20 @@ func _show_image(id: String) -> void:
 			return
 	_image.texture = null
 	_image.hide()
+
+# A local appraisal view, never a story document browser. The presenter supplies
+# already-observed content; opening and returning do not submit another action.
+func show_detail(model: Dictionary) -> void:
+	if model.is_empty(): return
+	_detail_image.texture = load(model.art)
+	_detail_text.text = model.text
+	_column.get_parent().hide()
+	_detail.show()
+	_detail_back.grab_focus()
+
+func dismiss_detail(restore_focus := true) -> bool:
+	if _detail == null or not _detail.visible: return false
+	_detail.hide()
+	_column.get_parent().show()
+	if restore_focus and is_instance_valid(_detail_entry): _detail_entry.grab_focus()
+	return true

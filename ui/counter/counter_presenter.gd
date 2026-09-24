@@ -9,6 +9,7 @@ func bind(session: RunSession, view: CounterView) -> void:
 	_view = view
 	_view.story_choice_requested.connect(_choose_story)
 	_view.companion.choice_requested.connect(_choose_companion)
+	_view.companion.notification_requested.connect(_open_companion_notification)
 	_session.restored.connect(_view.companion.reset)
 	_session.changed.connect(refresh)
 	refresh()
@@ -32,3 +33,10 @@ func _choose_story(event_id: String, choice_id: String) -> void:
 func _choose_companion(event_id: String, choice_id: String) -> void:
 	var result := _session.event_command(event_id, choice_id)
 	if not result.ok: _view.companion.dialogue.show_error(result.message)
+
+func _open_companion_notification() -> void:
+	var notice: Dictionary = _session.companion_model().get("notification", {})
+	if notice.is_empty(): return
+	var result := _session.event_command(notice.id, notice.choice)
+	if result.ok: _view.companion.show_notification(notice)
+	else: _view.companion.notification_error(result.message)

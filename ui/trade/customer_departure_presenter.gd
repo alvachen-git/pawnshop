@@ -51,6 +51,7 @@ func _refresh() -> void:
 	var early_departed := false
 	var deferred := false
 	var reply_name := ""
+	var reply_text := ""
 	var reply_style := ""
 	var quote_refused := false
 	var display_departed := false
@@ -74,6 +75,9 @@ func _refresh() -> void:
 		var speech: String = {"display_failed": "他拢起袖子：‘这个价，我接不住。’", "display_rejected": "客人将钱袋收回，告辞出门。", "display_cancelled": "客人收回目光，未再问价。", "inspection_refused": "你的手刚伸向包裹，那人便一把收回：‘说过了，不许验货。’他带着东西走了，未留下可核实的细节。", "swap_rejected": "他合上匣子，八十银元也带走了。","redemption_deferred": "姜素云收好当票：‘那就照票上的日子来，钱我留着。’", "patience_exhausted": "他把东西收回怀里：“这买卖，不谈了。”", "rounds_exhausted": "他重新扎好包袱：“价钱合不到一处，就到这里吧。”", "timed_out": "他朝门外看了一眼，收好东西，匆匆离开。", "shop_closed": "门板落下前，客人带着旧物离开了。"}[row.outcome]
 		if row.outcome == "timed_out" and visit.voice.has("timed_out"): speech = String(visit.voice.timed_out)
 		if EarlyRedemption.is_visit(visit) and row.outcome == "shop_closed": speech = visit.voice.timed_out
+		if PhoenixRecovery.enabled(state) and visit.customer_id == "fd_seller" and was_active:
+			speech += "\n" + PhoenixRecovery.LEAVE
+			reply_text = "卖镯人：‘掌柜若改了主意，托句话给我，我再带来。’"
 		var reason: String = REASONS[row.outcome]
 		if not was_active:
 			reason = "还没轮到柜台，等候期限已到，客人先走了。" if row.outcome == "timed_out" else "尚在排队，铺门已关，客人带着货物离开。"
@@ -100,7 +104,7 @@ func _refresh() -> void:
 	var title := ("未能成交" if active_departed else "等候客人离场") if ids.size() == 1 else "来客离场"
 	if ids.size() == 1 and early_departed: title = "已约定回访" if deferred else "提前取赎未办妥"
 	departed.emit({"id": "departure/" + "/".join(ids), "kind": "departure", "title": title, "item": subjects[0] if ids.size() == 1 else "%d位客人离开了" % ids.size(),
-		"reply_name": reply_name, "reply_style": reply_style if not early_departed else "",
+		"reply_text": reply_text, "reply_name": reply_name, "reply_style": reply_style if not early_departed else "",
 		"quote_refused": quote_refused,
 		"night": state.current_night_index, "active_departed": active_departed,
 		"clock": "第%d夜 · %s" % [state.current_night_index, TimeController.clock_text(_session.definition.opening_minute, state.game_minutes)],

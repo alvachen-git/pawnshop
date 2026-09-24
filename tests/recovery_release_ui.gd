@@ -1,0 +1,7 @@
+extends "res://tests/recovery_ui.gd"
+
+func recovery_manifest() -> String:
+	return "res://data/first_debt_recovery_release_manifest.json"
+
+func recovery_version() -> int:
+	return 41

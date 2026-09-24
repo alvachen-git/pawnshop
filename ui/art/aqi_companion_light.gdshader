@@ -2,6 +2,7 @@ shader_type canvas_item;
 
 uniform int night_band = 0;
 uniform int atmosphere = 0;
+uniform float hover_amount : hint_range(0.0, 1.0) = 0.0;
 
 void fragment() {
 	vec4 source = texture(TEXTURE, UV);
@@ -16,5 +17,8 @@ void fragment() {
 	float facing_lamp = smoothstep(0.40, 0.82, UV.x);
 	float collar_shade = 1.0 - 0.20 * smoothstep(0.67, 0.93, UV.y);
 	paint *= exposure * mix(0.78, 1.0, facing_lamp) * collar_shade;
+	// A translucent white wash follows only the painted silhouette. The original
+	// alpha and foreground counter still occlude the body, with no rectangular glow.
+	paint = mix(paint, vec3(1.0), hover_amount * 0.20);
 	COLOR = vec4(paint, source.a);
 }
