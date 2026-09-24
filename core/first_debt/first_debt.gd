@@ -8,7 +8,7 @@ static func enabled(run: RunDefinition) -> bool:
 	return int(run.variety.get("first_debt_version", 0)) in [1, 2, 3]
 
 static func revised(s: RunState) -> bool:
-	return s.run_definition_id in ["first_debt_reckoning", "first_debt_dragon_search", "first_debt_unified"]
+	return s.run_definition_id in ["first_debt_reckoning", "first_debt_dragon_search", "first_debt_unified", "bangle_unified"]
 
 static func last(state: RunState, id: String) -> Dictionary:
 	for i in range(state.event_history.size() - 1, -1, -1):

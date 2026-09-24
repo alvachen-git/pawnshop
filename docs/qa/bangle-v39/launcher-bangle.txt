@@ -1,0 +1,5 @@
+Appraisal test preset: isolated, progress is not saved.
+
+Starting unified v39: bangle
+
+Verified unified v39: bangle

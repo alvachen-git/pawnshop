@@ -14,7 +14,7 @@ func eligible(state: RunState, event: EventDefinition) -> bool:
 	if state.social_enabled and event.kind != "anchor" and SocialRules.night(state).get("military_event", false):
 		# The old social run keeps its frozen event rule. The combined campaign
 		# retains bedroom scenes and the companion alongside daytime military news.
-		if state.run_definition_id not in [&"unified_ten", &"named_wealthy_ten", &"pearl_market_ten", &"first_debt_dragon_search", &"first_debt_unified"] or (state.phase in [&"pre_open", &"open"] and not event.id.begins_with("aq_")): return false
+		if state.run_definition_id not in [&"unified_ten", &"named_wealthy_ten", &"pearl_market_ten", &"first_debt_dragon_search", &"first_debt_unified", &"bangle_market_ten", &"bangle_unified"] or (state.phase in [&"pre_open", &"open"] and not event.id.begins_with("aq_")): return false
 	if String(state.phase) != event.phase or state.current_night_index < event.night_min or (state.current_night_index > event.night_max and event.id != "ds_search_message") or state.game_minutes < event.window_start or state.game_minutes >= event.window_end: return false
 	if not CounterDomainValidator._contains_all(state.narrative_flags, event.required_flags): return false
 	for flag in event.excluded_flags:

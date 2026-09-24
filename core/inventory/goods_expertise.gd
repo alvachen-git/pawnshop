@@ -18,6 +18,7 @@ static func attach(rows: Array, run: RunDefinition, seed_value: int) -> void:
 		if row.item_id == CUP and not row.has("goods"): row.goods = traits(seed_value, row.visit_id)
 
 static func value(item: ItemInstance, definition: ItemDefinition) -> int:
+	if item.goods.has("bangle_value"): return int(item.goods.bangle_value.actual)
 	if item.goods.has("pearl_value"): return int(item.goods.pearl_value.actual)
 	if item.goods.has("watch_value"): return int(item.goods.watch_value.actual)
 	return TieredAppraisal.adjusted(item, FanConditionService.adjusted(item, appraisal_value(item, definition)))

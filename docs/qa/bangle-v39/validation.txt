@@ -1,0 +1,82 @@
+老凤祥花雕金镯 v39 — 本地验收记录
+记录时间: 2026-09-23T23:40:08
+基线: origin/main 0e2fb42bee56d7e7819b7419396a3299d19fd4ce
+隔离分支: codex/bangle-appraisal-v39；未提交、未推送、未合并。
+运行环境: Windows / Godot 4.6.1 / Compatibility renderer。
+
+最终验证（以下为修复后最终结果；早期失败调试日志不作为验收结果）：
+bangle_appraisal: BANGLE V39: 11736 passes, 0 failures
+bangle_economy: BANGLE ECONOMY: 133 passes, 0 failures
+bangle_journey: BANGLE JOURNEY: bangle=1 pearl=0 watch=0; 513 passes, 0 failures
+bangle_story: MIRROR REUNION: 3491 passes, 0 failures
+bangle_companion: AQI COMPANION: 3282 passes, 0 failures
+bangle-ui-wide-final: BANGLE UI: 81 assertions, 0 failures
+bangle-ui-small-final: BANGLE UI: 81 assertions, 0 failures
+pearl_appraisal: PEARL V38: 23030 passes, 0 failures
+pearl_economy: PEARL ECONOMY: 593 passes, 0 failures
+watch_negotiation: WATCH NEGOTIATION: 1070 passes, 0 failures; personalities { "easy": 3493, "careful": 4536, "firm": 1971 }
+named_wealthy: NAMED WEALTHY: 1211 passes, 0 failures
+fan_condition: FAN CONDITION: 2078 passes, 0 failures
+appraisal_release_entries: RELEASE ENTRY COMPATIBILITY: 22 checks passed
+pearl-ui-regression: PEARL UI: 101 assertions, 0 failures
+atlas-regression: ITEM STUDY ATLAS UI: 13 assertions, 0 failures
+launcher-bangle: Verified unified v39: bangle
+launcher-normal: Verified unified v39: normal
+
+覆盖范围:
+- 36类货况与各3个重量候选，共108组合；实际价值固定、独立修补和随机稳定。
+- 设备、知识、时间门槛；重复检查免费；局部火试开始、提前停止、完成、擦拭与比较。
+- 部分查验落笔回柜台、手记不可改写；对客说法独立、真假与信任/让价分离。
+- 五位持有人参数、筹款线、低价交易与商誉事件、收购/放当/赎回/绝当及出售。
+- 保存失败整体回滚、冷重放、自然十夜流程和旧版本兼容。
+- 1280×720及1600×900真实渲染/输入测试，每种81项断言；已人工看图检查称重、对比、手记和指南。
+- 珍珠界面101项断言、物品图册13项断言；怀表、珍珠、折扇、固定富客、铜镜及阿七规则回归。
+- 根目录转发启动与正式v39入口均实际启动验证成功。
+
+环境说明:
+- 离线运行时 Godot 报系统证书读取警告；测试及导入完成，未出现脚本解析错误。
+- Git diff --check 通过。
+- 美术使用内置 ImageGen 生成并直接接入；提示、来源和运行时呈现方式见 assets/bangle_desk/SOURCE.md。
+- 火试仅为本游戏固定样本的受控观察，不判定精确金含量。
+
+试玩说明: docs/BANGLE_V39_LOCAL.md
+截图: 同目录 bangle_1280_*.png / bangle_1600_*.png
+
+2026-09-24 简化火试操作（覆盖上述旧界面流程）：
+移除前后比较按钮；两图保持原亮度并排。完成擦拭直接满足比较观察，不再要求额外动作。
+火试3秒自动完成；提前停止不计完成。旧compare动作保留用于读取既有日志。
+bangle-simplified-rules: BANGLE V39: 11736 passes, 0 failures
+bangle-simplified-wide: BANGLE UI: 82 assertions, 0 failures
+bangle-simplified-small: BANGLE UI: 82 assertions, 0 failures
+bangle-simplified-replay: BANGLE JOURNEY: bangle=1 pearl=0 watch=0; 513 passes, 0 failures
+人工查看1280×720擦拭后截图，按钮排列和并排图正常；git diff --check通过。
+
+2026-09-24 戳记与内圈独立素材修正：
+原先stamp与inner均映射到同一张图；现inner使用独立无戳记图集，含足色、低成色火试前/后、镀金四格。
+只修改图像选择；固定事实、交易和保存规则不变。
+素材通过内置ImageGen生成并原样接入，来源及完整提示记录于assets/bangle_desk/SOURCE.md。
+bangle-inner-wide: BANGLE UI: 84 assertions, 0 failures
+bangle-inner-small: BANGLE UI: 84 assertions, 0 failures
+已看生成图集与1600实机内圈图；导入及diff检查通过。
+
+2026-09-24 金镯外观与柜台比例优化：
+内置ImageGen生成原生透明整镯图exterior-refined.png；收窄镯身、减薄边缘、细化雕花，保留完好/轻损/断口三态。
+柜台、鉴定桌、秤盘、指南共用新版整镯图；柜台按人物比例缩小，点击范围保留；鉴定桌与秤盘保留图片宽高比。
+经济规则与局部鉴定事实未改。完整提示及选用来源见assets/bangle_desk/SOURCE.md。
+bangle-refined-wide: BANGLE UI: 88 assertions, 0 failures
+bangle-refined-small: BANGLE UI: 88 assertions, 0 failures
+实机查看柜台人物手部对比及鉴定桌图；资源导入与git diff --check通过。
+
+2026-09-24 发布整合验收：
+基于线上 main db4182b（PR59）整合为 v40 bangle_unified，保留首债、寻龙与两条 v39 旧入口。
+bangle_unified_appraisal: 11736 passes, 0 failures
+bangle_unified_journey: 530 passes, 0 failures; natural seed 5, bangle=1; cold replay and failed-save rollback
+bangle_unified_routes: 4044 passes, 0 failures
+first_debt_unified_appraisal: 23030 passes, 0 failures
+appraisal_release_entries: 26 checks
+bangle_ui 1600x900 / 1280x720: each 88 assertions, 0 failures
+Godot import and unified launch normal/bangle: passed
+Godot root certificate-store warning is environmental; offline assertions passed.
+
+发布前 main 再次前进至 9da27b0（PR60 普通物品图、PR61 店内音效），已合并保留。
+最终整合导入通过；BANGLE UI 88、ITEM STUDY ATLAS UI 13、ITEM ART CONTRACTS 1509 assertions，均 0 failures。

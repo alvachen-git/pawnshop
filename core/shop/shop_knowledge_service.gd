@@ -30,6 +30,8 @@ static func topic_info(run: RunDefinition, topic: String) -> Dictionary:
 			info.bounds = TOPICS.luxury_watch.bounds; info.cabinet = 4
 	if run != null and PearlEconomy.enabled(run) and topic == "luxury_jade":
 		info.name = "珠玉鉴定指南"; info.description = "转珠看表层，放大孔口，再把整串逐粒比较。"
+	if run != null and BangleEconomy.enabled(run) and topic == "luxury_metal":
+		info.name = "金镯鉴定指南"; info.description = "称重对款，查看戳记与接缝，再比较火试后的局部痕迹。"
 	return info
 
 static func mastered(state: RunState, topic: String) -> bool:
