@@ -121,6 +121,7 @@ try {
 New-Item -ItemType Directory -Path "$package/licenses" | Out-Null
 Copy-Item "$root/assets/fonts/OFL.txt" "$package/licenses/NotoSansSC-OFL.txt"
 Copy-Item "$root/assets/fonts/SOURCE.md" "$package/licenses/NotoSansSC-source.md"
+Copy-Item "$root/assets/audio/radio/README.md" "$package/licenses/Pingtan-radio-source.md"
 Copy-Item "$root/third_party/godot/LICENSE.txt" "$package/licenses/Godot-LICENSE.txt"
 Copy-Item "$root/third_party/godot/COPYRIGHT.txt" "$package/licenses/Godot-COPYRIGHT.txt"
 Copy-Item "$root/third_party/godot/SOURCE.md" "$package/licenses/Godot-source.md"
