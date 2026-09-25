@@ -40,7 +40,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 	if financial.has("provenance_expense"): ledger.body += "本夜来源调查费 %d 银元（经营费用）\n" % financial.provenance_expense
 	if financial.has("expertise_expense"): ledger.body += "本夜行家复核费 %d 银元（经营费用）\n" % financial.expertise_expense
 	if WealthyCustomers.active(day.state):
-		ledger.body += "累计收购与放当 %d 笔 · 下次添商誉还需 %d 笔\n本夜十笔积累商誉%+d · 宣传商誉%+d\n" % [financial.reputation_trade_count, 10 - int(financial.reputation_trade_count) % 10, financial.reputation_growth, financial.advertising_delta]
+		ledger.body += ReputationFeedback.summary(day.state, financial, day.state.current_night_index) + "\n"
 	for entry in day.state.ledger_entries:
 		ledger.body += "\n第%d夜 %s · %s %+d · 余额 %d · 盈亏 %+d" % [entry.night, TimeController.clock_text(day.definition.opening_minute, entry.minute), KINDS[entry.kind], entry.amount, entry.balance, entry.realized_profit]
 	ledger.body += "\n\n当票（到期无人来赎，夜末核票处置）\n"

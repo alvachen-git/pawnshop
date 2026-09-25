@@ -8,7 +8,7 @@ static func notice(state: RunState) -> String:
 		return "\n" + {"fee": "门口有人来收街面照应钱，请翻开柜台上的《往来簿》。", "closure": "停业令已送到，开门前须作处置。", "supply": "经办人带来货单，开门前可选货或谢绝。", "claim": "旧货主找上门来，请先翻看柜台上的《往来簿》。"}.get(p.kind, "有一份军方口信待看。")
 	var lines := ""
 	for row in state.social.notices:
-		if row.night == state.current_night_index and row.text != MilitaryService.INTRODUCTION: lines = "\n" + String(row.text)
+		if row.night == state.current_night_index and row.text != MilitaryService.INTRODUCTION: lines = "\n" + ReputationFeedback.notice(String(row.text))
 	return lines
 
 static func button(model: Dictionary, day: DayController, command: String, label: String, detail := "") -> void:
@@ -71,5 +71,5 @@ static func faction_history(state: RunState, faction_id: String) -> String:
 	var lines: Array[String] = []
 	for row in state.social.get("notices", []):
 		if not faction_id.is_empty() and row.get("faction_id", "") == faction_id:
-			lines.append("第%d夜\n%s" % [row.night, row.text])
+			lines.append("第%d夜\n%s" % [row.night, ReputationFeedback.notice(String(row.text))])
 	return "\n\n".join(lines) if not lines.is_empty() else "尚无往来可记。"
