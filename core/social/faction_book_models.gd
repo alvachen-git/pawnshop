@@ -42,7 +42,7 @@ static func page(day: DayController, faction: String, section: int) -> Dictionar
 		var rules := SocialRules.config()
 		model.title = "托人送礼"
 		model.body = "托人递一份薄礼，往后有事好说话。"
-		model.fields = [["花费", "%d银元" % int(rules.gift_cost)], ["准备", "1次，须在开铺前办理"], ["间隔", "送到后须隔两夜再递"]]
+		model.fields = [["花费", "%d银元" % int(rules.gift_cost)], ["行动点", "1点，须在开铺前办理"], ["间隔", "送到后须隔两夜再递"]]
 		if social.plaque_awarded: model.body += "\n已获军方照应牌，挂在铺中；普通收购与活当可借牌压价一成，每客一次，但会损伤口碑。"
 		SocialReadModels.button(model, day, "gift", "托人送礼")
 		var reason := MilitaryService.reason(day, "gift")

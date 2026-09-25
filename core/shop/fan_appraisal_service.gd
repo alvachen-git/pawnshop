@@ -26,7 +26,7 @@ static func data(state: RunState) -> Dictionary:
 
 static func knowledge_reason(day: DayController) -> String:
 	if ShopKnowledgeService.enabled(day.definition):
-		return "" if ShopKnowledgeService.mastered(day.state, ShopKnowledgeService.GU_YANSHENG) else "尚未掌握顾砚生知识。开铺前到旧账柜第一柜学习，需1次准备。"
+		return "" if ShopKnowledgeService.mastered(day.state, ShopKnowledgeService.GU_YANSHENG) else "尚未掌握顾砚生知识。开铺前到旧账柜第一柜学习，需1行动点。"
 	return "" if data(day.state).get("knowledge", false) else "先研习工具册中的扇画图录。"
 
 static func bench_level(state: RunState) -> int:
@@ -63,7 +63,7 @@ static func facility_reason(day: DayController, command: String, detail := "") -
 			if bench_level(state) < 2: return "专用台完工后，才好安装扇画工具。"
 		"fan_study":
 			if ShopKnowledgeService.mastered(state, ShopKnowledgeService.GU_YANSHENG): return "这份知识已掌握，随时可以复看。"
-	if PreparationService.count(state) >= 2: return "今夜两次准备已经用完。"
+	if PreparationService.count(state) >= 2: return "今夜行动点已用完。"
 	if state.cash < int(COSTS.get(command, 0)): return "现银不足，需要%d银元。" % int(COSTS[command])
 	return ""
 
@@ -82,13 +82,13 @@ static func facility(day: DayController, command: String, detail := "") -> Actio
 		state.shop_growth.investments.append({"facility": command, "night": state.current_night_index, "amount": cost, "preparation": 1})
 	if command == "bench_two":
 		a.bench_due = state.current_night_index + 2
-		return ActionResult.new(true, "木匠收下80银元，约在第%d夜开铺前装妥专用台。占用一次准备，期间一级台仍可使用。" % int(a.bench_due))
+		return ActionResult.new(true, "木匠收下80银元，约在第%d夜开铺前装妥专用台。占用1行动点，期间一级台仍可使用。" % int(a.bench_due))
 	if command == "fan_tools":
 		a.tools = true
-		return ActionResult.new(true, "展扇夹、侧光镜和比对尺已安好。付出30银元，占用一次准备；还须掌握图录，才好辨认笔法与题款。")
+		return ActionResult.new(true, "展扇夹、侧光镜和比对尺已安好。付出30银元，占用1行动点；还须掌握图录，才好辨认笔法与题款。")
 	a.knowledge = true
 	a.preparations.append({"night": state.current_night_index, "action": "fan_study"})
-	return ActionResult.new(true, "你依图录试着辨了几处：先看转笔，再看题款是否与画面一同旧去。要点已抄妥，可随时免费复看。占用一次准备。")
+	return ActionResult.new(true, "你依图录试着辨了几处：先看转笔，再看题款是否与画面一同旧去。要点已抄妥，可随时免费复看。占用1行动点。")
 
 static func target(day: DayController, item_id: String) -> ItemInstance:
 	var held := InventoryManager.new().find(day.state, item_id)

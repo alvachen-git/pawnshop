@@ -280,7 +280,7 @@ static func facility_reason(day: DayController, command: String, detail: String)
 		if FanAppraisalService.bench_level(day.state) < KITS[detail].level: return "须先建成%d级鉴物台。" % KITS[detail].level
 		cost = KITS[detail].cost
 	else: return "没有这项铺务。"
-	if PreparationService.count(day.state) >= 2: return "今夜两次准备已经用完。"
+	if PreparationService.count(day.state) >= 2: return "今夜行动点已用完。"
 	return "现银不足，需要%d银元。" % cost if day.state.cash < cost else ""
 
 static func facility(day: DayController, command: String, detail: String) -> ActionResult:
@@ -296,7 +296,7 @@ static func facility(day: DayController, command: String, detail: String) -> Act
 		return ActionResult.new(true,"木匠已收款，三级精鉴台第%d夜开铺前完工。原台照常可用。" % state.shop_growth.precision.due)
 	state.shop_growth.precision.kits.append(detail)
 	if detail == "display": state.shop_growth.appraisal.tools = true
-	return ActionResult.new(true,KITS[detail].name+"已配齐，占用1次准备。")
+	return ActionResult.new(true,KITS[detail].name+"已配齐，占用1行动点。")
 
 static func facility_model(day: DayController, model: Dictionary) -> void:
 	if not enabled(day.definition): return
@@ -305,11 +305,11 @@ static func facility_model(day: DayController, model: Dictionary) -> void:
 	model.body += "\n精鉴台：" + ("已完工" if level >= 3 else "第%d夜完工" % due if due > 0 else "尚未委托")
 	if due == 0:
 		var why := facility_reason(day,"bench_three","")
-		model.buttons.append({"command":"bench_three","detail":"","label":"建三级精鉴台 · 160银元 / 准备1次 / 两夜工期","enabled":why.is_empty(),"reason":why})
+		model.buttons.append({"command":"bench_three","detail":"","label":"建三级精鉴台 · 160银元 / 1行动点 / 两夜工期","enabled":why.is_empty(),"reason":why})
 	var owned: Array[String] = []
 	for id in KITS:
 		if owns(day.state,id): owned.append(KITS[id].name); continue
 		var why := facility_reason(day,"precision_kit",id)
-		model.buttons.append({"command":"precision_kit","detail":id,"label":"添置%s · %d银元 / 准备1次" % [KITS[id].name,KITS[id].cost],"enabled":why.is_empty(),"reason":why})
+		model.buttons.append({"command":"precision_kit","detail":id,"label":"添置%s · %d银元 / 1行动点" % [KITS[id].name,KITS[id].cost],"enabled":why.is_empty(),"reason":why})
 	model.body += "\n已配器材："+("、".join(owned) if not owned.is_empty() else "暂无专用套件")
 	model.body += "\n放大镜与灯沿用柜台工具。知识在旧账柜学习。"

@@ -51,7 +51,7 @@ func refresh() -> void:
 	if SevenNightPlan.enabled(definition) and not OpeningPreparation.enabled(definition):
 		for entry in commands:
 			if state.phase == "pre_open" and entry.id != "open_shop": entry.visible = false
-		for entry in [{"id": "prep_investigate", "label": "调查收货消息 · 准备1次"}, {"id": "prep_contact", "label": "联系收货人 · 准备1次"}, {"id": "prep_visitors", "label": "打听今晚来客 · 准备1次"}, {"id": "prep_finish", "label": "结束准备"}]:
+		for entry in [{"id": "prep_investigate", "label": "调查收货消息 · 1行动点"}, {"id": "prep_contact", "label": "联系收货人 · 1行动点"}, {"id": "prep_visitors", "label": "打听今晚来客 · 1行动点"}, {"id": "prep_finish", "label": "结束准备"}]:
 			entry.enabled = _session.can_execute(entry.id)
 			entry.visible = state.current_night_index >= 4 and state.phase == "pre_open"
 			commands.append(entry)
@@ -59,17 +59,16 @@ func refresh() -> void:
 	if not state.buyer_appointment.is_empty(): appointment_hint = "\n" + OrdinarySamplePlan.notice(_session._day.state)
 	if SevenNightPlan.enabled(definition):
 		appointment_hint += "\n" + _session.seven_notice()
-		if state.current_night_index >= 4 and state.phase == "pre_open": appointment_hint = "\n今夜准备剩余%d次，开铺后不可返回。\n收货传闻与来客口信记在铺中记事里。" % (2 - PreparationService.count(_session._day.state))
+		if state.current_night_index >= 4 and state.phase == "pre_open": appointment_hint = "\n收货传闻与来客口信记在铺中记事里。"
 	var event_hint := "\n有待处理的铺中记事，请先查看。" if not state.pending_event_id.is_empty() else ""
 	var description := String(PHASE_LABELS[state.phase]) + event_hint + appointment_hint
 	if SevenNightPlan.enabled(definition) and state.phase == "pre_open" and state.current_night_index >= 4:
-		description = "开铺前\n今夜准备剩余%d次，开铺后不可返回。\n收货与来客消息可免费复看。" % (2 - PreparationService.count(_session._day.state))
+		description = "收货与来客消息可免费复看。"
 	if OpeningPreparation.enabled(definition) and state.current_night_index >= 2:
 		if state.phase == "pre_open":
 			commands = _preparation_commands()
-			description = "开铺前 · 现银%d大洋\n今夜准备剩余%d次；开铺后不可返回。" % [state.cash, 2 - PreparationService.count(_session._day.state)]
-			if state.current_night_index == 2: description += "\n开铺前可办两件事，也可直接开铺。消息可免费复看。"
-			if _category_picker: description += "\n选好收货类别才耗次数，返回不消耗。"
+			description = ""
+			if _category_picker: description += "\n选好收货类别才消耗行动点，返回不消耗。"
 	if state.phase in ["night_resolution", "shop_resolution"]:
 		description = "已封铺\n先核清今夜的当票与息费，再回房歇息。"
 		commands = [{"id": "read_night", "label": "查看夜间结算", "enabled": true}]
@@ -85,6 +84,10 @@ func refresh() -> void:
 	if state.phase == "open": description = "停业守铺 · 只办旧票" if SocialRules.closed(_session._day.state) else "营业中"
 	if SocialRules.enabled(definition):
 		description += SocialReadModels.notice(_session._day.state)
+	if state.phase in ["pre_open", "open", "closed_processing"] and definition.fee_policy.enabled:
+		description += "\n" + FeeService.nightly_fee_notice(state, definition)
+		var principal_notice := FeeService.principal_schedule_notice(state, definition)
+		if not principal_notice.is_empty(): description += "\n" + principal_notice
 	if _wait_picker:
 		description = "等待多久？"
 		commands = _wait_commands()
@@ -126,7 +129,7 @@ func _on_command(command: String) -> void:
 		if item == null: return
 		var dialog := ConfirmationDialog.new()
 		dialog.title = "寻配茶盏"
-		dialog.dialog_text = "为货签%d茶盏寻配 · 3银元 / 准备1次\n约来同纹样、相对式样的候选，价钱另谈。\n是否原配还须验看，不保证成交。" % (state.inventory_instances.find(item) + 1)
+		dialog.dialog_text = "为货签%d茶盏寻配 · 3银元 / 1行动点\n约来同纹样、相对式样的候选，价钱另谈。\n是否原配还须验看，不保证成交。" % (state.inventory_instances.find(item) + 1)
 		dialog.ok_button_text = "托人寻配"; dialog.cancel_button_text = "暂不寻配"
 		_view.add_child(dialog)
 		dialog.confirmed.connect(func() -> void: _session.execute("prep_seek", target); dialog.queue_free())
@@ -163,27 +166,27 @@ func _preparation_commands() -> Array:
 	if _category_picker:
 		for category in OpeningPreparation.CATEGORIES:
 			var error := OpeningPreparation.reason(state, "target", category)
-			commands.append({"id": "prep_category/" + category, "label": "收" + OpeningPreparation.CATEGORIES[category] + " · 准备1次", "enabled": error.is_empty(), "reason": error})
-		commands.append({"id": "prep_cancel_category", "label": "返回 · 不耗次数", "enabled": true})
+			commands.append({"id": "prep_category/" + category, "label": "收" + OpeningPreparation.CATEGORIES[category] + " · 1行动点", "enabled": error.is_empty(), "reason": error})
+		commands.append({"id": "prep_cancel_category", "label": "返回 · 不耗行动点", "enabled": true})
 		return commands
 	commands.append({"id": "open_shop", "label": "开铺营业", "enabled": _session.can_execute("open_shop")})
 	var actions := [
-		["attract", "招揽客人 · 3大洋 · 准备1次", "今晚增加1位普通潜在来客"],
-		["target", "托人捎话收货 · 准备1次", "选择类别，另约1位普通来客带货"],
-		["tea", "备茶候客 · 5大洋 · 准备1次", "今晚普通来客多等20分钟"],
-		["visitors", "打听来客 · 准备1次", "获知2位来客的时段、货类与交易意向"]]
-	if WealthyCustomers.active(state): actions.append(["advertise", "宣传铺子 · 30银元 · 准备1次", "每夜一次，关铺时听街面回音；可能传开好名声，也可能无人理会或传岔了话"] )
+		["attract", "招揽客人 · 3大洋 · 1行动点", "今晚增加1位普通潜在来客"],
+		["target", "托人捎话收货 · 1行动点", "选择类别，另约1位普通来客带货"],
+		["tea", "备茶候客 · 5大洋 · 1行动点", "今晚普通来客多等20分钟"],
+		["visitors", "打听来客 · 1行动点", "获知2位来客的时段、货类与交易意向"]]
+	if WealthyCustomers.active(state): actions.append(["advertise", "宣传铺子 · 30银元 · 1行动点", "每夜一次，关铺时听街面回音；可能传开好名声，也可能无人理会或传岔了话"] )
 	if state.current_night_index in [4, 5, 6] and not PreparationService.used(state, "investigate"):
-		actions.append(["investigate", "调查收货消息 · 准备1次", "提前打听第六夜的收货细目"])
+		actions.append(["investigate", "调查收货消息 · 1行动点", "提前打听第六夜的收货细目"])
 	if PhoenixRecovery.available(state):
-		actions.push_front(["phoenix_invite", "约卖镯人带凤镯来 · 准备1次", "不另收费，19:00起等空柜接待，货款另谈"])
+		actions.push_front(["phoenix_invite", "约卖镯人带凤镯来 · 1行动点", "不另收费，19:00起等空柜接待，货款另谈"])
 	if DragonSearch.enabled(state):
 		if not FirstDebt.last(state, "fd_search_motive").is_empty() and not FirstDebt.flag(state, "fd_followed"):
-			actions.push_front(["chen_invite", "约陈小满来谈 · 准备1次", "不另收费，开铺后等空柜接待；谈完后告辞"])
+			actions.push_front(["chen_invite", "约陈小满来谈 · 1行动点", "不另收费，开铺后等空柜接待；谈完后告辞"])
 		if FirstDebt.flag(state, "fd_search_promised") and DragonSearch.preparation(state, "dragon_search").is_empty() and not FirstDebt.settled(state):
-			actions.push_front(["dragon_search", "托人寻找龙镯 · 准备1次", "不另收费，收铺后收口信"])
+			actions.push_front(["dragon_search", "托人寻找龙镯 · 1行动点", "不另收费，收铺后收口信"])
 		if FirstDebt.flag(state, "fd_search_message") and not FirstDebt.item_exists(state, FirstDebt.DRAGON) and not FirstDebt.settled(state):
-			actions.push_front(["dragon_invite", "约陆掌眼带龙镯来 · 准备1次", "19:00起等空柜接待，货款另谈"])
+			actions.push_front(["dragon_invite", "约陆掌眼带龙镯来 · 1行动点", "19:00起等空柜接待，货款另谈"])
 	for action in actions:
 		var error := OpeningPreparation.reason(state, action[0])
 		var tooltip: String = action[2] + "。"
@@ -193,7 +196,7 @@ func _preparation_commands() -> Array:
 		for item in state.inventory_instances:
 			if item.definition_id != GoodsExpertise.CUP or item.ownership_state != "owned" or "form" not in item.revealed_clue_ids: continue
 			var error := OpeningPreparation.reason(state, "seek", item.instance_id)
-			commands.append({"id": "prep_seek/" + item.instance_id, "label": "寻配茶盏 · 货签%d · 3银元 / 准备1次" % (state.inventory_instances.find(item) + 1), "enabled": error.is_empty(), "reason": error, "tooltip": GoodsExpertise.description(item, _session._counter.catalog.get_definition("items", item.definition_id))})
+			commands.append({"id": "prep_seek/" + item.instance_id, "label": "寻配茶盏 · 货签%d · 3银元 / 1行动点" % (state.inventory_instances.find(item) + 1), "enabled": error.is_empty(), "reason": error, "tooltip": GoodsExpertise.description(item, _session._counter.catalog.get_definition("items", item.definition_id))})
 	return commands
 
 func _on_load() -> void:

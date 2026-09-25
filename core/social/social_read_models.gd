@@ -56,8 +56,8 @@ static func page(day: DayController, section := 0) -> Dictionary:
 	model.body += "\n\n采购棉袄 · 自有棉袄%d／3\n三件一并交货，完成奖励50银元，期限不限。" % CoatProcurement.stock(state).size()
 	if order.is_empty(): button(model, day, "accept_contract", "接下采购单")
 	else: button(model, day, "cancel_contract", "退回已经接下的采购单")
-	button(model, day, "gift", "托人送礼 · 20银元 / 准备1次")
-	model.body += "\n\n托人送礼：20银元，占一次开铺前准备；送到后隔两夜再递。"
+	button(model, day, "gift", "托人送礼 · 20银元 / 1行动点")
+	model.body += "\n\n托人送礼：20银元，占1行动点，须在开铺前办理；送到后隔两夜再递。"
 	var visit := CustomerManager.new().active(state)
 	if visit != null:
 		var supply := MilitaryService.supply_for(state, visit.visit_id)

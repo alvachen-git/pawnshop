@@ -210,7 +210,7 @@ func refresh() -> void:
 	_role.text = selected.role + " · " + selected.scope
 	_attitude.text = FactionBookModels.attitude(state, selected_faction)
 	_portrait.texture = load(selected.portrait)
-	_balance.text = "现银 %d 银元　·　今夜准备 %d / 2 次" % [state.cash, PreparationService.count(state)]
+	_balance.text = "现银 %d 银元　·　行动点 %d/2" % [state.cash, maxi(0, PreparationService.action_points(state, session.definition))]
 	for index in _tabs.size():
 		_tabs[index].set_pressed_no_signal(section == index)
 		_tabs[index].tooltip_text = "有来信待办" if not state.social.pending.is_empty() and index == FactionBookModels.pending_section(state) else ""

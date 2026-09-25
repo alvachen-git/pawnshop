@@ -79,7 +79,7 @@ func _run() -> void:
 		_check(viewport_rect.encloses((screen.get_node("%MenuButton") as Control).get_global_rect()), "缩放后菜单按钮不溢出：%s" % dimensions)
 		var menu_rect: Rect2 = screen.get_node("%MenuButton").get_global_rect()
 		_check(screen.get_node("%ShopStatusView").get_global_rect().encloses(menu_rect), "菜单按钮位于底栏内：%s" % dimensions)
-		for field in ["ClockStatus", "NightStatus", "CashStatus", "DebtStatus", "TicketStatus", "RiskStatus"]:
+		for field in ["ClockStatus", "NightStatus", "CashStatus", "DebtStatus", "TicketStatus", "ActionPointsStatus"]:
 			var value: Label = screen.get_node("%" + field)
 			_check(not value.text.contains("\n") and value.get_global_rect().end.x < menu_rect.position.x, "状态单行且不遮挡菜单：" + field)
 	print("SCENE NAVIGATION UI SMOKE: %d assertions, %d failures" % [_assertions, _failures])

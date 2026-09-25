@@ -20,9 +20,9 @@ func _run() -> void:
 	await _click_button(_main.get_node("CounterScreen").facilities.room.hotspots.bench)
 	await _capture("01_before_build")
 	var cash := _session._day.state.cash
-	await _click("整修鉴物台 · 40银元 / 准备1次")
+	await _click("整修鉴物台 · 40银元 / 1行动点")
 	await _click_button(_main.get_node("CounterScreen").facilities.room.hotspots.display)
-	await _click("整修陈列柜 · 60银元 / 准备1次")
+	await _click("整修陈列柜 · 60银元 / 1行动点")
 	_check(_session._day.state.cash == cash - 100 and PreparationService.count(_session._day.state) == 2, "UI actually buys facilities")
 	await _capture("02_built")
 	await _click_button(_main.get_node("CounterScreen").facilities.room.hotspots.display)

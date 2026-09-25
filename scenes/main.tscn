@@ -283,12 +283,12 @@ theme_override_font_sizes/font_size = 17
 text = "在当票据"
 vertical_alignment = 1
 
-[node name="RiskStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]
+[node name="ActionPointsStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 15
-text = "香火"
+text = "行动点 —"
 vertical_alignment = 1
 
 [node name="PhaseStatus" type="Label" parent="CounterScreen/ShopStatusView/StatusMargin/StatusRow"]

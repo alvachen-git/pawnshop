@@ -38,10 +38,10 @@ static func page(day: DayController, section: int) -> Dictionary:
 	if not day.state.shop_growth_enabled: return model
 	var state := day.state
 	if section == 0:
-		model.body = "工具架与陈列位\n\n今夜准备已用%d / 2次 · 现银%d银元\n整修在第二夜起、开铺前办理，当晚可用。" % [PreparationService.count(state), state.cash]
+		model.body = "工具架与陈列位\n\n行动点 %d/2 · 现银%d银元\n整修在第二夜起、开铺前办理，当晚可用。" % [maxi(0, PreparationService.action_points(state, day.definition)), state.cash]
 		model.body += "\n\n鉴物台：" + ("已整修。普通货使用放大镜、灯或磁铁的10分钟检查，缩至5分钟。" if state.shop_growth.bench else "旧毡起皱，工具散在台角。整平台面、安好工具架，检查更利落。")
 		model.body += "\n\n陈列柜：" + ("已整修，提供1个位置。开铺前可选换货物；成交须掌柜亲自谈。" if state.shop_growth.display else "玻璃蒙灰，柜门合不拢。修好后可陈列一件自有普通现货。")
-		for id in ["bench", "display"]: _button(model, day, "build", id, "整修%s · %d银元 / 1次准备" % [ShopGrowthService.NAMES[id], ShopGrowthService.COSTS[id]])
+		for id in ["bench", "display"]: _button(model, day, "build", id, "整修%s · %d银元 / 1行动点" % [ShopGrowthService.NAMES[id], ShopGrowthService.COSTS[id]])
 	elif section == 1:
 		model.body = "陈列位 · 一位一货\n\n只能放自有普通现货。营业中可撤下或另售，换货须等下次开铺前。\n陈列持续到撤下或售出；有没有识货的人来，须等门开后才知道。"
 		var id: String = state.shop_growth.display_id
@@ -55,7 +55,7 @@ static func page(day: DayController, section: int) -> Dictionary:
 			_button(model, day, "display", stock.instance_id, "陈列：" + (state.ghost_catalog.get_definition("items", stock.definition_id) as ItemDefinition).display_name)
 	else:
 		var count: int = state.shop_growth.exploration.size()
-		model.body = "沿柜查铺\n\n提前关门后，可在03:00前慢慢核查。不收银元，不占准备次数。"
+		model.body = "沿柜查铺\n\n提前关门后，可在03:00前慢慢核查。不收银元，不占行动点。"
 		for i in range(count - 1, -1, -1): model.body += "\n\n" + ShopGrowthService.MATERIALS[i]
 		if count < 3:
 			if count == 0: model.body += "\n\n旧账堆在最里头的柜脚，灰下还露着几张目录。"

@@ -58,7 +58,7 @@ static func reason(day: DayController, command: String, detail := "") -> String:
 			if state.current_night_index < 2: return "第二夜起可托人整修。"
 			if state.phase != &"pre_open" or PreparationService.used(state, "finish", state.current_night_index): return "须在开铺前、准备结束前托付。"
 			if state.shop_growth[detail]: return "已经整修妥当，不必再付钱。"
-			if PreparationService.count(state) >= 2: return "今夜两次准备已经用完。"
+			if PreparationService.count(state) >= 2: return "今夜行动点已用完。"
 			if state.cash < int(COSTS[detail]): return "现银不足，需要%d银元。" % COSTS[detail]
 		"display":
 			if not state.shop_growth.display: return "先整修一级陈列柜。"
@@ -92,7 +92,7 @@ static func perform(day: DayController, command: String, detail := "") -> Action
 			EconomyManager.new().commit(state, -cost, "", "facility/" + detail, "facility_investment")
 			state.shop_growth[detail] = true
 			state.shop_growth.investments.append({"facility": detail, "night": state.current_night_index, "amount": cost, "preparation": 1})
-			return ActionResult.new(true, "%s已经整修妥当，今晚便可使用。付出%d银元，占用一次准备。" % [NAMES[detail], cost])
+			return ActionResult.new(true, "%s已经整修妥当，今晚便可使用。付出%d银元，占用1行动点。" % [NAMES[detail], cost])
 		"display":
 			state.shop_growth.display_id = detail
 			return ActionResult.new(true, "你将货物放进陈列位，等识货的人来问价。")

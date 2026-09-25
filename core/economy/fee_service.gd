@@ -33,6 +33,32 @@ static func overdue(state: RunState) -> int:
 		if row.due_night <= state.current_night_index: total += int(row.amount)
 	return total
 
+static func nightly_fee_notice(state: RunState, run: RunDefinition) -> String:
+	if not run.fee_policy.enabled: return ""
+	var settled := state.fee_history.any(func(row: Dictionary) -> bool: return int(row.night) == state.current_night_index)
+	var next_night := state.current_night_index + (1 if settled else 0)
+	var amount := run.fee_policy.interest + run.fee_policy.overhead
+	var notice := "下次结息费：第%d夜夜末（%s），应付%d银元。" % [next_night, "明夜" if settled else "今夜", amount]
+	if not state.fee_arrears.is_empty():
+		var earliest_due := int(state.fee_arrears[0].due_night)
+		for row in state.fee_arrears: earliest_due = mini(earliest_due, int(row.due_night))
+		var deadline := "今夜到期" if earliest_due <= state.current_night_index else "还剩%d夜" % (earliest_due - state.current_night_index)
+		notice += "\n未付息费%d银元，最迟第%d夜夜末补齐（%s）。" % [outstanding(state), earliest_due, deadline]
+	return notice
+
+static func principal_schedule_notice(state: RunState, run: RunDefinition) -> String:
+	if not FirstDebt.enabled(run) or not run.fee_policy.enabled: return ""
+	var notice := "借据约定的还本日已过。"
+	if state.current_night_index <= 21:
+		notice = "下次约定还本：第21夜（%s）。" % _night_distance(state.current_night_index, 21)
+	elif state.current_night_index <= 49:
+		notice = "下次约定还本：第49夜（%s）。" % _night_distance(state.current_night_index, 49)
+	return notice
+
+static func _night_distance(current_night: int, target_night: int) -> String:
+	if current_night < target_night: return "还剩%d夜" % (target_night - current_night)
+	return "今夜"
+
 static func finish(state: RunState, run: RunDefinition) -> void:
 	if not run.fee_policy.enabled or overdue(state) == 0 or not state.risk_pending.is_empty() or state.phase == &"dead": return
 	state.phase = &"bankrupt"

@@ -110,7 +110,7 @@ static func reason(day: DayController, command: String, detail := "") -> String:
 	match command:
 		"gift":
 			if state.phase != &"pre_open" or PreparationService.used(state, "finish", state.current_night_index): return "须在准备结束前托人送礼。"
-			if PreparationService.count(state) >= 2: return "今夜两次准备已经用完。"
+			if PreparationService.count(state) >= 2: return "今夜行动点已用完。"
 			if not state.social.gifts.is_empty() and quiet(int(state.social.gifts.back().night), state.current_night_index, 2): return "上次的礼才送到，隔两夜再托人。"
 			if state.cash < int(SocialRules.config().gift_cost): return "送礼需20银元，现银不足。"
 		"accept_contract", "decline_contract":
@@ -163,7 +163,7 @@ static func perform(day: DayController, command: String, detail := "") -> Action
 			EconomyManager.new().commit(state, -cost, "", "military/gift/%d" % n, "military_expense")
 			social.gifts.append({"night": n, "cost": cost})
 			SocialRules.change(state, "military", int(SocialRules.config().gift_delta), "gift")
-			text = "礼已托人送到，花费%d银元，占一次准备。经办人收下名帖，说往后有事可以递话。" % cost
+			text = "礼已托人送到，花费%d银元，占1行动点。经办人收下名帖，说往后有事可以递话。" % cost
 		"accept_contract":
 			var order := contract_template(state)
 			order.merge({"accepted": n, "due": 0, "number": social.contracts.size() + 1})

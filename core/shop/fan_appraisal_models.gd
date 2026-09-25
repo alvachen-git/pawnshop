@@ -17,15 +17,15 @@ static func facility(day: DayController) -> Dictionary:
 		return model
 	model.body = "旧工具册与《顾砚生扇画摹存》已找出。\n台体、工具与识画的知识各有用处，缺一项便不能自行鉴赏。"
 	if int(a.bench_due) == 0:
-		model.buttons.append(button(day, "bench_two", "改造二级鉴物台 · 80银元 / 准备1次 / 两夜工期"))
+		model.buttons.append(button(day, "bench_two", "改造二级鉴物台 · 80银元 / 1行动点 / 两夜工期"))
 	elif level < 2:
 		model.body += "\n\n木匠施工中：第%d夜开铺前完工。一级台照常可用。" % int(a.bench_due)
 	else: model.body += "\n\n二级专用台已完工，可展开折扇并置图录。"
 	model.body += "\n扇画工具：" + ("展扇夹、侧光镜、比对尺已齐。" if a.tools else "尚未添置。")
 	model.body += "\n扇画知识：" + ("已研习，可自行比对。" if a.knowledge else "图录已在，尚未研习。")
 	model.body += "\n\n鉴定名声\n" + FanAppraisalService.standing_text(state) + "\n收货后请行家复核，可验证此前的自鉴。"
-	if not a.tools: model.buttons.append(button(day, "fan_tools", "添置扇画工具 · 30银元 / 准备1次"))
-	if not a.knowledge: model.buttons.append(button(day, "fan_study", "研习扇画图录 · 准备1次 / 不收费"))
+	if not a.tools: model.buttons.append(button(day, "fan_tools", "添置扇画工具 · 30银元 / 1行动点"))
+	if not a.knowledge: model.buttons.append(button(day, "fan_study", "研习扇画图录 · 1行动点 / 不收费"))
 	if a.knowledge and a.tools and level >= 2: model.body += "\n\n接到折扇时，从鉴定页进入「扇画比对」；自有折扇可从库存进入。笔锋与题款先留草稿，可免费重选；确认落笔一次耗10分钟。客人仍会按时离开。"
 	model.body += "\n\n图录要点 · 免费复看\n" + FanAppraisalService.REFERENCE.brush + "\n\n" + FanAppraisalService.REFERENCE.inscription
 	return model
@@ -33,7 +33,7 @@ static func facility(day: DayController) -> Dictionary:
 static func archive(model: Dictionary, day: DayController) -> void:
 	if not FanAppraisalService.enabled(day.definition): return
 	if ShopKnowledgeService.enabled(day.definition):
-		model.body += "\n\n柜中知识\n开铺前可按柜查阅，每学会一项占用1次准备；已掌握的可免费复看。"
+		model.body += "\n\n柜中知识\n开铺前可按柜查阅，每学会一项占用1行动点；已掌握的可免费复看。"
 		for topic in ShopKnowledgeService.TOPICS:
 			var knowledge := ShopKnowledgeService.page(day, topic)
 			model.body += "\n\n" + knowledge.title + " · " + ("已掌握" if ShopKnowledgeService.mastered(day.state, topic) else "尚未掌握")
@@ -53,10 +53,10 @@ static func independent_facility(day: DayController) -> Dictionary:
 	if a.is_empty(): return model
 	model.body = "暂无可用能力" if level == 0 else "普通工具检查 · 10 → 5分钟"
 	if level == 1 and int(a.bench_due) == 0:
-		model.buttons.append(button(day, "bench_two", "改造二级鉴物台 · 80银元 / 准备1次 / 两夜工期"))
+		model.buttons.append(button(day, "bench_two", "改造二级鉴物台 · 80银元 / 1行动点 / 两夜工期"))
 	elif level == 1 and int(a.bench_due) > 0:
 		model.body += "\n改造中 · 第%d夜完工" % int(a.bench_due)
-	if level >= 2 and not a.tools and not TieredAppraisal.enabled(day.definition): model.buttons.append(button(day, "fan_tools", "添置扇画工具 · 30银元 / 准备1次"))
+	if level >= 2 and not a.tools and not TieredAppraisal.enabled(day.definition): model.buttons.append(button(day, "fan_tools", "添置扇画工具 · 30银元 / 1行动点"))
 	var known := ShopKnowledgeService.mastered(day.state, ShopKnowledgeService.GU_YANSHENG)
 	if WealthyCustomers.active(day.state) and level >= 2 and not TieredAppraisal.enabled(day.definition): model.body += "\n高档货细查 · 已开放（对证需对应知识）"
 	if a.tools and level >= 2:

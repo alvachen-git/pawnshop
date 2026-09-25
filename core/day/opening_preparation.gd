@@ -55,7 +55,7 @@ static func reason(state: RunState, action: String, category := "") -> String:
 	if action == "finish": return ""
 	if PreparationService.used(state, action, 0 if action == "investigate" else state.current_night_index): return "这项准备已经做过。已知消息可以免费复看。"
 	if action == "investigate" and state.current_night_index not in [4, 5, 6]: return "眼下没有待调查的收货消息。"
-	if PreparationService.count(state) >= 2: return "今夜两次准备已经用完。"
+	if PreparationService.count(state) >= 2: return "今夜行动点已用完。"
 	if state.cash < int(COSTS[action]): return "现银不足，需要%d大洋。" % COSTS[action]
 	if action == "target" and PreparationService.used(state, "seek", state.current_night_index): return "今夜已经托人寻配茶盏。"
 	if action == "seek": return GoodsSeeking.reason(state, category)
@@ -143,7 +143,7 @@ static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog
 	if record.cost > 0:
 		EconomyManager.new().commit(state, -record.cost, "preparation", posting_id(record), "preparation", 0)
 	var messages := {"phoenix_invite": "已约卖镯人带凤镯来。今夜19:00起，待柜前得空便可验货谈价。", "chen_invite": "已约陈小满今夜来谈，开铺后待柜前得空便可说话。", "dragon_search": "已托人寻找龙镯，收铺后会有口信。", "dragon_invite": "已约陆掌眼带龙镯来。今夜19:00起，待柜前得空便可验看。", "advertise": "告示与口信已托人送出，关铺时再听街面回音。", "seek": "寻配口信已送出，今夜会有人带同纹样、相对式样的茶盏来。是否原配，还须验看；价钱另谈。", "attract": "口信已经送出，今夜会多一位客人带货来。", "target": "已托人捎话，今夜有位客人带%s来。" % CATEGORIES.get(category, "旧物"), "tea": "茶水备好了，今夜普通来客会多等20分钟。", "visitors": "两位来客的口信已记在铺中记事里。", "investigate": PreparationService.DETAILS, "finish": "准备妥当，可以开铺了。"}
-	return ActionResult.new(true, messages[action] + "\n现银%d大洋 · 今夜准备剩余%d次。" % [state.cash, 2 - PreparationService.count(state)])
+	return ActionResult.new(true, messages[action])
 
 static func posting_id(record: Dictionary) -> String:
 	return "preparation/%d/%s" % [record.night, record.action]
@@ -152,7 +152,7 @@ static func notice(state: RunState, catalog: ContentCatalog) -> String:
 	if state.current_night_index < 2: return ""
 	var lines: PackedStringArray = []
 	if state.current_night_index == 2:
-		lines.append("开铺前可办两件事：招揽客人、托人捎话收货、备茶候客，或打听来客。花费写在各项旁；也可以直接开铺。")
+		lines.append("开铺前可用行动点办事：招揽客人、托人捎话收货、备茶候客，或打听来客。花费写在各项旁；也可以直接开铺。")
 	if state.current_night_index >= 4:
 		lines.append(PreparationService.DETAILS if PreparationService.requirements_known(state) else "茶馆捎来的口信：外埠有人第六夜来收旧文房用品，细目还须打听。")
 		if state.current_night_index > 6: lines.append("第六夜的收货窗口已过，余货可另找买家，也可留在铺里。")

@@ -58,7 +58,7 @@ static func reason(day: DayController, topic: String) -> String:
 	if ShopGrowthService.blocked(day): return "请先处理眼前的事情。"
 	if day.state.current_night_index < 2: return "先将头一夜的生意理顺，第二夜起可来学习。"
 	if day.state.phase != &"pre_open" or PreparationService.used(day.state, "finish", day.state.current_night_index): return "学习须在开铺前、准备结束前进行。"
-	if PreparationService.count(day.state) >= 2: return "今夜两次准备已经用完。"
+	if PreparationService.count(day.state) >= 2: return "今夜行动点已用完。"
 	return ""
 
 static func learn(day: DayController, topic: String) -> ActionResult:
@@ -66,7 +66,7 @@ static func learn(day: DayController, topic: String) -> ActionResult:
 	if not error.is_empty(): return ActionResult.new(false, error)
 	if not day.state.shop_growth.has("knowledge"): day.state.shop_growth["knowledge"] = {}
 	day.state.shop_growth.knowledge[topic] = {"night": day.state.current_night_index}
-	return ActionResult.new(true, "你将柜中手记细读一遍，辨认的要点已记在心里。已掌握%s，占用1次准备，不收银元。" % topic_info(day.definition,topic).name)
+	return ActionResult.new(true, "你将柜中手记细读一遍，辨认的要点已记在心里。已掌握%s，占用1行动点，不收银元。" % topic_info(day.definition,topic).name)
 
 static func page(day: DayController, topic: String) -> Dictionary:
 	if not TOPICS.has(topic): return {"title": "旧账柜", "body": "柜里没有这份知识手记。", "buttons": []}
@@ -87,5 +87,5 @@ static func page(day: DayController, topic: String) -> Dictionary:
 			if TieredAppraisal.enabled(day.definition):
 				var spec: Dictionary = day.definition.variety.tiered_appraisal[id]
 				for index in 2: model.body += "\n\n"+String(spec.deep_checks[index])+"\n"+String(spec.deep_references[index])
-	if not known: model.buttons.append({"command": "learn_knowledge", "detail": topic, "label": "学习%s · 准备1次" % info.name, "enabled": error.is_empty(), "reason": error})
+	if not known: model.buttons.append({"command": "learn_knowledge", "detail": topic, "label": "学习%s · 1行动点" % info.name, "enabled": error.is_empty(), "reason": error})
 	return model

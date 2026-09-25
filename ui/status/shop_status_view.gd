@@ -12,7 +12,7 @@ func _ready() -> void:
 		[%CashStatus, preload("res://assets/ui/icons/coins.svg"), "现银"],
 		[%DebtStatus, preload("res://assets/ui/icons/receipt.svg"), "债务"],
 		[%TicketStatus, preload("res://assets/ui/icons/ticket.svg"), "在当票据"],
-		[%RiskStatus, preload("res://assets/ui/icons/candle.svg"), "香火"],
+		[%ActionPointsStatus, preload("res://assets/ui/icons/action-points.svg"), "行动点"],
 	]
 	for field in fields:
 		var label: Label = field[0]
@@ -48,7 +48,7 @@ func _ready() -> void:
 		label.mouse_filter = Control.MOUSE_FILTER_PASS
 	%PhaseStatus.hide()
 
-func render_snapshot(state: Dictionary, definition: RunDefinition, intrusion: bool, haunting: bool) -> void:
+func render_snapshot(state: Dictionary, definition: RunDefinition, action_points: int) -> void:
 	%ClockStatus.text = TimeController.clock_text(definition.opening_minute, state.game_minutes)
 	%NightStatus.text = "第 %d 夜" % state.current_night_index if FirstDebt.enabled(definition) else "第 %d / %d 夜" % [state.current_night_index, definition.total_nights]
 	_pending_cash = "%d 大洋" % state.cash
@@ -63,11 +63,9 @@ func render_snapshot(state: Dictionary, definition: RunDefinition, intrusion: bo
 	%TicketStatus.text = "%d 张" % active
 	%PhaseStatus.text = "铺面\n" + DayFlowPresenter.PHASE_LABELS[state.phase]
 	%ShopTitle.get_parent().get_node("ShopSignHotspot").tooltip_text = DayFlowPresenter.PHASE_LABELS[state.phase] + "\n查看营业安排 · 不耗时"
-	%RiskStatus.text = "财神香直 · 命灯安稳"
-	if intrusion: %RiskStatus.text = "香灰倒伏 · 命灯安稳"
-	if haunting: %RiskStatus.text = "香灰倒伏 · 命灯偏斜" if intrusion else "财神香直 · 命灯偏斜"
-	if state.phase == "dead": %RiskStatus.text = "命灯已灭"
-	if definition.private_room: %RiskStatus.text = "香灰倒伏" if intrusion else "香烟直上"
+	%ActionPointsStatus.text = "行动点 —" if action_points < 0 else "行动点 %d/2" % action_points
+	%ActionPointsStatus.tooltip_text = "开铺前可用行动点办事；每夜2点，次夜恢复。"
+	%ActionPointsStatus.accessibility_name = %ActionPointsStatus.text
 
 
 func show_content_ready(_item_count: int, _customer_count: int) -> void:
