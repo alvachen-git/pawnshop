@@ -21,11 +21,38 @@ func _run() -> void:
 	mirror.acquired_night = 3
 	state.inventory_instances.append(mirror)
 	_session.changed.emit()
+	for timing in [{"night": 1, "expected": "第21夜（还剩20夜）", "hidden": "第49夜"}, {"night": 21, "expected": "第21夜（今夜）", "hidden": "第49夜"}, {"night": 22, "expected": "第49夜（还剩27夜）", "hidden": "第21夜"}, {"night": 49, "expected": "第49夜（今夜）", "hidden": "第21夜"}, {"night": 50, "expected": "借据约定的还本日已过", "hidden": "下次约定还本"}]:
+		state.current_night_index = timing.night
+		var notice := FeeService.principal_schedule_notice(state, _session.definition)
+		_check(notice.contains(timing.expected) and not notice.contains(timing.hidden) and not notice.contains("本金暂不催收"), "营业页只显示最近一次约定还本日")
+	state.current_night_index = 3
+	var screen := _main.get_node("CounterScreen") as CounterScreen
+	var view := screen.get_node("CounterView") as CounterView
+	var day_panel := screen.get_node("%DayFlowPanel") as DayFlowPanel
+	for dimensions in [Vector2i(1280, 720), Vector2i(1600, 900)]:
+		root.size = dimensions
+		root.content_scale_size = dimensions
+		await _frames()
+		_capture_prefix = "shop_due_%d" % dimensions.x
+		await _click_button(view.get_hotspot(&"shop"))
+		_check(day_panel._description.text.contains("第3夜夜末") and day_panel._description.text.contains("应付10银元"), "营业页显示本夜息费和结算夜次")
+		_check(day_panel._description.text.contains("第21夜（还剩18夜）") and not day_panel._description.text.contains("第49夜"), "营业页只显示最近一次约定还本倒计时")
+		_check(not day_panel._description.text.contains("本金暂不催收"), "营业页不重复解释本金催收")
+		await _capture("01_upcoming")
+		state.fee_arrears = [{"origin_night": 2, "due_night": 3, "amount": 7}]
+		_session.changed.emit()
+		await _frames()
+		_check(day_panel._description.text.contains("未付息费7银元") and day_panel._description.text.contains("今夜到期"), "营业页显示旧欠金额和最后补齐夜次")
+		await _capture("02_arrears")
+		state.fee_arrears.clear()
+		_session.changed.emit()
+		await _click_button(screen.get_node("%CloseDrawerButton"))
+	root.size = Vector2i(1280, 720)
+	root.content_scale_size = root.size
+	await _frames()
 	for command in ["close_shop", "wait_until_seal", "resolve_night"]:
 		_check(_session.execute(command).ok, command)
 	await _frames()
-	var screen := _main.get_node("CounterScreen") as CounterScreen
-	var view := screen.get_node("CounterView") as CounterView
 	var status := screen.get_node("%ShopStatusView") as ShopStatusView
 	var menu := screen.get_node("%MenuButton") as Button
 	if screen.get_node("%Drawer").visible: await _click_button(screen.get_node("%CloseDrawerButton"))
@@ -63,13 +90,13 @@ func _run() -> void:
 		_check(before == _session.read_state(), "查看菜单与营业安排不改时间或存档状态")
 		var large := before.duplicate(true)
 		large.cash = 123456
-		large.fee_arrears = [{"amount": 99999}]
-		status.render_snapshot(large, _session.definition, true, true)
+		large.fee_arrears = [{"origin_night": 2, "due_night": 3, "amount": 99999}]
+		status.render_snapshot(large, _session.definition, PreparationService.action_points(_session._day.state, _session.definition))
 		await _frames()
 		_check(screen.get_node("%CashStatus").text == "123456 大洋", "现金动态值完整显示")
-		_check(screen.get_node("%DebtStatus").text.contains("短款 99999"), "短款动态值完整显示")
+		_check(screen.get_node("%DebtStatus").text.contains("短款 99999"), "欠付息费动态值完整显示")
 		_check_fields(screen, menu)
-		status.render_snapshot(before, _session.definition, true, true)
+		status.render_snapshot(before, _session.definition, PreparationService.action_points(_session._day.state, _session.definition))
 		await _frames()
 	print("SHOP HUD UI: %d assertions, %d failures" % [_assertions, _failures])
 	_main.queue_free()
@@ -78,7 +105,7 @@ func _run() -> void:
 
 func _check_fields(screen: Control, menu: Button) -> void:
 	var previous_end := 0.0
-	for field in ["ClockStatus", "NightStatus", "CashStatus", "DebtStatus", "TicketStatus", "RiskStatus"]:
+	for field in ["ClockStatus", "NightStatus", "CashStatus", "DebtStatus", "TicketStatus", "ActionPointsStatus"]:
 		var label: Label = screen.get_node("%" + field)
 		var bounds := label.get_global_rect()
 		_check(not label.text.contains("\n"), "底栏单行：" + field)

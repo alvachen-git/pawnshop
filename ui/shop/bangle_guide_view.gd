@@ -52,7 +52,7 @@ func turn(direction: int) -> void:
 
 func refresh_status() -> void:
 	var known := ShopKnowledgeService.mastered(session._day.state,"luxury_metal")
-	study.text = "已掌握金银器知识 · 免费复看" if known else "研习指南 · 准备1次 / 不收银元"
+	study.text = "已掌握金银器知识 · 免费复看" if known else "研习指南 · 1行动点 / 不收银元"
 	var why := ShopKnowledgeService.reason(session._day,"luxury_metal")
 	study.disabled = not why.is_empty(); study.tooltip_text = why
 	status.text = "翻页不耗时。"+("金银器知识已掌握。" if known else why if not why.is_empty() else "研习后，可配合金银衡验具称重、看戳记与火试。")

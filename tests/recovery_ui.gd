@@ -78,7 +78,7 @@ func _run() -> void:
 	await restore_stage("phoenix-prep"); screen._flow.show_panel(&"day"); await _frames()
 	await shot("phoenix-preparation")
 	var used := PreparationService.count(_session._day.state)
-	await _click("约卖镯人带凤镯来 · 准备1次")
+	await _click("约卖镯人带凤镯来 · 1行动点")
 	_check(PreparationService.count(_session._day.state) == used + 1, "real prep button consumes one")
 	await key(KEY_ESCAPE)
 	for spec in [["before-fd_truth", "", "把日期与出货记录说清楚", "truth"], ["before-fd_compensation", "-pay", "与她商量300银元赔偿", "offer"], ["before-fd_settle", "-pay", "交付300银元，立和解字据 · 5分钟", "pay"]]:

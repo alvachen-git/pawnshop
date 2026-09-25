@@ -18,7 +18,7 @@ func _run() -> void:
 		await restore_stage(stage); screen._close_drawer(); await _frames()
 		if stage == "help-preparation":
 			screen._flow.show_panel(&"day"); await _frames(); await shot(stage)
-			await _click("约陈小满来谈 · 准备1次")
+			await _click("约陈小满来谈 · 1行动点")
 			_check(PreparationService.count(_session._day.state) == 1, "mouse invitation one preparation")
 		elif stage.ends_with("uninvited"):
 			_check(not view._active_id.ends_with("/chen") and not dialogue.visible, "uninvited no portrait or dialogue")

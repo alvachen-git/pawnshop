@@ -372,14 +372,14 @@ func refresh() -> void:
 	actions.get_parent().move_child(actions, 0 if selected.begins_with("knowledge/") else 1)
 	if selected == "bench":
 		_title.text = "鉴物台 · " + ("一级" if growth.bench else "待整修")
-		body.text = "台面已整平，灯座牢靠，常用工具收在盘里。\n\n普通货用放大镜、灯或磁铁进行的10分钟检查，缩至5分钟。原5分钟检查不变。" if growth.bench else "旧毡起皱，灯座有些松动。\n\n整修后，普通工具检查由10分钟缩至5分钟。\n40银元 · 准备1次 · 当晚可用。"
-		if direct_bench and not growth.bench: _action("整修鉴物台 · 40银元 / 准备1次", "build", "bench")
+		body.text = "台面已整平，灯座牢靠，常用工具收在盘里。\n\n普通货用放大镜、灯或磁铁进行的10分钟检查，缩至5分钟。原5分钟检查不变。" if growth.bench else "旧毡起皱，灯座有些松动。\n\n整修后，普通工具检查由10分钟缩至5分钟。\n40银元 · 1行动点 · 当晚可用。"
+		if direct_bench and not growth.bench: _action("整修鉴物台 · 40银元 / 1行动点", "build", "bench")
 		if FanAppraisalService.enabled(session.definition):
 			var advanced := FanAppraisalModels.facility(session._day)
 			_title.text = advanced.title
 			body.text = advanced.body if direct_bench else body.text + "\n\n" + advanced.body
 			for row in advanced.buttons: _action(row.label, row.command, row.detail)
-		if not growth.bench and not direct_bench: _action("整修鉴物台 · 40银元 / 准备1次", "build", "bench")
+		if not growth.bench and not direct_bench: _action("整修鉴物台 · 40银元 / 1行动点", "build", "bench")
 		if WealthyCustomers.active(state):
 			body.text += "\n器材与知识齐备后，可查验高档货。" if TieredAppraisal.enabled(session.definition) else "\n高档货细查须二级台；图录对证还需学习对应知识。"
 			var targets: Array = state.inventory_instances.filter(func(i: ItemInstance) -> bool: return i.ownership_state in ["owned", "pledged"] and WealthyCustomers.is_item(i.definition_id))
@@ -390,8 +390,8 @@ func refresh() -> void:
 	elif selected == "display":
 		_title.text = "陈列柜 · " + ("一级" if growth.display else "待整修")
 		if not growth.display:
-			body.text = "玻璃蒙着灰，柜门合不拢。\n\n修好后，可陈列一件自有普通现货，等识货的客人来问价。\n60银元 · 准备1次 · 当晚可用。"
-			_action("整修陈列柜 · 60银元 / 准备1次", "build", "display")
+			body.text = "玻璃蒙着灰，柜门合不拢。\n\n修好后，可陈列一件自有普通现货，等识货的客人来问价。\n60银元 · 1行动点 · 当晚可用。"
+			_action("整修陈列柜 · 60银元 / 1行动点", "build", "display")
 		else:
 			var page := ShopGrowthReadModels.page(session._day, 1)
 			body.text = "陈列 %d/1\n" % (1 if stock_picture.visible else 0) + (stock_picture.tooltip_text if stock_picture.visible else "柜位空着。") + "\n\n开铺后，可能引来问价的客人；买卖须回柜台亲自办理。\n开铺前可选换，营业中可撤下。"
@@ -403,7 +403,7 @@ func refresh() -> void:
 		for row in page.buttons: _action(row.label, row.command, row.detail)
 		if WealthyCustomers.active(state):
 			for topic in ShopKnowledgeService.TOPICS:
-				if String(topic).begins_with("luxury_") and not ShopKnowledgeService.mastered(state, topic): _action("学习" + ShopKnowledgeService.TOPICS[topic].name + " · 准备1次", "learn_knowledge", topic)
+				if String(topic).begins_with("luxury_") and not ShopKnowledgeService.mastered(state, topic): _action("学习" + ShopKnowledgeService.TOPICS[topic].name + " · 1行动点", "learn_knowledge", topic)
 	elif selected.begins_with("knowledge/"):
 		var page := ShopKnowledgeService.page(session._day, selected.trim_prefix("knowledge/"))
 		_title.text = page.title

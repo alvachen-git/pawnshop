@@ -41,7 +41,7 @@ static func desk_reason(day: DayController, item_id: String) -> String:
 	if FanAppraisalService.bench_level(day.state) < 2: return "须先建成二级专用鉴物台。"
 	var a := FanAppraisalService.data(day.state)
 	if not a.tools: return "尚未配齐扇画工具。"
-	if not ShopKnowledgeService.mastered(day.state, ShopKnowledgeService.GU_YANSHENG): return "尚未掌握顾砚生知识。开铺前到旧账柜第一柜学习，需1次准备。"
+	if not ShopKnowledgeService.mastered(day.state, ShopKnowledgeService.GU_YANSHENG): return "尚未掌握顾砚生知识。开铺前到旧账柜第一柜学习，需1行动点。"
 	return ""
 
 static func reason(day: DayController, item_id: String, detail := "") -> String:

@@ -37,7 +37,7 @@ func _run() -> void:
 	var room := screen.facilities.room
 	await _click_button(room.hotspots.bench)
 	await _capture("01_upgrade")
-	await _click("改造二级鉴物台 · 80银元 / 准备1次 / 两夜工期")
+	await _click("改造二级鉴物台 · 80银元 / 1行动点 / 两夜工期")
 	_check(int(FanAppraisalService.data(_session._day.state).bench_due) == 5, "real mouse starts two-night construction")
 	_check(not room._shader.get_shader_parameter("bench_specialized"), "construction does not show completed bench")
 	install("ready")

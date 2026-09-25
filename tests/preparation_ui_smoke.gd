@@ -55,7 +55,7 @@ func _run() -> void:
 	await _capture("04a_second_preparation")
 	var preparation_panel := _main.find_child("DayFlowPanel", true, false) as DayFlowPanel
 	var attract_button: Button = preparation_panel._buttons.prep_attract
-	_check(attract_button.text == "招揽客人 · 3大洋 · 准备1次" and not attract_button.text.contains("增加"), "concise preparation label")
+	_check(attract_button.text == "招揽客人 · 3大洋 · 1行动点" and not attract_button.text.contains("增加"), "concise preparation label")
 	_check(attract_button.tooltip_text.contains("增加1位"), "preparation effect in tooltip")
 	var motion := InputEventMouseMotion.new()
 	motion.position = attract_button.get_global_rect().get_center()

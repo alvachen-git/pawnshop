@@ -33,7 +33,8 @@ func _ready() -> void:
 	column.add_child(_message)
 
 func render(model: Dictionary) -> void:
-	_description.text = model.description
+	_description.text = String(model.description).strip_edges()
+	_description.visible = not _description.text.is_empty()
 	_message.text = model.message
 	if _buttons.keys() != model.commands.map(func(entry: Dictionary) -> String: return entry.id):
 		_scroll.set_deferred("scroll_vertical", 0)

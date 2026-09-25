@@ -10,6 +10,15 @@ static func used(state: RunState, action: String, night := 0) -> bool:
 static func count(state: RunState) -> int:
 	return SocialRules.preparation_count(state) + ShopGrowthService.preparation_count(state) + state.preparation_history.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index and row.action != "finish").size()
 
+# Presentation-only balance; the existing history remains the source of truth.
+# -1 means this run/night has not opened the action-point system.
+static func action_points(state: RunState, run: RunDefinition) -> int:
+	if OpeningPreparation.enabled(run):
+		if state.current_night_index < 2: return -1
+	elif not SevenNightPlan.enabled(run) or state.current_night_index < 4:
+		return -1
+	return clampi(2 - count(state), 0, 2)
+
 static func reason(state: RunState, run: RunDefinition, action: String) -> String:
 	if OpeningPreparation.enabled(run): return OpeningPreparation.reason(state, action)
 	if not SevenNightPlan.enabled(run) or state.current_night_index < 4: return "第四夜起可在开铺前准备。"
@@ -17,9 +26,9 @@ static func reason(state: RunState, run: RunDefinition, action: String) -> Strin
 	if not state.pending_event_id.is_empty() or not state.risk_pending.is_empty(): return "请先处理眼前的事情。"
 	if action == "finish": return ""
 	if action not in ["investigate", "contact", "visitors"]: return "没有这项准备行动。"
-	if used(state, action, state.current_night_index if action == "visitors" else 0): return "这件事已经问过，查看消息不消耗次数。"
+	if used(state, action, state.current_night_index if action == "visitors" else 0): return "这件事已经问过，查看消息不消耗行动点。"
 	if action != "visitors" and state.current_night_index > 6: return "这桩收货约定已经结束。"
-	if count(state) >= 2: return "今夜两次准备已经用完。"
+	if count(state) >= 2: return "今夜行动点已用完。"
 	return ""
 
 static func visitor(state: RunState) -> Dictionary:

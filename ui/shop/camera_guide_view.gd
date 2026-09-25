@@ -55,7 +55,7 @@ func turn(direction: int) -> void:
 
 func refresh_status() -> void:
 	var known := ShopKnowledgeService.mastered(session._day.state,"luxury_textile")
-	study.text = "已掌握相机知识 · 免费复看" if known else "研习指南 · 准备1次 / 不收银元"
+	study.text = "已掌握相机知识 · 免费复看" if known else "研习指南 · 1行动点 / 不收银元"
 	var why := ShopKnowledgeService.reason(session._day,"luxury_textile")
 	study.disabled = not why.is_empty(); study.tooltip_text = why
 	status.text = "翻页不耗时。"+("相机知识已掌握。" if known else why if not why.is_empty() else "研习后，可对照镜片、机械与铭文，分别判断身份和状态。")

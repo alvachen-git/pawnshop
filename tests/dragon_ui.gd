@@ -26,7 +26,7 @@ func _run() -> void:
 		if stage in ["search-ready", "invite-ready"]:
 			screen._flow.show_panel(&"day"); await _frames()
 			await shot(stage)
-			var label := "托人寻找龙镯 · 准备1次" if stage == "search-ready" else "约陆掌眼带龙镯来 · 准备1次"
+			var label := "托人寻找龙镯 · 1行动点" if stage == "search-ready" else "约陆掌眼带龙镯来 · 1行动点"
 			var old_count := PreparationService.count(_session._day.state)
 			await _click(label)
 			_check(PreparationService.count(_session._day.state) == old_count + 1, "mouse preparation " + stage)
