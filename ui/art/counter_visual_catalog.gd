@@ -6,6 +6,7 @@ const ROOT := "res://assets/art02/"
 const NEIGHBOR_PORTRAIT := "res://assets/art04/customers/neighbor_v2.png"
 const ORDINARY_ROOT := "res://assets/art04/customers/ordinary/"
 const WEALTHY_ROOT := "res://assets/art04/customers/wealthy/"
+const WEALTHY_PAINTED_ROOT := WEALTHY_ROOT + "painted/"
 const WEALTHY_CUSTOMERS := {
 	"customer_wealthy_silk":"silk", "customer_wealthy_factory":"factory",
 	"customer_wealthy_opera":"opera", "customer_wealthy_antique":"antique", "customer_wealthy_comprador":"comprador",
@@ -66,7 +67,10 @@ const DETAILS := {
 }
 
 static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
-	if WEALTHY_CUSTOMERS.has(customer_id): return load(WEALTHY_ROOT + WEALTHY_CUSTOMERS[customer_id] + ".png") as Texture2D
+	if WEALTHY_CUSTOMERS.has(customer_id):
+		var painted_path: String = WEALTHY_PAINTED_ROOT + WEALTHY_CUSTOMERS[customer_id] + ".png"
+		if ResourceLoader.exists(painted_path): return load(painted_path) as Texture2D
+		return load(WEALTHY_ROOT + WEALTHY_CUSTOMERS[customer_id] + ".png") as Texture2D
 	if customer_id == "sun_dayuan" or asset == "social.sun_dayuan_visit": return load(SUN_PORTRAIT) as Texture2D
 	if customer_id == "fd_aqi": return AqiArt.counter_texture("aqi")
 	if customer_id == "fd_chen": return load(CHEN_PORTRAIT) as Texture2D
@@ -99,6 +103,10 @@ static func portrait_material(texture: Texture2D) -> ShaderMaterial:
 	material.set_shader_parameter("source_bottom", 1.0)
 	material.set_shader_parameter("chroma_key", is_wealthy_portrait(texture) or is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
 	material.set_shader_parameter("clean_chroma_edges", is_wealthy_portrait(texture) or is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path == NEIGHBOR_PORTRAIT)
+	# Repainted wealthy sprites have native alpha; chroma cleanup would alter cloth colors.
+	if texture.resource_path.begins_with(WEALTHY_PAINTED_ROOT):
+		material.set_shader_parameter("chroma_key", false)
+		material.set_shader_parameter("clean_chroma_edges", false)
 	return material
 
 static func is_ordinary_portrait(texture: Texture2D) -> bool:
