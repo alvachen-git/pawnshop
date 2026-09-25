@@ -66,7 +66,7 @@ func _run() -> void:
 	await _frames(); await _click_button(trade._pawn_submit)
 	_check(_session._day.state.cash == cash-v.trade.reserve_price and _session._day.state.pawn_tickets.size() == 1,"actual UI pawn pays principal and creates ticket")
 	await install("advertisement-closed")
-	_check(SocialReadModels.notice(_session._day.state).contains("商誉"),"closing ad feedback with numeric change")
+	_check(SocialReadModels.notice(_session._day.state).contains("口碑") or SocialReadModels.notice(_session._day.state).contains("好名声"),"closing ad feedback describes its effect")
 	screen.get_node("%ScreenFlowCoordinator").show_panel(&"day")
 	await _frames(); await _capture("advertisement")
 	print("WEALTHY UI: %d assertions, %d failures" % [_assertions,_failures])

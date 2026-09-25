@@ -37,7 +37,7 @@ func refresh() -> void:
 	if not state.risk_pending.is_empty(): body += "\n\n镜中来客尚未离开，请到「物品记事」应对后再继续。"
 	if WealthyCustomers.active(_session._day.state):
 		var growth := FinancialSummary.build(_session._day.state)
-		body += "\n\n累计收购与放当%d笔 · 本夜十笔积累商誉%+d · 宣传商誉%+d" % [growth.reputation_trade_count,growth.reputation_growth,growth.advertising_delta]
+		body += "\n\n" + ReputationFeedback.summary(_session._day.state, growth, state.current_night_index)
 	if state.phase == "dead":
 		body = "命灯熄灭\n\n灯盏已经冷透。《绝当录》上，多了一笔。"
 		if state.get("personal_risk_enabled", false) and not state.death_archive.is_empty():
@@ -57,7 +57,7 @@ func refresh() -> void:
 		account["debt"] = _session.economy_model().description if account.fee_enabled else ""
 		account["familiar_notes"] = FamiliarStories.note(_session._day.state)
 		if WealthyCustomers.active(_session._day.state):
-			account.familiar_notes += "\n累计收购与放当%d笔 · 本夜十笔积累商誉%+d · 宣传商誉%+d" % [int(account.get("reputation_trade_count",0)),int(account.get("reputation_growth",0)),int(account.get("advertising_delta",0))]
+			account.familiar_notes += "\n" + ReputationFeedback.summary(_session._day.state, account, int(account.night))
 		if InvestigationService.enabled(_session.definition):
 			account.familiar_notes += MirrorChapterService.summary(_session._day.state, _session.definition)
 			var order: Dictionary = _session._day.state.investigation
