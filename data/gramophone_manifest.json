@@ -16,7 +16,7 @@
     },
     {
       "kind": "buyers",
-      "path": "res://data/mirror_ending/buyers.json"
+      "path": "res://data/lu_introduction/buyers.json"
     },
     {
       "kind": "pawn_terms",
@@ -85,6 +85,10 @@
     {
       "kind": "customers",
       "path": "res://data/first_debt_reckoning/customers.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/lu_introduction/events.json"
     }
   ]
 }

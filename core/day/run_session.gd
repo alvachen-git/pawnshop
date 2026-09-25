@@ -77,7 +77,7 @@ func seven_notice() -> String:
 		introductions[7] = "七夜的账暂结一页。铺子照常开，未办完的旧事仍可接着查。"
 		introductions[10] = "十夜的账将合拢。未到期的票、托出的口信与未回的委托，照实留在账上。"
 	if FirstDebt.enabled(definition):
-		introductions[1] = "借据本金500银元，日息5银元，另付铺费5银元。短款只宽限至次夜夜末。"
+		introductions[1] = "借据本金500银元，日息5银元，另付铺费5银元。息费未付清便记短款，须在次夜夜末补齐。"
 		introductions.erase(10)
 	return String(introductions.get(_day.state.current_night_index, "")) + PreparationService.notice(_day.state, _counter.catalog) + MirrorChapterService.summary(_day.state, definition) + FamiliarStories.note(_day.state) + ("\n" + NightMarketRisk.note(_day.state) if NightMarketPlan.enabled(definition) else "") + GhostGuests.notice(_day.state, _counter.catalog) + ("\n查访回报已送到，可去「托人查访」拆阅。" if _day.state.investigation.get("delivered", false) and not _day.state.investigation.get("read", false) else "")
 
@@ -286,6 +286,9 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 	if command == "military_intro":
 		if visit_id != MilitaryIntroduction.id(_day.state) or amount != 0: return ActionResult.new(false, "请先听清柜前来客的话。")
 		return social_command("intro_talk", detail)
+	if command == "lu_intro":
+		if not LuIntroduction.active(_day.state) or visit_id != _day.state.pending_event_id or amount != 0: return ActionResult.new(false, "请按陆掌眼眼前的话头作答。")
+		return event_command(visit_id, detail)
 	if (not replaying or DragonSearch.enabled(_day.state)) and FirstDebt.chen_recognition_due(_day.state):
 		return ActionResult.new(false, "陈小满还在柜前，先听她把话说完。")
 	if command == "soul_inspect": return inspect_customer(visit_id)
@@ -355,7 +358,7 @@ func counter_model() -> Dictionary:
 
 func _build_counter_model() -> Dictionary:
 	var model := CounterReadModels.build(_day, _counter, message, _message_visit_id)
-	if MilitaryIntroduction.active(_day.state): return model
+	if MilitaryIntroduction.active(_day.state) or LuIntroduction.active(_day.state): return model
 	model.trade.reactions = _negotiation_reactions.for_visit(_day.state, model.active_id)
 	var active_visit := _counter.customers.active(_day.state)
 	if active_visit != null and GramophoneEconomy.handles(_day.state,active_visit.item):
@@ -526,6 +529,7 @@ func event_command(event_id: String, choice_id: String) -> ActionResult:
 	return _journal_call("event_command", [event_id, choice_id])
 
 func _impl_event_command(event_id: String, choice_id: String) -> ActionResult:
+	if event_id in LuIntroduction.EVENTS and not LuIntroduction.active(_day.state): return ActionResult.new(false, "先把柜前来客的话说完。")
 	if FirstDebt.enabled(definition) and event_id.begins_with("fd_"):
 		var before_minute := _day.state.game_minutes
 		var result := FirstDebt.choose(_day, _events, _counter, event_id, choice_id, replaying and not DragonSearch.enabled(_day.state))

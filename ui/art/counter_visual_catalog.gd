@@ -49,6 +49,7 @@ const ORDINARY_PLACEMENT := {
 	"bookkeeper": Vector3(0.500, 1.000, 0.500),
 }
 const LU_PORTRAIT := "res://assets/first_debt/lu_zhangyan_stocky.png"
+const LU_ELDERLY_PORTRAIT := "res://assets/first_debt/lu_zhangyan_elderly_v43.png"
 const CHEN_PORTRAIT := "res://assets/first_debt/chen_xiaoman_petite.png"
 const ITEMS := {
 	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
@@ -67,6 +68,7 @@ const DETAILS := {
 }
 
 static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
+	if asset == "fd.lu_elderly": return load(LU_ELDERLY_PORTRAIT) as Texture2D
 	if WEALTHY_CUSTOMERS.has(customer_id):
 		var painted_path: String = WEALTHY_PAINTED_ROOT + WEALTHY_CUSTOMERS[customer_id] + ".png"
 		if ResourceLoader.exists(painted_path): return load(painted_path) as Texture2D
@@ -118,6 +120,12 @@ static func is_wealthy_portrait(texture: Texture2D) -> bool:
 static func wealthy_bounds() -> Vector4:
 	var hem := 445.0 / 941.0 / 0.9
 	return Vector4(0.3175,hem-0.50,0.6825,hem)
+
+static func sun_bounds() -> Vector4:
+	# The source already fills the square with a broad, head-to-waist figure.
+	# Use Lu's display height; do not enlarge the head or bury the waist in the mat.
+	var hem := 445.0 / 941.0 / 0.9
+	return Vector4(0.3175, hem - 0.46, 0.6825, hem)
 
 static func is_special_portrait(texture: Texture2D) -> bool:
 	return texture != null and texture.resource_path.begins_with(SPECIAL_ROOT)

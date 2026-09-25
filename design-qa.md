@@ -1,62 +1,58 @@
-# 开场「入巷见铺」视觉验收
+# Lu selling interface — design QA
 
 final result: passed
 
-## Visual truth and capture
+## Latest correction: paired footer buttons
 
-- Selected source: `/Users/alvachen/.codex/generated_images/01a0c923-8e99-7c61-a112-29ab760aa9df/exec-ef130714-57cd-48f7-83fd-781340819032.png` (1672×941).
-- Source copy is an ideation mock; actual runtime keeps the full authored arrival narration, including its middle paragraph.
-- Implementation: `docs/qa/opening-art/1600_shop_arrival.png` (1600×900) and `1280_shop_arrival.png` (1280×720).
-- Native Godot OpenGL game screenshots; browser/CSS/devicePixelRatio do not apply. Both viewport and captured pixels are exactly the named dimensions. Near-identical 16:9 image ratios are rendered with aspect preserved. The source and 1600 screenshot were opened together in the same comparison tool input, judged at equivalent full-frame scale.
-- States inspected: factory paycut, photograph, wedding, letter, memories, stamp, arrival, inspection, accounts, first customer, room before/after photo and sleep. All screenshots in the same directory; no browser mock substitutes.
+User requested price details on the left and delivery on the right in one symmetric row. Both now use171×46 design pixels,24px text, the same y447 baseline and a12px gap, with27px margins at both edges. Existing paper/vermillion styling and all copy/assets remain unchanged. Compared the supplied screenshot with native1600×900 enabled and1280×720 disabled captures together; the source is cropped and its goods differ, so only the requested footer alignment is compared. No actionable visual issues remain. Evidence: `docs/qa/lu-sale-buttons/1600.png`, `1280-disabled.png`. Existing114-assertion Lu sale UI suite passed, including opening details and actual delivery. `git diff --check` passed.
 
-## Required fidelity surfaces
+## 2026-09-25 layout revision — latest acceptance
 
-- Fonts/typography: shared Songti/STSong/SimSun/Noto Serif system display font with bundled Noto Sans SC fallback. Body22 at720h and28 at900h, warm paper foreground; complete words retained. Chinese smart wrapping and clipping explicitly set. Long letter visibly scrolls, including its end. Cross-platform font substitution remains a known minor visual difference.
-- Spacing/layout: original street/counter composition preserved; live UI uses full-frame illustration, bottom reading field and paper action. Authored extra arrival paragraph makes the reading field moderately taller than the two-line concept. No clipping or off-screen actions at either resolution. Multi-choice scenes reserve a separate action column.
-- Colors/tokens: dark wood/soot/olive image palette, muted ivory text, existing paper button texture. Readability scrim remains separate from art. No gold trim or new decorative UI system.
-- Image quality: eight1672×941 built-in imagegen paintings. Foreman was revised at user's request to distinguish him from merchant faces. Skin/hands/material and purse scale reviewed in `1600_factory_paycut.png` and the source `assets/opening_art/factory-v2.png` together; full-size character and button/text details are readable without a separate crop. Background aspect preserved. Night room uses existing lamp-exposure convention and dark exterior panes.
-- Copy/content: all dialogue, action labels and outcomes come from existing event model. Only empty-line spacing changes in compact captions. No invented mechanics, tooltips or outcome labels. Account figures still present and scrollable when longer than caption field.
+The user's attached screenshot and explicit corrections supersede the original concept for selection marks, tags, heading alignment and receipt controls. Prior review below is historical.
 
-## Findings and fixes
+- Source: `docs/qa/lu-sale-layout/before.png` (2538×1314 cropped game screenshot). Current evidence: `lu_sale_1280_07_stationery.png` and `lu_sale_1600_07_stationery.png` in the same folder, native1280×720 and1600×900 captures. Source and final captures were opened together in the same comparison input. Compare the sales region at equivalent width: the user's crop omits most HUD, so the crop/aspect difference is not a layout defect. Stationery fixture matches the visible goods,49+21=70 and both selected; HUD values are fixture context.
+- Typography/layout: names and prices now share one vertically centred row; prices align right. The five-character pen name fits at1280. Stock heading is centred within its own paper background, whose left edge aligns with the tray.
+- Icons/colors: replaced separate text ticks and paper frames with the native Godot CheckBox icon pair. The tick is contained in the square asset. First comparison found the native unchecked asset too dark over cloth (P2); its measured near-black/half-opacity source is compensated with warm-paper tint. Final checked/unchecked captures at both sizes are readable and matched.
+- Imagery: existing room, portrait, merchandise and paper/wood textures retained. No new painting or altered character identity.
+- Copy/content/actions: receipt remove crosses and Clear button removed. Click the same selected stock again to remove it; toggle Select All off to deselect the batch. No new prose or commerce rules.
+- Verified `tests/lu_sale_ui.gd`:114 assertions,0 failures, including real delivery and the revised deselection path. `play-lu-v43.cmd -Verify` passed without explicit Godot path. `git diff --check` passed.
+- Final combined comparison: no remaining actionable P0/P1/P2 issues for these requested changes. Evidence includes partial/all selection, long stationery names, blocked goods, empty inventory and pair detail states. Earlier rule/introduction test results below were not rerun for this presentation-only revision.
 
-1. [P2 resolved] Initial factory composition placed purse under reading area. Painting shifted upward by8.5% of viewport height without stretching; final purse/hand are fully visible, head remains in frame. A solid base prevents underlying counter status leaking through the shifted background. Evidence: `1280_factory_paycut.png`, `1600_factory_paycut.png`.
-2. [P2 resolved] Large blank paragraph gaps made short scenes occupy too much of the painting and caused first-customer instructions to scroll. Compact paragraphs now use single newlines, explicit Chinese wrapping and clipped text bounds. Evidence: both `shop_arrival`, `first_customer`, `room` captures.
-3. [P2 resolved] Foreman looked too similar to ordinary guests. Replaced original image with user-directed `factory-v2.png`: broader jaw and shoulders, short hair, hard brow and pressed lips. Original preserved in ignored draft directory, not used by runtime.
-4. [P2 resolved] Reused room source showed daylight at03:00. Applied existing bedroom exposure and window masking, keeping ordinary mirror and lamp unchanged. Evidence: `1280_room.png`, `1600_room.png`.
+2026-09-25. Selected direction: option 2, 柜上挑货. Previous opening-art review is preserved in `docs/OPENING_ART_DESIGN_QA.md`.
 
-The final full-view comparisons contain no remaining actionable P0/P1/P2 findings. Residual P3: OS font fallback can change stroke style; Windows appearance has not been accepted.
+## Target and evidence
 
-## Interaction evidence and limits
+- Source: `docs/qa/lu-sale/target.png`, 1672×941 concept.
+- Native Godot captures: `docs/qa/lu-sale/lu_sale_1280_*.png` and `lu_sale_1600_*.png`, exact 1280×720 / 1600×900 viewport pixels.
+- Target and current captures were opened together in the same comparison tool input, at equivalent full-frame scale. Full-resolution receipt/tag text was readable; separately inspected pre-opening, detail and pair states.
+- `04_selected` uses a presentation-only inventory fixture matching the target selection: first two items, total80, five occupied slots. It uses shipped item art (phoenix bangle replaces the concept's nonexistent earrings). Amounts are layout examples, not balance changes. HUD cash/time comes from the preceding real transaction and is not copied from the concept.
+- `01_preopen`, `02_details` and `03_receipt` use naturally acquired stock restored through the v43 codec and actual game commands. The natural silver hairpin quote is39, not the concept's32.
 
-- Core opening tests:100 assertions/0 failures.
-- Current-manifest native UI:143 assertions/0 failures at each resolution, seed42. Mouse controls, initial keyboard focus, long-letter scroll, mid-opening reload state equality, first trade, room choices, sleep and replay skip verified. Runtime logs contain no script/render errors.
-- Earlier random-seed trial had an end-of-night transition assertion fail; final targeted UI fixture uses deterministic seed42, not a claim of exhaustive random-night validation. Game rules were not edited to make tests pass.
-- No full-game, Windows/export or real-user acceptance claim.
+## Findings, corrections and final comparison
 
-## Implementation checklist
+1. P1 resolved: receipt item labels collapsed in horizontal rows. Explicit label sizing, non-wrapping and dedicated price width now keep names and prices visible at both resolutions.
+2. P2 resolved: price tags were too short for two text lines. Increased their height and adjusted baselines; final captures show complete names and amounts.
+3. P2 resolved: background customer status card leaked behind the sales header. The overlay now uses the existing empty-counter painting, while the live bottom HUD remains visible.
+4. P2 resolved: unchecked filters were hard to distinguish; a fallback font rendered the checked symbol as a purple emoji. Explicit monochrome square/tick labels now maintain the ink palette and reflect partial selection correctly.
+5. Functional issue resolved: a rejected sale could leave the player in a business drawer after state notification. The failure handler reopens the tray with the draft and actual error. Rejection does not charge money/time; retry succeeds.
 
-- [x] Selected visual and8final raster assets integrated.
-- [x] Preserve story commands, gates and serialized state.
-- [x] Correct foreground readability and source-art visibility.
-- [x] Native1280×720 and1600×900 flow, screenshots and log checks.
-- [x] Document prompt/source hashes and direct isolated review command.
+Final combined comparison after these fixes has no remaining actionable P0/P1/P2 findings for the selected direction and tested 16:9 viewports.
 
-## 试玩修订复验 · 照片、喜帖、回忆
+## Five fidelity surfaces
 
-Source truth: 用户11:36:15、11:36:46、11:37:49三张截图及明确反馈，文件位于用户提供的NSIRD_screencaptureui临时目录；项目原图`assets/opening_art/photo.png`、`memory.png`。
+- Typography: established CounterTheme display font and bundled fallback; tags22/19, merchant34, total34 and primary action27 at720h. Actual game fonts intentionally replace image-generated calligraphy. Price details use existing account typography.
+- Spacing/layout: six real item cells on the left, portrait and paper receipt on the right, fixed total and delivery action, full live bottom HUD. More than six items paginate; long receipts scroll independently. Orthogonal cell boundaries replace the concept's decorative perspective so hit areas remain predictable.
+- Colors/tokens: existing old-paper texture, dark olive cloth, worn brown wood and restrained vermilion. No modern color accents. Disabled delivery remains distinct.
+- Imagery: actual elderly Lu portrait cropped through an AtlasTexture; shipped item images with their established material; generated empty tray-cell painting with prompt/provenance in `assets/lu_sale/tray_slot.md`. No baked prices/buttons or invented item assets.
+- Copy/content: first screen contains merchant, current demand, inventory, quotes, selected goods, total, time and actions. Costs, premiums, pair bonuses and projected cash are in details. No new lore or trade mechanics. The decorative envelope and flavor sentence inside the concept receipt are omitted; the actual entrance remains the lower-right letter.
 
-Implementation: `docs/qa/opening-art/1280_manqing_memory.png`、`1600_manqing_memory.png`、`1280_gu_value.png`、`1600_gu_value.png`、两分辨率`gu_people`/`gu_flashbacks`/`decision`。原memory画面和1600实机暗淡版本在同一工具输入直接对照；全尺寸图能读清面部、姓名和按钮，不需要另行裁图。
+## Verified behavior
 
-- [P2 resolved] 两次生成导致女孩表情变化：两节点现在使用同一photo.png；UI测试对旧照片人脸区域逐像素比较，两分辨率通过。
-- [P2 resolved] 喜帖简体：内置imagegen重做姓名为姚曼卿、陸紹廷；正文引用同步。场景只使用喜帖轮廓，避免重新生成的人脸混入。首轮采样出现矩形裤面接缝，改为纸张轮廓及窄接触阴影后消失。
-- [P2 resolved] 回忆与现实未区分：三段顾叔童年回忆统一低饱和、压暗与轻微暗边；仅作用背景，正文和按钮保持原色。回到现实恢复正常，首笔真实成交不会套回忆滤镜。
-- 两分辨率各143断言/0失败；开场剧情、读档与首夜流转复验通过。未改剧情条件或存档格式。1280复验曾出现合成点击跨帧漏点及100秒超时；测试改为同帧完整按下/释放、允许300秒并记录逐段事件后，最终全流程通过（ui-1280.log）。
+- `tests/lu_sale_ui.gd`:104 assertions,0 failures. Actual mouse entry, pre-open delivery lock, quotes, details, close/focus return, real income/20-minute trip/item ownership, rejection without mutation/draft loss, retry, filtering, select all, clear, empty state, pagination, optional/fixed pair preview bonuses and demand reset. Both viewport sizes.
+- `tests/lu_introduction.gd`:124 passes,0 failures. Introduction, letters unlocking, real sale, cold save decode and preserved v42 rules.
+- `tests/lu_introduction_ui.gd`:243 assertions,0 failures. Existing RPG introduction and first-night/second-night letter behavior, both resolutions.
+- Godot import/parse and `git diff --check` passed. Git printed an environment warning about an unreadable global ignore file; the diff check exited0.
 
-final result: passed
+## Scope and limits
 
-## 周婶引导复验
-
-用户13:38截图作为问题依据。原「观察」已改为实际入口「鉴定」，两种分辨率的neighbor_page_1至5均已输出。人工查看1280第2/3/5页、1600第1/4页：姓名、关系、教学内容及回应按钮清楚，一屏可读。柜台固定姓名为周秀英（周婶）。两分辨率187/0，核心100/0；未新增来访调度。
-
-final result: passed
+UI change on local v43. Existing commerce commands, demand schedule,20-minute trip, quotes, save version and old v42 path are preserved. Inventory's existing multi-buyer page is retained; the dedicated page is reached from Lu's letter. No push, PR or merge. Static screenshot fixture does not imply those five goods exist in a normal second-night save. No claim of new gameplay beyond current nights or of untested non-16:9 presentation.

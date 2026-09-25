@@ -8,3 +8,4 @@ start_at_title = true
 [node name="Bootstrap" parent="." index="0"]
 manifest_path = "res://data/gramophone_manifest.json"
 save_path = "user://gramophone_unified/autosave_v44.json"
+save_library_path = "user://gramophone_unified/save_library_v44.json"

@@ -178,7 +178,7 @@ func bind(session: RunSession) -> void:
 func refresh() -> void:
 	var pending: String = _session._day.state.pending_event_id
 	var event := _session._counter.catalog.get_definition("events", pending) as EventDefinition if not pending.is_empty() else null
-	if event == null or not _session._day.state.risk_pending.is_empty() or event.presentation.is_empty() or event.presentation.get("scene", "") in ["aqi_counter", "mirror_dream"]:
+	if event == null or not _session._day.state.risk_pending.is_empty() or event.presentation.is_empty() or event.presentation.get("scene", "") in ["aqi_counter", "mirror_dream", "lu_counter"]:
 		hide(); _signature = ""; return
 	_model = _session.event_model()
 	visible = not _model.presentation.is_empty() and _model.presentation.get("scene", "") not in ["aqi_counter", "mirror_dream"]

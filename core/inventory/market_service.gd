@@ -38,8 +38,10 @@ static func is_special(run: RunDefinition, buyer: BuyerDefinition) -> bool:
 	return not run.market.is_empty() and buyer != null and buyer.id == run.market.buyer_id
 
 static func history_text(day: DayController) -> String:
+	if not LuIntroduction.unlocked(day.state, day.definition): return ""
 	var lines: PackedStringArray = []
 	for row in day.state.market_history:
+		if LuIntroduction.enabled(day.definition) and row.night < 2: continue
 		var entry := demand(day.definition, row)
 		lines.append("第%d夜 %s · %s\n%s" % [row.night, TimeController.clock_text(day.definition.opening_minute, row.minute), entry.title, entry.body])
 	return "\n\n".join(lines)

@@ -20,6 +20,7 @@ var facilities: FacilitiesNavigation
 var _room_phase := ""
 var _room_pending := ""
 var _market_notice: Button
+var lu_sale: LuSaleView
 var _notice_stamp: Label
 var _notice_key := ""
 var _notice_read_key := ""
@@ -202,6 +203,22 @@ func bind_session(session: RunSession) -> void:
 	%Drawer.visibility_changed.connect(_refresh_notice_visibility)
 	_session_menu.visibility_changed.connect(_refresh_notice_visibility)
 	%InventoryPanel.batch_submitted.connect(session.sell_batch)
+	if LuIntroduction.enabled(session.definition):
+		lu_sale = LuSaleView.new()
+		lu_sale.name = "LuSale"
+		add_child(lu_sale)
+		lu_sale.dismissed.connect(_close_drawer)
+		lu_sale.visibility_changed.connect(_refresh_notice_visibility)
+		lu_sale.submitted.connect(func(buyer: String, ids: Array, pairs: Array) -> void:
+			var result := session.sell_batch(buyer, ids, pairs)
+			if result.ok: lu_sale.reset_draft(); lu_sale.hide()
+			else:
+				_close_menu()
+				%Drawer.hide()
+				lu_sale.present(session.counter_model().inventory)
+				lu_sale.show_error(result.message))
+		session.changed.connect(func() -> void:
+			if lu_sale.visible: lu_sale.render(session.counter_model().inventory))
 	_room = PrivateRoomView.new()
 	_room.name = "PrivateRoom"
 	add_child(_room)
@@ -320,7 +337,7 @@ func bind_session(session: RunSession) -> void:
 	var dream := MirrorDreamView.new()
 	add_child(dream)
 	dream.bind(session, self)
-	if FirstDebt.revised(session._day.state):
+	if FirstDebt.revised(session._day.state) or session._day.state.social_enabled:
 		first_debt_conversation = FirstDebtConversation.new()
 		add_child(first_debt_conversation)
 		first_debt_conversation.bind(session, self)
@@ -385,6 +402,7 @@ func _departure_closed(_destination: String) -> void:
 
 func _show_receipt(receipt: Dictionary) -> void:
 	if receipt.is_empty(): return
+	if lu_sale != null: lu_sale.hide()
 	var key := String(_session._day.state.run_token) + "/" + String(receipt.id)
 	if _seen_feedback.has(key): return
 	_seen_feedback[key] = true
@@ -497,14 +515,27 @@ func _sync_room() -> void:
 
 func _refresh_notice_visibility() -> void:
 	var state := _session._day.state
-	_market_notice.visible = not _session.definition.market.is_empty() and state.phase == "open" and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending() and not %Drawer.visible and not _session_menu.visible and not (_social_panel != null and _social_panel.visible)
+	var can_read := state.phase == &"open" or (LuIntroduction.enabled(_session.definition) and state.phase == &"pre_open")
+	_market_notice.visible = not _session.definition.market.is_empty() and can_read and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending() and not %Drawer.visible and not _session_menu.visible and not (_social_panel != null and _social_panel.visible)
+	_market_notice.visible = _market_notice.visible and LuIntroduction.unlocked(state, _session.definition)
+	_market_notice.visible = _market_notice.visible and not (lu_sale != null and lu_sale.visible)
 
 
 func _open_market_notice() -> void:
+	if not LuIntroduction.unlocked(_session._day.state, _session.definition): return
 	_notice_read_key = _notice_key
 	_notice_stamp.hide()
 	_return_focus = _market_notice
+	if lu_sale != null:
+		_close_menu()
+		%Drawer.hide()
+		_counter_view.dismiss_contexts()
+		_recent_bar.hide()
+		lu_sale.present(_session.counter_model().inventory)
+		return
 	_flow.show_panel(&"inventory")
+	# A first-time drawer open refreshes deferred; populate before selecting Lu.
+	%InventoryPanel.render(_session.counter_model().inventory)
 	%InventoryPanel.open_buyer(_session.definition.market.buyer_id)
 
 
@@ -549,6 +580,7 @@ func _on_context_opened(kind: StringName) -> void:
 
 
 func _open_drawer(panel_id: StringName) -> void:
+	if lu_sale != null: lu_sale.hide()
 	if panel_id != &"social" and _social_panel != null: _social_panel.hide()
 	if first_debt_conversation != null and first_debt_conversation.visible: first_debt_conversation.collapse()
 	if old_shop != null: old_shop.hide()
@@ -578,10 +610,14 @@ func _open_drawer(panel_id: StringName) -> void:
 
 
 func _close_drawer() -> void:
+	if lu_sale != null: lu_sale.hide()
 	if %Drawer.visible and %AppraisalPanel.is_visible_in_tree() and %AppraisalPanel.dismiss_detail(): return
 	if _social_panel != null: _social_panel.hide()
 	%Drawer.hide()
 	_close_menu()
+	if first_debt_conversation != null and first_debt_conversation.visible:
+		first_debt_conversation.focus_action()
+		return
 	if _return_focus != null and _return_focus.is_visible_in_tree():
 		_return_focus.grab_focus()
 	else:
@@ -590,6 +626,7 @@ func _close_drawer() -> void:
 
 
 func _toggle_menu() -> void:
+	if lu_sale != null: lu_sale.hide()
 	if first_debt_conversation != null and first_debt_conversation.visible: first_debt_conversation.collapse()
 	if _counter_view.story_active: _counter_view.story.hide()
 	if _social_panel != null: _social_panel.hide()
@@ -621,6 +658,10 @@ func _preview_selected(index: int) -> void:
 
 func _unhandled_key_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("ui_cancel"):
+		return
+	if lu_sale != null and lu_sale.visible:
+		lu_sale.cancel()
+		get_viewport().set_input_as_handled()
 		return
 	if first_debt_conversation != null and first_debt_conversation.visible:
 		first_debt_conversation.collapse()
@@ -673,6 +714,7 @@ func show_content_error(issues: Array) -> void:
 	_status_view.show_content_error(summary)
 
 func _reset_reception() -> void:
+	if lu_sale != null: lu_sale.reset_draft()
 	if old_shop != null: old_shop.hide()
 	_cancel_feedback(true)
 	_room_phase = ""
@@ -688,6 +730,7 @@ func _reset_reception() -> void:
 	_counter_view.dismiss_contexts()
 
 func _bell_blocked() -> bool:
+	if lu_sale != null and lu_sale.visible: return true
 	if first_debt_conversation != null and first_debt_conversation.visible: return true
 	if old_shop != null and old_shop.visible: return true
 	if not is_visible_in_tree() or process_mode == Node.PROCESS_MODE_DISABLED: return true
@@ -788,8 +831,9 @@ func _review_receipt(id: String) -> void:
 	_receipt.present(receipt)
 
 func _sync_military_reception() -> void:
-	var active := MilitaryIntroduction.active(_session._day.state)
-	var key := _session._day.state.run_token + "/" + MilitaryIntroduction.id(_session._day.state)
+	var state := _session._day.state
+	var active := MilitaryIntroduction.active(state) or LuIntroduction.active(state)
+	var key := state.run_token + "/" + ("lu_introduction" if LuIntroduction.active(state) else MilitaryIntroduction.id(state))
 	if active and (not _military_was_active or key != _military_reception_key):
 		_military_reception_key = key
 		# Show the arriving person on the counter; the player opens conversation.

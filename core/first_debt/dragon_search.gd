@@ -115,6 +115,7 @@ static func decorate(model: Dictionary, day: DayController, counter: CounterServ
 	model.context_actions = {"customer": [{"id": "dialogue", "label": "验看与谈价", "enabled": true}], "item": [{"id": "dialogue", "label": "验看与谈价", "enabled": true}]}
 	model.visual = {"customer_id": "fd_lu", "portrait_asset": "fd.lu", "customer_name": "陆掌眼", "attitude": "应约带货来", "deadline": "收铺前", "introduction": "你托人寻找的龙镯，带来了。", "intent": "旧货转让", "item_asset": "fd.dragon", "item_name": "龙镯", "item_status": "陆掌眼携来", "estimate": "%d银元" % price(s) if quoted(s) else "验看后谈价", "clues": [], "speech": []}
 	model["case_dialogue"] = {"text": text, "buttons": buttons, "auto_open": false, "speaker": "陆掌眼", "key": model.active_id}
+	if LuIntroduction.enabled(day.definition): model.visual.portrait_asset = "fd.lu_elderly"
 	model.dialogue = {"body": text, "buttons": buttons, "visit_id": model.active_id, "preserve_ticket_body": true}
 	model.trade.can_offer = false; model.trade.can_pawn = false
 	model.trade.buttons = []; model.appraisal.buttons = []

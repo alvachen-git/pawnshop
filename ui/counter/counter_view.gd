@@ -315,16 +315,16 @@ func render(model: Dictionary) -> void:
 
 	_portrait.texture = CounterVisualCatalog.portrait(visual.get("portrait_asset", ""), visual.get("customer_id", ""), visual.get("person_id", ""))
 	_portrait.material = CounterVisualCatalog.portrait_material(_portrait.texture)
-	# The standing neighbor's torso ends at the back edge; both hands reach onto the top.
+	# Keep Sun behind the painted counter edge, like the other visiting adults.
 	var sun_visit := _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.SUN_PORTRAIT
 	_counter_foreground.visible = active and sun_visit
 	if sun_visit:
-		# Square head-to-waist composition, at the existing customers' scale.
-		_bounds(_portrait, 0.315, 0.025, 0.68, 0.575)
+		var portrait_bounds := CounterVisualCatalog.sun_bounds()
+		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
 	elif _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT:
 		_bounds(_portrait, 0.315, 0.025, 0.68, 0.604)
 		(_portrait.material as ShaderMaterial).set_shader_parameter("hand_contact_shadow", true)
-	elif _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.LU_PORTRAIT:
+	elif _portrait.texture != null and _portrait.texture.resource_path in [CounterVisualCatalog.LU_PORTRAIT, CounterVisualCatalog.LU_ELDERLY_PORTRAIT]:
 		# His hands remain on his side, cropped by the painted rear counter edge.
 		var hem := 445.0 / 941.0 / 0.9
 		_bounds(_portrait, 0.3175, hem - 0.46, 0.6825, hem)

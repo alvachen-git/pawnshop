@@ -1129,7 +1129,10 @@
         "aq_seated_welcome",
         "aq_seated_careful",
         "fd_phoenix_departure",
-        "fd_phoenix_hint"
+        "fd_phoenix_hint",
+        "lu_visit_greeting",
+        "lu_visit_trade",
+        "lu_visit_letters"
       ],
       "flag_ids": [
         "INTRO_FACTORY_DONE",
@@ -1213,7 +1216,10 @@
         "aq_ticket_seen",
         "aq_ticket_done",
         "aq_seated",
-        "fd_phoenix_hint_seen"
+        "fd_phoenix_hint_seen",
+        "lu_visit_met",
+        "lu_visit_terms",
+        "lu_letters_unlocked"
       ],
       "ghost_rule_ids": [
         "weeping_mirror"
