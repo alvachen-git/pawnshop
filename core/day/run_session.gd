@@ -274,6 +274,9 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	return _journal_call("counter_command", [command, visit_id, detail, amount])
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	if command == "pawn" and PawnInterestPolicy.enabled(definition):
+		var pawn_error := _counter.reason(_day, command, visit_id, detail, amount)
+		if not pawn_error.is_empty(): return ActionResult.new(false, pawn_error)
 	# v41 porcelain preflights failed funding before polling unrelated events.
 	var porcelain_visit := _counter.customers.active(_day.state) if _counter != null else null
 	if command in ["offer","pawn"] and porcelain_visit != null and (PorcelainEconomy.handles(_day.state,porcelain_visit.item) or CameraEconomy.handles(_day.state,porcelain_visit.item)):
@@ -337,6 +340,8 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 		result = _counter.execute(_day, command, visit_id, detail, amount)
 		_negotiation_reactions.record(_day, negotiating_visit, asking_before, command, detail, result)
 		if result.ok and FanConditionService.enabled(definition) and command in ["condition_pressure", "offer", "pawn"]: _persist()
+		if result.ok and PawnInterestPolicy.enabled(definition) and command in ["early_redeem", "defer_redeem"]: _persist()
+		if result.ok and command == "question" and PawnInterestPolicy.timing_question(_day, negotiating_visit, detail): _persist()
 		if result.ok and FirstDebt.enabled(definition) and negotiating_visit != null and negotiating_visit.customer_id in ["fd_seller", "fd_chen"]: _persist()
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
@@ -526,7 +531,7 @@ func event_command(event_id: String, choice_id: String) -> ActionResult:
 	return _journal_call("event_command", [event_id, choice_id])
 
 func _impl_event_command(event_id: String, choice_id: String) -> ActionResult:
-	if event_id in LuIntroduction.EVENTS and not LuIntroduction.active(_day.state): return ActionResult.new(false, "先把柜前来客的话说完。")
+	if event_id in LuIntroduction.ALL_EVENTS and not LuIntroduction.active(_day.state): return ActionResult.new(false, "先把柜前来客的话说完。")
 	if FirstDebt.enabled(definition) and event_id.begins_with("fd_"):
 		var before_minute := _day.state.game_minutes
 		var result := FirstDebt.choose(_day, _events, _counter, event_id, choice_id, replaying and not DragonSearch.enabled(_day.state))

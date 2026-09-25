@@ -39,6 +39,11 @@ var _growth_counter: Button
 var _growth_error: Label
 var _growth_visit := ""
 var _customer_heading: Label
+var _interest_row: HBoxContainer
+var _interest_preview: Label
+var _interest_model: Dictionary = {}
+var _interest_tier := "medium"
+var _interest_buttons: Dictionary = {}
 
 
 func _ready() -> void:
@@ -110,6 +115,27 @@ func _ready() -> void:
 	amount_row.add_child(_price)
 	amount_row.add_child(_pawn_price)
 
+	_interest_row = HBoxContainer.new()
+	_interest_row.name = "PawnInterestChoices"
+	_interest_row.add_theme_constant_override("separation", 6)
+	_column.add_child(_interest_row)
+	var interest_group := ButtonGroup.new()
+	for tier in ["low", "medium", "high"]:
+		var button := Button.new()
+		button.name = "PawnInterest_" + tier
+		button.text = {"low": "低息 5%", "medium": "中息 10%", "high": "高息 20%"}[tier]
+		button.toggle_mode = true
+		button.button_group = interest_group
+		button.custom_minimum_size.y = 36
+		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		button.pressed.connect(_select_interest.bind(tier))
+		_interest_row.add_child(button)
+		_interest_buttons[tier] = button
+	_interest_preview = Label.new()
+	_interest_preview.name = "PawnInterestPreview"
+	_interest_preview.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_interest_preview.add_theme_font_size_override("font_size", 14)
+	_column.add_child(_interest_preview)
 	var action_row := HBoxContainer.new()
 	action_row.add_theme_constant_override("separation", 12)
 	_column.add_child(action_row)
@@ -123,7 +149,7 @@ func _ready() -> void:
 	action_row.add_child(_submit)
 	action_row.add_child(_pawn_submit)
 	action_row.add_child(_reject)
-	_forms.assign([separator, mode_row, _terms, _availability, _bargain_toggle, amount_caption, amount_row, action_row])
+	_forms.assign([separator, mode_row, _terms, _availability, _bargain_toggle, amount_caption, amount_row, _interest_row, _interest_preview, action_row])
 	_price.value_changed.connect(func(_value: float) -> void: _refresh_amount_availability())
 	_pawn_price.value_changed.connect(func(_value: float) -> void: _refresh_amount_availability())
 	# Replies scroll independently of the transaction controls.
@@ -143,7 +169,7 @@ func _ready() -> void:
 	var form := VBoxContainer.new()
 	form.add_theme_constant_override("separation", 8)
 	layout.add_child(form)
-	for control in [separator, mode_row, _terms, _bargain_toggle, amount_caption, amount_row, action_row]:
+	for control in [separator, mode_row, _terms, _bargain_toggle, amount_caption, amount_row, _interest_row, _interest_preview, action_row]:
 		control.reparent(form)
 	_growth_form = VBoxContainer.new()
 	_growth_form.name = "DisplayBuyerForm"
@@ -238,6 +264,8 @@ func _build_bargain_popup() -> void:
 func render(model: Dictionary) -> void:
 	_bargain_popup.hide()
 	_content_scroll.scroll_vertical = 0
+	_interest_model = model.get("pawn_interest", {})
+	_interest_row.hide(); _interest_preview.hide()
 	super.render(model)
 	var customer_visual: Dictionary = model.get("visual", {})
 	_customer_heading.text = String(customer_visual.get("customer_name", ""))
@@ -276,6 +304,7 @@ func render(model: Dictionary) -> void:
 	var new_visit := _last_visit != _visit_id
 	if new_visit:
 		_mode = "offer"
+		_interest_tier = "medium"
 	_ask_value.text = str(visual.asking)
 	(_ask_value.get_parent().get_child(0) as Label).text = "收购要价" if visual.has("fan_judgement") else "顾客要价"
 	_estimate_value.text = visual.estimate
@@ -357,9 +386,10 @@ func render(model: Dictionary) -> void:
 		_pawn_mode.hide()
 		_terms.hide()
 	else:
-		_pawn_mode.show()
+		_pawn_mode.visible = _interest_model.is_empty() or _interest_model.get("unlocked", false)
 
 func _refresh_amount_availability() -> void:
+	_refresh_interest()
 	if _availability_model.is_empty(): return
 	var visual: Dictionary = _availability_model.visual
 	var lines: PackedStringArray = []
@@ -487,6 +517,7 @@ func _sync_mode() -> void:
 	_submit.visible = not pawn_selected
 	_pawn_price.visible = pawn_selected
 	_pawn_submit.visible = pawn_selected
+	_refresh_interest()
 
 
 func _toggle_bargain_menu() -> void:
@@ -535,10 +566,25 @@ func _counter_display() -> void:
 
 func _pawn() -> void:
 	_pawn_price.apply()
-	intent.emit("pawn", _visit_id, "", int(_pawn_price.value))
+	intent.emit("pawn", _visit_id, _interest_tier if not _interest_model.is_empty() else "", int(_pawn_price.value))
 
 
 func _reject_offer() -> void:
 	if _reject_command.is_empty():
 		return
 	intent.emit(_reject_command, _visit_id, _reject_detail, 0)
+
+func _select_interest(tier: String) -> void:
+	_interest_tier = tier
+	_refresh_interest()
+
+func _refresh_interest() -> void:
+	if _interest_row == null: return
+	var shown: bool = not _interest_model.is_empty() and _interest_model.get("unlocked", false) and _mode == "pawn" and not _pawn_mode.disabled
+	_interest_row.visible = shown
+	_interest_preview.visible = shown
+	if not shown: return
+	for tier in _interest_buttons: _interest_buttons[tier].set_pressed_no_signal(tier == _interest_tier)
+	var principal := int(_pawn_price.value)
+	var fee := PawnInterestPolicy.fee(principal, _interest_tier)
+	_interest_preview.text = "放款本金 %d 银元 · 三夜息费 %d 银元\n第%d夜到期 · 应收赎金 %d 银元" % [principal, fee, int(_interest_model.due_night), principal + fee]

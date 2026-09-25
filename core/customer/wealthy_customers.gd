@@ -92,6 +92,8 @@ static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalo
 	var roll := VarietyService.rng(state.run_seed, key + "/condition").randi_range(0,99)
 	var variant := "sound" if roll < int(profile.weights[0]) else "mended" if roll < int(profile.weights[0]) + int(profile.weights[1]) else "flawed"
 	var modes := ["pawn"] if VarietyService.rng(state.run_seed,key + "/mode").randi_range(0,99) < int(profile.pawn_percent) else ["sell"]
+	# Select only buyout offers before this run has introduced live pawns.
+	if PawnInterestPolicy.enabled(run) and int(old.night) < 3: modes = ["sell"]
 	var name := ""
 	var used: Array = names.map(func(r: Dictionary) -> String: return r.person.name)
 	var surnames: Array = run.variety.surnames

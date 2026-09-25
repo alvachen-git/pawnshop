@@ -603,6 +603,10 @@ func _open_drawer(panel_id: StringName) -> void:
 		_social_panel.focus_close()
 		_refresh_notice_visibility()
 		return
+	# The v45 contract selector needs room for the customer reply at 720p.
+	var pawn_layout := panel_id == &"trade" and _session != null and PawnInterestPolicy.enabled(_session.definition)
+	%Drawer.anchor_top = 0.04 if pawn_layout else 0.09
+	%Drawer.anchor_bottom = 0.89 if pawn_layout else 0.815
 	%Drawer.show()
 	%DrawerTitle.text = "  " + ("托人查访" if panel_id == &"investigation" else PANEL_TITLES[String(panel_id)])
 	%CloseDrawerButton.grab_focus()

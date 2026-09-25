@@ -1,7 +1,7 @@
 class_name PawnController
 extends RefCounted
 
-func issue(state: RunState, visit: CustomerVisit, terms: PawnTermsDefinition, amount: int) -> void:
+func issue(state: RunState, visit: CustomerVisit, terms: PawnTermsDefinition, amount: int, interest_tier := "") -> void:
 	var ticket := PawnTicket.new()
 	ticket.ticket_id = "ticket/" + visit.visit_id
 	ticket.terms_id = terms.id
@@ -12,7 +12,8 @@ func issue(state: RunState, visit: CustomerVisit, terms: PawnTermsDefinition, am
 	ticket.principal = amount
 	ticket.started_night = state.current_night_index
 	ticket.due_night = ticket.started_night + terms.term_nights
-	ticket.redemption_amount = amount + ceili(amount * terms.redemption_fee_ratio)
+	ticket.interest_tier = interest_tier
+	ticket.redemption_amount = amount + (PawnInterestPolicy.fee(amount, interest_tier) if not interest_tier.is_empty() else ceili(amount * terms.redemption_fee_ratio))
 	EconomyManager.new().commit(state, -amount, visit.item.instance_id, "loan/" + visit.visit_id, "pawn_loan")
 	InventoryManager.new().acquire(state, visit.item, visit.visit_id, amount)
 	visit.item.acquisition_type = "pawn"

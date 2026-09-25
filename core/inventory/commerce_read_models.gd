@@ -50,6 +50,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 		var item := InventoryManager.new().find(day.state, ticket.collateral_id())
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 		ledger.body += "\n%s · %s（第%d夜入当）\n本金 %d · 赎金 %d · 第%d夜到期 · %s\n" % [VarietyService.name_for(ticket.person, customer), definition.display_name, ticket.started_night, ticket.principal, ticket.redemption_amount, ticket.due_night, TICKETS[ticket.status]]
+		if not ticket.interest_tier.is_empty(): ledger.body += "票面息费 %d%% · %d 银元\n" % [int(PawnInterestPolicy.RATES[ticket.interest_tier]), ticket.redemption_amount - ticket.principal]
 		if ticket.status != "active": continue
 		ledger.body += "约定到期日开铺后验票办理；无人来赎，夜末核票处置。\n"
 		var visit := PawnReturnService.current(day.state)

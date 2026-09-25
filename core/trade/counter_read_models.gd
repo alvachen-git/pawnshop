@@ -115,9 +115,9 @@ static func build(day: DayController, service: CounterService, message: String, 
 	model.trade.can_offer = service.reason(day, "offer", visit.visit_id, "", 1).is_empty()
 	var terms := service.catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 	if terms != null:
-		model.trade.can_pawn = service.reason(day, "pawn", visit.visit_id, "", 1).is_empty()
+		model.trade.can_pawn = service.reason(day, "pawn", visit.visit_id, "medium" if PawnInterestPolicy.enabled(day.definition) else "", 1).is_empty()
 		model.trade.pawn_asking = maxi(1, roundi(visit.trade.asking_price * terms.loan_ratio))
-		model.trade.body += "\n活当要款 %d · 期限%d夜 · 赎金=本金+向上取整的%.0f%%息费。\n收购/活当共用剩余轮次与耐心。" % [model.trade.pawn_asking, terms.term_nights, terms.redemption_fee_ratio * 100]
+		model.trade.body += "\n息费可选5%、10%、20%，按三夜整期结算。" if PawnInterestPolicy.enabled(day.definition) else "\n活当要款 %d · 期限%d夜 · 赎金=本金+向上取整的%.0f%%息费。\n收购/活当共用剩余轮次与耐心。" % [model.trade.pawn_asking, terms.term_nights, terms.redemption_fee_ratio * 100]
 		if EarlyRedemption.enabled(day.definition) and terms.id == FamiliarStories.TERMS: model.trade.body += "\n" + EarlyRedemption.AGREEMENT
 		var background := PawnRedemptionPolicy.background(day.definition, customer, VarietySaveCodec.selection(day.state, visit.visit_id))
 		if not background.is_empty(): model.trade.body += "\n" + background
@@ -135,6 +135,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 			model.trade.buttons = model.trade.buttons.filter(func(b: Dictionary) -> bool: return b.command not in ["pressure", "belittle", "concession"])
 			model.dialogue.buttons = model.dialogue.buttons.filter(func(b: Dictionary) -> bool: return not b.reason.contains("另行压价"))
 	LuxuryReadModels.enrich(model, day, service, visit, message)
+	PawnInterestPolicy.enrich(model, day, visit)
 	EarlyRedemption.enrich(model, day, service, visit)
 	return model
 

@@ -6,6 +6,6 @@
 start_at_title = true
 
 [node name="Bootstrap" parent="." index="0"]
-manifest_path = "res://data/pawn_interest_manifest.json"
-save_path = "user://pawn_interest_unified/autosave_v45.json"
-save_library_path = "user://pawn_interest_unified/save_library_v45.json"
+manifest_path = "res://data/lu_trade_manifest.json"
+save_path = "user://lu_trade_unified/autosave_v44.json"
+save_library_path = "user://lu_trade_unified/save_library_v44.json"
