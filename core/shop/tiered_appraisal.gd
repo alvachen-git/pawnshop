@@ -84,6 +84,7 @@ static func reason(day: DayController, command: String, id: String, detail := ""
 	if command == "luxury_exterior":
 		if not detail.is_empty(): return "外观检查无须另填内容。"
 		return time_reason(day,item,0 if record(day.state,id).get("exterior",false) else 5)
+	if GramophoneEconomy.handles(day.state,item): return GramophoneAppraisal.reason(day,command,id,detail)
 	if CameraEconomy.handles(day.state,item): return CameraAppraisal.reason(day,command,id,detail)
 	if PorcelainEconomy.handles(day.state,item): return PorcelainAppraisal.reason(day,command,id,detail)
 	if BangleEconomy.handles(day.state,item): return BangleAppraisal.reason(day,command,id,detail)
@@ -140,6 +141,7 @@ static func blank_stage() -> Dictionary:
 	return {"pairs":{},"marks":{},"identity":"","condition":"","committed":false}
 
 static func perform(day: DayController, command: String, id: String, detail := "") -> ActionResult:
+	if command != "luxury_exterior" and GramophoneEconomy.handles(day.state,LuxuryAppraisalService.target(day,id)): return GramophoneAppraisal.perform(day,command,id,detail)
 	if command != "luxury_exterior" and CameraEconomy.handles(day.state,LuxuryAppraisalService.target(day,id)): return CameraAppraisal.perform(day,command,id,detail)
 	if command != "luxury_exterior" and PorcelainEconomy.handles(day.state,LuxuryAppraisalService.target(day,id)): return PorcelainAppraisal.perform(day,command,id,detail)
 	if command != "luxury_exterior" and BangleEconomy.handles(day.state,LuxuryAppraisalService.target(day,id)): return BangleAppraisal.perform(day,command,id,detail)
@@ -187,6 +189,7 @@ static func exterior_text(state: RunState, item: ItemInstance) -> String:
 	return String(config(state,item).damage[["intact","minor","major"].find(item.goods.precision.damage)])
 
 static func observations(state: RunState, item: ItemInstance, tier: int) -> Array:
+	if GramophoneEconomy.handles(state,item): return GramophoneAppraisal.observations(state,item)
 	if CameraEconomy.handles(state,item): return CameraAppraisal.observations(state,item)
 	if PorcelainEconomy.handles(state,item): return PorcelainAppraisal.observations(state,item)
 	if BangleEconomy.handles(state,item): return BangleAppraisal.observations(state,item)
@@ -232,6 +235,7 @@ static func pending(state: RunState, visit: CustomerVisit) -> Array[String]:
 	return result
 
 static func pressure_reason(day: DayController, visit: CustomerVisit, detail: String, amount: int) -> String:
+	if visit != null and GramophoneEconomy.handles(day.state,visit.item): return "请在商量价钱中选择要谈的说法。"
 	if visit != null and CameraEconomy.handles(day.state,visit.item): return "请在商量价钱中选择要谈的说法。"
 	if visit != null and (PorcelainEconomy.handles(day.state,visit.item) or BangleEconomy.handles(day.state,visit.item) or PearlEconomy.handles(day.state,visit.item)): return "请在商量价钱中选择要谈的说法。"
 	if visit != null and WatchNegotiation.handles(day.state,visit.item): return "请在商量价钱中选择要谈的说法。"

@@ -32,7 +32,7 @@ static func finish(state: RunState, visit: CustomerVisit, outcome: String) -> vo
 	var price: int = visit.trade.offers.back()
 	var base := basis(state, visit)
 	var change := delta(price, base, outcome)
-	if (WatchEconomy.handles(state,visit.item) or PearlEconomy.handles(state,visit.item) or (PorcelainEconomy.handles(state,visit.item) or CameraEconomy.handles(state,visit.item)) or BangleEconomy.handles(state,visit.item)) and change < 0: change = 0
+	if (WatchEconomy.handles(state,visit.item) or PearlEconomy.handles(state,visit.item) or (PorcelainEconomy.handles(state,visit.item) or GramophoneEconomy.handles(state,visit.item) or CameraEconomy.handles(state,visit.item)) or BangleEconomy.handles(state,visit.item)) and change < 0: change = 0
 	# A later inspection/pressure action ending a conversation is not a rejected quote.
 	if outcome in ["patience_exhausted", "rounds_exhausted"] and not visit.trade.social_last_was_quote: change = 0
 	var positive := 0

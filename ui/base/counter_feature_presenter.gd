@@ -27,6 +27,9 @@ func _on_intent(command: String, visit_id: String, detail: String, amount: int) 
 		if visitor == null: return
 		var result := _session.fan_command(command,visitor.item.instance_id,detail)
 		if result.ok:
+			if GramophoneEconomy.handles(_session._day.state,visitor.item):
+				GramophoneDeskView.open_gramophone(_view,_session,visitor.item.instance_id)
+				return
 			if CameraEconomy.handles(_session._day.state,visitor.item):
 				CameraDeskView.open_camera(_view,_session,visitor.item.instance_id)
 				return

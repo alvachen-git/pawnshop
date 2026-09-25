@@ -67,12 +67,12 @@ static func reprice(state: RunState, visit: CustomerVisit) -> Dictionary:
 	var value := CameraEconomy.valuation(d.belief.identity,d.belief.lens,d.belief.mechanism,visit.item.goods.precision.damage)
 	var base := WealthyCustomers.reference_price(value,visit.transaction_modes[0])
 	var factor := float(o.rate)/100.0*(.85 if o.urgent else 1.0)*float(trade.intimidation)
-	var target_reserve := maxi(int(trade.funding),roundi(base*LuxuryCarry.percent(state,visit,"reserve")*factor))
+	var target_reserve := maxi(WealthyCustomers.minimum_price(state,visit),roundi(base*LuxuryCarry.percent(state,visit,"reserve")*factor))
 	var target_asking := maxi(target_reserve,roundi(base*LuxuryCarry.percent(state,visit,"asking")*factor))
 	var fraction := concession(state,visit)
 	var reserve := roundi(d.initial_reserve-fraction*maxi(0,int(d.initial_reserve)-target_reserve))
 	var asking := roundi(d.initial_asking-fraction*maxi(0,int(d.initial_asking)-target_asking))
-	visit.trade.reserve_price = maxi(int(trade.funding),mini(visit.trade.reserve_price,reserve))
+	visit.trade.reserve_price = maxi(WealthyCustomers.minimum_price(state,visit),mini(visit.trade.reserve_price,reserve))
 	visit.trade.asking_price = maxi(visit.trade.reserve_price,mini(visit.trade.asking_price,asking))
 	trade.value = CameraEconomy.valuation(d.facts.get("identity","original"),d.facts.get("lens","clear"),d.facts.get("mechanism","smooth"),visit.item.goods.precision.damage if d.facts.has("exterior") else "intact")
 	trade.reference = WealthyCustomers.reference_price(trade.value,visit.transaction_modes[0])
@@ -117,7 +117,9 @@ static func submit(day: DayController, visit: CustomerVisit, detail: String) -> 
 	if caught and not d.penalized: WatchEconomy.penalize(day.state,visit); d.penalized = true
 	var pricing := reprice(day.state,visit)
 	var after := visit.trade.asking_price
-	if accepted: replies.append("客人想了想：‘照这个价谈吧。’" if after < before and concession(day.state,visit)==1.0 else "客人摇头：‘只能再让这些。’" if after < before else unchanged_reply(d,pricing,before,belief_before,results))
+	if accepted and WealthyCustomers.item_minimum(day.state,visit) > 0 and after <= WealthyCustomers.minimum_price(day.state,visit):
+		replies.append(WealthyCustomers.minimum_reply(day.state,visit))
+	elif accepted: replies.append("客人想了想：‘照这个价谈吧。’" if after < before and concession(day.state,visit)==1.0 else "客人摇头：‘只能再让这些。’" if after < before else unchanged_reply(d,pricing,before,belief_before,results))
 	replies.append("要价：%d → %d 银元。" % [before,after])
 	var message := "\n".join(replies)
 	d.responses.append({"night":day.state.current_night_index,"minute":day.state.game_minutes,"parts":results,"before":before,"after":after,"message":message})

@@ -6,6 +6,7 @@ extends RefCounted
 static func apply(session: RunSession, level: int, short := "porcelain_vase", variant := "mended", damage := "minor", hidden := true, holder := "") -> void:
 	var state := session._day.state
 	var id := "item_luxury_"+short
+	if short == "gramophone": id = GramophoneEconomy.ITEM
 	if short == "camera": id = CameraEconomy.ITEM
 	if short == "silver_set": id = "item_luxury_silver_service"
 	if not session.definition.variety.tiered_appraisal.has(id): id = "item_luxury_porcelain_vase"
@@ -55,6 +56,7 @@ static func from_arguments(session: RunSession) -> bool:
 	if WatchEconomy.enabled(session.definition) and args.has("--precision-watch-case"): watch_case(session,args["--precision-watch-case"])
 	if PearlEconomy.enabled(session.definition) and args.has("--precision-pearl-case"): PearlPreview.apply(session,args["--precision-pearl-case"])
 	if BangleEconomy.enabled(session.definition) and args.has("--precision-bangle-case"): BanglePreview.apply(session,args["--precision-bangle-case"])
+	if GramophoneEconomy.enabled(session.definition) and args.has("--precision-gramophone-case"): GramophonePreview.apply(session,args["--precision-gramophone-case"])
 	if CameraEconomy.enabled(session.definition) and args.has("--precision-camera-case"): CameraPreview.apply(session,args["--precision-camera-case"])
 	if PorcelainEconomy.enabled(session.definition) and args.has("--precision-porcelain-case"): PorcelainPreview.apply(session,args)
 	return true

@@ -39,6 +39,8 @@ func _ready() -> void:
 	status = text(canvas,"",Rect2(115,562,1040,46),20)
 	button(canvas,"上一页",Rect2(115,620,150,44),turn.bind(-1),"previous")
 	button(canvas,"下一页",Rect2(280,620,150,44),turn.bind(1),"next")
+	if GramophoneEconomy.enabled(session.definition):
+		button(canvas,"留声机指南",Rect2(445,620,180,44),func() -> void: GramophoneGuideView.open(self,session),"gramophone_guide")
 	study = button(canvas,"",Rect2(640,620,510,44),learn,"study")
 	player = AudioStreamPlayer.new(); player.volume_db = -6; add_child(player)
 	player.finished.connect(finish_sample)

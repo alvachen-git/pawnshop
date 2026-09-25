@@ -14,6 +14,7 @@ var _footer: HBoxContainer
 var _error := ""
 
 static func open(owner_view: Control, current: RunSession, id: String) -> LuxuryAppraisalView:
+	if GramophoneEconomy.handles(current._day.state,LuxuryAppraisalService.target(current._day,id)): return GramophoneDeskView.open_gramophone(owner_view,current,id)
 	if CameraEconomy.handles(current._day.state,LuxuryAppraisalService.target(current._day,id)): return CameraDeskView.open_camera(owner_view,current,id)
 	if PorcelainEconomy.handles(current._day.state,LuxuryAppraisalService.target(current._day,id)): return PorcelainDeskView.open_porcelain(owner_view,current,id)
 	if BangleEconomy.handles(current._day.state,LuxuryAppraisalService.target(current._day,id)): return BangleDeskView.open_bangle(owner_view,current,id)

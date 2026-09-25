@@ -353,12 +353,15 @@ func render(model: Dictionary) -> void:
 	_item_image.material = null if visual.get("watch_art",false) else CounterItemArt.material(_item_image.texture, true)
 	if visual.get("bangle_art",false):
 		_item_image.texture=BangleArt.exterior(int(visual.tiered_exterior));_item_image.material=BangleArt.cutout()
+	if visual.has("gramophone_art"):
+		_item_image.texture=GramophoneArt.hero(); _item_image.material=GramophoneArt.counter_material()
 	if visual.has("camera_art"):
 		_item_image.texture=CameraArt.counter(); _item_image.material=null
 	if visual.has("porcelain_art"):
 		_item_image.texture=PorcelainArt.counter(visual.porcelain_art); _item_image.material=PorcelainArt.surface("front",String(visual.porcelain_art.damage),true,_item_image.texture)
 	_item_image.visible = active and _item_image.texture != null
 	var item_bounds := CounterItemArt.counter_bounds(_item_image.texture)
+	if visual.has("gramophone_art"): item_bounds=Rect2(.36,.35,.35,.51)
 	if visual.has("camera_art"): item_bounds=Rect2(.432,.643,.17,.20)
 	if visual.has("porcelain_art"): item_bounds=Rect2(.439,.557,.17,.29)
 	# ~50 mm case: the dial fits within a palm; keep the larger interaction target below.

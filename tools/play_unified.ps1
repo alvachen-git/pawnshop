@@ -1,6 +1,6 @@
 param(
-    [ValidateSet('normal','knowledge','camera','porcelain','bangle','pearl','watch','wealthy','wealthy-basic','wealthy-deep','wealthy-appraised','advertisement','introduction','contract','upgrade','fan','informed','ordinary','urgent','no-bench','intact','minor','major','stack','plaque','delivered','bedtime','call','dream','reunion','companion')][string]$Stage = 'normal',
-    [ValidateSet('camera','embroidery','gold_bangle','gold_watch','mantel_clock','pearl_necklace','jade_pendant','album','porcelain_vase','repeater','silver_set')][string]$Item = 'porcelain_vase',
+    [ValidateSet('normal','knowledge','gramophone','camera','porcelain','bangle','pearl','watch','wealthy','wealthy-basic','wealthy-deep','wealthy-appraised','advertisement','introduction','contract','upgrade','fan','informed','ordinary','urgent','no-bench','intact','minor','major','stack','plaque','delivered','bedtime','call','dream','reunion','companion')][string]$Stage = 'normal',
+    [ValidateSet('gramophone','camera','embroidery','gold_bangle','gold_watch','mantel_clock','pearl_necklace','jade_pendant','album','porcelain_vase','repeater','silver_set')][string]$Item = 'porcelain_vase',
     [ValidateSet('sound','mended','flawed')][string]$Condition = 'mended',
     [ValidateSet('intact','minor','major')][string]$Damage = 'minor',
     [ValidateSet('ordinary','hidden')][string]$Difficulty = 'hidden',
@@ -13,6 +13,7 @@ param(
     [ValidateSet('rough','standard','fine')][string]$Craft = 'standard',
     [ValidateRange(1,2)][int]$Sample = 1,
     [ValidateSet('natural','good','haze','scratched','sticky','stuck','rebuilt','imitation','imitation-legacy','imitation-letters','imitation-extra','imitation-city','no-tools','partial','firm','exposed','guide')][string]$CameraCase = 'haze',
+    [ValidateSet('natural','guide','good','wavering','stopping','rasping','muffled','worn-record','rebuilt','imitation','no-tools','partial','firm','exposed')][string]$GramophoneCase = 'good',
     [string]$GodotPath = '',
     [switch]$Wide,
     [switch]$Verify
@@ -34,12 +35,13 @@ if ($Stage -eq 'knowledge') {
     exit $LASTEXITCODE
 }
 $previousAppData = $env:APPDATA
-$precisionPreview = $Stage -in @('camera','watch','pearl','bangle','porcelain','wealthy','wealthy-basic','wealthy-deep')
+$precisionPreview = $Stage -in @('gramophone','camera','watch','pearl','bangle','porcelain','wealthy','wealthy-basic','wealthy-deep')
 if ($Stage -eq 'porcelain') {
     $Item = 'porcelain_vase'
     if (-not $PSBoundParameters.ContainsKey('Damage')) { $Damage = 'intact' }
     if (-not $PSBoundParameters.ContainsKey('Difficulty')) { $Difficulty = 'ordinary' }
 }
+if ($Stage -eq 'gramophone') { $Item = 'gramophone'; if (-not $PSBoundParameters.ContainsKey('Damage')) { $Damage = 'intact' } }
 if ($Stage -eq 'camera') { $Item = 'camera'; if (-not $PSBoundParameters.ContainsKey('Damage')) { $Damage = 'intact' } }
 if ($Stage -eq 'watch') { $Item = 'gold_watch' }
 if ($Stage -eq 'bangle') {
@@ -85,15 +87,16 @@ try {
     $gameArgs = @('--path',$gameRoot,'--resolution',$(if ($Wide) { '1600x900' } else { '1280x720' }),'res://scenes/start.tscn')
     if ($Verify) { $gameArgs += @('--quit-after','90') }
     if ($precisionPreview) {
-        $precisionLevel = @{ 'camera'='standard'; 'porcelain'='standard'; 'watch'='standard'; 'pearl'='standard'; 'bangle'='standard'; 'wealthy'='standard'; 'wealthy-basic'='basic'; 'wealthy-deep'='deep' }[$Stage]
+        $precisionLevel = @{ 'gramophone'='standard'; 'camera'='standard'; 'porcelain'='standard'; 'watch'='standard'; 'pearl'='standard'; 'bangle'='standard'; 'wealthy'='standard'; 'wealthy-basic'='basic'; 'wealthy-deep'='deep' }[$Stage]
         $gameArgs += @('--',"--precision-preview=$precisionLevel","--precision-item=$Item","--precision-condition=$Condition","--precision-damage=$Damage","--precision-difficulty=$Difficulty","--precision-watch-case=$WatchCase","--precision-holder=$Holder")
+        if ($Stage -eq 'gramophone') { $gameArgs += "--precision-gramophone-case=$GramophoneCase" }
         if ($Stage -eq 'camera') { $gameArgs += "--precision-camera-case=$CameraCase" }
         if ($Stage -eq 'pearl') { $gameArgs += "--precision-pearl-case=$PearlCase" }
         if ($Stage -eq 'porcelain') { $gameArgs += @("--precision-porcelain-case=$PorcelainCase","--precision-era=$Era","--precision-craft=$Craft","--precision-sample=$Sample") }
         if ($Stage -eq 'bangle') { $gameArgs += "--precision-bangle-case=$BangleCase" }
         Write-Output 'Appraisal test preset: isolated, progress is not saved.'
     } elseif ($Stage -ne 'normal') { $gameArgs += @('--',"--unified-preview=$Stage") }
-    $version = if ($Stage -eq 'normal' -or $precisionPreview) { 43 } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
+    $version = if ($Stage -eq 'normal' -or $precisionPreview) { 44 } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
     Write-Output "Starting unified v${version}: $Stage"
     Invoke-CheckedGodot $gameArgs ('launch-' + $Stage + '.log')
     if ($Verify) { Write-Output "Verified unified v${version}: $Stage" }

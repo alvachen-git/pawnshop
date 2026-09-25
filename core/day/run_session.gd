@@ -276,11 +276,11 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
 	# v41 porcelain preflights failed funding before polling unrelated events.
 	var porcelain_visit := _counter.customers.active(_day.state) if _counter != null else null
-	if command in ["offer","pawn"] and porcelain_visit != null and (PorcelainEconomy.handles(_day.state,porcelain_visit.item) or CameraEconomy.handles(_day.state,porcelain_visit.item)):
+	if command in ["offer","pawn"] and porcelain_visit != null and (PorcelainEconomy.handles(_day.state,porcelain_visit.item) or GramophoneEconomy.handles(_day.state,porcelain_visit.item) or CameraEconomy.handles(_day.state,porcelain_visit.item)):
 		var why := _counter.reason(_day,command,visit_id,detail,amount)
 		if not why.is_empty(): return ActionResult.new(false,why)
 	# Rejected new pressure attempts must not poll events or synchronize markets.
-	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim", "camera_claim", "porcelain_claim", "bangle_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
+	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim", "gramophone_claim", "camera_claim", "porcelain_claim", "bangle_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
 		var error := _counter.reason(_day, command, visit_id, detail, amount)
 		if not error.is_empty(): return ActionResult.new(false, error)
 	if command == "military_intro":
@@ -358,6 +358,9 @@ func _build_counter_model() -> Dictionary:
 	if MilitaryIntroduction.active(_day.state): return model
 	model.trade.reactions = _negotiation_reactions.for_visit(_day.state, model.active_id)
 	var active_visit := _counter.customers.active(_day.state)
+	if active_visit != null and GramophoneEconomy.handles(_day.state,active_visit.item):
+		for reply in GramophoneNegotiation.history(_day.state,active_visit):
+			if reply not in model.trade.reactions: model.trade.reactions.append(reply)
 	if active_visit != null and CameraEconomy.handles(_day.state,active_visit.item):
 		for reply in CameraNegotiation.history(_day.state,active_visit):
 			if reply not in model.trade.reactions: model.trade.reactions.append(reply)

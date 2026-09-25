@@ -9,7 +9,7 @@ static func build(state: RunState) -> Dictionary:
 	if state.social_enabled: result.military_expense = 0
 	if state.shop_growth_enabled: result.facility_investment = 0
 	if state.investigation_enabled: result.investigation_expense = 0
-	if state.run_definition_id in ["first_debt_open", "first_debt_reckoning", "first_debt_dragon_search", "first_debt_unified", "bangle_unified", "porcelain_unified", "camera_unified", "porcelain_release", "first_debt_recovery", "first_debt_recovery_release"]: result.debt_compensation = 0
+	if state.run_definition_id in ["first_debt_open", "first_debt_reckoning", "first_debt_dragon_search", "first_debt_unified", "bangle_unified", "porcelain_unified", "gramophone_unified", "camera_unified", "porcelain_release", "first_debt_recovery", "first_debt_recovery_release"]: result.debt_compensation = 0
 	if state.goods_version == 1: result.expertise_expense = 0
 	if state.preparation_version == 1: result.preparation_expense = 0
 	if not state.ordinary_selections.is_empty(): result.provenance_expense = 0
