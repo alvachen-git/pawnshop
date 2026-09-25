@@ -1,0 +1,42 @@
+{
+  "source_sha256": "7c17a8c9c76be65bd0fc3205c298d5836f1ccff9a32a2850f0673433ea2f847e",
+  "sample_start_seconds": 12,
+  "outputs": {
+    "clear.wav": {
+      "seconds": 23.9,
+      "peak": 0.58,
+      "rms": 0.11218924635489902,
+      "sha256": "0d9bfd1d3dcff4dafdf55a097412d2621860395819826f0ce6a65fe56884d69f"
+    },
+    "clear_worn.wav": {
+      "seconds": 23.9,
+      "peak": 0.76559855700861,
+      "rms": 0.11307644571654749,
+      "sha256": "eb191a8ebf660633733660013703a3ebe46b52bbdc2bddd84bc94227695bf1f7"
+    },
+    "rasping.wav": {
+      "seconds": 23.9,
+      "peak": 0.23508322134673063,
+      "rms": 0.11218924635489902,
+      "sha256": "014ae6d15ab69010c084fc907d9bb8624cafa2f4d911f26cd33b304f5b1f116e"
+    },
+    "rasping_worn.wav": {
+      "seconds": 23.9,
+      "peak": 0.78123899440561,
+      "rms": 0.11307560419229166,
+      "sha256": "d37e714fc742a48aaeb6a77e1650f3e6f1ef135444c2c99722799cf4085098af"
+    },
+    "muffled.wav": {
+      "seconds": 23.9,
+      "peak": 0.33945557182342073,
+      "rms": 0.061047514818769494,
+      "sha256": "5cda14acf2bf4771f677d8e36dc8ad6f679910c18b0ce910886aaf73142b02ce"
+    },
+    "muffled_worn.wav": {
+      "seconds": 23.9,
+      "peak": 0.7091087765739746,
+      "rms": 0.06263897650466958,
+      "sha256": "6d0bf7af9b2d2d5fff9c3d2e835716bb4ba20d8c875f172363881c1af1426032"
+    }
+  }
+}

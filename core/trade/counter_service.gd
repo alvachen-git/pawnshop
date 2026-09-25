@@ -36,6 +36,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	if customer.guest_rule == "swap" and command not in ["question", "judge"]: return "他只肯调换点名的当物，请到报价页决定。"
 	match command:
 		"watch_bluff": return WatchEconomy.bluff_reason(day,visit,detail,amount)
+		"gramophone_claim": return GramophoneNegotiation.reason(day,visit,detail,amount)
 		"camera_claim": return CameraNegotiation.reason(day,visit,detail,amount)
 		"porcelain_claim": return PorcelainNegotiation.reason(day,visit,detail,amount)
 		"bangle_claim": return BangleNegotiation.reason(day,visit,detail,amount)
@@ -132,7 +133,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	var cost := 0
 	match command:
 		"watch_bluff": cost = 5
-		"watch_claim", "pearl_claim", "camera_claim", "porcelain_claim", "bangle_claim": cost = 5
+		"watch_claim", "pearl_claim", "gramophone_claim", "camera_claim", "porcelain_claim", "bangle_claim": cost = 5
 		"luxury_pressure": cost = 5
 		"condition_pressure": cost = 5
 		"fan_pressure": cost = int(day.definition.variety.fan_bargaining.minutes)
@@ -156,6 +157,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	var message := ""
 	match command:
 		"watch_bluff": message = WatchEconomy.bluff(day,visit)
+		"gramophone_claim": message = GramophoneNegotiation.submit(day,visit,detail)
 		"camera_claim": message = CameraNegotiation.submit(day,visit,detail)
 		"porcelain_claim": message = PorcelainNegotiation.submit(day,visit,detail)
 		"bangle_claim": message = BangleNegotiation.submit(day,visit,detail)
@@ -230,6 +232,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 				message = (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "成交：支付 %d，物品已入库。估值不等于现金，尚未出售。" % amount
 			else:
 				message = ("客人把当票推回来：‘两成的重息，我不接。您肯降些，咱们再谈。’" if PawnInterestPolicy.firm(day.state, visit) else "客人摇头：‘我不急着用钱，犯不着付两成息。换个轻些的再商量。’") if refused_interest else String(visit.voice.get("refused", "对方拒绝了报价，提出新的要价。"))
+				if not refused_interest and WealthyCustomers.item_minimum(day.state,visit) > 0 and amount < WealthyCustomers.minimum_price(day.state,visit): message = WealthyCustomers.minimum_reply(day.state,visit)
 				if not interest_notice.is_empty(): message += "\n" + interest_notice
 				if day.state.game_minutes >= visit.expires_at:
 					visit.departure_reply = message

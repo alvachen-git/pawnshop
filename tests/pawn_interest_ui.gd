@@ -13,7 +13,7 @@ func restore_fixture(label: String) -> void:
 
 func _run() -> void:
 	create_timer(150).timeout.connect(func() -> void: push_error("PAWN UI TIMEOUT"); quit(1))
-	_main = load("res://scenes/start.tscn").instantiate()
+	_main = load("res://scenes/start_pawn_v45.tscn").instantiate()
 	_main.start_at_title = false
 	_main.get_node("Bootstrap").save_path = _save_path
 	root.add_child(_main); _session = _main.get_node("Bootstrap").session

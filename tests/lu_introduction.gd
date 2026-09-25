@@ -1,7 +1,13 @@
 extends "res://tests/shop_growth.gd"
 
+func manifest_path() -> String:
+	return "res://data/lu_trade_manifest.json"
+
+func fixture_directory() -> String:
+	return "res://.godot/qa/lu-v44/"
+
 func setup() -> bool:
-	var loaded := JsonContentProvider.new("res://data/lu_trade_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new(manifest_path()).load_catalog()
 	for issue in loaded.issues: print(issue.format_message())
 	check(loaded.is_success(), "v44 catalog")
 	if not loaded.is_success(): return false
@@ -25,8 +31,8 @@ func verify(s: RunSession, label: String) -> void:
 		s._day.state = restored
 
 func fixture(s: RunSession, label: String) -> void:
-	DirAccess.make_dir_recursive_absolute("res://.godot/qa/lu-v44")
-	var file := FileAccess.open("res://.godot/qa/lu-v44/" + label + ".json", FileAccess.WRITE)
+	DirAccess.make_dir_recursive_absolute(fixture_directory())
+	var file := FileAccess.open(fixture_directory() + label + ".json", FileAccess.WRITE)
 	file.store_string(JSON.stringify(SaveCodec.new().encode(s._day.state, 44)))
 
 func run() -> void:
@@ -82,7 +88,7 @@ func run() -> void:
 	check(BatchSaleReadModel.build(s._day, s._commerce).buyers.any(func(b: Dictionary) -> bool: return b.id == "buyer_lu"), "buyer visible after introduction")
 	fixture(s, "introduced")
 	var library := SaveLibrary.new("user://tests/lu-v44/library-%d.json" % Time.get_ticks_usec())
-	library.register_catalog("res://data/lu_trade_manifest.json", catalog)
+	library.register_catalog(manifest_path(), catalog)
 	check(library.write_entry("manual/1", s._day.state, run_def, 44, catalog), "v44 manual save " + library.error_message)
 	var saved := library.read_entry("manual/1")
 	check(not saved.is_empty() and saved.catalog.content_version == 44 and LuIntroduction.unlocked(saved.state, saved.run), "library loads v44 content and unlock")

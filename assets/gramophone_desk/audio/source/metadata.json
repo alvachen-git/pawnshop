@@ -1,0 +1,91 @@
+{
+  "Date": "1919-08-12",
+  "Description": [
+    "Victor 18615. Matrix/Take: B-23205/1.",
+    "Jazz/dance band"
+  ],
+  "Digitized": true,
+  "Id": "http://www.loc.gov/item/jukebox-33811/",
+  "IIIF_manifest": "http://www.loc.gov/item/jukebox-33811/manifest.json",
+  "Preview_url": [
+    "https://tile.loc.gov/image-services/iiif/service:mbrsrs:mbrsjukebox:dlc_victor_18615_01_b23205_01:dlc_victor_18615_01_b23205_01/full/pct:25/0/default.jpg#h=387&w=392",
+    "https://tile.loc.gov/image-services/iiif/service:mbrsrs:mbrsjukebox:dlc_victor_18615_01_b23205_01:dlc_victor_18615_01_b23205_01/full/pct:100/0/default.jpg#h=1551&w=1571",
+    "https://tile.loc.gov/image-services/iiif/service:mbrsrs:mbrsjukebox:dlc_victor_18615_01_b23205_01:dlc_victor_18615_01_b23205_01/full/pct:50/0/default.jpg#h=775&w=785"
+  ],
+  "Audio_type": "Instrumental",
+  "Contributors": [
+    {
+      "Name": "Smith, Joseph C.",
+      "Role": "Leader"
+    },
+    {
+      "Name": "Orlob, Harold",
+      "Role": "Composer"
+    },
+    {
+      "Name": "Joseph C. Smith's Orchestra",
+      "Role": "Musical Group"
+    },
+    {
+      "Name": "Cragg, George A.",
+      "Role": "Arranger"
+    }
+  ],
+  "Genre": [
+    "Ragtime, jazz, and more"
+  ],
+  "Language": [],
+  "Media_size": "10-inch",
+  "Recording_catalog_number": "18615",
+  "Date_text": "1919-08-12",
+  "Recording_label": "Victor",
+  "Location_text": "New York, New York",
+  "Recording_matrix_number": "B-23205 (Matrix ID)",
+  "Recording_take_id": "33811",
+  "Recording_take_number": "1",
+  "Rights": "Inclusion of the recording in the National Jukebox, courtesy of Sony Music Entertainment",
+  "Mime_type": [
+    "audio/mpeg",
+    "image/jpeg"
+  ],
+  "Online_format": [
+    "Audio",
+    "Image"
+  ],
+  "Original_format": [
+    "Sound recording"
+  ],
+  "Part_of": [
+    "National Jukebox",
+    "Recorded Sound Research Center",
+    "Recorded Sound Section, Library Of Congress"
+  ],
+  "Repository": [
+    "Recorded Sound Section, Library Of Congress"
+  ],
+  "Number_of_files": 2,
+  "Shelf_id": "Victor 18615",
+  "Subjects": [
+    "Ragtime, jazz, and more",
+    "Instrumental",
+    "Victor"
+  ],
+  "Last_updated_in_api": "2023-01-18T19:13:57.781Z",
+  "Title": "Waiting",
+  "Type_of_resource": "Audio",
+  "Url": "https://www.loc.gov/item/jukebox-33811/",
+  "Source_collection": "National Jukebox",
+  "Location": [
+    {
+      "Short_name": "New York",
+      "Full_name": "New York, United States",
+      "Osm_url": "https://www.openstreetmap.org/relation/175905",
+      "Latitude": 40.7127281,
+      "Longitude": -74.0060152,
+      "County": "Unknown",
+      "State_district": "Unknown",
+      "State": "New York",
+      "Country": "United States"
+    }
+  ]
+}

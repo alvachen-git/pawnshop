@@ -1,0 +1,10 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+ERROR: Failed to read the root certificate store.
+   at: get_system_ca_certificates (platform/windows/os_windows.cpp:2570)
+JOURNEY seed=3 cash=1489 reputation=11 phase=pre_open met=1 appraised=1 funded=0 redeemed=0
+JOURNEY seed=15 cash=1406 reputation=9 phase=pre_open met=3 appraised=3 funded=2 redeemed=1
+JOURNEY seed=17 cash=1029 reputation=9 phase=pre_open met=5 appraised=4 funded=4 redeemed=1
+JOURNEY seed=25 cash=1368 reputation=9 phase=pre_open met=6 appraised=5 funded=5 redeemed=1
+JOURNEY seed=32 cash=514 reputation=12 phase=pre_open met=10 appraised=9 funded=9 redeemed=2
+GRAMOPHONE V46 JOURNEY: 1440 passes, 0 failures

@@ -99,7 +99,7 @@ func journey(seed_value: int) -> void:
 				var amount := v.trade.reserve_price
 				if amount <= s._day.state.cash - 20:
 					var pawn := "pawn" in v.transaction_modes
-					check(s.counter_command("pawn" if pawn else "offer",v.visit_id,"",amount).ok,"natural wealthy acquisition")
+					check(s.counter_command("pawn" if pawn else "offer",v.visit_id,"medium" if pawn and PawnInterestPolicy.enabled(run_def) else "",amount).ok,"natural wealthy acquisition")
 					if pawn: funded += 1
 					verify(s,"wealthy acquired")
 				else: check(s.counter_command("reject",v.visit_id).ok,"decline unaffordable wealthy offer")

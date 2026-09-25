@@ -36,7 +36,7 @@ static func firm(state: RunState, visit: CustomerVisit) -> bool:
 static func urgent(state: RunState, visit: CustomerVisit) -> bool:
 	if WealthyCustomers.is_customer(visit.customer_id):
 		var trade := WealthyCustomers.trade(state, visit)
-		for key in ["watch_owner", "pearl_owner", "bangle_owner", "porcelain_owner", "camera_owner"]:
+		for key in ["watch_owner", "pearl_owner", "bangle_owner", "porcelain_owner", "camera_owner", "gramophone_owner"]:
 			if trade.get(key, {}).has("urgent"): return trade[key].urgent
 		return VarietyService.rng(state.run_seed, visit.visit_id + "/pawn-urgency").randi_range(0, 99) < 30
 	if visit.person.get("id", "") == "familiar/seamstress": return true

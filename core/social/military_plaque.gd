@@ -32,7 +32,7 @@ static func intimidate(state: RunState, visit: CustomerVisit) -> String:
 	if WealthyCustomers.active(state) and WealthyCustomers.is_customer(visit.customer_id):
 		var luxury := WealthyCustomers.trade(state,visit)
 		luxury.intimidation = float(percent) / 100.0
-		trade.reserve_price = maxi(trade.reserve_price,int(luxury.funding))
+		trade.reserve_price = maxi(trade.reserve_price,WealthyCustomers.minimum_price(state,visit))
 		trade.asking_price = maxi(trade.asking_price,trade.reserve_price)
 	var fan := FanBargainingService.attempt(state, visit)
 	if fan.get("accepted", false):
@@ -41,4 +41,6 @@ static func intimidate(state: RunState, visit: CustomerVisit) -> String:
 	state.social.intimidations.append({"visit_id":visit.visit_id, "night":state.current_night_index, "asking_before":before, "asking_after":trade.asking_price, "reserve_before":reserve, "reserve_after":trade.reserve_price})
 	SocialRules.change(state, "reputation", -int(SocialRules.config().plaque.reputation_cost), "intimidation/" + visit.visit_id)
 	visit.voice.completed = "他数过银元，朝墙上的木牌瞥了一眼，把钱收进衣襟，没有再说话。"
+	if WealthyCustomers.item_minimum(state,visit) > 0 and trade.asking_price <= WealthyCustomers.minimum_price(state,visit):
+		return "你抬手指了指军方照应牌。" + WealthyCustomers.minimum_reply(state,visit) + "\n要价 %d → %d 银元。" % [shown_before,trade.asking_price]
 	return "你抬手指了指军方照应牌。客人把嘴边的话咽回去：‘那就再让一成。’\n要价 %d → %d 银元。" % [shown_before, FanBargainingService.asking(state, visit)]

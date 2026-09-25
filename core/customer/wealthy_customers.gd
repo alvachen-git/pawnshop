@@ -127,6 +127,7 @@ static func prepare(state: RunState, visit: CustomerVisit) -> void:
 		visit.voice.introduction = LuxuryCarry.origin(state,visit) + ("\n这回至少需筹%d银元。" % funding if funding > 0 else "")
 	if WatchEconomy.handles(state,visit.item): WatchEconomy.prepare(state,visit)
 	if PearlEconomy.handles(state,visit.item): PearlEconomy.prepare(state,visit)
+	if GramophoneEconomy.handles(state,visit.item): GramophoneEconomy.prepare(state,visit)
 	if CameraEconomy.handles(state,visit.item): CameraEconomy.prepare(state,visit)
 	if PorcelainEconomy.handles(state,visit.item): PorcelainEconomy.prepare(state,visit)
 	if BangleEconomy.handles(state,visit.item): BangleEconomy.prepare(state,visit)
@@ -137,9 +138,27 @@ static func reference_price(value: int, mode: String) -> int:
 static func trade(state: RunState, visit: CustomerVisit) -> Dictionary:
 	return data(state).get("trades",{}).get(visit.visit_id,{})
 
+static func item_minimum(state: RunState, visit: CustomerVisit) -> int:
+	if state.ghost_catalog == null or visit.item == null: return 0
+	var run := state.ghost_catalog.get_definition("runs",state.run_definition_id) as RunDefinition
+	return int(run.variety.get("luxury_minimum_prices",{}).get(visit.item.definition_id,0)) if run != null else 0
+
+static func minimum_price(state: RunState, visit: CustomerVisit) -> int:
+	return maxi(item_minimum(state,visit),int(trade(state,visit).get("funding",0)))
+
+static func minimum_reply(state: RunState, visit: CustomerVisit) -> String:
+	var minimum := minimum_price(state,visit)
+	if int(trade(state,visit).get("funding",0)) > item_minimum(state,visit):
+		return "客人按住当票：‘这趟至少得筹到 %d 银元，少了这笔钱，我宁可先不当。’" % minimum
+	return "客人把东西拢回手边：‘最低 %d 银元，再低便不出手了。’" % minimum
+
 static func quote(state: RunState, visit: CustomerVisit, customer: CustomerDefinition, amount: int) -> bool:
 	visit.trade.rounds_left -= 1
 	visit.trade.offers.append(amount)
+	# Recheck the floor at settlement, including restored or previously reduced quotes.
+	if item_minimum(state,visit) > 0:
+		visit.trade.reserve_price = maxi(visit.trade.reserve_price,minimum_price(state,visit))
+		visit.trade.asking_price = maxi(visit.trade.asking_price,visit.trade.reserve_price)
 	if amount >= visit.trade.reserve_price: return true
 	visit.trade.patience -= customer.terms.failed_quote_cost
 	visit.trade.asking_price = maxi(visit.trade.reserve_price,visit.trade.asking_price - maxi(1,roundi(int(trade(state,visit).reference)*0.05)))

@@ -11,6 +11,7 @@ const FAMILIES := {
 # Existing bowl/hairpin inspection pages keep their original knowledge rules.
 # They share only presentation sizing and the tabletop material here.
 const PLACEMENT_FAMILIES := {
+	"luxury.gramophone": "gramophone",
 	"luxury.camera": "camera",
 	"fd.dragon": "dragon_bangle", "fd.phoenix": "phoenix_bangle",
 	"asset.item_blue_bowl": "bowl", "placeholder.silver_hairpin": "hairpin",
@@ -18,6 +19,7 @@ const PLACEMENT_FAMILIES := {
 	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
 }
 const FRONTS := {
+	"gramophone": "res://assets/gramophone_desk/counter_painted.png",
 	"camera": "res://assets/camera_desk/camera_counter_painted.png",
 	"dragon_bangle": "res://assets/first_debt/dragon.png",
 	"phoenix_bangle": "res://assets/first_debt/phoenix.png",

@@ -1,7 +1,10 @@
 extends "res://tests/lu_introduction.gd"
 
+func manifest_path() -> String:
+	return "res://data/pawn_interest_manifest.json"
+
 func setup() -> bool:
-	var loaded := JsonContentProvider.new("res://data/pawn_interest_manifest.json").load_catalog()
+	var loaded := JsonContentProvider.new(manifest_path()).load_catalog()
 	for issue in loaded.issues: print(issue.format_message())
 	check(loaded.is_success(), "v45 catalog")
 	if not loaded.is_success(): return false
@@ -12,19 +15,22 @@ func setup() -> bool:
 func fresh_growth(seed_value := 42) -> RunSession:
 	var store := CountingStore.new()
 	store.origin = {"seed": seed_value, "run_token": "0123456789abcdef0123456789abcdef"}
-	return RunSession.new(run_def, 45, store, catalog)
+	return RunSession.new(run_def, catalog.content_version, store, catalog)
 
 func verify(s: RunSession, label: String) -> void:
 	InvestigationSaveCodec.clear_cache()
 	var codec := SaveCodec.new()
-	var restored := codec.decode(codec.encode(s._day.state, 45), run_def, 45, catalog, true)
+	var restored := codec.decode(codec.encode(s._day.state, catalog.content_version), run_def, catalog.content_version, catalog, true)
 	check(restored != null, "cold replay " + label + " " + codec.error_message)
 	if restored != null: check(GhostSaveCodec.same(restored.to_read_model(), s.read_state()), "exact " + label)
 
+func fixture_directory() -> String:
+	return "res://.godot/qa/pawn-v45/"
+
 func fixture(s: RunSession, label: String) -> void:
-	DirAccess.make_dir_recursive_absolute("res://.godot/qa/pawn-v45")
-	var file := FileAccess.open("res://.godot/qa/pawn-v45/" + label + ".json", FileAccess.WRITE)
-	file.store_string(JSON.stringify(SaveCodec.new().encode(s._day.state, 45)))
+	DirAccess.make_dir_recursive_absolute(fixture_directory())
+	var file := FileAccess.open(fixture_directory() + label + ".json", FileAccess.WRITE)
+	file.store_string(JSON.stringify(SaveCodec.new().encode(s._day.state, catalog.content_version)))
 
 # Controlled boundary fixtures use the real quote service; journey fixtures below
 # additionally prove the same rules under a complete saved command transcript.
@@ -133,10 +139,10 @@ func journey() -> void:
 	check(s._day.state.game_minutes == 0 and PreparationService.count(s._day.state) == 0, "teaching free of time and AP")
 	fixture(s, "unlocked")
 	var library := SaveLibrary.new("user://tests/pawn-v45/library-%d.json" % Time.get_ticks_usec())
-	library.register_catalog("res://data/pawn_interest_manifest.json", catalog)
-	check(library.write_entry("manual/1", s._day.state, run_def, 45, catalog), "new version library save")
+	library.register_catalog(manifest_path(), catalog)
+	check(library.write_entry("manual/1", s._day.state, run_def, catalog.content_version, catalog), "new version library save")
 	var entry := library.read_entry("manual/1")
-	check(not entry.is_empty() and entry.catalog.content_version == 45 and PawnInterestPolicy.FLAG in entry.state.narrative_flags, "new library restores v45 unlock")
+	check(not entry.is_empty() and entry.catalog.content_version == catalog.content_version and PawnInterestPolicy.FLAG in entry.state.narrative_flags, "new library restores v45 unlock")
 	act(s, "open_shop"); driver.drain(s)
 	var found := false
 	for guard in 120:
@@ -156,7 +162,7 @@ func journey() -> void:
 	check(s.counter_command("pawn", v.visit_id, "low", amount).ok, "real low contract")
 	verify(s, "issued contract")
 	fixture(s, "pawn-completed")
-	var payload := SaveCodec.new().encode(s._day.state, 45)
+	var payload := SaveCodec.new().encode(s._day.state, catalog.content_version)
 	for kind in ["rate", "money", "reputation", "unlock"]:
 		var altered := payload.duplicate(true)
 		if kind == "rate": altered.pawn_tickets[0].interest_tier = "high"
@@ -164,7 +170,7 @@ func journey() -> void:
 		if kind == "reputation": altered.social.reputation += 2
 		if kind == "unlock": altered.narrative_flags.erase(PawnInterestPolicy.FLAG)
 		InvestigationSaveCodec.clear_cache()
-		check(SaveCodec.new().decode(altered, run_def, 45, catalog, true) == null, "tamper rejected " + kind)
+		check(SaveCodec.new().decode(altered, run_def, catalog.content_version, catalog, true) == null, "tamper rejected " + kind)
 	var ticket := s._day.state.pawn_tickets[0]
 	var due := ticket.due_night
 	while s._day.state.current_night_index < due:

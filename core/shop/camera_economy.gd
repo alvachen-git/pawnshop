@@ -53,7 +53,7 @@ static func reprice_initial(state: RunState, visit: CustomerVisit) -> void:
 	var row:=WealthyCustomers.trade(state,visit);var o:=owner(state,visit)
 	var base:=WealthyCustomers.reference_price(valuation(o.belief.identity,o.belief.lens,o.belief.mechanism,visit.item.goods.precision.damage),visit.transaction_modes[0])
 	var factor:=float(o.rate)/100.0*(.85 if o.urgent else 1.0)
-	visit.trade.reserve_price=maxi(int(row.funding),roundi(base*LuxuryCarry.percent(state,visit,"reserve")*factor))
+	visit.trade.reserve_price=maxi(WealthyCustomers.minimum_price(state,visit),roundi(base*LuxuryCarry.percent(state,visit,"reserve")*factor))
 	visit.trade.asking_price=maxi(visit.trade.reserve_price,roundi(base*LuxuryCarry.percent(state,visit,"asking")*factor))
 	visit.trade.opening_price=visit.trade.asking_price
 
