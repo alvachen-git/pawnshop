@@ -34,6 +34,9 @@ static func topic_info(run: RunDefinition, topic: String) -> Dictionary:
 		info.name = "金镯鉴定指南"; info.description = "称重对款，查看戳记与接缝，再比较火试后的局部痕迹。"
 	if run != null and PorcelainEconomy.enabled(run) and topic == "luxury_porcelain":
 		info.name = "青花断代图录"; info.description = "转看整器、绘纹与底足，年代与工艺分别判断。"; info.use = "对照元、明、清、民国的图样，不能单凭款识认年代。"
+	if run != null and CameraEconomy.enabled(run) and topic == "luxury_textile":
+		info.name = "洋相机鉴定指南"; info.field = "相机"; info.subject = "徕卡相机"; info.cabinet_name = "洋镜图册柜"
+		info.description = "查看镜片、调光圈，过片后试快门，再核对铭文与镜座。"; info.use = info.description
 	return info
 
 static func mastered(state: RunState, topic: String) -> bool:
@@ -63,7 +66,7 @@ static func learn(day: DayController, topic: String) -> ActionResult:
 	if not error.is_empty(): return ActionResult.new(false, error)
 	if not day.state.shop_growth.has("knowledge"): day.state.shop_growth["knowledge"] = {}
 	day.state.shop_growth.knowledge[topic] = {"night": day.state.current_night_index}
-	return ActionResult.new(true, "你将柜中手记细读一遍，辨认的要点已记在心里。已掌握%s，占用1次准备，不收银元。" % TOPICS[topic].name)
+	return ActionResult.new(true, "你将柜中手记细读一遍，辨认的要点已记在心里。已掌握%s，占用1次准备，不收银元。" % topic_info(day.definition,topic).name)
 
 static func page(day: DayController, topic: String) -> Dictionary:
 	if not TOPICS.has(topic): return {"title": "旧账柜", "body": "柜里没有这份知识手记。", "buttons": []}

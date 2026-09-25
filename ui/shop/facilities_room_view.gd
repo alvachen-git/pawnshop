@@ -291,6 +291,8 @@ func bind(value: RunSession) -> void:
 	refresh()
 
 func select(id: String) -> void:
+	if id == "knowledge/luxury_textile" and session != null and CameraEconomy.enabled(session.definition):
+		close_sheet(); CameraGuideView.open(self,session); return
 	if id == "knowledge/luxury_porcelain" and session != null and PorcelainEconomy.enabled(session.definition):
 		close_sheet(); PorcelainGuideView.open(self,session); return
 	if id == "knowledge/luxury_metal" and session != null and BangleEconomy.enabled(session.definition):

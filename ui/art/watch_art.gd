@@ -1,6 +1,14 @@
 class_name WatchArt
 extends RefCounted
 
+# Tabletop perspective is independent of the readable inspection atlas.
+static func counter(exterior: int) -> AtlasTexture:
+	var path := "res://assets/watch_desk/counter_painted"
+	var rect: Array = JSON.parse_string(FileAccess.get_file_as_string(path+".regions.json")).rects[clampi(exterior,0,2)]
+	var result := AtlasTexture.new(); result.atlas=load(path+".png")
+	result.region=Rect2(rect[0],rect[1],rect[2],rect[3]); result.filter_clip=true
+	return result
+
 static func cell(index: int) -> AtlasTexture:
 	var result := AtlasTexture.new()
 	result.atlas = load("res://assets/watch_desk/watch-atlas.png")

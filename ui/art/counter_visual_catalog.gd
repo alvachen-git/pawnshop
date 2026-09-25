@@ -143,6 +143,7 @@ static func _painted_front(asset: String) -> String:
 	return path if ResourceLoader.exists(path) else ""
 
 static func front(asset: String, source_images: Array = []) -> Texture2D:
+	if asset == "luxury.camera": return load(CounterItemArt.front_path(asset)) as Texture2D
 	if asset.begins_with("luxury."):
 		var path := "res://assets/wealthy/" + asset.trim_prefix("luxury.") + ".svg"
 		return load(path) as Texture2D if ResourceLoader.exists(path) else null
@@ -164,6 +165,8 @@ static func _front_path(asset: String, configured: String) -> String:
 	return configured
 
 static func images(visual: Dictionary, source_images: Array = []) -> Array:
+	if visual.get("item_asset", "") == "luxury.camera":
+		return [{"id":"front", "label":"相机", "path":CounterItemArt.front_path("luxury.camera")}]
 	if CounterItemArt.has_asset(visual.get("item_asset", "")):
 		return CounterItemArt.images(visual, source_images)
 	var result: Array = []

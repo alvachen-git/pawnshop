@@ -11,12 +11,14 @@ const FAMILIES := {
 # Existing bowl/hairpin inspection pages keep their original knowledge rules.
 # They share only presentation sizing and the tabletop material here.
 const PLACEMENT_FAMILIES := {
+	"luxury.camera": "camera",
 	"fd.dragon": "dragon_bangle", "fd.phoenix": "phoenix_bangle",
 	"asset.item_blue_bowl": "bowl", "placeholder.silver_hairpin": "hairpin",
 	"goods.silver_ring": "silver_ring", "goods.silver_lock": "silver_lock", "goods.folding_fan": "folding_fan",
 	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
 }
 const FRONTS := {
+	"camera": "res://assets/camera_desk/camera_counter_painted.png",
 	"dragon_bangle": "res://assets/first_debt/dragon.png",
 	"phoenix_bangle": "res://assets/first_debt/phoenix.png",
 	"inkstone": "res://assets/item_art_v30/inkstone_front.png",
@@ -79,6 +81,7 @@ const DETAILS := {
 # mirror/pen sources are projected onto the same tabletop. The redesigned
 # watch already has painted perspective and must retain its original aspect.
 const BOUNDS := {
+	"camera": Rect2(.432, .643, .170, .200),
 	# 64px source square at 1280x720; visible diameter ~56px, near a human wrist.
 	"dragon_bangle": Rect2(.485, .649, .050, .0988),
 	"phoenix_bangle": Rect2(.485, .649, .050, .0988),

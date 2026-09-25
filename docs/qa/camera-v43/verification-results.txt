@@ -1,0 +1,32 @@
+camera-test.log
+CAMERA V43: 3958 passes, 0 failures
+
+camera-economy.log
+CAMERA ECONOMY: 35 passes, 0 failures
+
+camera-journey.log
+CAMERA JOURNEY: camera=1; 1119 passes, 0 failures
+
+camera-routes.log
+RECOVERY ROUTES: 889 passes, 0 failures
+
+camera-durability.log
+RECOVERY DURABILITY: 131 passes, 0 failures
+
+camera-process.log
+RECOVERY PROCESS: 22 passes, 0 failures
+
+camera-regress-core.log
+M0–M7 TESTS PASSED · 1801 assertions
+
+camera-regress-porcelain.log
+PORCELAIN V41: 9800 passes, 0 failures
+
+camera-entries.log
+RELEASE ENTRY COMPATIBILITY: 34 checks passed
+
+.godot/camera-ui-final.log
+CAMERA UI: 61 assertions, 0 failures
+
+.godot/camera-ui-final-wide.log
+CAMERA UI: 61 assertions, 0 failures

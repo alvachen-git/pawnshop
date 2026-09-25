@@ -40,6 +40,15 @@ static func specimen(era: String, sample: int, hidden: bool, slot: int) -> Atlas
 	return result
 
 static func counter(facts: Dictionary) -> AtlasTexture:
+	var path := "res://assets/porcelain_desk/craft/counter/%s" % facts.era
+	if FileAccess.file_exists(path+".regions.json"):
+		if not _regions.has(path):
+			_regions[path]=JSON.parse_string(FileAccess.get_file_as_string(path+".regions.json"))
+		var row := clampi(int(facts.sample),0,1)*2+(1 if facts.hidden else 0)
+		var rect: Array = _regions[path].rects[row*3+CRAFTS.find(facts.craft)]
+		var painted := AtlasTexture.new(); painted.atlas=load(path+".png")
+		painted.region=Rect2(rect[0],rect[1],rect[2],rect[3]); painted.filter_clip=true
+		return painted
 	var complete := craft_specimen(facts.era,facts.craft,int(facts.sample),facts.hidden,6)
 	if complete != null: return complete
 	var result := specimen(facts.era,int(facts.sample),facts.hidden,10)

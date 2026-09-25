@@ -1,0 +1,5 @@
+camera-painterly-ui.log
+CAMERA UI: 69 assertions, 0 failures
+
+camera-painterly-ui-wide.log
+CAMERA UI: 69 assertions, 0 failures
