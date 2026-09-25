@@ -6,6 +6,7 @@ signal content_failed(issues: Array)
 
 @export_file("*.json") var manifest_path := "res://data/content_manifest.json"
 @export var save_path := "user://p0/autosave_v12.json"
+@export var save_library_path := ""
 
 var catalog: ContentCatalog
 var session: RunSession
@@ -76,6 +77,7 @@ func initialize() -> ContentLoadResult:
 			saves.legacy_archive_path = "user://p0/autosave.json"
 			saves.prior_version_path = "user://p0/autosave_v6.json"
 		saves.library = SaveLibrary.new() if not save_path.begins_with("user://tests/") else null
+		if saves.library != null and not save_library_path.is_empty(): saves.library = SaveLibrary.new(save_library_path)
 		if FirstDebt.enabled(definition) and not preview_stage.is_empty():
 			saves.library = SaveLibrary.new("user://tests/v%d_preview/" % preview_version + preview_stage + "_library.json")
 		# Seed overrides mutate the runtime definition; keep save validation on the

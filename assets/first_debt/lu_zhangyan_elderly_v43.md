@@ -1,0 +1,7 @@
+# 陆掌眼 · 老年立绘
+
+内置 image_gen 生成，2026-09-25。旧版参照为 `lu_zhangyan_stocky.png`。角色保持同一衣着、体形、柜台构图与水粉画风，以全白头发、皱纹、眼袋和老年手部表现七十多岁。新文件 `lu_zhangyan_elderly_v43.png` 保留真实透明通道；旧立绘不覆盖。
+
+生成提示词：
+
+Edit this existing game character portrait into an unmistakably elderly 76-80 year old Chinese male merchant, Lu Zhangyan, a longtime friend of pawnshop owner Gu in Republican-era Shanghai. Preserve the reference's exact half-body composition, stocky build, clasped hands, dark muted slate-blue changshan and worn brown sleeveless vest, recognizable facial structure, warm restrained expression, and realistic opaque gouache painting style with visible subtle brushwork. Change his age substantially: sparse fully silver-white swept-back hair with receding hairline, white eyebrows, deep natural crow's feet and forehead folds, soft jowls, visibly aged eyelids, age spots, and aged veined hands; a shrewd but approachable old merchant, dignified and alert, not frail or sinister. No new accessories or props. NOT photorealistic, not anime, no glossy skin or stylized caricature. Muted brown, smoke gray, old-paper warm light, matching the existing pawnshop art. Keep shoulders and both hands fully visible. Match input aspect ratio and character scale with small empty margins above head and sides, body reaching bottom edge. Deliver a SINGLE production-ready isolated portrait PNG with REAL TRANSPARENT ALPHA background, no black backdrop, no checkerboard pattern, no scenery, no counter, no ground shadow, no text. Intended asset canvas approximately 1254 by 1254.

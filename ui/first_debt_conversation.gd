@@ -19,6 +19,7 @@ var _last_press := 0
 var _error := ""
 var _result_speaker := ""
 var _close_after_result := false
+var _pre_open_result := false
 
 func bind(value: RunSession, owner_screen: CounterScreen) -> void:
 	session = value; screen = owner_screen
@@ -74,13 +75,15 @@ func bind(value: RunSession, owner_screen: CounterScreen) -> void:
 	session.restored.connect(func() -> void: _auto_seen = ""; _result = false; release_counter(); hide(); refresh.call_deferred())
 	hide()
 
-static func pages(text: String) -> Array[String]:
+static func pages(text: String, short_sentences: bool = false) -> Array[String]:
 	var result: Array[String] = []
 	for paragraph in text.split("\n", false):
 		var line := ""
-		for character in paragraph:
+		for index in paragraph.length():
+			var character := paragraph[index]
 			line += character
-			if line.length() >= 65 and character in ["。", "；", "？", "！", "”", "’"]:
+			var closing_quote_next := index + 1 < paragraph.length() and paragraph[index + 1] in ["”", "’"]
+			if (short_sentences or line.length() >= 65) and character in ["。", "；", "？", "！", "”", "’"] and not closing_quote_next:
 				result.append(line); line = ""
 		if not line.is_empty(): result.append(line)
 	if result.is_empty(): result.append("陈小满在柜前等你开口。")
@@ -90,8 +93,7 @@ func refresh() -> void:
 	if _committing: return
 	var next_model: Dictionary = session.counter_model().get("case_dialogue", {})
 	if _result:
-		var s := session._day.state
-		if s.phase != &"open" or not s.risk_pending.is_empty() or not s.pending_event_id.is_empty() or session.mirror_pending():
+		if not _result_context_valid():
 			_result = false; release_counter(); hide()
 		return
 	if next_model.is_empty():
@@ -108,7 +110,7 @@ func reopen() -> void:
 	screen._close_drawer()
 	screen._counter_view.dismiss_contexts()
 	if not _result:
-		_pages = pages(_model.text); _page = 0; _error = ""
+		_pages = pages(_model.text, _model.get("sentence_pages", false)); _page = 0; _error = ""
 	show(); display_page()
 
 func collapse() -> void:
@@ -120,11 +122,21 @@ func collapse() -> void:
 	if not target.visible: target = screen._counter_view.get_hotspot(&"shop")
 	target.grab_focus()
 
+func focus_action() -> void:
+	if _next.visible: _next.grab_focus()
+	elif _choices.get_child_count() > 0: _choices.get_child(0).grab_focus()
+
 func display_page() -> void:
 	for child in _choices.get_children():
 		_choices.remove_child(child); child.queue_free()
 	var text := _pages[_page]
 	_speaker.text = _result_speaker if _result and not _result_speaker.is_empty() else str(_model.get("speaker", speaker_for(_pages, _page)))
+	if not _result and _model.has("narration_speaker"):
+		var quote_depth := 0
+		for previous in range(_page):
+			quote_depth += _pages[previous].count("‘") + _pages[previous].count("“") - _pages[previous].count("’") - _pages[previous].count("”")
+		if quote_depth <= 0 and not text.begins_with("‘") and not text.begins_with("“"):
+			_speaker.text = _model.narration_speaker
 	_text.text = text + ("\n" + _error if not _error.is_empty() else "")
 	_text.scroll_to_line(0)
 	var last := _page == _pages.size() - 1
@@ -149,20 +161,35 @@ func choose(entry: Dictionary) -> void:
 	if _committing: return
 	_last_press = Time.get_ticks_msec(); _committing = true
 	screen._counter_view.conversation_held = true
-	var result := session.counter_command("fd_event", entry.target_id, entry.detail)
+	var result := session.counter_command(entry.get("command", "fd_event"), entry.target_id, entry.detail)
 	_committing = false
 	if not result.ok:
 		release_counter(); _error = result.message; display_page(); return
 	_close_after_result = entry.target_id in ["fd_search_motive", "fd_dragon_deal"] or (DragonSearch.enabled(session._day.state) and entry.target_id in ["fd_settle", "fd_followup", "fd_meeting_end"])
-	_result_speaker = str(_model.get("speaker", ""))
+	_pre_open_result = bool(_model.get("pre_open_story", false))
+	_result_speaker = str(_model.get("narration_speaker", _model.get("speaker", "")))
 	_model = session.counter_model().get("case_dialogue", {})
+	if _pre_open_result and not _model.is_empty():
+		_auto_seen = session._day.state.run_token + "/" + str(_model.key)
+	# Sun's intermediate replies are already the next authored speech.
+	if _pre_open_result and result.message.is_empty():
+		_result = false; release_counter()
+		if _model.is_empty(): hide()
+		else: reopen()
+		return
 	# The action may admit the next ordinary guest. Finish this short reply
 	# against Chen's retained counter art, then reveal the unchanged new visit.
-	var state := session._day.state
-	if state.phase != &"open" or not state.risk_pending.is_empty() or not state.pending_event_id.is_empty() or session.mirror_pending():
+	if not _result_context_valid():
 		_result = false; release_counter(); hide(); return
-	_pages = pages(result.message); _page = 0; _result = true; _error = ""
+	_pages = pages(result.message, _pre_open_result); _page = 0; _result = true; _error = ""
 	display_page()
+
+func _result_context_valid() -> bool:
+	var state := session._day.state
+	if not state.risk_pending.is_empty() or session.mirror_pending(): return false
+	if _pre_open_result:
+		return state.phase == &"pre_open" and (state.pending_event_id.is_empty() or MilitaryIntroduction.active(state) or LuIntroduction.active(state))
+	return state.phase == &"open" and state.pending_event_id.is_empty()
 
 func _acknowledge() -> bool:
 	var id: String = _model.get("ack_event", "")
@@ -186,7 +213,7 @@ func advance() -> void:
 	if _close_after_result or _model.get("buttons", []).is_empty():
 		_close_after_result = false
 		collapse(); return
-	_pages = pages(_model.text); _page = 0; display_page()
+	_pages = pages(_model.text, _model.get("sentence_pages", false)); _page = 0; display_page()
 
 func release_counter() -> void:
 	screen._counter_view.conversation_held = false

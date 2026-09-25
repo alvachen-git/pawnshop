@@ -73,7 +73,7 @@ static func record(state: RunState, run: RunDefinition) -> Dictionary:
 static func describe(state: RunState, run: RunDefinition) -> String:
 	if not run.fee_policy.enabled: return ""
 	var p := run.fee_policy
-	var body := "借据本金 %d 银元\n每日利息 %d · 铺面开支 %d · 合计 %d\n每夜夜末结账；短款只宽限到次夜夜末。\n" % [p.principal, p.interest, p.overhead, p.interest + p.overhead]
+	var body := "借据本金 %d 银元\n每日利息 %d · 铺面开支 %d · 合计 %d\n每夜夜末结账；息费未付清便记短款，须在次夜夜末补齐。\n" % [p.principal, p.interest, p.overhead, p.interest + p.overhead]
 	if state.fee_arrears.is_empty(): body += "息费暂无欠款。\n"
 	for debt in state.fee_arrears:
 		body += "第%d夜短款 %d 银元 · 第%d夜夜末须补齐%s\n" % [debt.origin_night, debt.amount, debt.due_night, "（今夜到期）" if debt.due_night == state.current_night_index else ""]

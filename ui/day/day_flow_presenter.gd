@@ -101,7 +101,7 @@ func _refresh_chrome(state: RunState) -> void:
 	status_updated.emit(("第 %d 夜" % state.current_night_index if FirstDebt.enabled(definition) else "第 %d / %d 夜" % [state.current_night_index, definition.total_nights]) + " · " + PHASE_LABELS[state.phase] + " · " + TimeController.clock_text(definition.opening_minute, state.game_minutes) + " · 现银 %d" % state.cash)
 	if state.phase != _last_phase:
 		_last_phase = state.phase
-		if MilitaryIntroduction.active(_session._day.state): return
+		if MilitaryIntroduction.active(_session._day.state) or LuIntroduction.active(_session._day.state): return
 		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")
 
 func _on_command(command: String) -> void:
