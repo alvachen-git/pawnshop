@@ -7,6 +7,8 @@ const SILENT_VOLUME_DB := -80.0
 # The file starts with 5 seconds of silence and a 1-second radio fade-in.
 const RADIO_LOOP_START_SECONDS := 6.0
 
+@export var music_enabled := false
+
 var _session: RunSession
 var _shop_screen: Control
 var _normal_volume_db: float
@@ -33,6 +35,11 @@ func bind_session(session: RunSession, shop_screen: Control) -> void:
 
 
 func _refresh() -> void:
+	if not music_enabled:
+		if _volume_tween != null: _volume_tween.kill(); _volume_tween = null
+		_should_play = false
+		stop()
+		return
 	var should_play := false
 	var state: Dictionary = {}
 	var clock_minute := 0

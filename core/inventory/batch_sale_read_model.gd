@@ -9,6 +9,7 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 	for id in day.definition.buyer_ids:
 		var buyer := service.catalog.get_definition("buyers", id) as BuyerDefinition
 		var special := MarketService.is_special(day.definition, buyer)
+		if special and not LuIntroduction.unlocked(day.state, day.definition): continue
 		var wanted: Array = [demand.name] if special else buyer.categories.map(func(key: String) -> String: return categories.get(key, key))
 		var reason := service.trip_reason(day, buyer)
 		var unlocked := CounterDomainValidator._contains_all(day.state.narrative_flags, buyer.required_flags) and PreparationService.buyer_reason(day.state, buyer.id).is_empty()

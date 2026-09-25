@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "lu_visit_greeting",
+      "title": "顾掌柜的老朋友",
+      "speaker": "陆掌眼",
+      "body": "门外传来两声轻叩。老人扶着门框跨进铺里，白发梳得齐整，眼角的皱纹随着笑意挤在一起。\n\n‘新掌柜吧？敝姓陆，街面上都叫我陆掌眼。我跟顾掌柜是几十年的老朋友了，年轻时一道跑过码头、看过货。听说铺子交到你手上，过来认认人。’",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 2,
+      "night_max": 2,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1100,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "lu_visit_met"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "陆先生，请坐。您平日做哪一行？",
+          "result": "陆掌眼在柜前坐下，慢慢说起自己的营生。",
+          "minutes": 0,
+          "grant_flags": [
+            "lu_visit_met"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "lu_counter",
+        "checkpoint": true
+      }
+    },
+    {
+      "id": "lu_visit_trade",
+      "title": "替商号跑货的人",
+      "speaker": "陆掌眼",
+      "body": "‘我做贸易，替城里的商号和人家采办东西。寿宴要瓷器，银楼找旧饰，表行缺钟表，什么货有买主，我便往哪里跑。’\n\n他拍了拍衣襟里的小账簿。\n\n‘顾掌柜从前收了合适的货，也常交给我。你这里若有铺子自己的现货，咱们照样做生意。不过我手上的托购单常换，得先看眼下要什么，再拿货来谈价。’",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 2,
+      "night_max": 2,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1099,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "lu_visit_met"
+      ],
+      "excluded_flags": [
+        "lu_visit_terms"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "收货的单子变了，我怎么知道？",
+          "result": "陆掌眼从袖中取出名帖，推到柜前。",
+          "minutes": 0,
+          "grant_flags": [
+            "lu_visit_terms"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "lu_counter",
+        "checkpoint": true
+      }
+    },
+    {
+      "id": "lu_visit_letters",
+      "title": "一封收货信",
+      "speaker": "陆掌眼",
+      "body": "‘有了新需求，我就托人送信来。你先看信里收哪类货，再从库存里挑合适的自有现货。合了品相，咱们当面谈价；还在当期、替客人保管的东西，可不能动。’\n\n‘顾掌柜做事讲分寸，这一点，我信他。你慢慢来。开铺后送货，往返约二十分钟，出门前先把店里的客人安顿好。’",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 2,
+      "night_max": 2,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1098,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "lu_visit_terms"
+      ],
+      "excluded_flags": [
+        "lu_letters_unlocked"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "收下名帖：陆先生慢走，有合适的货再来叨扰",
+          "result": "你将陆掌眼的名帖收好。老人拢了拢衣襟，起身告辞；眼下的收货口信留在柜边，往后的来信也送到这里。",
+          "minutes": 0,
+          "grant_flags": [
+            "lu_letters_unlocked"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "lu_counter",
+        "checkpoint": true
+      }
+    }
+  ]
+}

@@ -17,6 +17,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 		if item.ownership_state == "owned":
 			for id in day.definition.buyer_ids:
 				var buyer := service.catalog.get_definition("buyers", id) as BuyerDefinition
+				if MarketService.is_special(day.definition, buyer) and not LuIntroduction.unlocked(day.state, day.definition): continue
 				buyers[id] = "%s–%s · %s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end), "不限量" if buyer.capacity_per_night == 0 else "每夜最多收%d件" % buyer.capacity_per_night]
 				if id == PreparationService.BUYER and not PreparationService.requirements_known(day.state): buyers[id] = "第六夜，时段待打听"
 				if id == "buyer_appointment": buyers[id] = OrdinarySamplePlan.notice(day.state)

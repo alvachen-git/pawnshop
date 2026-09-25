@@ -6,7 +6,7 @@ func _run() -> void:
 	root.size=Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720);root.content_scale_size=root.size
 	_main=load("res://scenes/start.tscn").instantiate();_main.get_node("Bootstrap").save_path="user://tests/camera-ui/auto.json";root.add_child(_main)
 	_session=_main.get_node("Bootstrap").session
-	await _frames();await _click_button(_main.title_menu.buttons[0]);_check(_session.content_version==43,"v43 default")
+	await _frames();await _click_button(_main.title_menu.buttons[0]);_check(_session.content_version==44,"v44 integrated default")
 	PrecisionPreview.apply(_session,2,"camera","sound","intact",false,"factory");CameraPreview.apply(_session,"haze")
 	_session.restored.emit();_session.changed.emit();await _frames()
 	var screen:=_main.get_node("CounterScreen") as CounterScreen
@@ -73,5 +73,5 @@ func _run() -> void:
 
 func _capture(label:String) -> void:
 	await _frames();await RenderingServer.frame_post_draw
-	var folder:="res://docs/qa/camera-v43/";DirAccess.make_dir_recursive_absolute(folder)
+	var folder:="res://.godot/qa/camera-integrated/";DirAccess.make_dir_recursive_absolute(folder)
 	_check(root.get_texture().get_image().save_png(folder+_capture_prefix+"_"+label+".png")==OK,"capture "+label)

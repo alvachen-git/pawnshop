@@ -14,6 +14,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 	model.trade.pawn_asking = 1
 	if service == null: return model
 	if MilitaryIntroduction.active(day.state): return MilitaryIntroduction.model(model, day.state)
+	if LuIntroduction.active(day.state): return LuIntroduction.model(model, day, service.catalog)
 	var state := day.state
 	var waiting := 0
 	var next_arrival := -1

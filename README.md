@@ -1,5 +1,7 @@
 # 鬼市当铺
 
+当前默认版本为 **v44 陆掌眼交易整合版**：`play-lu-v44.cmd` 或 `play-unified.cmd`。包含最新 main 的相机鉴定、共用行动点与富商立绘；第二夜开铺前以 RPG 对话介绍陆掌眼，之后解锁来信卖货。背景音乐默认关闭，新局使用独立存档。旧陆掌眼 v43、相机 v43、瓷器 v42 均保留独立入口。详见 [v44 发布说明](docs/LU_TRADE_V44_RELEASE.md)。以下旧版本记录保留作历史参考。
+
 瓷器新版已整合：青花玉壶春瓶的年代／工艺鉴定、三档图样、图录与按原因区分的不让价回应。隔离试玩：`play-unified.cmd -Stage porcelain -Wide`。新局使用 v42；两套旧 v41 存档保留各自规则。见 [v42发布说明](docs/PORCELAIN_V42_RELEASE.md)。
 
 **珍珠试玩入口：`play-pearl-v38.cmd -Stage pearl -Wide`，正式新局可用 `play-unified.cmd` 或 Godot 项目入口。** 默认版本为 v42 `porcelain_release`，加入第一账、龙镯追查与第十八夜后继续营业，并保留v38的珍珠逐粒查验、整串谈价，以及五位富客按权重携带十种高档货。实际货值在生成时固定，手记、对客说法与客人认识各自保存。详见 [v38试玩与验收](docs/PEARL_V38_LOCAL.md)。

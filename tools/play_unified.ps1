@@ -14,19 +14,40 @@ param(
     [ValidateRange(1,2)][int]$Sample = 1,
     [ValidateSet('natural','good','haze','scratched','sticky','stuck','rebuilt','imitation','imitation-legacy','imitation-letters','imitation-extra','imitation-city','no-tools','partial','firm','exposed','guide')][string]$CameraCase = 'haze',
     [string]$GodotPath = '',
+    [string]$Scene = 'res://scenes/start.tscn',
     [switch]$Wide,
     [switch]$Verify
 )
 $ErrorActionPreference = 'Stop'
 $gameRoot = Split-Path -Parent $PSScriptRoot
 if (-not $GodotPath) {
-    $candidate = Join-Path $gameRoot '.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe'
-    if (Test-Path -LiteralPath $candidate) { $GodotPath = (Resolve-Path -LiteralPath $candidate).Path }
-    else {
-        $hostCandidate = Join-Path (Split-Path -Parent (Split-Path -Parent $gameRoot)) '.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe'
-        if (Test-Path -LiteralPath $hostCandidate) { $GodotPath = (Resolve-Path -LiteralPath $hostCandidate).Path }
-        else { $GodotPath = (Get-Command godot -ErrorAction SilentlyContinue).Source }
+    $engineRelativePath = '.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe'
+    $engineRoots = @($gameRoot)
+    # Linked worktrees do not contain the main checkout's ignored .tools folder.
+    # Resolve Git's own metadata instead of assuming a fixed drive or username.
+    $gitMarker = Join-Path $gameRoot '.git'
+    if (Test-Path -LiteralPath $gitMarker -PathType Leaf) {
+        $gitPointer = Get-Content -LiteralPath $gitMarker -TotalCount 1
+        if ($gitPointer -match '^gitdir:\s*(.+)$') {
+            $gitDirectory = $Matches[1].Trim()
+            if (-not [IO.Path]::IsPathRooted($gitDirectory)) { $gitDirectory = Join-Path $gameRoot $gitDirectory }
+            $commonMarker = Join-Path $gitDirectory 'commondir'
+            if (Test-Path -LiteralPath $commonMarker -PathType Leaf) {
+                $commonDirectory = (Get-Content -LiteralPath $commonMarker -Raw).Trim()
+                if (-not [IO.Path]::IsPathRooted($commonDirectory)) { $commonDirectory = Join-Path $gitDirectory $commonDirectory }
+                $engineRoots += Split-Path -Parent ([IO.Path]::GetFullPath($commonDirectory))
+            }
+        }
     }
+    $engineRoots += Split-Path -Parent (Split-Path -Parent $gameRoot)
+    foreach ($engineRoot in $engineRoots) {
+        $candidate = Join-Path $engineRoot $engineRelativePath
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+            $GodotPath = (Resolve-Path -LiteralPath $candidate).Path
+            break
+        }
+    }
+    if (-not $GodotPath) { $GodotPath = (Get-Command godot -ErrorAction SilentlyContinue).Source }
 }
 if (-not $GodotPath) { throw 'Godot 4.6.1 not found. Supply -GodotPath.' }
 if ($Stage -eq 'knowledge') {
@@ -82,7 +103,7 @@ try {
         # Regenerate and verify from real play, so previews never use stale rules.
         Invoke-CheckedGodot @('--headless','--path',$gameRoot,'--script',"res://tests/$test.gd") "$test.log" -TestRun
     }
-    $gameArgs = @('--path',$gameRoot,'--resolution',$(if ($Wide) { '1600x900' } else { '1280x720' }),'res://scenes/start.tscn')
+    $gameArgs = @('--path',$gameRoot,'--resolution',$(if ($Wide) { '1600x900' } else { '1280x720' }),$Scene)
     if ($Verify) { $gameArgs += @('--quit-after','90') }
     if ($precisionPreview) {
         $precisionLevel = @{ 'camera'='standard'; 'porcelain'='standard'; 'watch'='standard'; 'pearl'='standard'; 'bangle'='standard'; 'wealthy'='standard'; 'wealthy-basic'='basic'; 'wealthy-deep'='deep' }[$Stage]
@@ -93,7 +114,7 @@ try {
         if ($Stage -eq 'bangle') { $gameArgs += "--precision-bangle-case=$BangleCase" }
         Write-Output 'Appraisal test preset: isolated, progress is not saved.'
     } elseif ($Stage -ne 'normal') { $gameArgs += @('--',"--unified-preview=$Stage") }
-    $version = if ($Stage -eq 'normal' -or $precisionPreview) { 43 } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
+    $version = if ($Stage -eq 'normal' -or $precisionPreview) { if ($Scene -eq 'res://scenes/porcelain_v42.tscn') { 42 } elseif ($Scene -in @('res://scenes/lu_v43.tscn','res://scenes/camera_v43.tscn')) { 43 } else { 44 } } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
     Write-Output "Starting unified v${version}: $Stage"
     Invoke-CheckedGodot $gameArgs ('launch-' + $Stage + '.log')
     if ($Verify) { Write-Output "Verified unified v${version}: $Stage" }

@@ -53,10 +53,19 @@ func render_snapshot(state: Dictionary, definition: RunDefinition, action_points
 	%NightStatus.text = "第 %d 夜" % state.current_night_index if FirstDebt.enabled(definition) else "第 %d / %d 夜" % [state.current_night_index, definition.total_nights]
 	_pending_cash = "%d 大洋" % state.cash
 	if not cash_held: %CashStatus.text = _pending_cash
-	var arrears := 0
-	for row in state.fee_arrears: arrears += int(row.amount)
-	%DebtStatus.text = "本金 %d · 短款 %d" % [definition.fee_policy.principal, arrears] if definition.fee_policy.enabled else "—"
-	%DebtStatus.tooltip_text = "每日利息 %d，铺面开支 %d。短款须在次夜夜末补齐。" % [definition.fee_policy.interest, definition.fee_policy.overhead] if definition.fee_policy.enabled else ""
+	if definition.fee_policy.enabled:
+		var arrears := 0
+		for row in state.fee_arrears: arrears += int(row.amount)
+		var nightly_fee := definition.fee_policy.interest + definition.fee_policy.overhead
+		%DebtStatus.text = "本金 %d · 欠费 %d" % [definition.fee_policy.principal, arrears] if arrears > 0 else "本金 %d · 息费 %d" % [definition.fee_policy.principal, nightly_fee]
+		%DebtStatus.tooltip_text = "每夜夜末结利息%d、铺费%d。短款是未付清的息费，先补旧欠。" % [definition.fee_policy.interest, definition.fee_policy.overhead]
+		if arrears > 0:
+			var earliest_due := int(state.fee_arrears[0].due_night)
+			for row in state.fee_arrears: earliest_due = mini(earliest_due, int(row.due_night))
+			%DebtStatus.tooltip_text += "现欠%d银元，最迟第%d夜夜末补齐。" % [arrears, earliest_due]
+	else:
+		%DebtStatus.text = "—"
+		%DebtStatus.tooltip_text = ""
 	var active := 0
 	for ticket in state.pawn_tickets:
 		if ticket.status == "active": active += 1

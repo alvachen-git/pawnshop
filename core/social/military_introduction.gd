@@ -1,7 +1,7 @@
 class_name MilitaryIntroduction
 extends RefCounted
 
-# A pre-opening, itemless reception. It shares the normal counter/dialogue UI,
+# A pre-opening, itemless reception. It shares the counter's RPG dialogue UI,
 # but never enters the timed trading queue or consumes a random customer slot.
 const SPEECH := [
 	"孙大元背着手在柜前站定，目光扫过铺面。\n\n‘我叫孙大元，奉营部的差，管这一带的街面巡查，也经手军需采办。听说这里换了掌柜，今日来认个门，把规矩交代一声。’",
@@ -37,7 +37,9 @@ static func model(base: Dictionary, state: RunState) -> Dictionary:
 	base["itemless"] = true
 	base.context_actions = {"customer":[{"id":"dialogue", "label":"交谈", "enabled":true}], "item":[]}
 	base.visual = {"customer_id":"sun_dayuan", "customer_name":"孙大元", "portrait_asset":"social.sun_dayuan_visit", "item_asset":"", "item_name":"", "item_status":"", "estimate":"", "clues":[], "speech":[], "attitude":"登门拜访 · 只谈往来", "deadline":"", "introduction":SPEECH[step], "intent":"登门拜访"}
+	base.visual.introduction = ["营部孙大元，今日来认个门。", "这街面上的规矩，掌柜得记牢。", "往后的差事，都记在《往来簿》里。"][step]
 	base.dialogue = {"body":SPEECH[step], "visit_id":id(state), "buttons":[{"command":"military_intro", "detail":str(step), "label":CHOICES[step], "enabled":true, "reason":""}]}
+	base["case_dialogue"] = {"key":id(state) + "/" + str(step), "auto_open":true, "pre_open_story":true, "sentence_pages":true, "speaker":"孙大元", "narration_speaker":"柜前", "text":SPEECH[step], "buttons":[{"command":"military_intro", "target_id":id(state), "detail":str(step), "label":CHOICES[step], "enabled":true, "reason":""}]}
 	base.trade.body = "孙大元此来只为打个招呼，没有货物可交易。"
 	base.appraisal.body = "柜上没有货物。"
 	return base
