@@ -1,6 +1,10 @@
-# 手摇留声机 · v44 本地试玩
+# 手摇留声机 · v44 开发与 v46 发布整合
 
 胜利牌手摇留声机在 v44 替换进口座钟，内部 ID 仍为 `item_luxury_mantel_clock`。五位富客沿用此位置的携货权重，总数仍为十件。v43 与更早内容和存档不改写；`start_camera_v43.tscn` 保留上一版入口。开发基线为 main `30a325e`；发布前已整合 main `82d167d` 的陆掌眼登门、卖货托盘和新版对话。默认新局同时包含这些功能；旧陆掌眼入口 `play-lu-v44.cmd` 保留原 manifest 和存档。
+
+## 发布整合
+
+v46 默认入口整合 main `887ad59` 的三档活当利息与第三夜教学，保留陆掌眼登门与卖货。新增 `gramophone_release` 与独立自动档、档案库；v44 留声机、v44 陆掌眼、v45 活当利息各自旧入口和存档继续保留。默认新局含相机120／留声机100银元底价，旧版规则不迁移。
 
 ## 试玩
 
@@ -10,7 +14,7 @@
 
 普通实物预置（`good`、故障、磨损唱片、拼配和仿品）仅固定物品情境，客人的认识、急迫、相信检定和议价性格沿正式规则生成。只有 `partial`、`firm`、`exposed` 是固定谈价反应的专项测试。不要用这些专项情境评估自然成交分布。
 
-`-Holder` 支持 `silk`、`factory`、`opera`、`antique`、`comprador`；`-Damage` 支持 `intact`、`minor`、`major`。预置使用隔离环境，不保存正式进度。正常新局使用 `gramophone_unified/autosave_v44.json`。
+`-Holder` 支持 `silk`、`factory`、`opera`、`antique`、`comprador`；`-Damage` 支持 `intact`、`minor`、`major`。预置使用隔离环境，不保存正式进度。默认新局使用 `gramophone_release/autosave_v46.json`；独立 v44 入口仍使用 `gramophone_unified/autosave_v44.json`。
 
 建议顺序：
 

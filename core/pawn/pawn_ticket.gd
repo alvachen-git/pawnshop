@@ -1,6 +1,7 @@
 class_name PawnTicket
 extends RefCounted
 
+var interest_tier := ""
 var replacement_instance_id := ""
 var person: Dictionary = {}
 var ticket_id := ""
@@ -21,6 +22,7 @@ func to_data() -> Dictionary:
 	var data := {"person": person.duplicate(true), "ticket_id": ticket_id, "terms_id": terms_id, "customer_id": customer_id, "item_instance_id": item_instance_id, "source_visit_id": source_visit_id, "principal": principal, "started_night": started_night, "due_night": due_night, "redemption_amount": redemption_amount, "status": status, "extensions": extensions.duplicate(true), "closed_night": closed_night, "closed_minute": closed_minute}
 
 	if not replacement_instance_id.is_empty(): data.replacement_instance_id = replacement_instance_id
+	if not interest_tier.is_empty(): data["interest_tier"] = interest_tier
 	return data
 
 func collateral_id() -> String:

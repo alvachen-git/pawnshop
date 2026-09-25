@@ -6,7 +6,7 @@ func _run() -> void:
 	root.size=Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720);root.content_scale_size=root.size
 	_main=load("res://scenes/start.tscn").instantiate();_main.get_node("Bootstrap").save_path="user://tests/gramophone-ui/auto.json";root.add_child(_main)
 	_session=_main.get_node("Bootstrap").session
-	await _frames();await _click_button(_main.title_menu.buttons[0]);_check(_session.content_version==44,"v44 default")
+	await _frames();await _click_button(_main.title_menu.buttons[0]);_check(_session.content_version==46,"v46 default")
 	PrecisionPreview.apply(_session,2,"gramophone","sound","intact",false,"antique");GramophonePreview.apply(_session,"wavering")
 	_session.restored.emit();_session.changed.emit();await _frames()
 	var screen:=_main.get_node("CounterScreen") as CounterScreen

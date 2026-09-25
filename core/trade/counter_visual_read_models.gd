@@ -22,7 +22,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 	var terms := service.catalog.get_definition("pawn_terms", VarietyService.terms_for(visit, customer)) as PawnTermsDefinition
 	var modes: Array = customer.transaction_modes if visit.transaction_modes.is_empty() else visit.transaction_modes
 	var offers := "sell" in modes
-	var pawns := "pawn" in modes and "pawn" in customer.transaction_modes and terms != null
+	var pawns := "pawn" in modes and "pawn" in customer.transaction_modes and terms != null and PawnInterestPolicy.unlocked(day.state, day.definition)
 	var visual := {
 		"customer_id": visit.customer_id,
 		"person_id": String(visit.person.get("id", "")),
@@ -42,7 +42,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 		"offer_allowed": offers, "pawn_allowed": pawns,
 		"cash": day.state.cash,
 		"offer_reason": service.reason(day, "offer", visit.visit_id, "", 1),
-		"pawn_reason": service.reason(day, "pawn", visit.visit_id, "", 1),
+		"pawn_reason": service.reason(day, "pawn", visit.visit_id, "medium" if PawnInterestPolicy.enabled(day.definition) else "", 1),
 		"attitude": "显得不耐烦" if visit.trade.patience < customer.patience else "尚愿意交谈",
 		"deadline": TimeController.clock_text(day.definition.opening_minute, visit.expires_at),
 		"quote_minutes": customer.terms.quote_minutes, "pressure_minutes": customer.terms.pressure_minutes,

@@ -18,7 +18,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 	model.trade.pawn_asking = visit.trade.asking_price
 	var reference := int(WealthyCustomers.trade(day.state,visit).reference)
 	model.trade.body = "%s%d银元\n剩余议价%d轮 · %s\n报价和举证各5分钟、各用一轮。" % ["活当要款" if pawn else "出售要价",visit.trade.asking_price,visit.trade.rounds_left,"显得不耐烦" if visit.trade.patience < 2 else "尚愿交谈"]
-	if pawn: model.trade.body += "\n当期3夜，赎金为本金加向上取整的10%息费。"
+	if pawn: model.trade.body += "\n当期3夜，息费按选定档位计算，零头向上取整。" if PawnInterestPolicy.enabled(day.definition) else "\n当期3夜，赎金为本金加向上取整的10%息费。"
 	var funding := int(WealthyCustomers.trade(day.state,visit).funding)
 	if funding > 0: model.trade.body += "\n客人说这回至少需筹%d银元。" % funding
 	model.trade.body += "\n\n" + message

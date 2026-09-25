@@ -55,15 +55,15 @@ func run() -> void:
 				v.trade.reserve_price = 1; v.trade.asking_price = 1
 				var cash := s._day.state.cash
 				var command := "pawn" if mode == "pawn" else "offer"
-				var rejected := s.counter_command(command,v.visit_id,"",minimum-1)
+				var rejected := s.counter_command(command,v.visit_id,"medium" if command == "pawn" and PawnInterestPolicy.enabled(run_def) else "",minimum-1)
 				check(rejected.ok and v.status == "active" and s._day.state.cash == cash,"below floor refused without acquisition or payment")
 				check(rejected.message.contains(str(minimum)),"refusal states minimum")
 				check(v.trade.reserve_price >= minimum and v.trade.asking_price >= minimum,"settlement restores floor")
 				var before := s.read_state(); (s._save as CountingStore).fail = true
-				check(not s.counter_command(command,v.visit_id,"",minimum).ok and before == s.read_state(),"floor trade save failure rolls back")
+				check(not s.counter_command(command,v.visit_id,"medium" if command == "pawn" and PawnInterestPolicy.enabled(run_def) else "",minimum).ok and before == s.read_state(),"floor trade save failure rolls back")
 				(s._save as CountingStore).fail = false
 				v = s._day.state.visits[0]
-				check(s.counter_command(command,v.visit_id,"",minimum).ok,"floor price can trade")
+				check(s.counter_command(command,v.visit_id,"medium" if command == "pawn" and PawnInterestPolicy.enabled(run_def) else "",minimum).ok,"floor price can trade")
 				check(v.status == ("pawned" if mode == "pawn" else "bought") and s._day.state.cash == cash-minimum,"actual settlement at minimum")
 				check(v.item.goods == fixed,"fixed real value independent of seller minimum")
 				for buyer_id in run_def.buyer_ids:

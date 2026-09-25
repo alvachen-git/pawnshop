@@ -1,8 +1,9 @@
 # 鬼市当铺
 
-默认新局现为留声机整合版：包含陆掌眼登门与卖货、留声机鉴定及相机120／留声机100银元最低接受价。使用 `play-unified.cmd`；旧陆掌眼 v44 独立入口为 `play-lu-v44.cmd`。见 [留声机说明](docs/GRAMOPHONE_V44.md)。
+当前默认新局为 **v46 留声与当约整合版**：保留陆掌眼登门、卖货托盘与 v45 活当利息选择，加入留声机鉴定和相机120／留声机100银元最低接受价。使用 `play-unified.cmd`；旧版使用各自独立入口和存档。见 [留声机说明](docs/GRAMOPHONE_V44.md)。
 
-此前发布的 **v44 陆掌眼交易整合版** 保留为 `play-lu-v44.cmd` 独立入口。包含最新 main 的相机鉴定、共用行动点与富商立绘；第二夜开铺前以 RPG 对话介绍陆掌眼，之后解锁来信卖货。背景音乐默认关闭，新局使用独立存档。旧陆掌眼 v43、相机 v43、瓷器 v42 均保留独立入口。详见 [v44 发布说明](docs/LU_TRADE_V44_RELEASE.md)。以下旧版本记录保留作历史参考。
+
+此前发布的 **v45 活当利息与第三夜解锁版**：`play-pawn-v45.cmd` 独立入口。第一、二夜只做收购；第三夜开铺前由陆掌眼以 RPG 对话介绍活当，再开放低息5%／中息10%／高息20%。三夜整期计息，商誉与客人接受条件随利息档位变化。基于 main v44，保留第二夜来信卖货、相机鉴定与共用行动点；使用独立存档，v44及更早版本入口与旧票规则保留。详见 [v45 本地试玩与验收](docs/PAWN_INTEREST_V45.md)。以下旧版本记录保留作历史参考。
 
 瓷器新版已整合：青花玉壶春瓶的年代／工艺鉴定、三档图样、图录与按原因区分的不让价回应。隔离试玩：`play-unified.cmd -Stage porcelain -Wide`。新局使用 v42；两套旧 v41 存档保留各自规则。见 [v42发布说明](docs/PORCELAIN_V42_RELEASE.md)。
 
@@ -76,7 +77,7 @@ macOS 在仓库目录运行 `godot --path .`；复现同一局用 `godot --path 
 
 ## 存档
 
-默认新局使用 **save_version=42 / content_version=42**，自动位置为 `auto/porcelain_release`，位于既有档案库 `user://save_library/library_v1.json`；独立路径为 `user://porcelain_release/autosave_v42.json`。旧v31 `wealthy_ten`、v30 `unified_ten` 和更早存档继续按各自规则运行，不补抽破损、不追收器材、不改写原当票。命灯受害仍自动保存，营业中不能手动随时保存。
+默认新局使用 **save_version=45 / content_version=45**，自动位置为 `auto/pawn_interest_unified`，位于独立档案库 `user://pawn_interest_unified/save_library_v45.json`；独立路径为 `user://pawn_interest_unified/autosave_v45.json`。旧v31 `wealthy_ten`、v30 `unified_ten` 和更早存档继续按各自规则运行，不补抽破损、不追收器材、不改写原当票。命灯受害仍自动保存，营业中不能手动随时保存。
 
 旧三夜局使用v12，独立路径为 `user://p0/autosave_v12.json`。独立四夜样板仍用v11，保存于 `user://ordinary_four/autosave_v11.json`。三夜入口可导入通过完整历史校验的旧v9/v10/v11局，原文件保留；旧局继续使用对应旧内容，重新开局才进入v12。旧v10分别保留实施前测试快照和已上线版本的配置，包含两种历史现金/债务组合。
 

@@ -86,6 +86,7 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 					for renewal in ticket.extensions:
 						if renewal.night == entry.night and renewal.minute == entry.minute: due_night = renewal.new_due
 			detail = "第%d夜到期 · 约定赎金 %d 银元\n在当物品不可出售。" % [due_night, ticket.redemption_amount]
+			if not ticket.interest_tier.is_empty(): detail += "\n整期息费 %d%% · %d 银元" % [PawnInterestPolicy.RATES[ticket.interest_tier], ticket.redemption_amount - ticket.principal]
 			if EarlyRedemption.enabled(day.definition) and ticket.terms_id == FamiliarStories.TERMS: detail += "\n" + EarlyRedemption.AGREEMENT
 	if SevenNightPlan.enabled(day.definition) and entry.kind in ["acquisition", "pawn_loan"]:
 		var row := VarietySaveCodec.selection(day.state, item.source_visit_id)

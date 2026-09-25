@@ -117,7 +117,8 @@ try {
         if ($Stage -eq 'bangle') { $gameArgs += "--precision-bangle-case=$BangleCase" }
         Write-Output 'Appraisal test preset: isolated, progress is not saved.'
     } elseif ($Stage -ne 'normal') { $gameArgs += @('--',"--unified-preview=$Stage") }
-    $version = if ($Stage -eq 'normal' -or $precisionPreview) { if ($Scene -eq 'res://scenes/porcelain_v42.tscn') { 42 } elseif ($Scene -in @('res://scenes/lu_v43.tscn','res://scenes/camera_v43.tscn','res://scenes/start_camera_v43.tscn')) { 43 } else { 44 } } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
+    $sceneVersions = @{ 'res://scenes/porcelain_v42.tscn'=42; 'res://scenes/lu_v43.tscn'=43; 'res://scenes/camera_v43.tscn'=43; 'res://scenes/start_camera_v43.tscn'=43; 'res://scenes/lu_v44.tscn'=44; 'res://scenes/start_lu_trade_v44.tscn'=44; 'res://scenes/start_gramophone_v44.tscn'=44; 'res://scenes/start_pawn_v45.tscn'=45 }
+    $version = if ($Stage -eq 'normal' -or $precisionPreview) { if ($sceneVersions.ContainsKey($Scene)) { $sceneVersions[$Scene] } else { 46 } } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
     Write-Output "Starting unified v${version}: $Stage"
     Invoke-CheckedGodot $gameArgs ('launch-' + $Stage + '.log')
     if ($Verify) { Write-Output "Verified unified v${version}: $Stage" }

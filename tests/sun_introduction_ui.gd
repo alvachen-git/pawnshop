@@ -7,7 +7,7 @@ func _capture(label: String) -> void:
 
 func _run() -> void:
 	create_timer(100).timeout.connect(func() -> void: quit(1))
-	_main = load("res://scenes/start.tscn").instantiate()
+	_main = load("res://scenes/lu_v44.tscn").instantiate()
 	_main.start_at_title = false
 	_main.get_node("Bootstrap").save_path = _save_path
 	root.add_child(_main); _session = _main.get_node("Bootstrap").session

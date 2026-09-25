@@ -14,7 +14,7 @@ func fresh_growth(seed_value := 42) -> RunSession:
 
 func verify(s:RunSession,label:String) -> void:
 	InvestigationSaveCodec.clear_cache()
-	var codec:=SaveCodec.new();var restored:=codec.decode(codec.encode(s._day.state,41),run_def,41,catalog,true)
+	var codec:=SaveCodec.new();var restored:=codec.decode(codec.encode(s._day.state,catalog.content_version),run_def,catalog.content_version,catalog,true)
 	check(restored!=null,"v41 cold replay "+label+" "+codec.error_message)
 	if restored!=null:check(GhostSaveCodec.same(restored.to_read_model(),s.read_state()),"exact v41 replay "+label)
 
@@ -34,7 +34,7 @@ func negotiate(s:RunSession,v:CustomerVisit) -> void:
 	(s._save as CountingStore).fail=false;v=s._counter.customers.active(s._day.state)
 	check(s.counter_command("porcelain_claim",v.visit_id,'{"era":"republic","craft":"rough"}').ok,"natural porcelain claims")
 	porcelain_claims+=1;verify(s,"porcelain customer response")
-	var codec:=SaveCodec.new();InvestigationSaveCodec.clear_cache();var restored:=codec.decode(codec.encode(s._day.state,41),run_def,41,catalog,true)
+	var codec:=SaveCodec.new();InvestigationSaveCodec.clear_cache();var restored:=codec.decode(codec.encode(s._day.state,catalog.content_version),run_def,catalog.content_version,catalog,true)
 	check(restored!=null,"reload spent claim")
 	if restored!=null:
 		var old:CustomerVisit=restored.visits.filter(func(x:CustomerVisit)->bool:return x.visit_id==v.visit_id)[0]

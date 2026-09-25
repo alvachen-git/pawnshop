@@ -1,7 +1,10 @@
 extends "res://tests/pearl_appraisal.gd"
 
 func setup() -> bool:
-	var loaded:=JsonContentProvider.new("res://data/gramophone_manifest.json").load_catalog()
+	return setup_catalog("res://data/gramophone_manifest.json")
+
+func setup_catalog(manifest: String) -> bool:
+	var loaded:=JsonContentProvider.new(manifest).load_catalog()
 	for issue in loaded.issues:print(issue.format_message())
 	check(loaded.is_success(),"v44 catalog")
 	if not loaded.is_success():return false
@@ -9,7 +12,7 @@ func setup() -> bool:
 
 func fresh_growth(seed_value := 42) -> RunSession:
 	var store:=CountingStore.new();store.origin={"seed":seed_value,"run_token":"0123456789abcdef0123456789abcdef"}
-	return RunSession.new(run_def,44,store,catalog)
+	return RunSession.new(run_def,catalog.content_version,store,catalog)
 
 func gramophone(identity:="original",sound:="clear",motor:="steady",damage:="intact",cid:="customer_wealthy_factory",mode:="sell") -> RunSession:
 	var s:=unit_visit(cid,GramophoneEconomy.ITEM,"sound",mode);equip(s,2)

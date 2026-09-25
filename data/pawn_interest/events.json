@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "lu_pawn_collateral",
+      "title": "一叠空白当票",
+      "speaker": "陆掌眼",
+      "body": "陆掌眼进门时，手里多了一叠空白当票。\n\n‘前两日你认过货，也找过销路。今儿说说活当：客人舍不得卖，押物借钱，你把本金给他，当物替他保管。票未结清，柜里的东西可不能拿去卖。’",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 3,
+      "night_max": 3,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1097,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "lu_letters_unlocked"
+      ],
+      "excluded_flags": [
+        "lu_pawn_basics"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "当票写清楚，原物另行保管",
+          "result": "你将空白当票摊平，留出本金与到期日的位置。",
+          "minutes": 0,
+          "grant_flags": [
+            "lu_pawn_basics"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "lu_counter",
+        "checkpoint": true
+      }
+    },
+    {
+      "id": "lu_pawn_interest",
+      "title": "息钱怎么定",
+      "speaker": "陆掌眼",
+      "body": "‘咱们以三夜为期。低息五分、中息一成、高息两成，都是这三夜合起来的息费，零头不足一元按一元算。放一百，到期便分别收一百零五、一百一十、一百二十。’\n\n‘给钱厚不厚道，街坊记着；息钱轻重，街坊也记着。低息办成，人家承情；高息一出口，即便没谈成，也伤口碑。刚硬的人不肯低头，不急用钱的也会另找门路。人家不肯，你还可以重新商量。’",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 3,
+      "night_max": 3,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1096,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "lu_pawn_basics"
+      ],
+      "excluded_flags": [
+        "lu_pawn_rates"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "先看客人的难处，再商量息钱",
+          "result": "你在纸上列好三档息费，逐一核了赎金。",
+          "minutes": 0,
+          "grant_flags": [
+            "lu_pawn_rates"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "lu_counter",
+        "checkpoint": true
+      }
+    },
+    {
+      "id": "lu_pawn_maturity",
+      "title": "三夜之后",
+      "speaker": "陆掌眼",
+      "body": "‘息钱轻些，人家凑钱赎回也容易些。收得重，能不能凑齐便难说。三夜到了，原主带票来，验票收赎，原物还他。’\n\n‘若没人来赎，夜末核票：留货，往后自己找买主；或转当，收回八成本金，少挣还是赔钱，落笔前想清楚。既然开了这门生意，每张票的本金、息费和到期日，都得写明白。’",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 3,
+      "night_max": 3,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1095,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "lu_pawn_rates"
+      ],
+      "excluded_flags": [
+        "pawn_unlocked"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "记下了，今夜开始接活当",
+          "result": "陆掌眼点点头，将当票留在柜上，拢起衣襟告辞。",
+          "minutes": 0,
+          "grant_flags": [
+            "pawn_unlocked"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "lu_counter",
+        "checkpoint": true
+      }
+    }
+  ]
+}

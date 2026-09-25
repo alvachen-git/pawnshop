@@ -56,7 +56,10 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 			if not appraisal.can_perform(visit.item, item, detail, day.definition.tools): return "动作已做过、工具缺失或前置证据不足。"
 			cost = ShopGrowthService.appraisal_minutes(day.state, item, detail)
 		"question":
-			if scenario != null:
+			if PawnInterestPolicy.timing_question(day, visit, detail):
+				if amount != 0 or detail in visit.asked_question_ids: return "这话已经问过，或不是询问用款的时机。"
+				cost = 5
+			elif scenario != null:
 				var question := scenario.find_question(detail)
 				if question == null or detail in visit.asked_question_ids: return "这话已经问过，或不适合眼前这件东西。"
 				if not TradeScenarioService.question_available(day, visit, question): return "尚未听到相关说法，或没有对应的实物证据。"
@@ -86,6 +89,9 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 		"offer", "pawn", "pressure":
 			if visit.trade.rounds_left <= 0 or visit.trade.patience <= 0: return "本次议价已经结束。"
 			if command in ["offer", "pawn"]:
+				if command == "pawn" and PawnInterestPolicy.enabled(day.definition):
+					if not PawnInterestPolicy.unlocked(day.state, day.definition): return "活当尚未开办，先听陆掌眼讲清当票规矩。"
+					if not PawnInterestPolicy.RATES.has(detail): return "请先选好低、中、高息，再报放款金额。"
 				var modes: Array = customer.transaction_modes if visit.transaction_modes.is_empty() else visit.transaction_modes
 				if ("sell" if command == "offer" else "pawn") not in modes: return "客人只愿按约定的方式交货。"
 				if command == "pawn" and ("pawn" not in customer.transaction_modes or not catalog.has_definition("pawn_terms", VarietyService.terms_for(visit, customer))): return "此顾客不接受活当。"
@@ -133,7 +139,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"fan_pressure": cost = int(day.definition.variety.fan_bargaining.minutes)
 		"verify_source": cost = int(item.provenance.check_minutes)
 		"appraise": cost = ShopGrowthService.appraisal_minutes(day.state, item, detail)
-		"question": cost = scenario.find_question(detail).minutes if scenario != null else customer.find_question(detail).minutes
+		"question": cost = 5 if PawnInterestPolicy.timing_question(day, visit, detail) else (scenario.find_question(detail).minutes if scenario != null else customer.find_question(detail).minutes)
 		"concession": cost = scenario.concession_minutes
 		"offer", "pawn": cost = customer.terms.quote_minutes
 		"pressure": cost = customer.terms.pressure_minutes
@@ -167,7 +173,9 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"appraise": message = appraisal.perform(visit.item, item, detail)
 		"question":
 			visit.asked_question_ids.append(detail)
-			if scenario != null:
+			if PawnInterestPolicy.timing_question(day, visit, detail):
+				message = PawnInterestPolicy.cue(day.state, visit)
+			elif scenario != null:
 				var question := scenario.find_question(detail)
 				message = question.answer(visit)
 				visit.trade.patience -= question.patience_cost
@@ -197,13 +205,25 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 			var threshold := maxi(1, roundi(visit.trade.reserve_price * terms.loan_ratio)) if command == "pawn" else -1
 			visit.trade.social_offer_mode = command
 			visit.trade.social_last_was_quote = true
-			var accepted := WealthyCustomers.quote(day.state, visit, customer, amount) if WealthyCustomers.active(day.state) and WealthyCustomers.is_customer(visit.customer_id) else (FanBargainingService.sale_quote(day.state, visit, customer, amount) if command == "offer" and FanBargainingService.enabled(day.definition) else trades.quote(visit.trade, customer, amount, threshold))
+			var interest_active := command == "pawn" and PawnInterestPolicy.enabled(day.definition)
+			var interest_notice := PawnInterestPolicy.reputation(day.state, visit, detail, false) if interest_active else ""
+			var refused_interest := interest_active and detail == "high" and PawnInterestPolicy.refuses_high(day.state, visit)
+			var accepted := false
+			if refused_interest:
+				visit.trade.rounds_left -= 1
+				visit.trade.offers.append(amount)
+				visit.trade.patience -= customer.terms.failed_quote_cost
+			else:
+				accepted = WealthyCustomers.quote(day.state, visit, customer, amount) if WealthyCustomers.active(day.state) and WealthyCustomers.is_customer(visit.customer_id) else (FanBargainingService.sale_quote(day.state, visit, customer, amount) if command == "offer" and FanBargainingService.enabled(day.definition) else trades.quote(visit.trade, customer, amount, threshold))
 			if accepted:
 				if command == "pawn":
-					PawnController.new().issue(day.state, visit, terms, amount)
+					if interest_active:
+						terms = catalog.get_definition("pawn_terms", PawnInterestPolicy.terms_id(day.state, visit, customer, detail))
+					PawnController.new().issue(day.state, visit, terms, amount, detail if interest_active else "")
 					customers.finish(day.state, visit, "pawned")
+					if interest_active: interest_notice += PawnInterestPolicy.reputation(day.state, visit, detail, true)
 					customers.update(day.state)
-					return ActionResult.new(true, (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "活当放款 %d；当票已生成，在当物品不可出售。" % amount)
+					return ActionResult.new(true, (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "活当放款 %d；当票已生成，在当物品不可出售。" % amount + ("\n" + interest_notice if not interest_notice.is_empty() else ""))
 				# All guards have passed. These synchronous, non-failing writes emit no signals mid-commit.
 				economy.pay_acquisition(day.state, amount, visit.item.instance_id, "purchase/" + visit_id)
 				inventory.acquire(day.state, visit.item, visit_id, amount)
@@ -211,7 +231,9 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 				customers.finish(day.state, visit, "bought")
 				message = (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "成交：支付 %d，物品已入库。估值不等于现金，尚未出售。" % amount
 			else:
-				message = WealthyCustomers.minimum_reply(day.state,visit) if WealthyCustomers.item_minimum(day.state,visit) > 0 and amount < WealthyCustomers.minimum_price(day.state,visit) else String(visit.voice.get("refused", "对方拒绝了报价，提出新的要价。"))
+				message = ("客人把当票推回来：‘两成的重息，我不接。您肯降些，咱们再谈。’" if PawnInterestPolicy.firm(day.state, visit) else "客人摇头：‘我不急着用钱，犯不着付两成息。换个轻些的再商量。’") if refused_interest else String(visit.voice.get("refused", "对方拒绝了报价，提出新的要价。"))
+				if not refused_interest and WealthyCustomers.item_minimum(day.state,visit) > 0 and amount < WealthyCustomers.minimum_price(day.state,visit): message = WealthyCustomers.minimum_reply(day.state,visit)
+				if not interest_notice.is_empty(): message += "\n" + interest_notice
 				if day.state.game_minutes >= visit.expires_at:
 					visit.departure_reply = message
 					customers.finish(day.state, visit, "timed_out")
