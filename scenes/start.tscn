@@ -6,5 +6,5 @@
 start_at_title = true
 
 [node name="Bootstrap" parent="." index="0"]
-manifest_path = "res://data/porcelain_release_manifest.json"
-save_path = "user://porcelain_release/autosave_v42.json"
+manifest_path = "res://data/camera_manifest.json"
+save_path = "user://camera_unified/autosave_v43.json"

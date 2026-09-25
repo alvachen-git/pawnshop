@@ -18,6 +18,7 @@ static func attach(rows: Array, run: RunDefinition, seed_value: int) -> void:
 		if row.item_id == CUP and not row.has("goods"): row.goods = traits(seed_value, row.visit_id)
 
 static func value(item: ItemInstance, definition: ItemDefinition) -> int:
+	if item.goods.has("camera_value"): return int(item.goods.camera_value.actual)
 	if item.goods.has("porcelain_value"): return int(item.goods.porcelain_value.actual)
 	if item.goods.has("bangle_value"): return int(item.goods.bangle_value.actual)
 	if item.goods.has("pearl_value"): return int(item.goods.pearl_value.actual)

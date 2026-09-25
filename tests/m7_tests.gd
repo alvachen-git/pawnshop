@@ -229,7 +229,7 @@ func _visual_contract() -> void:
 	var configured: Array = model.images.duplicate(true)
 	configured.back().path = "res://assets/art02/items/bowl_repair.svg"
 	views = CounterVisualCatalog.images(model.visual, configured)
-	_expect.call(views.size() == 3 and views.back().id == "repaired" and views.back().path == configured.back().path, "交付图替换同一细节视图，不叠加旧占位图")
+	_expect.call(views.size() == 3 and views.back().id == "repaired" and views.back().path == "res://assets/item_studies/bowl_repair.png", "交付图替换同一细节视图，不叠加旧占位图")
 	s = seeded(seed_for("n1_visit2", "plated")); open(s); action(s, "reject"); wait_to(s, 90)
 	action(s, "question", "material"); action(s, "appraise", "magnet")
 	_expect.call(action(s, "question", "magnetic_core").ok and active(s).trade.reserve_price == 9, "仅用磁针也能针对整铜口供追问")

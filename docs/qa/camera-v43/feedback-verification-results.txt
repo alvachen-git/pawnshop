@@ -1,0 +1,14 @@
+camera-recording-feedback.log
+CAMERA FEEDBACK: 2068 passes, 0 failures
+
+camera-refine-appraisal.log
+CAMERA V43: 3958 passes, 0 failures
+
+camera-refine-journey.log
+CAMERA JOURNEY: camera=1; 1119 passes, 0 failures
+
+camera-recording-ui-wide.log
+CAMERA UI: 69 assertions, 0 failures
+
+camera-recording-ui.log
+CAMERA UI: 69 assertions, 0 failures

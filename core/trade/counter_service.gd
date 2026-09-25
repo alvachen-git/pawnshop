@@ -36,6 +36,7 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	if customer.guest_rule == "swap" and command not in ["question", "judge"]: return "他只肯调换点名的当物，请到报价页决定。"
 	match command:
 		"watch_bluff": return WatchEconomy.bluff_reason(day,visit,detail,amount)
+		"camera_claim": return CameraNegotiation.reason(day,visit,detail,amount)
 		"porcelain_claim": return PorcelainNegotiation.reason(day,visit,detail,amount)
 		"bangle_claim": return BangleNegotiation.reason(day,visit,detail,amount)
 		"pearl_claim": return PearlNegotiation.reason(day,visit,detail,amount)
@@ -125,7 +126,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	var cost := 0
 	match command:
 		"watch_bluff": cost = 5
-		"watch_claim", "pearl_claim", "porcelain_claim", "bangle_claim": cost = 5
+		"watch_claim", "pearl_claim", "camera_claim", "porcelain_claim", "bangle_claim": cost = 5
 		"luxury_pressure": cost = 5
 		"condition_pressure": cost = 5
 		"fan_pressure": cost = int(day.definition.variety.fan_bargaining.minutes)
@@ -149,6 +150,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 	var message := ""
 	match command:
 		"watch_bluff": message = WatchEconomy.bluff(day,visit)
+		"camera_claim": message = CameraNegotiation.submit(day,visit,detail)
 		"porcelain_claim": message = PorcelainNegotiation.submit(day,visit,detail)
 		"bangle_claim": message = BangleNegotiation.submit(day,visit,detail)
 		"pearl_claim": message = PearlNegotiation.submit(day,visit,detail)

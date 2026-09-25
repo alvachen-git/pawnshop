@@ -21,7 +21,7 @@ func _run() -> void:
 				screen._close_drawer();screen._close_menu();screen._counter_view.dismiss_contexts();await _frames()
 				var actual:AtlasTexture=screen._counter_view._item_image.texture
 				var front:=PorcelainArt.cell(era,"standard",sample,hidden,"body",0)
-				_check(actual.atlas==front.atlas and actual.region!=front.region,"counter has dedicated perspective")
+				_check(actual.atlas!=front.atlas and actual.atlas.resource_path.contains("/craft/counter/"),"counter has dedicated painted perspective; inspection unchanged")
 				await capture("refined_"+era+"_"+str(sample+1)+("_hidden" if hidden else "_ordinary"))
 	print("PORCELAIN REFINED: %d assertions, %d failures" % [_assertions,_failures]);quit(0 if _failures==0 else 1)
 
