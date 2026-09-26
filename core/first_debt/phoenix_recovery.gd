@@ -6,7 +6,7 @@ const HINT := "fd_phoenix_hint"
 const LEAVE := "卖镯人收好包裹：‘掌柜若改了主意，托句话给我，我再带来。’\n开铺前可约卖镯人带凤镯来。"
 
 static func enabled(s: RunState) -> bool:
-	return s.run_definition_id in ["gramophone_unified", "gramophone_release", "preopen_recycler", "silver_market", "camera_unified", "porcelain_release", "first_debt_recovery", "first_debt_recovery_release"]
+	return s.run_definition_id in ["gramophone_unified", "gramophone_release", "qingbang_release", "preopen_recycler", "silver_market", "camera_unified", "porcelain_release", "first_debt_recovery", "first_debt_recovery_release"]
 
 static func available(s: RunState) -> bool:
 	return enabled(s) and (FirstDebt.saw_seller(s) or not FirstDebt.last(s, GATE).is_empty()) and not FirstDebt.item_exists(s, FirstDebt.PHOENIX) and not FirstDebt.settled(s)

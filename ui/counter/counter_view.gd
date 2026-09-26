@@ -317,8 +317,8 @@ func render(model: Dictionary) -> void:
 	_portrait.material = CounterVisualCatalog.portrait_material(_portrait.texture)
 	# Keep Sun behind the painted counter edge, like the other visiting adults.
 	var sun_visit := _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.SUN_PORTRAIT
-	_counter_foreground.visible = active and sun_visit
-	if sun_visit:
+	_counter_foreground.visible = active and (sun_visit or visual.get("portrait_asset","") == "social.qingbang")
+	if sun_visit or visual.get("portrait_asset","") == "social.qingbang":
 		var portrait_bounds := CounterVisualCatalog.sun_bounds()
 		_bounds(_portrait, portrait_bounds.x, portrait_bounds.y, portrait_bounds.z, portrait_bounds.w)
 	elif _portrait.texture != null and _portrait.texture.resource_path == CounterVisualCatalog.NEIGHBOR_PORTRAIT:

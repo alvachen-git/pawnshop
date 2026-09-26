@@ -71,6 +71,7 @@ const DETAILS := {
 }
 
 static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
+	if asset == "social.qingbang": return load("res://assets/qingbang/shen_bojun_enforcer.png") as Texture2D
 	if asset == "silver.owner": return load(SPECIAL_ROOT + "silver_owner_v48.png") as Texture2D
 	if asset == "fd.lu_elderly": return load(LU_ELDERLY_PORTRAIT) as Texture2D
 	if asset == "special.wet_bundle_v45": return load(SPECIAL_ROOT + "wet_bundle_v45.png") as Texture2D

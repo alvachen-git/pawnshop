@@ -6,6 +6,7 @@ var session: RunSession
 var section := 0
 var selected_faction := "military"
 var _page_key := ""
+var _qingbang_pending_key := ""
 var _pending_key := ""
 var _title: Label
 var _facts: GridContainer
@@ -176,7 +177,9 @@ func refresh() -> void:
 	var pending_key := state.run_token + "/" + str(state.current_night_index) + "/" + JSON.stringify(state.social.pending)
 	if pending_key != _pending_key:
 		_pending_key = pending_key
-		if not state.social.pending.is_empty(): section = FactionBookModels.pending_section(state)
+		if not state.social.pending.is_empty():
+			selected_faction = "military"
+			section = FactionBookModels.pending_section(state)
 	var entries := FactionBookModels.roster(state)
 	_right.visible = not entries.is_empty()
 	_empty.visible = entries.is_empty()
@@ -184,11 +187,18 @@ func refresh() -> void:
 		_roster.remove_child(child)
 		child.queue_free()
 	if entries.is_empty(): return
+	if QingbangRules.active(state):
+		var qkey := state.run_token + JSON.stringify(state.social.qingbang.pending)
+		if qkey != _qingbang_pending_key:
+			_qingbang_pending_key = qkey
+			if not state.social.qingbang.pending.is_empty():
+				selected_faction = "qingbang"
+				section = 0
 	if not entries.any(func(entry: Dictionary) -> bool: return entry.id == selected_faction): selected_faction = entries[0].id
 	var selected: Dictionary = {}
 	for entry in entries:
 		var button := Button.new()
-		button.text = "%s\n%s · %s" % [entry.name, entry.representative, FactionBookModels.attitude(state, entry.id)]
+		button.text = "%s\n%s" % [entry.name, entry.representative]
 		button.add_theme_font_size_override("font_size", 17)
 		button.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		button.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -208,21 +218,27 @@ func refresh() -> void:
 		if entry.id == selected_faction: selected = entry
 	_name.text = selected.representative
 	_role.text = selected.role + " · " + selected.scope
-	_attitude.text = FactionBookModels.attitude(state, selected_faction)
+	_attitude.text = "态度：" + FactionBookModels.attitude(state, selected_faction)
 	_portrait.texture = load(selected.portrait)
+	if selected_faction == "qingbang":
+		var portrait_crop := AtlasTexture.new()
+		portrait_crop.atlas = _portrait.texture
+		portrait_crop.region = Rect2(380, 5, 530, 680)
+		_portrait.texture = portrait_crop
 	_balance.text = "现银 %d 银元　·　行动点 %d/2" % [state.cash, maxi(0, PreparationService.action_points(state, session.definition))]
 	for index in _tabs.size():
+		_tabs[index].text = (["往来","打听","旧事"] if selected_faction == "qingbang" else ["采购","打点","旧事"])[index]
 		_tabs[index].set_pressed_no_signal(section == index)
 		_tabs[index].tooltip_text = "有来信待办" if not state.social.pending.is_empty() and index == FactionBookModels.pending_section(state) else ""
 
 	var model := FactionBookModels.page(session._day, selected_faction, section)
-	_letter.add_theme_constant_override("separation", 6 if model.has("stock") else 10)
+	_letter.add_theme_constant_override("separation", 6 if model.has("stock") or selected_faction == "qingbang" else 10)
 	_actions.add_theme_constant_override("separation", 2 if model.has("stock") else 4)
 	var order_number := int(state.social.contract.get("number", -1))
 	if _selected_order != order_number:
 		_selected_order = order_number
 		_selected_coats.clear()
-	var key := "%s/%d/%d/%s" % [selected_faction, state.current_night_index, section, JSON.stringify(state.social.pending)]
+	var key := "%s/%d/%d/%s" % [selected_faction, state.current_night_index, section, JSON.stringify(state.social.qingbang.pending if selected_faction == "qingbang" else state.social.pending)]
 	if key != _page_key:
 		_page_key = key
 		_scroll.set_deferred("scroll_vertical", 0)

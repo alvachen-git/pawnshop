@@ -50,6 +50,7 @@ func execute(day: DayController, ticket: PawnTicket, terms: PawnTermsDefinition,
 	visit.minute = day.state.game_minutes
 	visit.status = "completed"
 	var item := InventoryManager.new().find(day.state, ticket.collateral_id())
+	if QingbangDamage.lost(day.state,ticket): return QingbangDamage.settle_return(day,ticket,visit)
 	if command == "redeem":
 		EconomyManager.new().commit(day.state, ticket.redemption_amount, item.instance_id, "redeem/" + ticket.ticket_id, "redemption", ticket.redemption_amount - ticket.principal)
 		ticket.status = "redeemed"
@@ -75,7 +76,7 @@ func transfer_quote(ticket: PawnTicket, terms: PawnTermsDefinition) -> int:
 
 func disposal_reason(state: RunState, catalog: ContentCatalog, choices: Dictionary) -> String:
 	if state.phase != &"night_resolution": return "封铺后才可核销到期当票。"
-	var due := maturities(state)
+	var due := maturities(state).filter(func(ticket: PawnTicket) -> bool: return not QingbangDamage.lost(state,ticket))
 	if choices.size() != due.size(): return "请逐张选好留货或转当，再合账。"
 	for ticket in due:
 		var terms := catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
@@ -86,6 +87,10 @@ func disposal_reason(state: RunState, catalog: ContentCatalog, choices: Dictiona
 func resolve_maturities(state: RunState, night_minutes: int, catalog: ContentCatalog, choices: Dictionary) -> void:
 	for ticket in maturities(state):
 		var item := InventoryManager.new().find(state, ticket.collateral_id())
+		if QingbangDamage.lost(state,ticket):
+			QingbangDamage.close_ticket(state,ticket)
+			ticket.closed_minute = night_minutes
+			continue
 		ticket.closed_night = state.current_night_index
 		ticket.closed_minute = night_minutes
 		if choices[ticket.ticket_id] == "keep":

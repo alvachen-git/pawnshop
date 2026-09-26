@@ -36,6 +36,7 @@ static func result_text(item: ItemInstance, definition: ItemDefinition) -> Strin
 
 static func inquiry_reason(day: DayController, item: ItemInstance, definition: ItemDefinition) -> String:
 	if item == null or definition == null or item.provenance.is_empty(): return "没有可调查的来源线索。"
+	if QingbangRules.active(day.state) and not QingbangSupplies.inquiry(day.state,item.instance_id).is_empty(): return "已经托青帮打听过这件货，请在往来簿查看回话。"
 	if day.state.phase != &"open" or item.ownership_state != "owned": return "只能在营业时调查铺中自有现货。"
 	if GoodsExpertise.enabled(day.definition) and item.provenance.status == "unconfirmed": return "已核验过，暂无新的来源可查。"
 	if item.provenance.investigated or item.provenance.status in ["verified", "mismatch"]: return "来源已查清，或这件物品已调查过。"

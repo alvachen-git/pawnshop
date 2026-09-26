@@ -1,0 +1,4 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+COAT DISTRIBUTION: 805 / 4114
+SOCIAL V27: 1706 passes, 0 failures

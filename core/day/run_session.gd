@@ -89,7 +89,8 @@ func can_execute(command: String) -> bool:
 	if command == "finish_trial" and MedicineStory.enabled(definition) and _day.state.current_night_index < 20: return false
 	if command == "finish_trial": return FirstDebt.enabled(definition) and _day.state.phase == &"day_summary" and _day.state.current_night_index >= 18
 	if MirrorEndingService.active(_day.state): return false
-	if MilitaryIntroduction.active(_day.state): return false
+	if MilitaryIntroduction.active(_day.state) or QingbangConversation.active(_day.state): return false
+	if command == "open_shop" and QingbangRules.busy(_day.state): return false
 	if command == "open_shop" and SocialRules.blocked(_day.state): return false
 	if command in RoomKeepsakes.COMMANDS: return not mirror_pending() and RoomKeepsakes.can_execute(_day.state, command)
 	if command.begins_with("seal_cloth/"): return not mirror_pending() and NightMarketRisk.treatment_reason(_day, command.trim_prefix("seal_cloth/")).is_empty()
@@ -187,6 +188,8 @@ func _impl_execute(command: String, detail := "") -> ActionResult:
 	if result.ok and (command == "finish_sleep" or (command == "resolve_night" and not definition.private_room)): FeeService.finish(_day.state, definition)
 	if result.ok and command == "open_shop":
 		MilitaryService.spawn_supply(_day.state)
+		QingbangSupplies.spawn(_day.state)
+		QingbangService.opening(_day)
 		ShopGrowthService.lock_night(_day.state)
 	if result.ok and _counter != null:
 		if command == "continue_run" and _day.state.phase == &"pre_open":
@@ -297,6 +300,12 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 	if command in [FanBargainingService.COMMAND, "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim", "gramophone_claim", "camera_claim", "porcelain_claim", "bangle_claim"] or (FanConditionService.enabled(definition) and command in ["appraise", "judge"]):
 		var error := _counter.reason(_day, command, visit_id, detail, amount)
 		if not error.is_empty(): return ActionResult.new(false, error)
+	if command == "qingbang_fee":
+		if amount != 0 or detail not in ["pay", "refuse"]: return ActionResult.new(false, "请当面答复交钱或拒交。")
+		return social_command("qingbang/" + detail, visit_id)
+	if command == "qingbang_talk":
+		if not QingbangConversation.active(_day.state) or visit_id != _day.state.social.qingbang.dialogue.id or amount != 0: return ActionResult.new(false,"请先听清柜前来客的话。")
+		return social_command("qingbang/talk",detail)
 	if command == "military_intro":
 		if visit_id != MilitaryIntroduction.id(_day.state) or amount != 0: return ActionResult.new(false, "请先听清柜前来客的话。")
 		return social_command("intro_talk", detail)
@@ -374,7 +383,7 @@ func counter_model() -> Dictionary:
 
 func _build_counter_model() -> Dictionary:
 	var model := CounterReadModels.build(_day, _counter, message, _message_visit_id)
-	if MilitaryIntroduction.active(_day.state) or LuIntroduction.active(_day.state): return model
+	if MilitaryIntroduction.active(_day.state) or LuIntroduction.active(_day.state) or QingbangConversation.presenting(_day.state): return model
 	model.trade.reactions = _negotiation_reactions.for_visit(_day.state, model.active_id)
 	var active_visit := _counter.customers.active(_day.state)
 	if active_visit != null and GramophoneEconomy.handles(_day.state,active_visit.item):
@@ -762,6 +771,7 @@ func pawn_disposal_model() -> Array[Dictionary]:
 	var rows: Array[Dictionary] = []
 	if _commerce == null or _day.state.phase != &"night_resolution": return rows
 	for ticket in _commerce.pawns.maturities(_day.state):
+		if QingbangDamage.lost(_day.state,ticket): continue
 		var item := InventoryManager.new().find(_day.state, ticket.collateral_id())
 		var terms := _commerce.catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
 		rows.append({"id": ticket.ticket_id, "number": "%03d" % (_day.state.pawn_tickets.find(ticket) + 1), "item": (_commerce.catalog.get_definition("items", item.definition_id) as ItemDefinition).display_name,
@@ -775,6 +785,7 @@ func choose_pawn_disposal(id: String, choice: String) -> ActionResult:
 func _impl_choose_pawn_disposal(id: String, choice: String) -> ActionResult:
 	if _commerce == null or _day.state.phase != &"night_resolution" or choice not in ["keep", "transfer"]: return ActionResult.new(false, "眼下不能处置当票。")
 	var ticket := _commerce.pawns.find(_day.state, id)
+	if QingbangDamage.lost(_day.state,ticket): return ActionResult.new(false,"原物已经报废，不能留货或转当。")
 	if ticket == null or ticket not in _commerce.pawns.maturities(_day.state): return ActionResult.new(false, "当票尚未到期或已经结清。")
 	_pawn_choices[id] = choice
 	if _day.state.personal_risk_enabled: _day.state.pending_pawn_choices[id] = choice
@@ -864,6 +875,8 @@ func _persist() -> bool:
 	return _save.save_state(_day.state, definition, content_version)
 
 func _journal_call(method: String, args: Array) -> ActionResult:
+	if QingbangConversation.active(_day.state) and not ((method == "counter_command" and args[0] in ["qingbang_talk", "qingbang_fee"]) or (method == "social_command" and args[0] in ["qingbang/talk", "qingbang/pay", "qingbang/refuse"])):
+		return ActionResult.new(false,"沈伯钧还在柜前，请先把话说完。")
 	if not MedicineStory.dialogue(_day.state).is_empty() and not (method == "execute" and args[0] == "medicine_talk"):
 		return ActionResult.new(false, "柜前的话还没说完。")
 	if MirrorEndingService.active(_day.state) and method != "mirror_resolution_command":
@@ -989,7 +1002,7 @@ func social_command(command: String, detail := "") -> ActionResult:
 	return _journal_call("social_command", [command, detail])
 
 func _impl_social_command(command: String, detail := "") -> ActionResult:
-	var result := MilitaryService.perform(_day, command, detail)
+	var result := QingbangService.perform(_day,command.trim_prefix("qingbang/"),detail) if command.begins_with("qingbang/") else MilitaryService.perform(_day, command, detail)
 	if result.ok:
 		ShopGrowthService.sync(_day.state)
 		MarketService.sync(_day.state, definition)

@@ -9,6 +9,7 @@ func prepare_night(state: RunState, run: RunDefinition, catalog: ContentCatalog)
 		VarietyService.prepare(state, run, catalog, return_delay)
 		InvestigationService.prepare(state, run)
 		MilitaryService.dawn(state, run)
+		QingbangService.dawn(state, run)
 		if SocialRules.closed(state):
 			for visit in state.visits: visit.status = "suspended"
 		return
@@ -90,6 +91,7 @@ func finish(state: RunState, visit: CustomerVisit, outcome: String) -> void:
 	ReputationService.finish(state, visit, outcome)
 	ReputationGrowth.acquired(state, visit, outcome)
 	MilitaryService.departed(state, visit, outcome)
+	QingbangSupplies.departed(state, visit, outcome)
 	InvestigationService.departed(state, visit, outcome)
 	ShopGrowthService.departed(state, visit, outcome)
 	visit.status = outcome

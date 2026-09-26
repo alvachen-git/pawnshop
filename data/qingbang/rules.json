@@ -1,0 +1,73 @@
+{
+  "fees": [
+    {
+      "max": -50,
+      "cost": 100
+    },
+    {
+      "max": -11,
+      "cost": 90
+    },
+    {
+      "max": 19,
+      "cost": 80
+    },
+    {
+      "max": 49,
+      "cost": 65
+    },
+    {
+      "max": 100,
+      "cost": 50
+    }
+  ],
+  "fee_interval": 8,
+  "fee_delta": 5,
+  "refuse_delta": -20,
+  "raid_threshold": -10,
+  "raid_chance": 25,
+  "raid_quiet": 5,
+  "raid_reputation": -5,
+  "raid_items": 2,
+  "gift_cost": 20,
+  "gift_delta": 8,
+  "gift_quiet": 2,
+  "inquiry_cost": 10,
+  "trade_delta": 4,
+  "supply_chance": 25,
+  "supply_quiet": 2,
+  "complaint_min": 3,
+  "complaint_max": 6,
+  "supplies": [
+    {
+      "id": "shop_pen",
+      "item": "item_fountain_pen",
+      "variant": "sound",
+      "price": 18,
+      "title": "文具铺掌柜的旧钢笔",
+      "cue": "附有旧铺的收据，笔帽上的字与掌柜姓氏相合。",
+      "report": "文具铺本人确认出让，旧收据与笔身暗记相合。",
+      "disputed": false
+    },
+    {
+      "id": "quay_watch",
+      "item": "item_pocket_watch",
+      "variant": "worn",
+      "price": 24,
+      "title": "码头递来的怀表",
+      "cue": "说是自家的旧表，后盖姓名却新近磨过，只剩一个‘许’字。",
+      "report": "修表铺的底册写着许姓客人。卖表人不是他，也拿不出托卖字据。",
+      "disputed": true
+    },
+    {
+      "id": "warehouse_silk",
+      "item": "item_silk_panel",
+      "variant": "faded",
+      "price": 22,
+      "title": "货栈带出的绣片",
+      "cue": "包布上还挂着寄存签，来人却说是无人认领的清仓货。",
+      "report": "寄存人仍在上海，租金已付。货栈没有收到出让这块绣片的口信。",
+      "disputed": true
+    }
+  ]
+}
