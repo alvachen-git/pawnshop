@@ -11,11 +11,7 @@ static func build(day: DayController, manager: RiskManager, error_message: Strin
 	for summary in state.summaries:
 		if summary.outcome in ["mirror_scar", "mirror_survived", "mirror_death"]: haunting = true
 	if state.personal_risk_enabled: haunting = state.personal_damage > 0
-	var closed: Array = []
-	for row in state.risk_history:
-		var key := "%d/%s" % [row.night, row.item_id]
-		if row.action == "close": closed.append(key)
-		if (row.action == "close" and not row.covered) or (row.action == "uncover" and key in closed): intrusion = true
+	intrusion = smoke_intrusion(state)
 	for item in manager.ghosts(state):
 		if not item_id.is_empty() and item.definition_id != item_id: continue
 		if item.ownership_state not in ["owned", "pledged"]: continue
@@ -114,3 +110,13 @@ static func records(day: DayController, manager: RiskManager) -> Array[Dictionar
 		result.append({"id": id, "label": definition.display_name})
 	if not day.state.death_archive.is_empty(): result.append({"id": "death_archive", "label": "《绝当录》"})
 	return result
+
+
+static func smoke_intrusion(state: RunState) -> bool:
+	var intrusion := false
+	var closed: Array = []
+	for row in state.risk_history:
+		var key := "%d/%s" % [row.night, row.item_id]
+		if row.action == "close": closed.append(key)
+		if (row.action == "close" and not row.covered) or (row.action == "uncover" and key in closed): intrusion = true
+	return intrusion

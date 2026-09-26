@@ -6,6 +6,6 @@
 start_at_title = true
 
 [node name="Bootstrap" parent="." index="0"]
-manifest_path = "res://data/preopen_recycler_manifest.json"
-save_path = "user://preopen_recycler/autosave_v47.json"
-save_library_path = "user://preopen_recycler/save_library_v47.json"
+manifest_path = "res://data/first_debt_merit_release_manifest.json"
+save_path = "user://first_debt_merit_release/autosave_v48.json"
+save_library_path = "user://first_debt_merit_release/save_library_v48.json"

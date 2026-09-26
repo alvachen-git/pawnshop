@@ -3,6 +3,7 @@ extends RefCounted
 
 const PHASE_PRE_OPEN := &"pre_open"
 
+var hidden_merit: int = 0
 var social_enabled := false
 var social: Dictionary = {}
 var shop_growth_enabled := false
@@ -156,6 +157,7 @@ func to_read_model() -> Dictionary:
 		"visit_history": visit_history.duplicate(true),
 	}
 
+	if HiddenMerit.enabled(self): data["hidden_merit"] = hidden_merit
 	if social_enabled: data["social"] = social.duplicate(true)
 	if shop_growth_enabled: data["shop_growth"] = shop_growth.duplicate(true)
 	if mirror_ending_enabled:

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "merit_incense",
+      "title": "炉烟",
+      "speaker": "柜前",
+      "body": "炉中烟气轻轻舒展开来。",
+      "kind": "anchor",
+      "phase": "open",
+      "night_min": 10,
+      "night_max": 18,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 0,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "seen",
+          "label": "继续",
+          "result": "香头微亮，烟气渐渐平复。",
+          "minutes": 0,
+          "grant_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "merit_feedback",
+        "manual": true,
+        "checkpoint": true,
+        "repeat_daily": false,
+        "open_ended": true
+      }
+    }
+  ]
+}

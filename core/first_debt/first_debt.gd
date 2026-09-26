@@ -8,7 +8,7 @@ static func enabled(run: RunDefinition) -> bool:
 	return int(run.variety.get("first_debt_version", 0)) in [1, 2, 3]
 
 static func revised(s: RunState) -> bool:
-	return s.run_definition_id in ["first_debt_reckoning", "first_debt_dragon_search", "first_debt_unified", "bangle_unified", "porcelain_unified", "gramophone_unified", "gramophone_release", "preopen_recycler", "camera_unified", "porcelain_release", "first_debt_recovery", "first_debt_recovery_release"]
+	return s.run_definition_id in ["first_debt_reckoning", "first_debt_dragon_search", "first_debt_unified", "bangle_unified", "porcelain_unified", "gramophone_unified", "gramophone_release", "preopen_recycler", "first_debt_merit", "first_debt_merit_balance", "first_debt_merit_release", "camera_unified", "porcelain_release", "first_debt_recovery", "first_debt_recovery_release"]
 
 static func last(state: RunState, id: String) -> Dictionary:
 	for i in range(state.event_history.size() - 1, -1, -1):
@@ -225,6 +225,7 @@ static func choose(day: DayController, events: EventDirector, counter: CounterSe
 		for item in [owned(s, PHOENIX), owned(s, DRAGON)]:
 			item.ownership_state = "returned"
 			EconomyManager.new().commit(s, 0, item.instance_id, "first_debt/return/" + item.instance_id, "debt_return", -item.acquisition_price)
+	if id == "fd_settle" and choice_id in ["return", "pay"]: HiddenMerit.reward_first_debt(s, choice_id)
 	for f in c.grant_flags:
 		if f not in s.narrative_flags: s.narrative_flags.append(f)
 	s.event_history.append({"event_id": id, "choice_id": choice_id, "night": s.current_night_index, "phase": String(s.phase), "offered_minute": s.game_minutes - c.minutes, "minute": s.game_minutes})

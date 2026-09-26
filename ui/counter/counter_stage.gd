@@ -21,6 +21,8 @@ var _foreground_material: ShaderMaterial
 var _smoke: TextureRect
 var _smoke_material: ShaderMaterial
 var _smoke_drift := 0.0
+var merit_elapsed := -1.0
+var merit_strength := 0.0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -69,6 +71,12 @@ func create_counter_foreground() -> TextureRect:
 
 func _process(delta: float) -> void:
 	if _smoke_material == null: return
+	if smoke_wrong or lamp_dead: stop_merit_echo()
+	if merit_elapsed >= 0.0:
+		merit_elapsed += delta
+		merit_strength = clampf(merit_elapsed / 0.5, 0.0, 1.0) if merit_elapsed < 2.0 else clampf(3.0 - merit_elapsed, 0.0, 1.0)
+		if merit_elapsed >= 3.0: stop_merit_echo()
+	_smoke_material.set_shader_parameter("merit_glow", merit_strength)
 	var target := 1.0 if smoke_wrong else 0.0
 	_smoke_drift = move_toward(_smoke_drift, target, delta * 0.8)
 	_smoke_material.set_shader_parameter("drift", _smoke_drift)
@@ -125,3 +133,14 @@ func _line(a: Vector2, b: Vector2, color: String, width := 1.0) -> void:
 
 func _outline(rect: Rect2, color: String) -> void:
 	draw_rect(rect, Color(color), false, 1)
+
+
+func play_merit_echo() -> void:
+	if smoke_wrong or lamp_dead: return
+	merit_elapsed = 0.0
+	merit_strength = 0.0
+
+func stop_merit_echo() -> void:
+	merit_elapsed = -1.0
+	merit_strength = 0.0
+	if _smoke_material != null: _smoke_material.set_shader_parameter("merit_glow", 0.0)

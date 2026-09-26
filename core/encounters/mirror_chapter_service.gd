@@ -24,6 +24,7 @@ static func decorate(model: Dictionary, day: DayController, director: EventDirec
 	if not enabled(day.definition): return
 	var notes := ""
 	for row in day.state.event_history:
+		if row.event_id == HiddenMerit.ECHO: continue
 		var event := director.catalog.get_definition("events", row.event_id) as EventDefinition
 		if not event.presentation.get("manual", false) or event.phase != "open": continue
 		var result := event.find_choice(row.choice_id).result

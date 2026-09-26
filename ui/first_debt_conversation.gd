@@ -147,6 +147,8 @@ func display_page() -> void:
 	for entry in _model.buttons:
 		var button := Button.new()
 		button.text = entry.label
+		if not entry.enabled and not str(entry.reason).is_empty():
+			button.text += "（" + str(entry.reason).trim_suffix("。") + "）"
 		button.name = "Case_" + entry.target_id + "_" + entry.detail
 		button.custom_minimum_size.y = 36
 		button.add_theme_font_size_override("font_size", 18)

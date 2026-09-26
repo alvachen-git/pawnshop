@@ -14,7 +14,7 @@ func _ready() -> void:
 	if OS.is_debug_build():
 		for argument in OS.get_cmdline_user_args():
 			if argument.begins_with("--precision-preview="): start_at_title = false
-			if argument.begins_with("--unified-preview=") and _bootstrap.manifest_path in ["res://data/first_debt_recovery_release_manifest.json", "res://data/bangle_unified_manifest.json", "res://data/first_debt_recovery_manifest.json", "res://data/first_debt_unified_manifest.json", "res://data/pearl_market_manifest.json", "res://data/named_wealthy_manifest.json", "res://data/watch_patterns_manifest.json", "res://data/watch_negotiation_manifest.json", "res://data/watch_market_manifest.json", "res://data/watch_manifest.json", "res://data/unified_manifest.json", "res://data/wealthy_manifest.json", "res://data/tiered_manifest.json"]:
+			if argument.begins_with("--unified-preview=") and _bootstrap.manifest_path in ["res://data/first_debt_merit_balance_manifest.json", "res://data/first_debt_recovery_release_manifest.json", "res://data/bangle_unified_manifest.json", "res://data/first_debt_recovery_manifest.json", "res://data/first_debt_unified_manifest.json", "res://data/pearl_market_manifest.json", "res://data/named_wealthy_manifest.json", "res://data/watch_patterns_manifest.json", "res://data/watch_negotiation_manifest.json", "res://data/watch_market_manifest.json", "res://data/watch_manifest.json", "res://data/unified_manifest.json", "res://data/wealthy_manifest.json", "res://data/tiered_manifest.json"]:
 				var stage := argument.trim_prefix("--unified-preview=")
 				if stage in Bootstrap.UNIFIED_PREVIEWS:
 					_bootstrap.manifest_path = "res://data/wealthy_manifest.json" if stage in Bootstrap.WEALTHY_PREVIEWS else "res://data/unified_manifest.json"
@@ -37,6 +37,16 @@ func _ready() -> void:
 			if argument.begins_with("--mirror-dream-preview=") and argument.trim_prefix("--mirror-dream-preview=") in ["bedtime", "dream", "after", "ready"]:
 				_bootstrap.preview_stage = argument.trim_prefix("--mirror-dream-preview=")
 				_bootstrap.preview_version = 28
+				start_at_title = false
+			if argument.begins_with("--merit-release-preview=") and argument.trim_prefix("--merit-release-preview=") in ["return", "pay"]:
+				_bootstrap.manifest_path = "res://data/first_debt_merit_release_manifest.json"
+				_bootstrap.preview_stage = argument.trim_prefix("--merit-release-preview=")
+				_bootstrap.preview_version = 48
+				start_at_title = false
+			if argument.begins_with("--merit-preview=") and argument.trim_prefix("--merit-preview=") in ["return", "pay"]:
+				_bootstrap.manifest_path = "res://data/first_debt_merit_balance_manifest.json"
+				_bootstrap.preview_stage = argument.trim_prefix("--merit-preview=")
+				_bootstrap.preview_version = 43
 				start_at_title = false
 			if argument.begins_with("--recovery-release-preview=") and argument.trim_prefix("--recovery-release-preview=") in ["seller", "recall", "truth", "compensation", "pay"]:
 				_bootstrap.manifest_path = "res://data/first_debt_recovery_release_manifest.json"

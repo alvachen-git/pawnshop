@@ -25,6 +25,7 @@ var _sale_from_business := false
 var _notice_stamp: Label
 var _notice_key := ""
 var _notice_read_key := ""
+var merit_presenter: MeritFeedbackPresenter
 var _departure: TradeReceiptView
 var _departure_queue: Array[Dictionary] = []
 var _departure_return_panel: StringName = &""
@@ -313,6 +314,9 @@ func bind_session(session: RunSession) -> void:
 	)
 	_departure_presenter.reset.connect(func() -> void: _departure_queue.clear(); _departure.hide())
 	_departure_presenter.bind(session)
+	merit_presenter = MeritFeedbackPresenter.new()
+	add_child(merit_presenter)
+	merit_presenter.bind(session, self)
 	session.changed.connect(func() -> void: _drain_departures.call_deferred())
 	_narrative = NarrativeScene.new()
 	_narrative.name = "NarrativeScene"

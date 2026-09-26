@@ -105,6 +105,9 @@ func journey() -> void:
 	if begin == 11 and route != "defer" and not route.begins_with("natural"): check(finish_night <= 17, "finish by night17")
 	verify(s, route)
 
+func compensation_ready(_s: RunSession) -> bool:
+	return true
+
 func progress(s: RunSession) -> bool:
 	var st := s._day.state
 	var n := st.current_night_index
@@ -135,6 +138,7 @@ func progress(s: RunSession) -> bool:
 	steps.append(["fd_settle", "pay" if route in ["pay", "sell_pay", "sold_search", "decline", "holding_pay", "natural_pay"] else "return"])
 	steps.append(["fd_followup", "listen"])
 	for pair in steps:
+		if pair[0] == "fd_compensation" and not compensation_ready(s): continue
 		if route == "natural_pay" and pair[0] == "fd_settle" and st.cash < 340: continue
 		if route in ["sold_search", "holding_pay"] and pair[0] in ["fd_compensation", "fd_settle"] and FirstDebt.owned(st, FirstDebt.DRAGON) == null: continue
 		if not FirstDebt.last(st, pair[0]).is_empty() and not (pair[0] == "fd_search_motive" and not FirstDebt.flag(st, "fd_search_promised")): continue
