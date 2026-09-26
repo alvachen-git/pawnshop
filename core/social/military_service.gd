@@ -253,6 +253,7 @@ static func settle(_state: RunState) -> void:
 static func suspend(day: DayController) -> void:
 	var state := day.state
 	SocialRules.night(state).closed = true
+	SpecialGuests.suspend(state)
 	for visit in state.visits:
 		# Preserve named/familiar and specifically invited visits for the next night.
 		var invited := state.preparation_history.any(func(r: Dictionary) -> bool: return r.night == state.current_night_index and r.action in ["attract", "target", "seek"] and visit.visit_id in r.visit_ids)

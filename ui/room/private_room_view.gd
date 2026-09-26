@@ -36,6 +36,10 @@ var _sleep_prompt := false
 var _transition_error: AcceptDialog
 
 func _ready() -> void:
+	var held_audio := HeldGoodsAudio.new()
+	held_audio.name = "HeldGoodsAudio"
+	held_audio.room = self
+	add_child(held_audio)
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	_background = TextureRect.new()
 	_background.texture = preload("res://assets/bedroom/room-normal.png")
@@ -383,7 +387,10 @@ func _bed_pressed() -> void:
 	dismiss_observation()
 	if _model.can_sleep:
 		if _confirm == null: _create_confirmation()
-		_confirm.popup_centered(Vector2i(380, 160))
+		var warning := str(_model.get("wet_warning", ""))
+		_confirm.dialog_autowrap = not warning.is_empty()
+		_confirm.dialog_text = (warning + "\n\n" if not warning.is_empty() else "") + "准备就寝，结束今天的活动？"
+		_confirm.popup_centered(Vector2i(440, 220) if not warning.is_empty() else Vector2i(380, 160))
 	elif _model.can_finish: command_requested.emit("finish_sleep")
 
 func _draw() -> void:

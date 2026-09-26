@@ -42,6 +42,8 @@ func _ready() -> void:
 
 func select_page(index: int) -> void:
 	_selected = index
+	if _model.has("visual"):
+		_body.visible = not _body.text.is_empty() and index == int(_model.get("feedback_page", -1))
 	for i in _pages.size():
 		_pages[i].visible = index == i
 		(_tabs.get_child(i) as Button).set_pressed_no_signal(index == i)
@@ -50,6 +52,7 @@ func select_page(index: int) -> void:
 func render(model: Dictionary) -> void:
 	_model = model
 	if not model.has("visual"):
+		_body.show()
 		super.render(model)
 		return
 	var v: Dictionary = model.visual
@@ -99,7 +102,9 @@ func render(model: Dictionary) -> void:
 		if model.has("cash_flow") and row.state == "active": AccountPaper.label(ticket, "约定收款，尚未入账；不计入当前可周转现银。", 14)
 		for entry in model.buttons:
 			if entry.target_id == row.id: AccountPaper.action(ticket, entry, _emit_intent)
-	_body.text = "" if has_album and v.message == model.first_debt.text else v.message
+	# Global session messages belong to the action/story that produced them.
+	# Only errors raised by an action on this ledger page may appear below it.
+	_body.text = model.get("ledger_feedback", "")
 	select_page(_selected)
 
 func _emit_intent(command: String, visit_id: String, detail: String) -> void:

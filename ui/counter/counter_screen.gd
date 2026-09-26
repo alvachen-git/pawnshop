@@ -341,6 +341,10 @@ func bind_session(session: RunSession) -> void:
 		first_debt_conversation = FirstDebtConversation.new()
 		add_child(first_debt_conversation)
 		first_debt_conversation.bind(session, self)
+	if MedicineStory.enabled(session.definition):
+		var medicine := MedicineConversation.new()
+		add_child(medicine)
+		medicine.bind(session, self)
 	if MirrorReunionService.enabled(session.definition):
 		var reunion := MirrorReunionView.new()
 		add_child(reunion)

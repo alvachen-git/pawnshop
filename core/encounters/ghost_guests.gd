@@ -25,7 +25,9 @@ static func arrive(state: RunState, visit: CustomerVisit) -> void:
 	if state.person_deaths.any(func(row: Dictionary) -> bool: return row.person_id == visit.person.get("id", "")):
 		CustomerManager.new().finish(state, visit, "person_deceased")
 		return
-	if not state.ghost_visits.is_empty() or state.current_night_index not in [5, 6] or state.game_minutes < 300 or visit.arrival < 300: return
+	var eligible_night := state.current_night_index >= 5 and state.current_night_index <= 12 if SpecialGuests.active(state) else state.current_night_index in [5, 6]
+	if not state.ghost_visits.is_empty() or not eligible_night or state.game_minutes < 300 or visit.arrival < 300: return
+	if not SpecialGuests.swap_time_allowed(state, visit): return
 	var planned := VarietySaveCodec.selection(state, visit.visit_id)
 	if planned.is_empty() or planned.get("context_id", "").is_empty() or not String(planned.get("seven_role", "")).is_empty() or planned.get("familiar_reserved", false): return
 	var run := state.ghost_catalog.get_definition("runs", state.run_definition_id) as RunDefinition
@@ -37,8 +39,10 @@ static func arrive(state: RunState, visit: CustomerVisit) -> void:
 		if story is Dictionary:
 			for key in ["first", "follow"]:
 				if story.get(key, {}).get("visit_id", "") == visit.visit_id: return
+	if SpecialGuests.active(state) and not SpecialGuests.available(state, planned): return
 	var tickets := eligible(state)
 	if tickets.is_empty(): return
+	if not SpecialGuests.swap_roll(state, visit): return
 	var ticket: PawnTicket = VarietyService.pick(tickets, state.run_seed, visit.visit_id + "/swap-target")
 	state.ghost_visits.append({"visit_id": visit.visit_id, "ticket_id": ticket.ticket_id, "original_customer_id": visit.customer_id, "night": state.current_night_index, "minute": state.game_minutes})
 	var guest := state.ghost_catalog.get_definition("customers", SWAP) as CustomerDefinition
@@ -123,7 +127,7 @@ static func decorate(model: Dictionary, day: DayController, catalog: ContentCata
 	var item := InventoryManager.new().find(day.state, ticket.item_instance_id)
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	var text := "那人指向柜里替%s保管的%s，打开随身的小匣。同样的形状，同样的旧色，边缘却冷冷地泛着青。\n\n“把你那件给我。这件留下，没人看得出来。另奉八十银元。”\n\n当票还没到该撕的时候，物件仍是人家的。" % [ticket.person.get("name", "原主"), definition.display_name]
-	model.customer = "提匣的夜客\n" + text
+	model.customer = (SpecialGuests.NAME if SpecialGuests.active(day.state) else "提匣的夜客") + "\n" + text
 	model.visual.intent = "换物付酬"
 	model.visual.introduction = text
 	for feature in ["dialogue", "trade", "appraisal"]:

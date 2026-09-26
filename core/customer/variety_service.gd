@@ -4,7 +4,7 @@ extends RefCounted
 static func rng(seed_value: int, key: String) -> RandomNumberGenerator:
 	# v34/v35 isolate saves while retaining v33's existing random streams.
 	# New watch facts use their own /watch34/ keys, never consume those streams.
-	key = key.replace("gramophone_unified/","first_debt_recovery/").replace("camera_unified/", "first_debt_recovery/").replace("porcelain_release/", "first_debt_recovery/").replace("porcelain_unified/", "first_debt_unified/").replace("first_debt_recovery_release/", "first_debt_recovery/").replace("bangle_unified/", "first_debt_unified/").replace("bangle_market_ten/", "watch_ten/").replace("pearl_market_ten/", "watch_ten/").replace("named_wealthy_ten/", "watch_ten/").replace("watch_patterns_ten/", "watch_ten/").replace("watch_negotiation_ten/", "watch_ten/").replace("watch_market_ten/", "watch_ten/")
+	key = key.replace("gramophone_unified/","first_debt_recovery/").replace("medicine_huaian_v47/", "special_guests/").replace("special_guests_late_v46/", "special_guests/").replace("special_guests_wet_v45/", "special_guests/").replace("special_guests/", "camera_unified/").replace("camera_unified/", "first_debt_recovery/").replace("porcelain_release/", "first_debt_recovery/").replace("porcelain_unified/", "first_debt_unified/").replace("first_debt_recovery_release/", "first_debt_recovery/").replace("bangle_unified/", "first_debt_unified/").replace("bangle_market_ten/", "watch_ten/").replace("pearl_market_ten/", "watch_ten/").replace("named_wealthy_ten/", "watch_ten/").replace("watch_patterns_ten/", "watch_ten/").replace("watch_negotiation_ten/", "watch_ten/").replace("watch_market_ten/", "watch_ten/")
 	var random := RandomNumberGenerator.new()
 	random.seed = (seed_value + int(key.hash())) & 0x7fffffff
 	return random
@@ -119,12 +119,15 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		FamiliarStoryVoice.apply(visit, row, state, catalog)
 		WealthyCustomers.prepare(state, visit)
 		NightMarketPlan.prepare(visit, row, run, item)
+		SpecialGuests.prepare(state, visit, row, item)
+		MedicineStory.prepare(state, visit, row, item)
 		if PhoenixRecovery.enabled(state) and visit.customer_id == "fd_seller":
 			visit.voice["rejected"] = PhoenixRecovery.LEAVE
 		state.visits.append(visit)
 	state.visits.sort_custom(func(a: CustomerVisit, b: CustomerVisit) -> bool: return a.arrival < b.arrival)
 
 static func name_for(person: Dictionary, customer: CustomerDefinition) -> String:
+	if person.get("name") == SpecialGuests.NAME: return SpecialGuests.NAME
 	return customer.terms.display_name if person.is_empty() or person.name == customer.terms.display_name else String(person.name) + " · " + customer.terms.display_name
 
 static func terms_for(visit: CustomerVisit, customer: CustomerDefinition) -> String:

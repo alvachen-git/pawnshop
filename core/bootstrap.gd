@@ -78,6 +78,12 @@ func initialize() -> ContentLoadResult:
 			saves.prior_version_path = "user://p0/autosave_v6.json"
 		saves.library = SaveLibrary.new() if not save_path.begins_with("user://tests/") else null
 		if saves.library != null and not save_library_path.is_empty(): saves.library = SaveLibrary.new(save_library_path)
+		if SpecialGuests.enabled(definition) and definition.variety.special_guests.version == 2 and saves.library != null:
+			saves.library = SaveLibrary.new("user://special_guests_v45/library.json")
+		if SpecialGuests.enabled(definition) and definition.variety.special_guests.version == 3 and saves.library != null:
+			saves.library = SaveLibrary.new("user://special_guests_v46/library.json")
+		if MedicineStory.enabled(definition) and saves.library != null:
+			saves.library = SaveLibrary.new("user://medicine_huaian_v47/library.json")
 		if FirstDebt.enabled(definition) and not preview_stage.is_empty():
 			saves.library = SaveLibrary.new("user://tests/v%d_preview/" % preview_version + preview_stage + "_library.json")
 		# Seed overrides mutate the runtime definition; keep save validation on the

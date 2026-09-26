@@ -13,6 +13,7 @@ func bind(session: RunSession, view: PrivateRoomView) -> void:
 	_view.observation_requested.connect(_observe)
 	_session.changed.connect(refresh)
 	_session.restored.connect(_view.close_private_panels)
+	_session.restored.connect((_view.get_node("HeldGoodsAudio") as HeldGoodsAudio).reset)
 	refresh()
 
 func _observe(id: String) -> void:
@@ -66,6 +67,9 @@ func refresh() -> void:
 	if state.get("personal_risk_enabled", false):
 		if state.phase == "dead" and not state.death_archive.is_empty(): body = state.death_archive.back().cause
 		elif state.phase == "sleep_resolution" and RoomFlow.response(_session._day.state, int(state.current_night_index), "personal") == "defy": body = "你捂着胸口喘了许久。床边那道影子退开了，寒意却还留在骨头里。"
+	var wet_state := _session._day.state
+	if state.phase == "private_room" and not WetGoodsRisk.warning(wet_state).is_empty(): body += "\n\n" + WetGoodsRisk.warning(wet_state)
+	if state.phase == "sleep_resolution" and not WetGoodsRisk.bedtime_text(wet_state).is_empty(): body = WetGoodsRisk.bedtime_text(wet_state)
 	if state.phase == "dead" and grade == 5: body = "柜下传来湿布展开的声音。窗纸透出一点白，屋里却已经没有自己的影子。"
 	if grade > 0: body += "\n\n" + lamp
 	var observations := {}
@@ -77,4 +81,4 @@ func refresh() -> void:
 	keepsakes.observations = observations
 	var mirror := BedroomMirrorFeedback.build(_session._day.state)
 	if state.current_night_index == 7 and "aq_met" in state.narrative_flags: mirror = {}
-	_view.render({"observations": observations, "mirror": mirror, "keepsakes": keepsakes, "lamp_state": lamp_state, "lamp_grade": grade, "visible": state.room_enabled and (state.phase in ["private_room", "sleep_resolution"] or bedroom_death), "phase": state.phase, "night": state.current_night_index, "body": body, "lamp": lamp, "haunting": haunting or grade > 0, "dead": state.phase == "dead", "pending": not state.risk_pending.is_empty() or not state.pending_event_id.is_empty(), "can_sleep": _session.can_execute("sleep"), "can_finish": _session.can_execute("finish_sleep"), "error": _error, "gu_letter": "INTRO_LETTER_STORED" in state.narrative_flags, "photo_placed": keepsakes.photo_placed})
+	_view.render({"wet_warning": WetGoodsRisk.warning(wet_state), "wet_audio": {"held": SpecialGuests.held_items(_session._day.state), "token": state.run_token}, "observations": observations, "mirror": mirror, "keepsakes": keepsakes, "lamp_state": lamp_state, "lamp_grade": grade, "visible": state.room_enabled and (state.phase in ["private_room", "sleep_resolution"] or bedroom_death), "phase": state.phase, "night": state.current_night_index, "body": body, "lamp": lamp, "haunting": haunting or grade > 0, "dead": state.phase == "dead", "pending": not state.risk_pending.is_empty() or not state.pending_event_id.is_empty(), "can_sleep": _session.can_execute("sleep"), "can_finish": _session.can_execute("finish_sleep"), "error": _error, "gu_letter": "INTRO_LETTER_STORED" in state.narrative_flags, "photo_placed": keepsakes.photo_placed})
