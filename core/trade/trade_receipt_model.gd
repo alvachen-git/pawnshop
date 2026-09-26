@@ -40,6 +40,8 @@ static func batch(day: DayController, catalog: ContentCatalog, first: int) -> Di
 		if GoodsExpertise.enabled(day.definition): line += " · 原配加价%d" % (row.amount - base - source)
 		if trip.get("action_points", 0) == 1:
 			line = "%s · 收%d / 成本%d / 盈亏%+d\n基础价%s · 当日%d%%" % [definition.display_name, row.amount, item.acquisition_price, row.realized_profit, String.num(definition.base_value, 2), RecyclerPolicy.rate(day.state.run_seed, trip.night, item.definition_id)]
+		if SilverPolicy.enabled(day.definition) and buyer.id == SilverPolicy.BUYER:
+			line = "%s · 收%d / 成本%d / 盈亏%+d\n当日银价%d%%" % [definition.display_name, row.amount, item.acquisition_price, row.realized_profit, SilverPolicy.rate(day.state, trip.night)]
 		lines.append(line)
 	receipt.item = "%s · 交货%d件" % [buyer.display_name, trip.item_ids.size()]
 	receipt.item_asset = ""
@@ -71,7 +73,7 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 			detail = String(definition.expertise.results[record.result]) if record.action == "fan" else ("两盏原配：纹样相对，底足制式一致。" if record.result == "matched" else "两盏并非原配：纹样、左右式样或底足制式不合。")
 			detail += "\n复核费记入经营费用，原始成本不变。"
 			break
-	if entry.kind == "sale" and not item.provenance.is_empty():
+	if entry.kind == "sale" and not item.provenance.is_empty() and not (SilverPolicy.enabled(day.definition) and _sale_for_entry(day, entry).get("buyer_id") == SilverPolicy.BUYER):
 		var sale := _sale_for_entry(day, entry)
 		var buyer := catalog.get_definition("buyers", sale.get("buyer_id", "")) as BuyerDefinition
 		if buyer != null:

@@ -285,6 +285,9 @@ func counter_command(command: String, visit_id: String, detail := "", amount := 
 	return _journal_call("counter_command", [command, visit_id, detail, amount])
 
 func _impl_counter_command(command: String, visit_id: String, detail := "", amount := 0) -> ActionResult:
+	if command == "silver_intro":
+		if not SilverPolicy.active(_day.state) or visit_id != _day.state.pending_event_id or amount != 0: return ActionResult.new(false, "银楼掌柜眼下不在柜前。")
+		return event_command(visit_id, detail)
 	if command == "pawn" and PawnInterestPolicy.enabled(definition):
 		var pawn_error := _counter.reason(_day, command, visit_id, detail, amount)
 		if not pawn_error.is_empty(): return ActionResult.new(false, pawn_error)
@@ -554,6 +557,7 @@ func event_command(event_id: String, choice_id: String) -> ActionResult:
 	return _journal_call("event_command", [event_id, choice_id])
 
 func _impl_event_command(event_id: String, choice_id: String) -> ActionResult:
+	if event_id in SilverPolicy.EVENTS and not SilverPolicy.active(_day.state): return ActionResult.new(false, "先把柜前来客的话说完。")
 	if event_id in LuIntroduction.ALL_EVENTS and not LuIntroduction.active(_day.state): return ActionResult.new(false, "先把柜前来客的话说完。")
 	if FirstDebt.enabled(definition) and event_id.begins_with("fd_"):
 		var before_minute := _day.state.game_minutes

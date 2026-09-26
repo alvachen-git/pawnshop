@@ -860,8 +860,8 @@ func _review_receipt(id: String) -> void:
 
 func _sync_military_reception() -> void:
 	var state := _session._day.state
-	var active := MilitaryIntroduction.active(state) or LuIntroduction.active(state) or QingbangConversation.presenting(state)
-	var key := state.run_token + "/" + ("lu_introduction" if LuIntroduction.active(state) else String(QingbangConversation.encounter(state).id) if QingbangConversation.presenting(state) else MilitaryIntroduction.id(state))
+	var active := MilitaryIntroduction.active(state) or LuIntroduction.active(state) or QingbangConversation.presenting(state) or SilverPolicy.active(state)
+	var key := state.run_token + "/" + ("silver_introduction" if SilverPolicy.active(state) else "lu_introduction" if LuIntroduction.active(state) else String(QingbangConversation.encounter(state).id) if QingbangConversation.presenting(state) else MilitaryIntroduction.id(state))
 	if active and (not _military_was_active or key != _military_reception_key):
 		_military_reception_key = key
 		# Show the arriving person on the counter; the player opens conversation.

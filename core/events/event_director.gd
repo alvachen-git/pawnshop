@@ -8,13 +8,14 @@ func _init(content: ContentCatalog) -> void:
 	catalog = content
 
 func eligible(state: RunState, event: EventDefinition) -> bool:
+	if event.id in SilverPolicy.EVENTS and not SilverPolicy.due(state): return false
 	if event.id == "ds_search_message" and (not DragonSearch.message_due(state) or not state.risk_pending.is_empty()): return false
 	if event.id == MirrorDreamService.EVENT and not MirrorDreamService.eligible(state, event.presentation.get("requires_call", false)): return false
 	if event.id == MirrorDreamService.CALL and not MirrorDreamService.call_eligible(state): return false
 	if state.social_enabled and event.kind != "anchor" and SocialRules.night(state).get("military_event", false):
 		# The old social run keeps its frozen event rule. The combined campaign
 		# retains bedroom scenes and the companion alongside daytime military news.
-		if state.run_definition_id not in [&"unified_ten", &"named_wealthy_ten", &"pearl_market_ten", &"first_debt_dragon_search", &"first_debt_unified", &"bangle_market_ten", &"bangle_unified", "porcelain_unified", "gramophone_unified", "gramophone_release", "qingbang_release", "preopen_recycler", "camera_unified", "porcelain_release", &"first_debt_recovery", &"first_debt_recovery_release"] or (state.phase in [&"pre_open", &"open"] and not event.id.begins_with("aq_")): return false
+		if state.run_definition_id not in [&"unified_ten", &"named_wealthy_ten", &"pearl_market_ten", &"first_debt_dragon_search", &"first_debt_unified", &"bangle_market_ten", &"bangle_unified", "porcelain_unified", "gramophone_unified", "gramophone_release", "qingbang_release", "preopen_recycler", "silver_market", "camera_unified", "porcelain_release", &"first_debt_recovery", &"first_debt_recovery_release"] or (state.phase in [&"pre_open", &"open"] and not event.id.begins_with("aq_")): return false
 	if String(state.phase) != event.phase or state.current_night_index < event.night_min or (state.current_night_index > event.night_max and event.id != "ds_search_message") or state.game_minutes < event.window_start or state.game_minutes >= event.window_end: return false
 	if not CounterDomainValidator._contains_all(state.narrative_flags, event.required_flags): return false
 	for flag in event.excluded_flags:

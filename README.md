@@ -1,8 +1,10 @@
 # 鬼市当铺
 
-新增独立入口：`play-medicine-huaian.cmd` 包含周怀安筹药费、特殊客跨夜回访及湿包货异响；`-Stage report` 可预览提前筹齐后的报平安，`-Stage saved` / `-Stage bereaved` 可查看两种结局，`-Wide` 使用1600×900。新局和存档独立，通用默认入口仍为下述v46。见 [周怀安支线](docs/MEDICINE_HUAIAN_V47.md) 和 [本轮发布验收](docs/SPECIAL_GUESTS_RELEASE.md)。
+当前本地默认新局为 **v48 银楼商誉与白银行情版**。运行 `play-silver-v48.cmd`（或 `play-unified.cmd`）；商誉达到条件后，银楼掌柜次夜以 RPG 对话登门，之后可在开铺前用1行动点批量交货。独立存档，保留v47杂货回收及更早入口。详见 [v48 试玩、截图与验收](docs/SILVER_MARKET_V48.md)。本轮已完成本地验收，并获授权发布。
 
-当前默认新局为 **v46 留声与当约整合版**：保留陆掌眼登门、卖货托盘与 v45 活当利息选择，加入留声机鉴定和相机120／留声机100银元最低接受价。使用 `play-unified.cmd`；旧版使用各自独立入口和存档。见 [留声机说明](docs/GRAMOPHONE_V44.md)。
+新增独立入口：`play-medicine-huaian.cmd` 包含周怀安筹药费、特殊客跨夜回访及湿包货异响；`-Stage report` 可预览提前筹齐后的报平安，`-Stage saved` / `-Stage bereaved` 可查看两种结局，`-Wide` 使用1600×900。新局和存档独立，通用默认入口现为上述v48。见 [周怀安支线](docs/MEDICINE_HUAIAN_V47.md) 和 [本轮发布验收](docs/SPECIAL_GUESTS_RELEASE.md)。
+
+此前发布的 **v46 留声与当约整合版**：保留陆掌眼登门、卖货托盘与 v45 活当利息选择，加入留声机鉴定和相机120／留声机100银元最低接受价。使用 `play-unified.cmd`；旧版使用各自独立入口和存档。见 [留声机说明](docs/GRAMOPHONE_V44.md)。
 
 
 此前发布的 **v45 活当利息与第三夜解锁版**：`play-pawn-v45.cmd` 独立入口。第一、二夜只做收购；第三夜开铺前由陆掌眼以 RPG 对话介绍活当，再开放低息5%／中息10%／高息20%。三夜整期计息，商誉与客人接受条件随利息档位变化。基于 main v44，保留第二夜来信卖货、相机鉴定与共用行动点；使用独立存档，v44及更早版本入口与旧票规则保留。详见 [v45 本地试玩与验收](docs/PAWN_INTEREST_V45.md)。以下旧版本记录保留作历史参考。

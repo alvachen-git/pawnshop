@@ -15,6 +15,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 	if service == null: return model
 	if QingbangConversation.presenting(day.state): return QingbangConversation.model(model,day)
 	if MilitaryIntroduction.active(day.state): return MilitaryIntroduction.model(model, day.state)
+	if SilverPolicy.active(day.state): return SilverPolicy.model(model, day, service.catalog)
 	if LuIntroduction.active(day.state): return LuIntroduction.model(model, day, service.catalog)
 	var state := day.state
 	var waiting := 0
