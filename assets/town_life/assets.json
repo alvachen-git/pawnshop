@@ -1,0 +1,81 @@
+[
+  {
+    "file": "assets/town_life/customers/musician.png",
+    "sha256": "c460e873e2dd818a4bdf2e9e5c1c86896cd45d5ef98624772936de5041a80b3b",
+    "source": "OpenAI built-in image_gen, 2026-09-26; complete face and pose redesign",
+    "alpha": "native RGBA; unedited output",
+    "revision": 2,
+    "generation_file": "exec-d486e1f5-253d-4833-bc08-d87c93e6a72f.png"
+  },
+  {
+    "file": "assets/town_life/customers/porter.png",
+    "sha256": "3861041b3e27b090ddcc2c9349bc05a2a0d640887492caedb6513ecefc76fa77",
+    "source": "OpenAI built-in image_gen, 2026-09-26; complete face and pose redesign",
+    "alpha": "native RGBA; unedited output",
+    "revision": 2,
+    "generation_file": "exec-a076ae79-a8f5-49e0-8f5a-59f4da165bf5.png"
+  },
+  {
+    "file": "assets/town_life/customers/soldier.png",
+    "sha256": "8d4396a4b4c140966008e85c986732eaa43ded8bd1935aeaa6a345a0e3d8bca2",
+    "source": "OpenAI built-in image_gen, 2026-09-26; environment integration revision",
+    "alpha": "native RGBA; unedited output",
+    "revision": 3,
+    "generation_file": "exec-743795e8-170a-4ed5-8c03-3be7cc26feeb.png"
+  },
+  {
+    "file": "assets/town_life/customers/washerwoman.png",
+    "sha256": "ba2afdc59a756c71aff07b465c7d2f57c3d673a4f0760c17022feda749e91127",
+    "source": "OpenAI built-in image_gen, 2026-09-26; complete face and pose redesign",
+    "alpha": "native RGBA; unedited output",
+    "revision": 2,
+    "generation_file": "exec-14b3ae24-7644-4fdf-ac03-b2ec9fb74ea1.png"
+  },
+  {
+    "file": "assets/town_life/items/abacus.png",
+    "sha256": "95855ae3d8ff8ab872945f7a6e7254d2b42bb4cc68e50aabab9fee1952fb1894",
+    "source": "OpenAI built-in image_gen, 2026-09-26",
+    "alpha": "native RGBA; unedited output"
+  },
+  {
+    "file": "assets/town_life/items/copper_handwarmer.png",
+    "sha256": "cbb86cee328f773fd0f22cc1a7543ec6bff2c36c87a79832ebc598978b675829",
+    "source": "OpenAI built-in image_gen, 2026-09-26",
+    "alpha": "native RGBA; unedited output"
+  },
+  {
+    "file": "assets/town_life/items/erhu.png",
+    "sha256": "8597a1730373a3e993c3ab2196ce66dabefd77b13d466ffd23732e0b3761f055",
+    "source": "OpenAI built-in image_gen, 2026-09-26",
+    "alpha": "native RGBA; unedited output"
+  },
+  {
+    "file": "assets/town_life/items/kerosene_lamp.png",
+    "sha256": "afba37b093bb1549c2c4fee135c1c22d15148590e7fbc4d8f940d77cd4b28fa7",
+    "source": "OpenAI built-in image_gen, 2026-09-26",
+    "alpha": "native RGBA; unedited output"
+  },
+  {
+    "file": "assets/town_life/items/leather_suitcase.png",
+    "sha256": "036f238b71ff33022a58a9a3057fe7876dbffeb7034835ad32f4642baaa8c83f",
+    "source": "OpenAI built-in image_gen, 2026-09-26; environment integration revision",
+    "alpha": "native RGBA; unedited output",
+    "revision": 2,
+    "generation_file": "exec-702b0cce-a551-4fd0-ba81-541db970dd18.png"
+  },
+  {
+    "file": "assets/town_life/items/padded_vest.png",
+    "sha256": "0b437dc7ba2cf970f2292b1aeefb649fe67c5067c6c7f2ef7610f59ebace5620",
+    "source": "OpenAI built-in image_gen, 2026-09-26; environment integration revision",
+    "alpha": "native RGBA; unedited output",
+    "revision": 2,
+    "generation_file": "exec-368ca2ff-2284-4032-be51-e71ded7b9004.png"
+  },
+  {
+    "file": "assets/town_life/items/silver_earrings.png",
+    "sha256": "de29d6b5c3fa53b9f1c732a0fcf8d540fca80ed905d8671e5775f2435935e894",
+    "source": "OpenAI built-in image_gen, 2026-09-26",
+    "alpha": "native RGBA; unedited output",
+    "generation_file": "exec-0846d014-40da-4b0a-8b17-244cfc197dca.png"
+  }
+]

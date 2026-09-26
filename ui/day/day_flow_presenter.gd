@@ -178,9 +178,9 @@ func _preparation_commands() -> Array:
 	var commands: Array = []
 	var state := _session._day.state
 	if _category_picker:
-		for category in OpeningPreparation.CATEGORIES:
+		for category in OpeningPreparation.categories(state):
 			var error := OpeningPreparation.reason(state, "target", category)
-			commands.append({"id": "prep_category/" + category, "label": "收" + OpeningPreparation.CATEGORIES[category] + " · 1行动点", "enabled": error.is_empty(), "reason": error})
+			commands.append({"id": "prep_category/" + category, "label": "收" + OpeningPreparation.categories(state)[category] + " · 1行动点", "enabled": error.is_empty(), "reason": error})
 		commands.append({"id": "prep_cancel_category", "label": "返回 · 不耗行动点", "enabled": true})
 		return commands
 	commands.append({"id": "open_shop", "label": "开铺营业", "enabled": _session.can_execute("open_shop")})

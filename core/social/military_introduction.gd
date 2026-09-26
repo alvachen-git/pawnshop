@@ -22,7 +22,7 @@ static func advance(day: DayController, detail: String) -> ActionResult:
 	state.social.intro_step += 1
 	if state.social.intro_step < 3: return ActionResult.new(true, "")
 	state.social.introduced = true
-	SocialRules.military_notice(state, MilitaryService.INTRODUCTION)
+	SocialRules.military_notice(state, MilitaryService.INTRODUCTION.replace("棉袄", TownLife.clothing_name(state)))
 	MilitaryPlaque.award(state)
 	# Draw the same day's military event only after the personal introduction.
 	SocialRules.night(state).military_checked = false
@@ -36,10 +36,10 @@ static func model(base: Dictionary, state: RunState) -> Dictionary:
 	base.item = ""
 	base["itemless"] = true
 	base.context_actions = {"customer":[{"id":"dialogue", "label":"交谈", "enabled":true}], "item":[]}
-	base.visual = {"customer_id":"sun_dayuan", "customer_name":"孙大元", "portrait_asset":"social.sun_dayuan_visit", "item_asset":"", "item_name":"", "item_status":"", "estimate":"", "clues":[], "speech":[], "attitude":"登门拜访 · 只谈往来", "deadline":"", "introduction":SPEECH[step], "intent":"登门拜访"}
+	base.visual = {"customer_id":"sun_dayuan", "customer_name":"孙大元", "portrait_asset":"social.sun_dayuan_visit", "item_asset":"", "item_name":"", "item_status":"", "estimate":"", "clues":[], "speech":[], "attitude":"登门拜访 · 只谈往来", "deadline":"", "introduction":(String(SPEECH[step]).replace("棉袄", "御寒衣物（棉袄或夹棉背心）") if TownLife.active(state) else SPEECH[step]), "intent":"登门拜访"}
 	base.visual.introduction = ["营部孙大元，今日来认个门。", "这街面上的规矩，掌柜得记牢。", "往后的差事，都记在《往来簿》里。"][step]
-	base.dialogue = {"body":SPEECH[step], "visit_id":id(state), "buttons":[{"command":"military_intro", "detail":str(step), "label":CHOICES[step], "enabled":true, "reason":""}]}
-	base["case_dialogue"] = {"key":id(state) + "/" + str(step), "auto_open":true, "pre_open_story":true, "sentence_pages":true, "speaker":"孙大元", "narration_speaker":"柜前", "text":SPEECH[step], "buttons":[{"command":"military_intro", "target_id":id(state), "detail":str(step), "label":CHOICES[step], "enabled":true, "reason":""}]}
+	base.dialogue = {"body":(String(SPEECH[step]).replace("棉袄", "御寒衣物（棉袄或夹棉背心）") if TownLife.active(state) else SPEECH[step]), "visit_id":id(state), "buttons":[{"command":"military_intro", "detail":str(step), "label":CHOICES[step], "enabled":true, "reason":""}]}
+	base["case_dialogue"] = {"key":id(state) + "/" + str(step), "auto_open":true, "pre_open_story":true, "sentence_pages":true, "speaker":"孙大元", "narration_speaker":"柜前", "text":(String(SPEECH[step]).replace("棉袄", "御寒衣物（棉袄或夹棉背心）") if TownLife.active(state) else SPEECH[step]), "buttons":[{"command":"military_intro", "target_id":id(state), "detail":str(step), "label":CHOICES[step], "enabled":true, "reason":""}]}
 	base.trade.body = "孙大元此来只为打个招呼，没有货物可交易。"
 	base.appraisal.body = "柜上没有货物。"
 	return base

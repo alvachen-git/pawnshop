@@ -3,6 +3,14 @@ extends RefCounted
 
 # Presentation only: stable item IDs and already-filtered evidence drive all art.
 const FAMILIES := {
+	"town.abacus": "abacus",
+	"town.silver_earrings": "silver_earrings",
+	"town.copper_handwarmer": "copper_handwarmer",
+	"town.kerosene_lamp": "kerosene_lamp",
+	"town.leather_suitcase": "leather_suitcase",
+	"town.erhu": "erhu",
+	"town.padded_vest": "padded_vest",
+
 	"placeholder.inkstone": "inkstone", "placeholder.clay_teapot": "clay_teapot",
 	"placeholder.silk_panel": "silk_panel", "placeholder.fountain_pen": "fountain_pen",
 	"placeholder.pocket_watch": "pocket_watch", "asset.item_brass_holder": "holder",
@@ -19,6 +27,14 @@ const PLACEMENT_FAMILIES := {
 	"asset.weeping_mirror_ordinary": "mirror_ordinary", "asset.weeping_mirror_resentful": "mirror_resentful",
 }
 const FRONTS := {
+	"abacus": "res://assets/town_life/items/abacus.png",
+	"silver_earrings": "res://assets/town_life/items/silver_earrings.png",
+	"copper_handwarmer": "res://assets/town_life/items/copper_handwarmer.png",
+	"kerosene_lamp": "res://assets/town_life/items/kerosene_lamp.png",
+	"leather_suitcase": "res://assets/town_life/items/leather_suitcase.png",
+	"erhu": "res://assets/town_life/items/erhu.png",
+	"padded_vest": "res://assets/town_life/items/padded_vest.png",
+
 	"gramophone": "res://assets/gramophone_desk/counter_painted.png",
 	"camera": "res://assets/camera_desk/camera_counter_painted.png",
 	"dragon_bangle": "res://assets/first_debt/dragon.png",
@@ -83,6 +99,16 @@ const DETAILS := {
 # mirror/pen sources are projected onto the same tabletop. The redesigned
 # watch already has painted perspective and must retain its original aspect.
 const BOUNDS := {
+	"abacus": Rect2(.395,.68,.24,.18),
+	# Small paired jewelry: about 35px visible height at 1280x720.
+	# Counter scale only; appraisal art and the generous click target stay unchanged.
+	"silver_earrings": Rect2(.504,.754,.047,.072),
+	"copper_handwarmer": Rect2(.455,.65,.16,.23),
+	"kerosene_lamp": Rect2(.46,.615,.14,.29),
+	"leather_suitcase": Rect2(.375,.61,.33,.34),
+	"erhu": Rect2(.345,.62,.40,.32),
+	"padded_vest": Rect2(.385,.61,.32,.35),
+
 	"camera": Rect2(.432, .643, .170, .200),
 	# 64px source square at 1280x720; visible diameter ~56px, near a human wrist.
 	"dragon_bangle": Rect2(.485, .649, .050, .0988),
@@ -168,6 +194,7 @@ static func projects_on_table(texture: Texture2D) -> bool:
 
 static func material(texture: Texture2D, on_counter := false) -> ShaderMaterial:
 	if texture == null: return null
+	if texture.resource_path.begins_with("res://assets/town_life/items/"): return _town_material(texture, on_counter)
 	var path := texture.resource_path
 	if not (path in [FRONTS.bowl, FRONTS.hairpin, FRONTS.folding_fan, FRONTS.dragon_bangle, FRONTS.phoenix_bangle] or path.begins_with(STUDY_ROOT) or path.begins_with(SECOND_ROOT) or path.begins_with("res://assets/item_art_v30/") or path.begins_with("res://assets/art06/items/") or path.begins_with("res://assets/art07/items/") or path.begins_with("res://assets/art09/items/")): return null
 	var result := ShaderMaterial.new()
@@ -192,4 +219,19 @@ static func material(texture: Texture2D, on_counter := false) -> ShaderMaterial:
 			result.set_shader_parameter("footprint", Vector4(.515, .889, .265, .053))
 		elif family == "bowl":
 			result.set_shader_parameter("footprint", Vector4(.50, .945, .18, .034))
+	return result
+
+# Native alpha town sprites use the same tabletop lighting/contact treatment as
+# existing goods. Keep examination art neutral; never bake lighting into PNGs.
+static func _town_material(texture: Texture2D, on_counter: bool) -> ShaderMaterial:
+	var result := ShaderMaterial.new()
+	result.shader = preload("res://ui/art/counter_item.gdshader")
+	if not on_counter: return result
+	var family := _family(texture)
+	result.set_shader_parameter("exposure", 0.91)
+	result.set_shader_parameter("saturation", 0.84)
+	result.set_shader_parameter("highlight_reduction", 0.20 if family in ["copper_handwarmer", "kerosene_lamp"] else 0.10)
+	result.set_shader_parameter("contact_mode", 2 if family in ["copper_handwarmer", "kerosene_lamp"] else 1)
+	if family == "copper_handwarmer": result.set_shader_parameter("footprint", Vector4(.51,.90,.23,.045))
+	elif family == "kerosene_lamp": result.set_shader_parameter("footprint", Vector4(.45,.96,.21,.028))
 	return result

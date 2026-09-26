@@ -43,7 +43,7 @@ static func urgent(state: RunState, visit: CustomerVisit) -> bool:
 	return VarietySaveCodec.selection(state, visit.visit_id).get("situation", visit.situation_id) == "urgent"
 
 static func refuses_high(state: RunState, visit: CustomerVisit) -> bool:
-	return firm(state, visit) or not urgent(state, visit)
+	return (TownLife.active(state) and visit.customer_id == "customer_musician" and visit.item.definition_id == "item_erhu") or firm(state, visit) or not urgent(state, visit)
 
 static func cue(state: RunState, visit: CustomerVisit) -> String:
 	var words := "‘这笔钱今夜要用，息钱咱们好商量。’" if urgent(state, visit) else "‘我不急着用钱，息钱太重，就再问问别家。’"

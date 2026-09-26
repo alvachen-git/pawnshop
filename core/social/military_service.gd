@@ -87,8 +87,12 @@ static func end_event(state: RunState) -> void:
 	state.social.last_event = state.current_night_index
 	state.social.pending = {}
 
-static func contract_template(_state: RunState) -> Dictionary:
-	return SocialRules.config().contracts[0].duplicate(true)
+static func contract_template(state: RunState) -> Dictionary:
+	var result: Dictionary = SocialRules.config().contracts[0].duplicate(true)
+	if TownLife.active(state):
+		for key in result:
+				if result[key] is String: result[key] = String(result[key]).replace("棉袄", "御寒衣物")
+	return result
 
 static func claim_for(state: RunState, id: String) -> Dictionary:
 	for row in state.social.claims:
@@ -115,7 +119,7 @@ static func reason(day: DayController, command: String, detail := "") -> String:
 			if state.cash < int(SocialRules.config().gift_cost): return "送礼需20银元，现银不足。"
 		"accept_contract", "decline_contract":
 			if SocialRules.blocked(state): return "先把眼前的军方来意处理妥当。"
-			if not contract.is_empty(): return "先前接下的棉袄还没交齐。"
+			if not contract.is_empty(): return "先前接下的%s还没交齐。" % TownLife.clothing_name(state)
 		"cancel_contract":
 			if SocialRules.blocked(state): return "先把眼前的军方来意处理妥当。"
 			if contract.is_empty(): return "没有已经接下的采购单。"
@@ -237,7 +241,7 @@ static func perform(day: DayController, command: String, detail := "") -> Action
 			if command != "claim_later" or social.pending.get("kind", "") == "claim":
 				claim.status = command; claim["ended"] = n; social.pending = {}
 	SocialRules.military_notice(state, text)
-	return ActionResult.new(true, text)
+	return ActionResult.new(true, text.replace("棉袄", "御寒衣物") if TownLife.active(state) else text)
 
 static func finish_contract(state: RunState, result: String, amount: int) -> void:
 	var row: Dictionary = state.social.contract.duplicate(true)

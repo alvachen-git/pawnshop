@@ -140,6 +140,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 	PawnInterestPolicy.enrich(model, day, visit)
 	SpecialGuests.enrich(model, day, service, visit)
 	EarlyRedemption.enrich(model, day, service, visit)
+	TownLife.enrich(model, day, service, visit)
 	return model
 
 static func _button(day: DayController, service: CounterService, visit: CustomerVisit, command: String, detail: String, label: String) -> Dictionary:

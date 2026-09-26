@@ -81,9 +81,15 @@ static func page(day: DayController, faction: String, section: int) -> Dictionar
 		SocialReadModels.button(model, day, "decline_contract", "暂不接单")
 	else:
 		model.fields = [["交货", "自有棉袄%d／3 · 三件一并交付" % stocks.size()], ["奖励", "50银元 · 期限不限"]]
-		model["stock"] = stocks.map(func(item: ItemInstance) -> Dictionary: return {"id":item.instance_id, "label":"货签%d · 棉袄 · 成本%d银元" % [state.inventory_instances.find(item) + 1, item.acquisition_price]})
+		model["stock"] = stocks.map(func(item: ItemInstance) -> Dictionary: return {"id":item.instance_id, "label":"货签%d · %s · 成本%d银元" % [state.inventory_instances.find(item) + 1, (state.ghost_catalog.get_definition("items", item.definition_id) as ItemDefinition).display_name, item.acquisition_price]})
 		SocialReadModels.button(model, day, "deliver", "交付所选三件棉袄", "[]")
 		SocialReadModels.button(model, day, "cancel_contract", "退回已经接下的采购单")
+	if TownLife.active(state):
+		model.title = String(model.title).replace("棉袄", "御寒衣物")
+		model.body = String(model.body).replace("棉袄", "御寒衣物")
+		model.body = (String(model.body) + "\n棉袄、背心可混交；须自有、可穿。").strip_edges()
+		for field in model.fields: field[1] = String(field[1]).replace("棉袄", "御寒衣物")
+		for button in model.buttons: button.label = String(button.label).replace("棉袄", "御寒衣物")
 	return model
 
 static func pending_section(state: RunState) -> int:
