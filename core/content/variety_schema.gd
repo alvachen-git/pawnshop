@@ -3,6 +3,15 @@ extends RefCounted
 
 static func validate(kind: String, row: Dictionary, path: String, at: String) -> Array:
 	var issues: Array = []
+	if kind == "runs" and row.get("variety") is Dictionary and row.variety.has("silver_trade"):
+		var silver: Variant = row.variety.silver_trade
+		var valid_silver: bool = silver is Dictionary and silver.get("version") == 1 and silver.get("items") is Dictionary and row.variety.get("preopen_recycler_version") == 1
+		if valid_silver:
+			for spec in silver.items.values():
+				if not spec is Dictionary or spec.get("material", "other") not in SilverPolicy.MATERIALS or spec.get("origin", "ordinary") not in SilverPolicy.ORIGINS or not spec.get("variants", {}) is Dictionary: valid_silver = false; break
+				for traits in spec.get("variants", {}).values():
+					if not traits is Dictionary or traits.get("material", spec.get("material", "other")) not in SilverPolicy.MATERIALS or traits.get("origin", spec.get("origin", "ordinary")) not in SilverPolicy.ORIGINS: valid_silver = false
+		if not valid_silver: CounterDomainValidator._error(issues, at, "银楼材质、来源或开铺前交易规则无效。")
 	if kind == "runs" and row.get("variety") is Dictionary and row.variety.has("preopen_recycler_version"):
 		if row.variety.preopen_recycler_version != 1 or row.variety.get("preparation_version") != 1 or not row.get("batch_selling", false): CounterDomainValidator._error(issues, at, "开铺回收需要批量交货与行动点准备规则。")
 	if kind == "runs" and row.get("variety") is Dictionary and row.variety.has("fan_bargaining"):

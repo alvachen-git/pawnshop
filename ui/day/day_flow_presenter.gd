@@ -96,7 +96,7 @@ func refresh() -> void:
 			if buyer_id == "buyer_lu" or not RecyclerPolicy.visible(_session._day, buyer_id): continue
 			var buyer := _session._counter.catalog.get_definition("buyers", buyer_id) as BuyerDefinition
 			var label := "卖货 · " + buyer.display_name
-			if buyer_id == RecyclerPolicy.BUYER: label += " · 1行动点"
+			if buyer_id == RecyclerPolicy.BUYER or (SilverPolicy.enabled(definition) and buyer_id == SilverPolicy.BUYER): label += " · 1行动点"
 			sale_commands.append({"id": "sale/" + buyer_id, "label": label, "enabled": reason.is_empty(), "reason": reason})
 		commands = commands.slice(0, 1) + sale_commands + commands.slice(1)
 	if _wait_picker:

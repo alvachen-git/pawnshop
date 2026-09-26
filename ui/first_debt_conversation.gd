@@ -188,7 +188,7 @@ func _result_context_valid() -> bool:
 	var state := session._day.state
 	if not state.risk_pending.is_empty() or session.mirror_pending(): return false
 	if _pre_open_result:
-		return state.phase == &"pre_open" and (state.pending_event_id.is_empty() or MilitaryIntroduction.active(state) or LuIntroduction.active(state))
+		return state.phase == &"pre_open" and (state.pending_event_id.is_empty() or MilitaryIntroduction.active(state) or LuIntroduction.active(state) or SilverPolicy.active(state))
 	return state.phase == &"open" and state.pending_event_id.is_empty()
 
 func _acknowledge() -> bool:

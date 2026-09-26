@@ -59,6 +59,8 @@ static func restore(data: Dictionary, state: RunState, run: RunDefinition, catal
 		if not entry.get("goods", {}) is Dictionary or not entry.get("expert_reviewed", false) is bool: return "商品复核字段无效。"
 		var normalized_goods: Dictionary = entry.duplicate(true)
 		if not VarietySaveCodec.normalize_goods(normalized_goods) or normalized_goods.get("goods", {}) != planned.item.goods: return "茶盏制式与来访不符。"
+		if entry.get("silver_trade", {}) != planned.item.silver_trade: return "银饰材质或来源与原始来货不符。"
+		instance.silver_trade = planned.item.silver_trade.duplicate(true)
 		instance.goods = planned.item.goods.duplicate(true)
 		instance.expert_reviewed = entry.get("expert_reviewed", false)
 		instance.provenance = entry.get("provenance", {}).duplicate(true)

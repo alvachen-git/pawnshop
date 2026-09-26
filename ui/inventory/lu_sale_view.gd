@@ -200,6 +200,13 @@ func _slot(row: Dictionary, rect: Rect2) -> void:
 	picture.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_place(picture, cell, Rect2(40, 18, 187, 139))
 	if not row.reason.is_empty(): picture.modulate = Color("999687")
+	if _buyer.get("silver", false) and not row.reason.is_empty():
+		var refusal := _paper(cell, Rect2(18, 119, 231, 44))
+		var words := _label(refusal, row.reason, Rect2(8, 3, 215, 38), 14, Color("713122"))
+		words.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		words.size = Vector2(215, 38)
+		words.max_lines_visible = 2
+		words.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	var tag := _paper(cell, Rect2(12, 165, 243, 46))
 	var tag_line := HBoxContainer.new()
 	tag_line.add_theme_constant_override("separation", 8)
@@ -240,18 +247,18 @@ func _slot(row: Dictionary, rect: Rect2) -> void:
 
 func _receipt() -> void:
 	var paper := _paper(_canvas, Rect2(846, 114, 408, 526))
-	if buyer_id == "buyer_lu":
+	if buyer_id == "buyer_lu" or _buyer.get("silver", false):
 		var avatar := TextureRect.new()
 		var crop := AtlasTexture.new()
-		crop.atlas = preload("res://assets/first_debt/lu_zhangyan_elderly_v43.png")
-		crop.region = Rect2(305, 0, 620, 660)
+		crop.atlas = preload("res://assets/art04/customers/special/silver_owner_v48.png") if _buyer.get("silver", false) else preload("res://assets/first_debt/lu_zhangyan_elderly_v43.png")
+		crop.region = Rect2(210, 0, 510, 570) if _buyer.get("silver", false) else Rect2(305, 0, 620, 660)
 		avatar.texture = crop
 		avatar.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		avatar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		_place(avatar, paper, Rect2(27, 15, 126, 130))
-		_label(paper, "陆掌眼", Rect2(171, 29, 210, 42), 34)
-		_label(paper, "收" + String(_buyer.get("wanted", "货")), Rect2(171, 83, 210, 32), 25, Color("843b2b"))
+		_label(paper, "街口银楼" if _buyer.get("silver", false) else "陆掌眼", Rect2(171, 29, 210, 42), 30 if _buyer.get("silver", false) else 34)
+		_label(paper, "今日银价 %d%%" % _buyer.daily_rate if _buyer.get("silver", false) else "收" + String(_buyer.get("wanted", "货")), Rect2(171, 83, 210, 32), 23 if _buyer.get("silver", false) else 25, Color("843b2b"))
 	else:
 		var sign := _paper(paper, Rect2(27, 24, 354, 78))
 		var title := _label(sign, "杂货回收" if buyer_id == RecyclerPolicy.BUYER else _buyer.get("name", "收货约定"), Rect2(12, 10, 330, 58), 34)
@@ -344,7 +351,9 @@ func _price_details() -> void:
 	scroll.add_child(list)
 	for row in _buyer.get("stock", []):
 		if row.id in _selected:
-			if _buyer.get("preopen", false):
+			if _buyer.get("silver", false):
+				AccountPaper.label(list, "%s\n今日银价%d%% · 报价%d银元" % [row.name, row.daily_rate, row.price], 18)
+			elif _buyer.get("preopen", false):
 				AccountPaper.label(list, "%s\n基础价%s × 当日%d%% → %d银元" % [row.name, String.num(row.base_value, 2), row.daily_rate, row.price], 18)
 			else:
 				AccountPaper.label(list, "%s\n报价%d · 成本%d · 来源溢价%d" % [row.name, row.price, row.cost, row.premium], 18)
