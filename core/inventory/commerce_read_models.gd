@@ -1,9 +1,9 @@
 class_name CommerceReadModels
 extends RefCounted
 
-const STATES := {"returned": "已归还陈家", "exchanged_out": "原物已换出", "lost": "湿灰毁损", "owned": "现货", "pledged": "在当（不可售）", "sold": "已售", "redeemed": "已赎回", "transferred": "已转当"}
-const TICKETS := {"active": "在当", "redeemed": "已赎回", "transferred": "已转当", "defaulted": "已绝当转现货"}
-const KINDS := {"debt_return": "旧物归还", "debt_compensation": "陈家补偿", "facility_investment": "设施投入", "investigation": "查访支出", "pawn_exchange": "换物收款", "inventory_loss": "损货核销（无现金支出）", "acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费", "daily_fees": "息费付款", "pawn_transfer": "转当收入", "provenance_inquiry": "来源调查费", "expertise": "行家复核费", "preparation": "准备支出", "military_expense": "军方往来支出"}
+const STATES := {"destroyed":"砸店报废", "returned": "已归还陈家", "exchanged_out": "原物已换出", "lost": "湿灰毁损", "owned": "现货", "pledged": "在当（不可售）", "sold": "已售", "redeemed": "已赎回", "transferred": "已转当"}
+const TICKETS := {"destroyed":"原物损毁，免本息核销", "active": "在当", "redeemed": "已赎回", "transferred": "已转当", "defaulted": "已绝当转现货"}
+const KINDS := {"qingbang_expense":"青帮往来支出", "debt_return": "旧物归还", "debt_compensation": "陈家补偿", "facility_investment": "设施投入", "investigation": "查访支出", "pawn_exchange": "换物收款", "inventory_loss": "损货核销（无现金支出）", "acquisition": "收购", "pawn_loan": "活当放款", "sale": "出售", "redemption": "赎金", "extension": "续当费", "daily_fees": "息费付款", "pawn_transfer": "转当收入", "provenance_inquiry": "来源调查费", "expertise": "行家复核费", "preparation": "准备支出", "military_expense": "军方往来支出"}
 
 static func build(day: DayController, service: CommerceService, message: String) -> Dictionary:
 	var financial := FinancialSummary.build(day.state)
@@ -35,6 +35,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 	var ledger := {"body": "现银 %d · 本夜已实现盈亏 %+d\n收购支出/活当本金不是已实现亏损。\n" % [day.state.cash, financial.realized_profit], "buttons": []}
 	if day.definition.fee_policy.enabled:
 		ledger.body = FeeService.describe(day.state, day.definition) + "\n现银 %d · 本夜交易毛利 %+d\n当夜利息 %d · 铺面开支 %d · 经营净收益 %+d\n本夜实际付息费 %d\n" % [day.state.cash, financial.realized_profit, financial.interest_expense, financial.shop_expense, financial.operating_profit, financial.fees_paid]
+	if financial.has("qingbang_expense"): ledger.body += "本夜青帮往来支出 %d 银元\n" % financial.qingbang_expense
 	if financial.has("military_expense"): ledger.body += "本夜军方往来支出 %d 银元\n" % financial.military_expense
 	if financial.has("preparation_expense"): ledger.body += "本夜准备支出 %d 大洋（经营费用）\n" % financial.preparation_expense
 	if financial.has("provenance_expense"): ledger.body += "本夜来源调查费 %d 银元（经营费用）\n" % financial.provenance_expense
@@ -51,7 +52,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 		var definition := service.catalog.get_definition("items", item.definition_id) as ItemDefinition
 		ledger.body += "\n%s · %s（第%d夜入当）\n本金 %d · 赎金 %d · 第%d夜到期 · %s\n" % [VarietyService.name_for(ticket.person, customer), definition.display_name, ticket.started_night, ticket.principal, ticket.redemption_amount, ticket.due_night, TICKETS[ticket.status]]
 		if not ticket.interest_tier.is_empty(): ledger.body += "票面息费 %d%% · %d 银元\n" % [int(PawnInterestPolicy.RATES[ticket.interest_tier]), ticket.redemption_amount - ticket.principal]
-		if ticket.status != "active": continue
+		if ticket.status != "active" or QingbangDamage.lost(day.state,ticket): continue
 		ledger.body += "约定到期日开铺后验票办理；无人来赎，夜末核票处置。\n"
 		var visit := PawnReturnService.current(day.state)
 		if not visit.is_empty() and visit.ticket_id == ticket.ticket_id:

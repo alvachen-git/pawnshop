@@ -9,21 +9,27 @@ static func roster(state: RunState) -> Array:
 	var definitions: Array = JSON.parse_string(FileAccess.get_file_as_string("res://data/social_relations/factions.json"))
 	for entry in definitions:
 		if entry.id == "military" and state.social.introduced: result.append(entry)
+	if QingbangRules.active(state) and state.social.qingbang.introduced:
+		result.append({"id":"qingbang","name":"青帮","representative":"沈伯钧","role":"本街管事","scope":"街面照应与旧货往来","portrait":"res://assets/qingbang/shen_bojun_enforcer.png","emblem":"res://assets/qingbang/qingbang_emblem.png"})
 	return result
 
 static func attitude(state: RunState, faction: String) -> String:
+	if faction == "qingbang" and QingbangRules.active(state):
+		var relation: int = state.social.qingbang.relation
+		return "话里带刺，须留心门外" if relation < -10 else "尚未交好" if relation < 20 else "肯替你递话" if relation < 50 else "熟门熟路，愿意照应"
 	if faction != "military": return "尚无来往"
 	var score := int(state.social.military)
 	if score <= -80: return "话里已不留情面"
 	if score <= -50: return "来往间处处为难"
 	if score <= -20: return "言语渐冷，须多留心"
-	if score < 20: return "照规矩往来"
+	if score < 20: return "尚无交情"
 	if score < 50: return "愿意给几分照应"
 	if score < 80: return "有好货会先递口信"
 	return "交情深了，也有事相托"
 
 static func page(day: DayController, faction: String, section: int) -> Dictionary:
 	var model := {"title":"", "body":"尚无往来可记。", "fields":[], "buttons":[]}
+	if faction == "qingbang" and QingbangRules.active(day.state) and day.state.social.qingbang.introduced: return QingbangBook.page(day,section)
 	if faction != "military" or not day.state.social_enabled or not day.state.social.introduced: return model
 	var state := day.state
 	var social: Dictionary = state.social
@@ -84,4 +90,5 @@ static func pending_section(state: RunState) -> int:
 	return 0 if state.social.pending.get("kind", "") in ["", "supply"] else 1
 
 static func perform(session: RunSession, faction: String, command: String, detail: String) -> void:
-	if faction == "military": session.social_command(command, detail)
+	if faction == "qingbang": session.social_command("qingbang/" + command,detail)
+	elif faction == "military": session.social_command(command, detail)

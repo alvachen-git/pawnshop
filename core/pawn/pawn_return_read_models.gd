@@ -48,3 +48,5 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	model.trade.can_pawn = false
 	var reason := service.pawns.reason(day, ticket, terms, visit.command)
 	model.trade.buttons = [{"command": visit.command, "detail": "", "label": ("验票收赎，交付替物" if not ticket.replacement_instance_id.is_empty() else "验票收赎，交还原物") if visit.command == "redeem" else "验票收息，续当留物", "enabled": reason.is_empty(), "reason": reason}]
+
+	QingbangDamage.decorate(model,day,ticket,visit)

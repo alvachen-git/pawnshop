@@ -13,6 +13,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 	model.trade.can_pawn = false
 	model.trade.pawn_asking = 1
 	if service == null: return model
+	if QingbangConversation.presenting(day.state): return QingbangConversation.model(model,day)
 	if MilitaryIntroduction.active(day.state): return MilitaryIntroduction.model(model, day.state)
 	if LuIntroduction.active(day.state): return LuIntroduction.model(model, day, service.catalog)
 	var state := day.state

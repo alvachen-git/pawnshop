@@ -484,7 +484,7 @@ func _sync_room() -> void:
 	var returning := PawnReturnService.current(_session._day.state)
 	var id: String = returning.get("id", "")
 	if id.is_empty(): _return_id = ""
-	elif id != _return_id and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending():
+	elif id != _return_id and not QingbangConversation.presenting(state) and state.pending_event_id.is_empty() and state.risk_pending.is_empty() and not _session.mirror_pending():
 		_return_id = id
 		_flow.show_panel(&"trade")
 	if _receipt != null and _receipt.visible:
@@ -840,8 +840,8 @@ func _review_receipt(id: String) -> void:
 
 func _sync_military_reception() -> void:
 	var state := _session._day.state
-	var active := MilitaryIntroduction.active(state) or LuIntroduction.active(state)
-	var key := state.run_token + "/" + ("lu_introduction" if LuIntroduction.active(state) else MilitaryIntroduction.id(state))
+	var active := MilitaryIntroduction.active(state) or LuIntroduction.active(state) or QingbangConversation.presenting(state)
+	var key := state.run_token + "/" + ("lu_introduction" if LuIntroduction.active(state) else String(QingbangConversation.encounter(state).id) if QingbangConversation.presenting(state) else MilitaryIntroduction.id(state))
 	if active and (not _military_was_active or key != _military_reception_key):
 		_military_reception_key = key
 		# Show the arriving person on the counter; the player opens conversation.

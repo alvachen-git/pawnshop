@@ -45,7 +45,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 							if int(band[0]) < 240 or int(band[1]) > 420 or int(band[0]) > int(band[1]) or int(band[0]) % 5 != 0 or int(band[1]) % 5 != 0: valid_special = false
 				if not valid_special: CounterDomainValidator._error(issues, at, "特殊客版本或持货伤害配置无效。")
 			if value.has("first_debt_version") and (not RunSchema.integer(value.first_debt_version) or int(value.first_debt_version) not in [1, 2, 3]): CounterDomainValidator._error(issues, at, "第一账版本无效。")
-			for feature in ["investigation_version", "personal_risk_version", "social_relations_version"]:
+			for feature in ["investigation_version", "personal_risk_version", "social_relations_version", "qingbang_version"]:
 				if value.has(feature) and (not RunSchema.integer(value[feature]) or value[feature] != 1): CounterDomainValidator._error(issues, at, "功能版本无效。")
 			if value.has("night_market"):
 				var late: Variant = value.night_market
