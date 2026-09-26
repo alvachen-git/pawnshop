@@ -12,6 +12,7 @@ static func protected(row: Dictionary) -> bool:
 	return row.get("context_id", "").is_empty() or row.has("seven_role") or row.get("familiar_reserved", false)
 
 static func overlay(rows: Array[Dictionary], run: RunDefinition, catalog: ContentCatalog, seed_value: int) -> Array[Dictionary]:
+	if SpecialGuests.enabled(run): return rows
 	if not enabled(run): return rows
 	var config: Dictionary = run.variety.night_market
 	var eligible: Array = []

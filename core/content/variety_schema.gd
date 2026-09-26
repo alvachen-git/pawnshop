@@ -29,6 +29,21 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 	var value: Dictionary = row[field]
 	match kind:
 		"runs":
+			if value.has("medicine_story_version") and value.medicine_story_version != 1: CounterDomainValidator._error(issues, at, "药费客版本无效。")
+			if value.has("special_guests"):
+				var special: Variant = value.special_guests
+				var valid_special: bool = special is Dictionary and RunSchema.integer(special.get("version")) and int(special.version) in [1, 2, 3]
+				if valid_special and int(special.version) >= 2:
+					valid_special = RunSchema.integer(special.get("wet_harm_start_night")) and special.wet_harm_start_night == 5 and value.get("personal_risk_version") == 1
+				if valid_special and int(special.version) == 3:
+					valid_special = special.get("arrival_windows") is Dictionary
+					if valid_special:
+						for policy in ["one_quote", "closed", "wet_cloth", "swap"]:
+							var band: Variant = special.arrival_windows.get(policy)
+							if not band is Array or band.size() != 2: valid_special = false; continue
+							if not RunSchema.integer(band[0]) or not RunSchema.integer(band[1]): valid_special = false; continue
+							if int(band[0]) < 240 or int(band[1]) > 420 or int(band[0]) > int(band[1]) or int(band[0]) % 5 != 0 or int(band[1]) % 5 != 0: valid_special = false
+				if not valid_special: CounterDomainValidator._error(issues, at, "特殊客版本或持货伤害配置无效。")
 			if value.has("first_debt_version") and (not RunSchema.integer(value.first_debt_version) or int(value.first_debt_version) not in [1, 2, 3]): CounterDomainValidator._error(issues, at, "第一账版本无效。")
 			for feature in ["investigation_version", "personal_risk_version", "social_relations_version"]:
 				if value.has(feature) and (not RunSchema.integer(value[feature]) or value[feature] != 1): CounterDomainValidator._error(issues, at, "功能版本无效。")

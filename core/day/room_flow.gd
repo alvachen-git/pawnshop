@@ -53,8 +53,10 @@ static func execute(state: RunState, manager: RiskManager, command: String) -> A
 		"enter_room": state.phase = &"private_room"
 		"sleep":
 			state.phase = &"sleep_resolution"
-			var pursuit := MirrorEncounterService.pursuit(state, state.current_night_index)
-			state.risk_pending = pursuit.mirror_id if not pursuit.is_empty() else ""
+			WetGoodsRisk.sleep(state)
+			if state.phase != &"dead":
+				var pursuit := MirrorEncounterService.pursuit(state, state.current_night_index)
+				state.risk_pending = pursuit.mirror_id if not pursuit.is_empty() else ""
 		"finish_sleep":
 			state.phase = &"day_summary"
 			NightMarketRisk.finish_sleep(state)

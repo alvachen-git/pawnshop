@@ -74,6 +74,7 @@ func update(state: RunState, pending_quote_visit_id := "") -> void:
 			if visit.status == "waiting":
 				visit.status = "active"
 				GhostGuests.arrive(state, visit)
+				SpecialGuests.activate(state, visit)
 				ShopGrowthService.activate(state, visit)
 				if visit.status == "active": break
 
@@ -84,6 +85,8 @@ func active(state: RunState) -> CustomerVisit:
 
 func finish(state: RunState, visit: CustomerVisit, outcome: String) -> void:
 	if visit.status not in ["scheduled", "waiting", "active"]: return
+	SpecialGuests.finish(state, visit, outcome)
+	MedicineStory.finish(state, visit, outcome)
 	ReputationService.finish(state, visit, outcome)
 	ReputationGrowth.acquired(state, visit, outcome)
 	MilitaryService.departed(state, visit, outcome)

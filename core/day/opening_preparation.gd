@@ -26,6 +26,8 @@ static func plan(state: RunState, run: RunDefinition, catalog: ContentCatalog) -
 	for row in rows:
 		if ordinary(row) and not row.get("wealthy", false) and PreparationService.used(state, "tea", int(row.night)): row.wait_minutes = int(row.wait_minutes) + 20
 	CoatProcurement.overlay(state, rows)
+	rows = MedicineStory.overlay(state, run, catalog, rows)
+	rows = SpecialGuests.overlay(state, run, catalog, rows)
 	GoodsExpertise.attach(rows, run, state.run_seed)
 	rows.sort_custom(func(a: Dictionary, b: Dictionary) -> bool: return a.night < b.night if a.night != b.night else a.arrival < b.arrival)
 	return rows

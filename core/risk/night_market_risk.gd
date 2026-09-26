@@ -8,6 +8,7 @@ static func selection(state: RunState, visit_id: String) -> Dictionary:
 	return VarietySaveCodec.selection(state, visit_id)
 
 static func after_command(state: RunState, visit: CustomerVisit, command: String, detail: String) -> String:
+	if SpecialGuests.active(state): return ""
 	if visit.night_policy != "wet_cloth": return ""
 	var action := ""
 	if command == "question" and detail == "origin": action = "taboo"
@@ -98,6 +99,7 @@ static func death_record(state: RunState) -> Dictionary:
 	return {"run_token": state.run_token, "run_id": String(state.run_definition_id), "night": state.current_night_index, "cash": state.cash, "item_id": "wet_cloth", "rule_id": "night_guest_lamp", "cause": "湿布一直压在柜下。灯火一夜夜淡下去，终于没能等到天明。", "item_name": "柜下湿包布", "inventory_cost": assets.inventory_cost, "pawn_principal": assets.pawn_principal}
 
 static func note(state: RunState) -> String:
+	if SpecialGuests.active(state): return ""
 	if not state.night_market_enabled: return ""
 	# Reveal the warning when a wet-cloth guest is present, before any risky choice.
 	if unresolved(state).is_empty() and not state.visits.any(func(visit: CustomerVisit) -> bool: return visit.night_policy == "wet_cloth" and visit.status in ["active", "waiting"]): return ""
