@@ -25,6 +25,7 @@ static func visible(day: DayController, buyer_id: String) -> bool:
 	if not enabled(day.definition): return true
 	match buyer_id:
 		BUYER: return true
+		"buyer_silversmith": return SilverPolicy.unlocked(day.state)
 		"buyer_lu": return LuIntroduction.unlocked(day.state, day.definition)
 		"buyer_pen_appointment": return PreparationService.used(day.state, "investigate") or day.state.current_night_index >= 6
 		"buyer_mirror":

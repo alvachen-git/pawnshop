@@ -9,9 +9,11 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 	for id in day.definition.buyer_ids:
 		if not RecyclerPolicy.visible(day, id): continue
 		var buyer := service.catalog.get_definition("buyers", id) as BuyerDefinition
+		var silver: bool = SilverPolicy.enabled(day.definition) and id == SilverPolicy.BUYER
 		var special := MarketService.is_special(day.definition, buyer)
 		if special and not LuIntroduction.unlocked(day.state, day.definition): continue
 		var wanted: Array = [demand.name] if special else buyer.categories.map(func(key: String) -> String: return categories.get(key, key))
+		if silver: wanted = ["真银饰件"]
 		var reason := service.trip_reason(day, buyer)
 		var unlocked := CounterDomainValidator._contains_all(day.state.narrative_flags, buyer.required_flags) and PreparationService.buyer_reason(day.state, buyer.id).is_empty()
 		var known := buyer.id != PreparationService.BUYER or PreparationService.requirements_known(day.state)
@@ -27,12 +29,12 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 			var base := service.base_quote(item, buyer)
 			var label := definition.display_name + (" · 货签%d" % (day.state.inventory_instances.find(item) + 1) if GoodsExpertise.enabled(day.definition) else "")
 			var recycler: bool = RecyclerPolicy.enabled(day.definition) and id == RecyclerPolicy.BUYER
-			stock.append({"base_value": definition.base_value, "daily_rate": RecyclerPolicy.rate(day.state.run_seed, day.state.current_night_index, item.definition_id) if recycler else 0, "id": item.instance_id, "name": label, "cost": item.acquisition_price, "price": price,
-				"premium": ProvenanceService.premium(item, buyer, base) if item_error.is_empty() and not recycler else 0, "reason": item_error})
-		var preopen: bool = RecyclerPolicy.enabled(day.definition) and id == RecyclerPolicy.BUYER
-		buyers.append({"preopen": preopen, "action_points": PreparationService.action_points(day.state, day.definition), "draft_key": "recycler/%d" % day.state.current_night_index if preopen else market.get("id", "fixed"), "id": id, "name": buyer.display_name, "wanted": "、".join(wanted), "reason": reason, "stock": stock,
+			stock.append({"base_value": GoodsExpertise.value(item, definition) if silver else definition.base_value, "daily_rate": SilverPolicy.rate(day.state) if silver else RecyclerPolicy.rate(day.state.run_seed, day.state.current_night_index, item.definition_id) if recycler else 0, "id": item.instance_id, "name": label, "cost": item.acquisition_price, "price": price,
+				"premium": ProvenanceService.premium(item, buyer, base) if item_error.is_empty() and not recycler and not silver else 0, "reason": item_error})
+		var preopen: bool = RecyclerPolicy.enabled(day.definition) and (id == RecyclerPolicy.BUYER or silver)
+		buyers.append({"silver": silver, "daily_rate": SilverPolicy.rate(day.state) if silver else 0, "preopen": preopen, "action_points": PreparationService.action_points(day.state, day.definition), "draft_key": "%s/%d" % [id, day.state.current_night_index] if preopen else market.get("id", "fixed"), "id": id, "name": buyer.display_name, "wanted": "、".join(wanted), "reason": reason, "stock": stock,
 			"window": "开铺前 · 每批1行动点" if preopen else "第六夜，时段待打听" if not known else "%s–%s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end)],
-			"note": "每日各货各价，按件收货。" if preopen else demand.body if special else "按实物品相报价，收货件数不限。"})
+			"note": "只收真银饰；尸身物、陪葬物不收。" if silver else "每日各货各价，按件收货。" if preopen else demand.body if special else "按实物品相报价，收货件数不限。"})
 	if FirstDebt.enabled(day.definition):
 		for row in buyers:
 			var phoenix := FirstDebt.owned(day.state, FirstDebt.PHOENIX)
@@ -43,7 +45,7 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 				row.note += "\n龙凤两只一并交货，合价320银元。"
 	if GoodsExpertise.enabled(day.definition):
 		for row in buyers:
-			row.pairs = GoodsExpertiseUI.sale_pairs(day, service, service.catalog.get_definition("buyers", row.id))
+			row.pairs = [] if row.get("silver", false) else GoodsExpertiseUI.sale_pairs(day, service, service.catalog.get_definition("buyers", row.id))
 	var notices: PackedStringArray = []
 	if SevenNightPlan.enabled(day.definition):
 		var appointment := PreparationService.notice(day.state, service.catalog)

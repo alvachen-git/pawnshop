@@ -2,6 +2,7 @@ class_name ItemInstance
 extends RefCounted
 
 var provenance: Dictionary = {}
+var silver_trade: Dictionary = {}
 var goods: Dictionary = {}
 var expert_reviewed := false
 var instance_id: String
@@ -19,6 +20,7 @@ var ownership_state := "owned"
 func to_data() -> Dictionary:
 	var result := {"provenance": provenance.duplicate(true), "instance_id": instance_id, "definition_id": definition_id, "selected_variant_id": selected_variant_id, "revealed_clue_ids": revealed_clue_ids.duplicate(), "completed_action_ids": completed_action_ids.duplicate(), "judgement": judgement, "acquisition_price": acquisition_price, "acquired_night": acquired_night, "source_visit_id": source_visit_id, "acquisition_type": acquisition_type, "ownership_state": ownership_state}
 
+	if not silver_trade.is_empty(): result.silver_trade = silver_trade.duplicate(true)
 	if not goods.is_empty(): result.goods = goods.duplicate(true)
 	if expert_reviewed: result.expert_reviewed = true
 	return result

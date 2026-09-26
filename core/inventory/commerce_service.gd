@@ -10,6 +10,7 @@ func _init(content: ContentCatalog) -> void:
 func quote(item: ItemInstance, buyer: BuyerDefinition, day: DayController = null) -> int:
 	if day != null and RecyclerPolicy.enabled(day.definition) and buyer.id == RecyclerPolicy.BUYER:
 		return RecyclerPolicy.price(day.state, catalog.get_definition("items", item.definition_id))
+	if day != null and SilverPolicy.enabled(day.definition) and buyer.id == SilverPolicy.BUYER: return SilverPolicy.price(day.state, item, catalog.get_definition("items", item.definition_id))
 	if buyer.id == "buyer_lu" and item.definition_id in [FirstDebt.PHOENIX, FirstDebt.DRAGON]: return 120 if item.definition_id == FirstDebt.PHOENIX else 160
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	var base := base_quote(item, buyer)
@@ -72,6 +73,7 @@ func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	if not appointment_error.is_empty(): return appointment_error
 	if item.ownership_state != "owned": return "只有铺中自有现货可以出售。"
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
+	if SilverPolicy.enabled(day.definition) and buyer.id == SilverPolicy.BUYER: return SilverPolicy.item_reason(item, definition)
 	if ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) not in buyer.categories or buyer.channel not in definition.sell_channels: return "此买家不收这类货。"
 	if MarketService.is_special(day.definition, buyer) and item.definition_id not in [FirstDebt.PHOENIX, FirstDebt.DRAGON] and ("metal" if MirrorEndingService.released(day.state, item.instance_id) else definition.category) != MarketService.category(day): return "不合陆掌眼眼下的收货偏好。"
 	return ""
@@ -80,6 +82,7 @@ func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
 	if RecyclerPolicy.enabled(day.definition):
 		if buyer == null or buyer.id not in day.definition.buyer_ids or not RecyclerPolicy.visible(day, buyer.id): return "尚无这位买家的收货约定。"
 		if buyer.id == RecyclerPolicy.BUYER: return RecyclerPolicy.trip_reason(day)
+		if buyer.id == SilverPolicy.BUYER and SilverPolicy.enabled(day.definition): return SilverPolicy.trip_reason(day)
 	if SocialRules.closed(day.state): return "今夜停业，不办新交货；已有约定顺延一夜。"
 	if buyer == null or buyer.id not in day.definition.buyer_ids: return "买家不存在。"
 	var introduction := PreparationService.buyer_reason(day.state, buyer.id)
@@ -100,6 +103,7 @@ func sell_batch(day: DayController, buyer_id: String, item_ids: Array, pairs: Ar
 	var buyer := catalog.get_definition("buyers", buyer_id) as BuyerDefinition
 	var error := trip_reason(day, buyer)
 	if not error.is_empty(): return ActionResult.new(false, error)
+	if SilverPolicy.enabled(day.definition) and buyer_id == SilverPolicy.BUYER and not pairs.is_empty(): return ActionResult.new(false, "银楼逐件论价，不另加成套价。")
 	if item_ids.is_empty(): return ActionResult.new(false, "请先选好要卖的货。")
 	if not pairs.is_empty() and not GoodsExpertise.enabled(day.definition): return ActionResult.new(false, "这局没有原配出货。")
 	var paired := GoodsExpertise.pair_bonus(day.state, catalog, buyer, item_ids, pairs)
@@ -128,7 +132,7 @@ func sell_batch(day: DayController, buyer_id: String, item_ids: Array, pairs: Ar
 	var market := MarketService.current(day.definition, day.state.run_seed, day.state.current_night_index, start)
 	var batch_id := "batch/%d" % (day.state.sale_batches.size() + 1)
 	# Everything that can reject is checked before time or money changes.
-	var preopen := RecyclerPolicy.enabled(day.definition) and buyer_id == RecyclerPolicy.BUYER
+	var preopen := RecyclerPolicy.enabled(day.definition) and (buyer_id == RecyclerPolicy.BUYER or (SilverPolicy.enabled(day.definition) and buyer_id == SilverPolicy.BUYER))
 	if not preopen:
 		var spent := day.spend_action(buyer.action_minutes)
 		if not spent.ok: return spent

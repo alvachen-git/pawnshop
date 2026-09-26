@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "silver_greeting",
+      "title": "银楼掌柜登门",
+      "speaker": "银楼掌柜",
+      "body": "‘听街坊说，您收当公道，柜上的账也清楚。我是街口银楼的掌柜，今日特来认个门。’",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 2,
+      "night_max": 999,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [],
+      "excluded_flags": [
+        "silver_intro_1"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "请坐，往后多照应。",
+          "result": "银楼掌柜点了点头。",
+          "minutes": 0,
+          "grant_flags": [
+            "silver_intro_1"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "lu_counter",
+        "checkpoint": true
+      }
+    },
+    {
+      "id": "silver_goods",
+      "title": "银楼掌柜登门",
+      "speaker": "银楼掌柜",
+      "body": "‘往后收着真银的簪、戒、锁片，不妨送来。旧些、修补过的也能看，按品相论价。’\n\n‘但尸身上取下的、陪葬入过土的，我们不接。家里正经传下来的遗物，不在此列。’",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 2,
+      "night_max": 999,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "silver_intro_1"
+      ],
+      "excluded_flags": [
+        "silver_intro_2"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "这条规矩，我记下了。",
+          "result": "银楼掌柜点了点头。",
+          "minutes": 0,
+          "grant_flags": [
+            "silver_intro_2"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "lu_counter",
+        "checkpoint": true
+      }
+    },
+    {
+      "id": "silver_farewell",
+      "title": "银楼掌柜登门",
+      "speaker": "银楼掌柜",
+      "body": "‘银价每日有涨有落，我按当天行情收。您开铺前带货来，一趟可多带几件。’\n\n‘今日先不扰您，往后常来往。’",
+      "kind": "anchor",
+      "phase": "pre_open",
+      "night_min": 2,
+      "night_max": 999,
+      "window_start": 0,
+      "window_end": 540,
+      "priority": 1,
+      "weight": 1,
+      "max_count": 1,
+      "cooldown": 0,
+      "required_flags": [
+        "silver_intro_2"
+      ],
+      "excluded_flags": [
+        "silver_trade_unlocked"
+      ],
+      "required_items": [],
+      "conflicts_with": [],
+      "choices": [
+        {
+          "id": "continue",
+          "label": "慢走，得了合适的银饰就送去。",
+          "result": "银楼掌柜拱了拱手，出门去了。",
+          "minutes": 0,
+          "grant_flags": [
+            "silver_trade_unlocked"
+          ],
+          "required_flags": [],
+          "excluded_flags": []
+        }
+      ],
+      "presentation": {
+        "scene": "lu_counter",
+        "checkpoint": true
+      }
+    }
+  ]
+}
