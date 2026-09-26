@@ -121,7 +121,7 @@ func run() -> void:
 	check(s._day.state.cash == before.cash + price and s._day.state.game_minutes == 0 and PreparationService.action_points(s._day.state, run_def) == 1, "funds AP time")
 	verify(s, "sold"); fixture(s, "sold")
 	blocked_sale(s, [item.instance_id], "repeat silver sale", SilverPolicy.BUYER)
-	var saved := SaveCodec.new().encode(s._day.state, 48)
+	var saved := SaveCodec.new().encode(s._day.state, catalog.content_version)
 	for field in ["price", "origin", "material", "unlock", "reputation", "seed", "AP"]:
 		var bad := saved.duplicate(true)
 		match field:
@@ -133,7 +133,7 @@ func run() -> void:
 			"seed": bad.run_seed += 1
 			"AP": bad.sale_batches.back().action_points = 0
 		InvestigationSaveCodec.clear_cache()
-		check(SaveCodec.new().decode(bad, run_def, 48, catalog, true) == null, "reject forged " + field)
+		check(SaveCodec.new().decode(bad, run_def, catalog.content_version, catalog, true) == null, "reject forged " + field)
 	act(s, "open_shop"); driver.drain(s)
 	blocked_sale(s, [item.instance_id], "silver during opening", SilverPolicy.BUYER)
 	finish_night(s); driver.drain(s)

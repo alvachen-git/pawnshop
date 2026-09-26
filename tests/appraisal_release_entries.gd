@@ -6,7 +6,7 @@ func _initialize() -> void:
 		"start_special_guests_late_v46": "special_guests_late_v46",
 		"start_special_guests_wet_v45": "special_guests_wet_v45",
 		"start_special_guests": "special_guests",
-		"start": "silver_market",
+		"start": "first_debt_merit_release",
 		"start_silver_v48": "silver_market",
 		"start_recycler_v47": "preopen_recycler",
 		"start_qingbang": "qingbang_release",

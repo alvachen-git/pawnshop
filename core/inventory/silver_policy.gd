@@ -13,7 +13,7 @@ static func enabled(run: RunDefinition) -> bool:
 	return run != null and run.variety.get("silver_trade", {}).get("version", 0) == 1
 
 static func enabled_state(state: RunState) -> bool:
-	return state.run_definition_id == &"silver_market"
+	return state.run_definition_id in [&"silver_market", &"first_debt_merit_release"]
 
 # Changes are durable and replay-verified: an invitation survives later losses.
 static func invited_night(state: RunState) -> int:

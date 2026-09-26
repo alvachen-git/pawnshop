@@ -1,0 +1,106 @@
+{
+  "content_version": 49,
+  "default_run_id": "first_debt_merit_release",
+  "sources": [
+    {
+      "kind": "runs",
+      "path": "res://data/first_debt_merit_release/run.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/items/items_v11.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/goods_expertise/customers.json"
+    },
+    {
+      "kind": "buyers",
+      "path": "res://data/lu_introduction/buyers.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/pawn_terms/terms_v11.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/integrated/events.json"
+    },
+    {
+      "kind": "ghost_rules",
+      "path": "res://data/ghost_rules/rules_m5.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/opening/items.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/opening/customers.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/mirror_chapter/customers.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/mirror_investigation/events.json"
+    },
+    {
+      "kind": "pawn_terms",
+      "path": "res://data/familiar/pawn_terms.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/fan_bargaining/items.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/mirror_living/customers.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/first_debt_recovery/events.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/mirror_dream_call/events.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/social_relations/coats.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/pearl_market/customers.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/gramophone/items.json"
+    },
+    {
+      "kind": "items",
+      "path": "res://data/first_debt_reckoning/items.json"
+    },
+    {
+      "kind": "customers",
+      "path": "res://data/first_debt_reckoning/customers.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/lu_introduction/events.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/pawn_interest/events.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/silver_market/events.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/first_debt_merit/events.json"
+    }
+  ]
+}

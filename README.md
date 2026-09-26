@@ -1,12 +1,9 @@
 # 鬼市当铺
 
 新增独立入口 **街巷百业 v50**：运行 `play-town-life.cmd`，包含四种普通职业、银耳坠等六种日常货、御寒衣物混合交付及新版人物/货物美术。使用独立存档；`-Version 49` / `-Legacy` 保留前两轮试玩进度。详见 [街巷百业说明](docs/TOWN_LIFE_V50.md) 与 [合并验收](docs/TOWN_LIFE_RELEASE.md)。通用默认入口和青帮独立入口保持各自规则。
+新增独立入口：`play-medicine-huaian.cmd` 包含周怀安筹药费、特殊客跨夜回访及湿包货异响；`-Stage report` 可预览提前筹齐后的报平安，`-Stage saved` / `-Stage bereaved` 可查看两种结局，`-Wide` 使用1600×900。新局和存档独立，通用默认入口为下述v49。见 [周怀安支线](docs/MEDICINE_HUAIAN_V47.md) 和 [本轮发布验收](docs/SPECIAL_GUESTS_RELEASE.md)。
 
-当前本地默认新局为 **v48 银楼商誉与白银行情版**。运行 `play-silver-v48.cmd`（或 `play-unified.cmd`）；商誉达到条件后，银楼掌柜次夜以 RPG 对话登门，之后可在开铺前用1行动点批量交货。独立存档，保留v47杂货回收及更早入口。详见 [v48 试玩、截图与验收](docs/SILVER_MARKET_V48.md)。本轮已完成本地验收，并获授权发布。
-
-新增独立入口：`play-medicine-huaian.cmd` 包含周怀安筹药费、特殊客跨夜回访及湿包货异响；`-Stage report` 可预览提前筹齐后的报平安，`-Stage saved` / `-Stage bereaved` 可查看两种结局，`-Wide` 使用1600×900。新局和存档独立，通用默认入口现为上述v48。见 [周怀安支线](docs/MEDICINE_HUAIAN_V47.md) 和 [本轮发布验收](docs/SPECIAL_GUESTS_RELEASE.md)。
-
-此前发布的 **v46 留声与当约整合版**：保留陆掌眼登门、卖货托盘与 v45 活当利息选择，加入留声机鉴定和相机120／留声机100银元最低接受价。使用 `play-unified.cmd`；旧版使用各自独立入口和存档。见 [留声机说明](docs/GRAMOPHONE_V44.md)。
+当前默认新局为 **v49 阴德与第一账反馈整合版**，基于v48银楼版，保留银楼、开铺前回收、留声机、相机鉴定及活当利息。归还双镯阴德加10、现金和解加5（隐藏）；结案后香炉有短暂暖光，资金不足时付款按钮置灰。见 [发布与测试](docs/FIRST_DEBT_MERIT_V49_RELEASE.md)。旧运行保留原规则与独立存档。
 
 
 此前发布的 **v45 活当利息与第三夜解锁版**：`play-pawn-v45.cmd` 独立入口。第一、二夜只做收购；第三夜开铺前由陆掌眼以 RPG 对话介绍活当，再开放低息5%／中息10%／高息20%。三夜整期计息，商誉与客人接受条件随利息档位变化。基于 main v44，保留第二夜来信卖货、相机鉴定与共用行动点；使用独立存档，v44及更早版本入口与旧票规则保留。详见 [v45 本地试玩与验收](docs/PAWN_INTEREST_V45.md)。以下旧版本记录保留作历史参考。
@@ -15,7 +12,9 @@
 
 **珍珠试玩入口：`play-pearl-v38.cmd -Stage pearl -Wide`，正式新局可用 `play-unified.cmd` 或 Godot 项目入口。** 默认版本为 v42 `porcelain_release`，加入第一账、龙镯追查与第十八夜后继续营业，并保留v38的珍珠逐粒查验、整串谈价，以及五位富客按权重携带十种高档货。实际货值在生成时固定，手记、对客说法与客人认识各自保存。详见 [v38试玩与验收](docs/PEARL_V38_LOCAL.md)。
 
-v40本地开发基于已合并的main `db4182b`，增加凤镯漏买补救与核实／赔偿对白。见 [v40启动与测试](docs/FIRST_DEBT_V40.md)。本批未推送、未合并。
+v43本地开发新增隐藏阴德与第一账结案香炉动画，见 [启动与测试](docs/FIRST_DEBT_V43_MERIT.md)。发布包含源码、测试入口与验收记录，不包含试玩包。
+
+v40历史开发基于已合并的main `db4182b`，增加凤镯漏买补救与核实／赔偿对白。见 [v40启动与测试](docs/FIRST_DEBT_V40.md)。v40成果已纳入v41发布。
 
 v39第一账发布基于线上 main `0e2fb42` 隔离整合。v38与第一账旧v31存档保持原运行。v37与更早存档保留原规则；原v37独立场景为 `scenes/start_named_wealthy_v37.tscn`。历史折扇与铜镜入口继续保留。
 

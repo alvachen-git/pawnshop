@@ -559,6 +559,10 @@ func event_command(event_id: String, choice_id: String) -> ActionResult:
 func _impl_event_command(event_id: String, choice_id: String) -> ActionResult:
 	if event_id in SilverPolicy.EVENTS and not SilverPolicy.active(_day.state): return ActionResult.new(false, "先把柜前来客的话说完。")
 	if event_id in LuIntroduction.ALL_EVENTS and not LuIntroduction.active(_day.state): return ActionResult.new(false, "先把柜前来客的话说完。")
+	if event_id == HiddenMerit.ECHO:
+		var result := HiddenMerit.acknowledge(_day.state, choice_id, mirror_pending())
+		if result.ok: _persist()
+		return result
 	if FirstDebt.enabled(definition) and event_id.begins_with("fd_"):
 		var before_minute := _day.state.game_minutes
 		var result := FirstDebt.choose(_day, _events, _counter, event_id, choice_id, replaying and not DragonSearch.enabled(_day.state))
@@ -1089,3 +1093,7 @@ func first_debt_model() -> Dictionary:
 
 func old_shop_model() -> Dictionary:
 	return OldShopReadModel.build(_day, _events, _counter)
+
+
+func merit_feedback_model() -> Dictionary:
+	return HiddenMerit.feedback(_day.state, mirror_pending())

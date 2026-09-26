@@ -48,6 +48,8 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	error_message = "十夜存档与实际办理记录不符，原档已保留。"
 	replayed_actions = 0
 	if not data is Dictionary or catalog == null or not InvestigationService.enabled(run): return null
+	if String(run.id) in [HiddenMerit.RUN, HiddenMerit.BALANCED_RUN, HiddenMerit.RELEASE_RUN]:
+		if not RunSchema.integer(data.get("hidden_merit")) or data.hidden_merit < -100 or data.hidden_merit > 100: return null
 	var version := catalog.content_version
 	if data.get("content_version") != version or data.get("save_version") != version or data.get("run_definition_id") != String(run.id): return null
 	if not data.get("action_journal") is Array or (not FirstDebt.enabled(run) and data.action_journal.size() > 4096): return null
@@ -102,6 +104,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 		if row.method == "counter_command" and args.size() == 4: args[3] = int(args[3])
 		var result: ActionResult = session.callv(row.method, args)
 		if DragonSearch.enabled(session._day.state) and row.method == "execute" and (str(row.args[0]).begins_with("prep_dragon_") or row.args[0] in ["prep_chen_invite", "prep_phoenix_invite"]) and not result.ok: return null
+		if row.method == "event_command" and row.args[0] == HiddenMerit.ECHO and not result.ok: return null
 		if row.method in ["growth_command", "fan_command", "social_command"] and not result.ok: return null
 		if row.method == "counter_command" and (row.args[0] in ["fan_pressure", "condition_pressure", "watch_bluff", "watch_claim", "pearl_claim", "gramophone_claim", "camera_claim", "porcelain_claim", "bangle_claim"] or String(row.args[0]).begins_with("luxury_")) and not result.ok: return null
 		if SocialRules.enabled(run) and row.method == "counter_command" and row.args[0] in ["military_intro", "intimidate"] and not result.ok: return null

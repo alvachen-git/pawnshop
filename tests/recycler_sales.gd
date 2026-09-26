@@ -1,5 +1,8 @@
 extends "res://tests/pawn_interest.gd"
 
+func expected_version() -> int:
+	return 47
+
 func manifest_path() -> String:
 	return "res://data/preopen_recycler_manifest.json"
 
@@ -159,7 +162,7 @@ func channels() -> void:
 	var old := JsonContentProvider.new("res://data/gramophone_release_manifest.json").load_catalog()
 	check(old.is_success(), "v46 catalog retained")
 	var old_run: RunDefinition = old.catalog.get_definition("runs", old.catalog.default_run_id)
-	check(not RecyclerPolicy.enabled(old_run) and catalog.content_version == 47 and old.catalog.content_version == 46, "version isolation")
+	check(not RecyclerPolicy.enabled(old_run) and catalog.content_version == expected_version() and old.catalog.content_version == 46, "version isolation")
 	var old_store := CountingStore.new()
 	old_store.origin = {"seed": 42, "run_token": "0123456789abcdef0123456789abcdef"}
 	var legacy := RunSession.new(old_run, old.catalog.content_version, old_store, old.catalog)

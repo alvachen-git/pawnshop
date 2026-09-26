@@ -9,13 +9,14 @@ func _init(content: ContentCatalog) -> void:
 
 func eligible(state: RunState, event: EventDefinition) -> bool:
 	if event.id in SilverPolicy.EVENTS and not SilverPolicy.due(state): return false
+	if event.id == HiddenMerit.ECHO: return false # Presentation acknowledgment never becomes a choice.
 	if event.id == "ds_search_message" and (not DragonSearch.message_due(state) or not state.risk_pending.is_empty()): return false
 	if event.id == MirrorDreamService.EVENT and not MirrorDreamService.eligible(state, event.presentation.get("requires_call", false)): return false
 	if event.id == MirrorDreamService.CALL and not MirrorDreamService.call_eligible(state): return false
 	if state.social_enabled and event.kind != "anchor" and SocialRules.night(state).get("military_event", false):
 		# The old social run keeps its frozen event rule. The combined campaign
 		# retains bedroom scenes and the companion alongside daytime military news.
-		if state.run_definition_id not in [&"unified_ten", &"named_wealthy_ten", &"pearl_market_ten", &"first_debt_dragon_search", &"first_debt_unified", &"bangle_market_ten", &"bangle_unified", "porcelain_unified", "gramophone_unified", "gramophone_release", "qingbang_release", "preopen_recycler", "silver_market", "camera_unified", "porcelain_release", &"first_debt_recovery", &"first_debt_recovery_release"] or (state.phase in [&"pre_open", &"open"] and not event.id.begins_with("aq_")): return false
+		if state.run_definition_id not in [&"unified_ten", &"named_wealthy_ten", &"pearl_market_ten", &"first_debt_dragon_search", &"first_debt_unified", &"bangle_market_ten", &"bangle_unified", "porcelain_unified", "gramophone_unified", "gramophone_release", "preopen_recycler", "silver_market", "qingbang_release", "first_debt_merit", "first_debt_merit_balance", "first_debt_merit_release", "camera_unified", "porcelain_release", &"first_debt_recovery", &"first_debt_recovery_release"] or (state.phase in [&"pre_open", &"open"] and not event.id.begins_with("aq_")): return false
 	if String(state.phase) != event.phase or state.current_night_index < event.night_min or (state.current_night_index > event.night_max and event.id != "ds_search_message") or state.game_minutes < event.window_start or state.game_minutes >= event.window_end: return false
 	if not CounterDomainValidator._contains_all(state.narrative_flags, event.required_flags): return false
 	for flag in event.excluded_flags:
@@ -34,6 +35,7 @@ func eligible(state: RunState, event: EventDefinition) -> bool:
 	var count := 0
 	var optional_today := 0
 	for row in state.event_history:
+		if row.event_id == HiddenMerit.ECHO: continue
 		var previous := catalog.get_definition("events", row.event_id) as EventDefinition
 		if row.event_id == event.id:
 			count += 1
@@ -63,7 +65,7 @@ func select_next(state: RunState, run: RunDefinition) -> String:
 		if event.priority == top_priority: total += event.weight
 	var rng := RandomNumberGenerator.new()
 	# Stable IDs/order and persisted history make selection independent of UI reads.
-	rng.seed = state.run_seed + state.current_night_index * 104729 + state.event_history.size() * 7919
+	rng.seed = state.run_seed + state.current_night_index * 104729 + HiddenMerit.gameplay_event_count(state) * 7919
 	var roll := rng.randi_range(1, total)
 	for event in candidates:
 		if event.priority != top_priority: continue
@@ -108,7 +110,7 @@ func choose(day: DayController, event_id: String, choice_id: String) -> ActionRe
 	for flag in choice.grant_flags:
 		if flag not in day.state.narrative_flags: day.state.narrative_flags.append(flag)
 	day.state.event_history.append({"event_id": event.id, "choice_id": choice.id, "night": day.state.current_night_index, "phase": event.phase, "offered_minute": day.state.pending_event_minute, "minute": day.state.game_minutes})
-	PersonalRisk.apply_effect(day.state, choice.personal_effect, "event/%s/%d" % [event.id, day.state.event_history.size()], choice.result)
+	PersonalRisk.apply_effect(day.state, choice.personal_effect, "event/%s/%d" % [event.id, HiddenMerit.gameplay_event_count(day.state)], choice.result)
 	day.state.pending_event_id = ""
 	day.state.pending_event_minute = -1
 	poll(day.state, day.definition)
@@ -124,7 +126,7 @@ func model(day: DayController, message: String) -> Dictionary:
 		if day.state.personal_risk_enabled:
 			for option in event.choices:
 				if option.available(day.state.narrative_flags, day.state.inventory_instances) and option.personal_effect.has("personal_damage"):
-					var warning := PersonalRisk.warning(day.state, "event/%s/%d" % [event.id, day.state.event_history.size() + 1], int(option.personal_effect.personal_damage))
+					var warning := PersonalRisk.warning(day.state, "event/%s/%d" % [event.id, HiddenMerit.gameplay_event_count(day.state) + 1], int(option.personal_effect.personal_damage))
 					if not warning.is_empty(): risk_warning = warning; body += warning; break
 		for choice in event.choices:
 			if not choice.available(day.state.narrative_flags, day.state.inventory_instances): continue
@@ -132,6 +134,7 @@ func model(day: DayController, message: String) -> Dictionary:
 			buttons.append({"command": "choose", "target_id": event.id, "detail": choice.id, "label": choice.label + (" · %d分钟" % choice.minutes if choice.minutes > 0 else ""), "enabled": reason.is_empty(), "reason": reason})
 	var history := "往事\n"
 	for row in day.state.event_history:
+		if row.event_id == HiddenMerit.ECHO: continue
 		var event := catalog.get_definition("events", row.event_id) as EventDefinition
 		history += "\n第%d夜 · %s\n%s\n" % [row.night, event.title, event.find_choice(row.choice_id).result]
 	var model := {"body": body, "history": history if not day.state.event_history.is_empty() else "", "buttons": buttons, "pending_id": day.state.pending_event_id, "presentation": {}}
