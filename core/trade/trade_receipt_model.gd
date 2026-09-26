@@ -38,6 +38,8 @@ static func batch(day: DayController, catalog: ContentCatalog, first: int) -> Di
 		var source := ProvenanceService.premium(item, buyer, base)
 		var line := "%s · 收%d / 成本%d / 盈亏%+d\n基础报价%d · 来源溢价%d" % [definition.display_name, row.amount, item.acquisition_price, row.realized_profit, base, source]
 		if GoodsExpertise.enabled(day.definition): line += " · 原配加价%d" % (row.amount - base - source)
+		if trip.get("action_points", 0) == 1:
+			line = "%s · 收%d / 成本%d / 盈亏%+d\n基础价%s · 当日%d%%" % [definition.display_name, row.amount, item.acquisition_price, row.realized_profit, String.num(definition.base_value, 2), RecyclerPolicy.rate(day.state.run_seed, trip.night, item.definition_id)]
 		lines.append(line)
 	receipt.item = "%s · 交货%d件" % [buyer.display_name, trip.item_ids.size()]
 	receipt.item_asset = ""
@@ -45,7 +47,7 @@ static func batch(day: DayController, catalog: ContentCatalog, first: int) -> Di
 	receipt.amount = total
 	receipt.before = entries[0].balance - entries[0].amount
 	receipt.after = entries.back().balance
-	receipt.note = "往返20分钟，货款已收妥。"
+	receipt.note = "消耗1行动点，货款已收妥。" if trip.get("action_points", 0) == 1 else "往返20分钟，货款已收妥。"
 	var expenses := "未扣调查、行家复核、寻货及每日费用。" if GoodsExpertise.enabled(day.definition) else "未扣来源调查费与每日息费。"
 	receipt.detail = "总成本%d · 已实现盈亏%+d 银元\n%s\n\n%s" % [cost, total - cost, expenses, "\n\n".join(lines)]
 	return receipt

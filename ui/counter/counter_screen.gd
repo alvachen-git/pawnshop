@@ -21,6 +21,7 @@ var _room_phase := ""
 var _room_pending := ""
 var _market_notice: Button
 var lu_sale: LuSaleView
+var _sale_from_business := false
 var _notice_stamp: Label
 var _notice_key := ""
 var _notice_read_key := ""
@@ -207,7 +208,7 @@ func bind_session(session: RunSession) -> void:
 		lu_sale = LuSaleView.new()
 		lu_sale.name = "LuSale"
 		add_child(lu_sale)
-		lu_sale.dismissed.connect(_close_drawer)
+		lu_sale.dismissed.connect(_dismiss_sale)
 		lu_sale.visibility_changed.connect(_refresh_notice_visibility)
 		lu_sale.submitted.connect(func(buyer: String, ids: Array, pairs: Array) -> void:
 			var result := session.sell_batch(buyer, ids, pairs)
@@ -215,7 +216,7 @@ func bind_session(session: RunSession) -> void:
 			else:
 				_close_menu()
 				%Drawer.hide()
-				lu_sale.present(session.counter_model().inventory)
+				lu_sale.present(session.counter_model().inventory, buyer)
 				lu_sale.show_error(result.message))
 		session.changed.connect(func() -> void:
 			if lu_sale.visible: lu_sale.render(session.counter_model().inventory))
@@ -229,6 +230,7 @@ func bind_session(session: RunSession) -> void:
 	var day_presenter := DayFlowPresenter.new()
 	add_child(day_presenter)
 	day_presenter.route_requested.connect(_flow.show_panel)
+	day_presenter.sale_requested.connect(_open_business_sale)
 	day_presenter.bind(session, %DayFlowPanel, _session_menu)
 	var night_presenter := NightResolutionPresenter.new()
 	add_child(night_presenter)
@@ -391,7 +393,8 @@ func _drain_departures() -> void:
 
 func _departure_closed(_destination: String) -> void:
 	if first_debt_conversation != null: first_debt_conversation.refresh.call_deferred()
-	if _session._day.state.phase != "open": _flow.show_panel(&"night")
+	if _session._day.state.phase == "pre_open": _flow.show_panel(&"day")
+	elif _session._day.state.phase != "open": _flow.show_panel(&"night")
 	elif not _departure_return_panel.is_empty(): _flow.show_panel(_departure_return_panel)
 	else:
 		_close_drawer()
@@ -454,6 +457,7 @@ func _receipt_closed(destination: String) -> void:
 		_flow.show_panel(StringName(destination))
 		if destination == "ledger": %LedgerPanel.select_page(2)
 	elif not _receipt_followup.is_empty(): _flow.show_panel(StringName(_receipt_followup))
+	elif state.phase == "pre_open": _flow.show_panel(&"day")
 	elif state.phase != "open": _flow.show_panel(&"night")
 	elif _session.counter_model().trade.get("pawn_return", false): _flow.show_panel(&"trade")
 	else: _close_drawer()
@@ -531,6 +535,7 @@ func _open_market_notice() -> void:
 		%Drawer.hide()
 		_counter_view.dismiss_contexts()
 		_recent_bar.hide()
+		_sale_from_business = false
 		lu_sale.present(_session.counter_model().inventory)
 		return
 	_flow.show_panel(&"inventory")
@@ -538,6 +543,21 @@ func _open_market_notice() -> void:
 	%InventoryPanel.render(_session.counter_model().inventory)
 	%InventoryPanel.open_buyer(_session.definition.market.buyer_id)
 
+
+func _open_business_sale(buyer_id: String) -> void:
+	if lu_sale == null or not RecyclerPolicy.enabled(_session.definition) or _session._day.state.current_night_index < 2 or not RecyclerPolicy.visible(_session._day, buyer_id): return
+	if not RecyclerPolicy.browse_reason(_session._day).is_empty() or _session._day.state.phase not in [&"pre_open", &"open"]: return
+	_sale_from_business = true
+	_close_menu()
+	%Drawer.hide()
+	_counter_view.dismiss_contexts()
+	_recent_bar.hide()
+	lu_sale.present(_session.counter_model().inventory, buyer_id)
+
+func _dismiss_sale() -> void:
+	var business := _sale_from_business
+	_close_drawer()
+	if business: _flow.show_panel(&"day")
 
 func _route_from_counter(panel_id: StringName, hotspot: StringName) -> void:
 	if _counter_view.story_active: _counter_view.story.hide()

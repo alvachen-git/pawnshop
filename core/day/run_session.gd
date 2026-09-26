@@ -422,6 +422,7 @@ func _impl_commerce_command(command: String, target: String, detail := "") -> Ac
 	var feedback_before := _feedback_snapshot()
 	if _commerce != null:
 		result = _commerce.execute(_day, command, target, detail)
+		if result.ok and command == "sell" and RecyclerPolicy.enabled(definition): _persist()
 		_counter.customers.update(_day.state)
 	if _risk != null: _risk.capture_close(_day.state)
 	if _events != null: _events.poll(_day.state, definition)
@@ -460,6 +461,7 @@ func _impl_sell_batch(buyer_id: String, item_ids: Array, pairs: Array = []) -> A
 	var previous := _day.state.ledger_entries.size()
 	var feedback_before := _feedback_snapshot()
 	var result := _commerce.sell_batch(_day, buyer_id, item_ids, pairs)
+	if result.ok and RecyclerPolicy.enabled(definition): _persist()
 	if result.ok:
 		_counter.customers.update(_day.state)
 		if _risk != null: _risk.capture_close(_day.state)

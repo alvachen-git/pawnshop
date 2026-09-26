@@ -4,6 +4,7 @@ extends Control
 signal dismissed
 signal submitted(buyer_id: String, item_ids: Array, pairs: Array)
 
+var buyer_id := "buyer_lu"
 var _model: Dictionary = {}
 var _buyer: Dictionary = {}
 var _visual: Dictionary = {}
@@ -29,7 +30,9 @@ func _ready() -> void:
 	resized.connect(_fit)
 	hide()
 
-func present(inventory: Dictionary) -> void:
+func present(inventory: Dictionary, target_buyer := "buyer_lu") -> void:
+	if buyer_id != target_buyer: reset_draft()
+	buyer_id = target_buyer
 	_error = ""
 	render(inventory)
 	show()
@@ -37,13 +40,13 @@ func present(inventory: Dictionary) -> void:
 
 func render(inventory: Dictionary) -> void:
 	_model = inventory.get("sales", {})
-	if _token != _model.get("run_token", "") or _market != _model.get("market_id", ""):
-		reset_draft()
-	_token = _model.get("run_token", "")
-	_market = _model.get("market_id", "")
 	_buyer = {}
 	for row in _model.get("buyers", []):
-		if row.id == "buyer_lu": _buyer = row
+		if row.id == buyer_id: _buyer = row
+	var draft_key: String = _buyer.get("draft_key", "") if _buyer.get("preopen", false) else _model.get("market_id", "")
+	if _token != _model.get("run_token", "") or _market != draft_key: reset_draft()
+	_token = _model.get("run_token", "")
+	_market = draft_key
 	_visual = {}
 	for row in inventory.get("visual", {}).get("stock", []): _visual[row.id] = row
 	_rebuild()
@@ -237,17 +240,35 @@ func _slot(row: Dictionary, rect: Rect2) -> void:
 
 func _receipt() -> void:
 	var paper := _paper(_canvas, Rect2(846, 114, 408, 526))
-	var avatar := TextureRect.new()
-	var crop := AtlasTexture.new()
-	crop.atlas = preload("res://assets/first_debt/lu_zhangyan_elderly_v43.png")
-	crop.region = Rect2(305, 0, 620, 660)
-	avatar.texture = crop
-	avatar.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-	avatar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_place(avatar, paper, Rect2(27, 15, 126, 130))
-	_label(paper, "陆掌眼", Rect2(171, 29, 210, 42), 34)
-	_label(paper, "收" + String(_buyer.get("wanted", "货")), Rect2(171, 83, 210, 32), 25, Color("843b2b"))
+	if buyer_id == "buyer_lu":
+		var avatar := TextureRect.new()
+		var crop := AtlasTexture.new()
+		crop.atlas = preload("res://assets/first_debt/lu_zhangyan_elderly_v43.png")
+		crop.region = Rect2(305, 0, 620, 660)
+		avatar.texture = crop
+		avatar.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		avatar.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		avatar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		_place(avatar, paper, Rect2(27, 15, 126, 130))
+		_label(paper, "陆掌眼", Rect2(171, 29, 210, 42), 34)
+		_label(paper, "收" + String(_buyer.get("wanted", "货")), Rect2(171, 83, 210, 32), 25, Color("843b2b"))
+	else:
+		var sign := _paper(paper, Rect2(27, 24, 354, 78))
+		var title := _label(sign, "杂货回收" if buyer_id == RecyclerPolicy.BUYER else _buyer.get("name", "收货约定"), Rect2(12, 10, 330, 58), 34)
+		title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		title.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		_label(paper, "各货各价 · 当日为准" if _buyer.get("preopen", false) else _buyer.get("window", ""), Rect2(30, 115, 300, 27), 19)
+		var stamp := Panel.new()
+		var seal := StyleBoxFlat.new()
+		seal.bg_color = Color("ead3a400")
+		seal.border_color = Color("873e2c")
+		seal.set_border_width_all(2)
+		stamp.add_theme_stylebox_override("panel", seal)
+		stamp.rotation = -0.06
+		_place(stamp, paper, Rect2(326, 107, 52, 36))
+		var seal_text := _label(stamp, "收货", Rect2(0, 0, 52, 36), 20, Color("873e2c"))
+		seal_text.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		seal_text.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_rule(paper, 152)
 	_label(paper, "本次货单", Rect2(27, 164, 300, 30), 25)
 	var scroll := ScrollContainer.new()
@@ -290,7 +311,7 @@ func _receipt() -> void:
 			for key in ["income", "profit", "cash", "balance"]: _preview[key] += int(pair.bonus)
 	_rule(paper, 326)
 	_total = _label(paper, "收款  %d 银元" % _preview.get("income", 0), Rect2(27, 333, 354, 43), 34, Color("713122"))
-	_label(paper, "已选%d件 · 往返20分钟" % _selected.size(), Rect2(27, 380, 250, 26), 17)
+	_label(paper, ("已选%d件 · 交货1行动点 · 余%d点" % [_selected.size(), maxi(0, _buyer.get("action_points", 0))] if _buyer.get("preopen", false) else "已选%d件 · 往返20分钟" % _selected.size()), Rect2(27, 380, 354, 26), 17)
 	var details := _button(paper, "价目明细", Rect2(27, 447, 171, 46), func() -> void: _details = true; _rebuild())
 	details.add_theme_font_size_override("font_size", 24)
 	var reason: String = _error if not _error.is_empty() else _buyer.get("reason", "")
@@ -301,7 +322,7 @@ func _receipt() -> void:
 	status.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	status.tooltip_text = reason
 	status.mouse_filter = Control.MOUSE_FILTER_PASS
-	_submit = _button(paper, "确认交货", Rect2(210, 447, 171, 46), func() -> void: submitted.emit("buyer_lu", _selected.duplicate(), _pairs.duplicate(true)))
+	_submit = _button(paper, "确认交货", Rect2(210, 447, 171, 46), func() -> void: submitted.emit(buyer_id, _selected.duplicate(), _pairs.duplicate(true)))
 	_submit.add_theme_font_size_override("font_size", 24)
 	for state in ["normal", "hover", "pressed"]:
 		_submit.add_theme_stylebox_override(state, CounterTheme.painted_paper(Color("8b4232") if state != "hover" else Color("a35a42")))
@@ -323,13 +344,17 @@ func _price_details() -> void:
 	scroll.add_child(list)
 	for row in _buyer.get("stock", []):
 		if row.id in _selected:
-			AccountPaper.label(list, "%s\n报价%d · 成本%d · 来源溢价%d" % [row.name, row.price, row.cost, row.premium], 18)
+			if _buyer.get("preopen", false):
+				AccountPaper.label(list, "%s\n基础价%s × 当日%d%% → %d银元" % [row.name, String.num(row.base_value, 2), row.daily_rate, row.price], 18)
+			else:
+				AccountPaper.label(list, "%s\n报价%d · 成本%d · 来源溢价%d" % [row.name, row.price, row.cost, row.premium], 18)
 	if _buyer.has("fixed_pair") and _buyer.fixed_pair.all(func(id: String) -> bool: return id in _selected): AccountPaper.label(list, "龙凤成对加价 %d 银元" % _buyer.fixed_bonus, 18)
 	for pair in _buyer.get("pairs", []):
 		if pair.ids in _pairs: AccountPaper.label(list, pair.label + " · 加价%d 银元" % pair.bonus, 18)
 	AccountPaper.rule(list)
 	if _preview.valid:
-		AccountPaper.label(list, "收款%d · 成本%d · 交易毛利%+d 银元\n%s 出门 → %s 回店" % [_preview.income, _preview.cost, _preview.profit, _model.get("clock", ""), _model.get("return_clock", "")], 18)
+		var trip_text := "交货消耗1行动点" if _buyer.get("preopen", false) else "%s 出门 → %s 回店" % [_model.get("clock", ""), _model.get("return_clock", "")]
+		AccountPaper.label(list, "收款%d · 成本%d · 交易毛利%+d 银元\n%s" % [_preview.income, _preview.cost, _preview.profit, trip_text], 18)
 		if _model.has("cash_flow"): AccountPaper.label(list, "成交后现银%d 银元\n%s" % [_preview.cash, CashFlowReadModel.balance_text(_preview.balance, true)], 17)
 	AccountPaper.label(list, "交易毛利未扣调查、复核、寻货及每日费用。", 15)
 
