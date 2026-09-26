@@ -40,8 +40,8 @@ func render(model: Dictionary) -> void:
 	AccountPaper.clear(_cash_flow)
 	_cash_flow.visible = model.has("cash_flow")
 	if _cash_flow.visible: AccountPaper.label(_cash_flow, CashFlowReadModel.overview(model.cash_flow), 15)
-	_tabs.get_child(2).visible = model.has("sales")
-	if not model.has("sales") and _filter == 2: _filter = 0
+	_tabs.get_child(2).visible = model.has("sales") and not model.get("business_selling", false)
+	if not _tabs.get_child(2).visible and _filter == 2: _filter = 0
 	if not model.has("visual"):
 		super.render(model)
 		return
@@ -53,6 +53,7 @@ func _select(index: int) -> void:
 	(_column.get_parent() as ScrollContainer).scroll_vertical = 0
 
 func open_buyer(buyer_id: String) -> void:
+	if _model.get("business_selling", false): return
 	_select(2)
 	_sale_view._choose(buyer_id)
 

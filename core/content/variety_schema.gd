@@ -3,6 +3,8 @@ extends RefCounted
 
 static func validate(kind: String, row: Dictionary, path: String, at: String) -> Array:
 	var issues: Array = []
+	if kind == "runs" and row.get("variety") is Dictionary and row.variety.has("preopen_recycler_version"):
+		if row.variety.preopen_recycler_version != 1 or row.variety.get("preparation_version") != 1 or not row.get("batch_selling", false): CounterDomainValidator._error(issues, at, "开铺回收需要批量交货与行动点准备规则。")
 	if kind == "runs" and row.get("variety") is Dictionary and row.variety.has("fan_bargaining"):
 		var policy: Variant = row.variety.fan_bargaining
 		var valid: bool = policy is Dictionary

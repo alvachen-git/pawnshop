@@ -7,7 +7,9 @@ var pawns := PawnController.new()
 func _init(content: ContentCatalog) -> void:
 	catalog = content
 
-func quote(item: ItemInstance, buyer: BuyerDefinition) -> int:
+func quote(item: ItemInstance, buyer: BuyerDefinition, day: DayController = null) -> int:
+	if day != null and RecyclerPolicy.enabled(day.definition) and buyer.id == RecyclerPolicy.BUYER:
+		return RecyclerPolicy.price(day.state, catalog.get_definition("items", item.definition_id))
 	if buyer.id == "buyer_lu" and item.definition_id in [FirstDebt.PHOENIX, FirstDebt.DRAGON]: return 120 if item.definition_id == FirstDebt.PHOENIX else 160
 	var definition := catalog.get_definition("items", item.definition_id) as ItemDefinition
 	var base := base_quote(item, buyer)
@@ -75,6 +77,9 @@ func item_reason(day: DayController, item: ItemInstance, buyer: BuyerDefinition)
 	return ""
 
 func trip_reason(day: DayController, buyer: BuyerDefinition) -> String:
+	if RecyclerPolicy.enabled(day.definition):
+		if buyer == null or buyer.id not in day.definition.buyer_ids or not RecyclerPolicy.visible(day, buyer.id): return "尚无这位买家的收货约定。"
+		if buyer.id == RecyclerPolicy.BUYER: return RecyclerPolicy.trip_reason(day)
 	if SocialRules.closed(day.state): return "今夜停业，不办新交货；已有约定顺延一夜。"
 	if buyer == null or buyer.id not in day.definition.buyer_ids: return "买家不存在。"
 	var introduction := PreparationService.buyer_reason(day.state, buyer.id)
@@ -109,7 +114,7 @@ func sell_batch(day: DayController, buyer_id: String, item_ids: Array, pairs: Ar
 		var item := InventoryManager.new().find(day.state, id)
 		error = item_reason(day, item, buyer)
 		if not error.is_empty(): return ActionResult.new(false, error)
-		var price := quote(item, buyer) + int(paired.bonuses.get(id, 0))
+		var price := quote(item, buyer, day) + int(paired.bonuses.get(id, 0))
 		income += price
 		cost += item.acquisition_price
 		rows.append({"item_instance_id": id, "price": price, "cost_basis": item.acquisition_price, "realized_profit": price - item.acquisition_price})
@@ -123,14 +128,17 @@ func sell_batch(day: DayController, buyer_id: String, item_ids: Array, pairs: Ar
 	var market := MarketService.current(day.definition, day.state.run_seed, day.state.current_night_index, start)
 	var batch_id := "batch/%d" % (day.state.sale_batches.size() + 1)
 	# Everything that can reject is checked before time or money changes.
-	var spent := day.spend_action(buyer.action_minutes)
-	if not spent.ok: return spent
+	var preopen := RecyclerPolicy.enabled(day.definition) and buyer_id == RecyclerPolicy.BUYER
+	if not preopen:
+		var spent := day.spend_action(buyer.action_minutes)
+		if not spent.ok: return spent
 	for row in rows:
 		var item := InventoryManager.new().find(day.state, row.item_instance_id)
 		commit_sale(day.state, item, buyer_id, row.price, batch_id)
 	day.state.sale_batches.append({"id": batch_id, "buyer_id": buyer_id, "item_ids": item_ids.duplicate(), "night": day.state.current_night_index, "start": start, "minute": day.state.game_minutes, "market_id": market.get("id", "fixed")})
+	if preopen: day.state.sale_batches.back().action_points = 1
 	if GoodsExpertise.enabled(day.definition): day.state.sale_batches.back().pairs = pairs.map(func(ids: Array) -> Array: return GoodsExpertise.pair_ids(ids[0], ids[1]))
-	return ActionResult.new(true, "交货%d件，收银%d；成本%d，交易毛利%+d。往返20分钟。" % [rows.size(), income, cost, income - cost])
+	return ActionResult.new(true, "交货%d件，收银%d；成本%d，交易毛利%+d。%s" % [rows.size(), income, cost, income - cost, "消耗1行动点。" if preopen else "往返20分钟。"])
 
 static func commit_sale(state: RunState, item: ItemInstance, buyer_id: String, price: int, batch_id := "") -> void:
 	var profit := price - item.acquisition_price

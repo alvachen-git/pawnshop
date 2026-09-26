@@ -102,3 +102,9 @@ powershell -ExecutionPolicy Bypass -File "D:\CodexData\home\worktrees\qingbang-f
 ```
 
 读完沈伯钧的话后选择交钱或拒交；可用同一指令重新开始测试另一条路径。此测试场景不写入普通开局存档。去掉 `-Stage fee` 为普通入口，加 `-Wide` 为1600×900。
+
+## 发布整合
+
+发布前已合入远程 main 的 `f3719f5`（回收商 v47，PR #74）。冲突仅为共享剧情适用版本及存档册注册，保留青帮 v48 与回收商 v47 两个独立入口。默认入口沿用 main 的回收商版本；青帮仍使用本页独立启动指令。
+
+合并后重新验证青帮收费与冷启动存档、两种分辨率的青帮 UI、回收商出售与存档兼容。发布验证记录保存在 `docs/qa/qingbang-publish/`。

@@ -3,6 +3,7 @@ extends Node
 
 signal status_updated(text: String)
 signal route_requested(panel_id: StringName)
+signal sale_requested(buyer_id: String)
 
 const PHASE_LABELS := {"pre_open": "开铺前", "open": "营业中", "closed_processing": "已关门 · 店内处理", "night_resolution": "封铺 · 夜间结算", "shop_resolution": "封铺 · 铺内收尾", "private_room": "回房", "sleep_resolution": "就寝", "day_summary": "日结", "run_ended": "经营告一段落", "dead": "命灯已灭", "bankrupt": "铺门已封"}
 var _session: RunSession
@@ -88,6 +89,16 @@ func refresh() -> void:
 		description += "\n" + FeeService.nightly_fee_notice(state, definition)
 		var principal_notice := FeeService.principal_schedule_notice(state, definition)
 		if not principal_notice.is_empty(): description += "\n" + principal_notice
+	if RecyclerPolicy.enabled(definition) and state.current_night_index >= 2 and state.phase in [&"pre_open", &"open"] and not _category_picker:
+		var reason := RecyclerPolicy.browse_reason(_session._day)
+		var sale_commands: Array = []
+		for buyer_id in definition.buyer_ids:
+			if buyer_id == "buyer_lu" or not RecyclerPolicy.visible(_session._day, buyer_id): continue
+			var buyer := _session._counter.catalog.get_definition("buyers", buyer_id) as BuyerDefinition
+			var label := "卖货 · " + buyer.display_name
+			if buyer_id == RecyclerPolicy.BUYER: label += " · 1行动点"
+			sale_commands.append({"id": "sale/" + buyer_id, "label": label, "enabled": reason.is_empty(), "reason": reason})
+		commands = commands.slice(0, 1) + sale_commands + commands.slice(1)
 	if _wait_picker:
 		description = "等待多久？"
 		commands = _wait_commands()
@@ -105,6 +116,9 @@ func _refresh_chrome(state: RunState) -> void:
 		route_requested.emit(&"night" if state.phase in ["night_resolution", "day_summary", "run_ended", "dead", "bankrupt"] else &"day")
 
 func _on_command(command: String) -> void:
+	if command.begins_with("sale/"):
+		sale_requested.emit(command.trim_prefix("sale/"))
+		return
 	if command == "choose_wait":
 		_wait_picker = true
 		refresh()
