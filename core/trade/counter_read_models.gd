@@ -2,7 +2,7 @@ class_name CounterReadModels
 extends RefCounted
 
 const JUDGEMENTS := {"unknown": "暂不判断", "sound": "完好真品", "damaged": "有修补/瑕疵", "fake": "仿制/材质不符"}
-const OUTCOMES := {"inspection_refused": "收货离去", "swapped": "换物成交", "swap_rejected": "拒绝换物", "person_deceased": "当户已故", "redeemed_early": "提前赎回", "redemption_deferred": "约定到期再来", "bought": "成交", "pawned": "活当放款", "rejected": "拒收", "timed_out": "等候超时离场", "shop_closed": "关铺失去机会", "patience_exhausted": "耐心耗尽", "rounds_exhausted": "议价结束"}
+const OUTCOMES := {"medicine_reported": "叙话告辞", "inspection_refused": "收货离去", "swapped": "换物成交", "swap_rejected": "拒绝换物", "person_deceased": "当户已故", "redeemed_early": "提前赎回", "redemption_deferred": "约定到期再来", "bought": "成交", "pawned": "活当放款", "rejected": "拒收", "timed_out": "等候超时离场", "shop_closed": "关铺失去机会", "patience_exhausted": "耐心耗尽", "rounds_exhausted": "议价结束"}
 
 static func build(day: DayController, service: CounterService, message: String, message_visit_id := "") -> Dictionary:
 	var blank := {"body": "暂无正在接待的顾客。\n请在营业页开铺或等待来客。", "buttons": [], "visit_id": ""}
@@ -136,6 +136,7 @@ static func build(day: DayController, service: CounterService, message: String, 
 			model.dialogue.buttons = model.dialogue.buttons.filter(func(b: Dictionary) -> bool: return not b.reason.contains("另行压价"))
 	LuxuryReadModels.enrich(model, day, service, visit, message)
 	PawnInterestPolicy.enrich(model, day, visit)
+	SpecialGuests.enrich(model, day, service, visit)
 	EarlyRedemption.enrich(model, day, service, visit)
 	return model
 

@@ -23,6 +23,8 @@ const SPECIAL_CUSTOMERS := {
 # Full source height, counter occlusion in source UV, horizontal center.
 # Align each source independently; the husband's canonical reference is square.
 const SPECIAL_PLACEMENT := {
+	"zhou_huaian_v47": Vector3(0.680, 0.780, 0.500),
+	"wet_bundle_v45": Vector3(0.640, 0.800, 0.500),
 	"xu_wenheng": Vector3(0.660, 0.760, 0.500),
 	"jiang_suyun": Vector3(0.650, 0.720, 0.500),
 	"mirror_husband": Vector3(0.510, 1.000, 0.493),
@@ -69,6 +71,7 @@ const DETAILS := {
 
 static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
 	if asset == "fd.lu_elderly": return load(LU_ELDERLY_PORTRAIT) as Texture2D
+	if asset == "special.wet_bundle_v45": return load(SPECIAL_ROOT + "wet_bundle_v45.png") as Texture2D
 	if WEALTHY_CUSTOMERS.has(customer_id):
 		var painted_path: String = WEALTHY_PAINTED_ROOT + WEALTHY_CUSTOMERS[customer_id] + ".png"
 		if ResourceLoader.exists(painted_path): return load(painted_path) as Texture2D
@@ -82,6 +85,7 @@ static func portrait(asset: String, customer_id := "", person_id := "") -> Textu
 	# Keep the approved cap, face and clothes used by the reunion expression set.
 	if customer_id == "mirror_husband" or person_id == InvestigationService.PERSON:
 		return MIRROR_HUSBAND_PORTRAIT
+	if asset == "medicine.huaian": return load(SPECIAL_ROOT + "zhou_huaian_v47.png") as Texture2D
 	if asset == "social.sun_dayuan_visit":
 		return load(SUN_PORTRAIT) as Texture2D
 	if customer_id == "intro_neighbor" and ResourceLoader.exists(NEIGHBOR_PORTRAIT):
@@ -106,7 +110,7 @@ static func portrait_material(texture: Texture2D) -> ShaderMaterial:
 	material.set_shader_parameter("chroma_key", is_wealthy_portrait(texture) or is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
 	material.set_shader_parameter("clean_chroma_edges", is_wealthy_portrait(texture) or is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path == NEIGHBOR_PORTRAIT)
 	# Repainted wealthy sprites have native alpha; chroma cleanup would alter cloth colors.
-	if texture.resource_path.begins_with(WEALTHY_PAINTED_ROOT):
+	if texture.resource_path.begins_with(WEALTHY_PAINTED_ROOT) or texture.resource_path in [SPECIAL_ROOT + "wet_bundle_v45.png", SPECIAL_ROOT + "zhou_huaian_v47.png"]:
 		material.set_shader_parameter("chroma_key", false)
 		material.set_shader_parameter("clean_chroma_edges", false)
 	return material

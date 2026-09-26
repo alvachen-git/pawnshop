@@ -2,7 +2,9 @@ extends "res://tests/m3_ui_smoke.gd"
 
 func _run() -> void:
 	root.size = Vector2i(1600, 900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280, 720)
-	await super._run()
+	if "ledger-context" in OS.get_cmdline_user_args():
+		await _ledger_context_run()
+	else: await super._run()
 
 func _capture(label: String) -> void:
 	_capture_prefix = "art03_1600" if "wide" in OS.get_cmdline_user_args() else "art03_1280"
@@ -56,3 +58,77 @@ func _all_text(node: Node) -> String:
 	var result := str(node.text) + "\n" if node is Label or node is Button else ""
 	for child in node.get_children(): result += _all_text(child)
 	return result
+
+func _check_ledger_context(ledger: LedgerPanel, label: String) -> void:
+	var previous := _session.message
+	var snapshot := _session.read_state()
+	var events: Dictionary = JSON.parse_string(FileAccess.get_file_as_string("res://data/mirror_investigation/events.json"))
+	var mirror_note := ""
+	for event in events.records:
+		for option in event.get("choices", []):
+			if str(option.get("result", "")).contains("借镜照客"): mirror_note = option.result
+	_check(not mirror_note.is_empty(), "real mirror event fixture")
+	_session.message = mirror_note
+	_session.changed.emit()
+	await _frames()
+	_check(_session.message == mirror_note, "ledger leaves story feedback available to its own view")
+	for page in [2, 0, 1, 2]:
+		ledger.select_page(page)
+		_check(ledger._body.text.is_empty() and not ledger._body.visible, label + " ledger excludes unrelated story on page " + str(page))
+	_check(_all_text(ledger._pages[2]).contains("本金"), label + " ticket-specific information retained")
+	_check(snapshot == _session.read_state(), "viewing ledger preserves save state")
+	await super._capture("ledger_" + label)
+	var presenter: LedgerPresenter
+	for child in _main.get_node("CounterScreen").get_children():
+		if child is LedgerPresenter: presenter = child
+	_check(presenter != null, "ledger presenter available")
+	if presenter != null:
+		presenter._on_intent("sell", "missing-item", "missing-buyer", 0)
+		_check(not ledger._body.text.is_empty() and ledger._body.visible, "ledger action failure still visible")
+		ledger.select_page(1)
+		_check(not ledger._body.visible, "ticket action failure stays on its source page")
+		ledger.select_page(2)
+	_session.message = previous
+	_session.changed.emit()
+	await _frames()
+	_check(ledger._body.text.is_empty(), "unrelated next action clears ledger feedback")
+
+func _ledger_context_run() -> void:
+	_capture_prefix = "ledger_clean_1600" if "wide" in OS.get_cmdline_user_args() else "ledger_clean_1280"
+	_main = load("res://scenes/start_special_guests_wet_v45.tscn").instantiate()
+	_main.start_at_title = false
+	_main.get_node("Bootstrap").save_path = _save_path
+	root.add_child(_main); current_scene = _main
+	_session = _main.get_node("Bootstrap").session
+	await _frames()
+	root.mode = Window.MODE_WINDOWED
+	root.size = Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720)
+	root.content_scale_size = root.size
+	PrecisionPreview.apply(_session,3,"camera","sound","intact",false)
+	_session.restored.emit(); _session.changed.emit()
+	await _frames()
+	var screen := _main.get_node("CounterScreen") as CounterScreen
+	screen._route_from_counter(&"ledger",&"ledger")
+	await _frames()
+	var ledger := _main.find_child("LedgerPanel",true,false) as LedgerPanel
+	ledger.select_page(2)
+	_check(_session.counter_model().ledger.visual.tickets.is_empty(),"empty pawn ticket fixture")
+	await _check_ledger_context(ledger,"empty")
+	var v := _session._counter.customers.active(_session._day.state)
+	var result := _session.counter_command("pawn",v.visit_id,"",v.trade.asking_price)
+	_check(result.ok,"actual pawn transaction succeeds: " + result.message)
+	await _frames()
+	for name in ["TradeReceipt", "CustomerDeparture"]:
+		var receipt := _main.find_child(name,true,false)
+		if receipt != null: receipt.hide()
+	screen._route_from_counter(&"ledger",&"ledger")
+	await _frames()
+	ledger.select_page(2)
+	_check(_session.counter_model().ledger.visual.tickets.size() == 1,"actual pawn produces one ticket")
+	await _check_ledger_context(ledger,"populated")
+	var text := _all_text(ledger._pages[2])
+	_check(text.contains("本金") and text.contains("赎金") and text.contains("到期"),"pawn terms remain visible")
+	_check(root.get_texture().get_image().get_size() == root.size,"actual screenshot dimensions")
+	print("LEDGER CONTEXT UI: %d assertions, %d failures" % [_assertions,_failures])
+	_main.queue_free(); await _frames()
+	quit(0 if _failures == 0 else 1)

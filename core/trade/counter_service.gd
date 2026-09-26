@@ -19,9 +19,12 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 	if day.state.phase != &"open" or visit == null or visit.visit_id != visit_id or day.state.game_minutes >= visit.expires_at:
 		return "当前顾客已离开或柜台未营业。"
 	if command.begins_with("luxury_") and command != "luxury_pressure": return LuxuryAppraisalService.reason(day, command, visit.item.instance_id, detail)
-	if WealthyCustomers.is_customer(visit.customer_id) and command in ["appraise", "judge", "pressure", "belittle"]: return "请在高档货鉴物台细查、对证，再拿鉴定记录谈价。"
+	if (WealthyCustomers.is_customer(visit.customer_id) or (SpecialGuests.late(day.state, visit) and WealthyCustomers.is_item(visit.item.definition_id))) and command in ["appraise", "judge", "pressure", "belittle"]: return "请在高档货鉴物台细查、对证，再拿鉴定记录谈价。"
+	if visit.purpose == "medicine_report": return "周怀安这次只来报平安，没有货物可交易。"
 	if visit.purpose == "display_buyer": return ShopGrowthService.trade_reason(day, command, visit_id, detail, amount)
 	if visit.purpose == "husband_meeting": return "这次只谈旧事，请到对话页问话或送客。"
+	var special_error := SpecialGuests.price_reason(day.state, visit, command)
+	if not special_error.is_empty(): return special_error
 	var late_error := NightMarketPlan.command_reason(visit, command)
 	if not late_error.is_empty(): return late_error
 	if EarlyRedemption.is_visit(visit): return EarlyRedemption.reason(day, visit, command, detail, amount)
@@ -231,6 +234,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 				customers.finish(day.state, visit, "bought")
 				message = (String(visit.voice.completed) + "\n" if visit.voice.has("completed") else "") + "成交：支付 %d，物品已入库。估值不等于现金，尚未出售。" % amount
 			else:
+				SpecialGuests.quote_failed(day.state, visit)
 				message = ("客人把当票推回来：‘两成的重息，我不接。您肯降些，咱们再谈。’" if PawnInterestPolicy.firm(day.state, visit) else "客人摇头：‘我不急着用钱，犯不着付两成息。换个轻些的再商量。’") if refused_interest else String(visit.voice.get("refused", "对方拒绝了报价，提出新的要价。"))
 				if not refused_interest and WealthyCustomers.item_minimum(day.state,visit) > 0 and amount < WealthyCustomers.minimum_price(day.state,visit): message = WealthyCustomers.minimum_reply(day.state,visit)
 				if not interest_notice.is_empty(): message += "\n" + interest_notice

@@ -85,6 +85,8 @@ func has_save() -> bool:
 	return _save.exists()
 
 func can_execute(command: String) -> bool:
+	if not MedicineStory.dialogue(_day.state).is_empty(): return command == "medicine_talk"
+	if command == "finish_trial" and MedicineStory.enabled(definition) and _day.state.current_night_index < 20: return false
 	if command == "finish_trial": return FirstDebt.enabled(definition) and _day.state.phase == &"day_summary" and _day.state.current_night_index >= 18
 	if MirrorEndingService.active(_day.state): return false
 	if MilitaryIntroduction.active(_day.state): return false
@@ -107,6 +109,12 @@ func execute(command: String, detail := "") -> ActionResult:
 	return _journal_call("execute", [command, detail])
 
 func _impl_execute(command: String, detail := "") -> ActionResult:
+	if command == "medicine_talk":
+		var result := MedicineStory.acknowledge(_day.state, detail)
+		if result.ok: _persist()
+		message = result.message
+		_emit_changed()
+		return result
 	if MilitaryIntroduction.active(_day.state): return ActionResult.new(false, "孙大元还在柜前，请先把话说完。")
 	if command == "finish_trial":
 		if not can_execute(command): return ActionResult.new(false, "请先完成今夜结算。")
@@ -279,7 +287,7 @@ func _impl_counter_command(command: String, visit_id: String, detail := "", amou
 		if not pawn_error.is_empty(): return ActionResult.new(false, pawn_error)
 	# v41 porcelain preflights failed funding before polling unrelated events.
 	var porcelain_visit := _counter.customers.active(_day.state) if _counter != null else null
-	if command in ["offer","pawn"] and porcelain_visit != null and (PorcelainEconomy.handles(_day.state,porcelain_visit.item) or GramophoneEconomy.handles(_day.state,porcelain_visit.item) or CameraEconomy.handles(_day.state,porcelain_visit.item)):
+	if command in ["offer","pawn"] and porcelain_visit != null and (PorcelainEconomy.handles(_day.state,porcelain_visit.item) or GramophoneEconomy.handles(_day.state,porcelain_visit.item) or CameraEconomy.handles(_day.state,porcelain_visit.item) or (SpecialGuests.active(_day.state) and SpecialGuests.anonymous(porcelain_visit))):
 		var why := _counter.reason(_day,command,visit_id,detail,amount)
 		if not why.is_empty(): return ActionResult.new(false,why)
 	# Rejected new pressure attempts must not poll events or synchronize markets.
@@ -407,6 +415,7 @@ func _build_counter_model() -> Dictionary:
 			for row in _day.state.soul_history:
 				if row.visit_id == target.get("id", "") and row.result != "expired": model.dialogue.visual["soul_note"] = LivingMirror.describe(row)
 	if FirstDebt.enabled(definition): FirstDebt.decorate(model, _day, _events, _counter)
+	MedicineStory.enrich(model, _day.state)
 	return model
 
 func commerce_command(command: String, target: String, detail := "") -> ActionResult:
@@ -851,6 +860,8 @@ func _persist() -> bool:
 	return _save.save_state(_day.state, definition, content_version)
 
 func _journal_call(method: String, args: Array) -> ActionResult:
+	if not MedicineStory.dialogue(_day.state).is_empty() and not (method == "execute" and args[0] == "medicine_talk"):
+		return ActionResult.new(false, "柜前的话还没说完。")
 	if MirrorEndingService.active(_day.state) and method != "mirror_resolution_command":
 		return ActionResult.new(false, "镜前的话还未说完，请从库存提醒回到镜前。" if MirrorReunionService.enabled(definition) else "镜前的话还未说完；若要先办别的事，请选择「暂且收起」。")
 	if LivingMirror.enabled(definition) and not InvestigationService.enabled(definition): return _ghost_call(method, args)

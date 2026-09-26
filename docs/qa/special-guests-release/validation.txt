@@ -1,0 +1,126 @@
+medicine_huaian_v47
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+RUN SEED: 1043022195
+MEDICINE V47: 1870 passes, 0 failures
+
+
+special_guests_late_v46
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+RUN SEED: 14512311
+SPECIAL GUESTS V46: 1252 passes, 0 failures
+
+
+wet_goods_v45
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+RUN SEED: 123949340
+WET GOODS V45: 364 passes, 0 failures
+
+
+special_guests_rules
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+SPECIAL GUESTS: 867 passes, 0 failures
+
+
+special_guests_edges
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+SPECIAL GUEST EDGES: 2200 passes, 0 failures
+
+
+special_guests_swap_journey
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+SPECIAL SWAP JOURNEY: 210 passes, 0 failures
+
+
+gramophone_release_journey
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+JOURNEY seed=3 cash=1489 reputation=11 phase=pre_open met=1 appraised=1 funded=0 redeemed=0
+JOURNEY seed=15 cash=1406 reputation=9 phase=pre_open met=3 appraised=3 funded=2 redeemed=1
+JOURNEY seed=17 cash=1029 reputation=9 phase=pre_open met=5 appraised=4 funded=4 redeemed=1
+JOURNEY seed=25 cash=1368 reputation=9 phase=pre_open met=6 appraised=5 funded=5 redeemed=1
+JOURNEY seed=32 cash=514 reputation=12 phase=pre_open met=10 appraised=9 funded=9 redeemed=2
+GRAMOPHONE V46 JOURNEY: 1440 passes, 0 failures
+
+
+gramophone_release_minimum
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+LUXURY MINIMUM: 433 passes, 0 failures
+
+
+pawn_interest
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+PAWN INTEREST V45: 588 passes, 0 failures
+
+
+pawn_interest_contracts
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+PAWN CONTRACTS V45: 3493 passes, 0 failures
+
+
+lu_introduction
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+LU INTRODUCTION: 128 passes, 0 failures
+
+
+appraisal_release_entries
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+RELEASE ENTRY COMPATIBILITY: 52 checks passed
+
+
+medicine-ui-1280
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 546.30 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3060 Laptop GPU
+
+RUN SEED: 34545109
+MEDICINE UI: 42 passes, 0 failures
+
+
+medicine-ui-1600
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 546.30 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3060 Laptop GPU
+
+RUN SEED: 1638945569
+MEDICINE UI: 42 passes, 0 failures
+
+
+special-ui-small
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 546.30 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3060 Laptop GPU
+
+RUN SEED: 489909443
+SPECIAL GUEST UI: 49 passes, 0 failures
+
+
+special-ui-wide
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 546.30 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3060 Laptop GPU
+
+RUN SEED: 611910015
+SPECIAL GUEST UI: 49 passes, 0 failures
+
+
+ledger-small
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 546.30 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3060 Laptop GPU
+
+RUN SEED: 1734077628
+LEDGER CONTEXT UI: 31 assertions, 0 failures
+
+
+ledger-wide
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+OpenGL API 3.3.0 NVIDIA 546.30 - Compatibility - Using Device: NVIDIA - NVIDIA GeForce RTX 3060 Laptop GPU
+
+RUN SEED: 465310760
+LEDGER CONTEXT UI: 31 assertions, 0 failures

@@ -102,7 +102,7 @@ static func build(day: DayController, catalog: ContentCatalog, entry: Dictionary
 		# Older receipts may outlive their live visitor; retain the saved context.
 		if not matched and not row.is_empty() and not row.context_id.is_empty() and not row.has("night_policy"): note += "\n" + String(SevenNightPlan.context(day.definition, row.context_id).voice.completed)
 	var late := VarietySaveCodec.selection(day.state, item.source_visit_id)
-	if entry.kind == "acquisition" and late.get("night_policy") == "wet_cloth":
+	if entry.kind == "acquisition" and late.get("night_policy") == "wet_cloth" and not SpecialGuests.active(day.state):
 		note += "\n那块湿包布留在了柜边。"
 		if late.night_aftermath == "item": detail += "\n货面浮起湿灰，暂不能交货。封铺前到营业页按旧规封存包布，需20分钟。"
 		elif late.night_aftermath == "haunt": detail += "\n身后响起一声滴水，影子慢了半步。须在封铺前按旧规封存包布，需20分钟。"

@@ -1,5 +1,7 @@
 # 鬼市当铺
 
+新增独立入口：`play-medicine-huaian.cmd` 包含周怀安筹药费、特殊客跨夜回访及湿包货异响；`-Stage report` 可预览提前筹齐后的报平安，`-Stage saved` / `-Stage bereaved` 可查看两种结局，`-Wide` 使用1600×900。新局和存档独立，通用默认入口仍为下述v46。见 [周怀安支线](docs/MEDICINE_HUAIAN_V47.md) 和 [本轮发布验收](docs/SPECIAL_GUESTS_RELEASE.md)。
+
 当前默认新局为 **v46 留声与当约整合版**：保留陆掌眼登门、卖货托盘与 v45 活当利息选择，加入留声机鉴定和相机120／留声机100银元最低接受价。使用 `play-unified.cmd`；旧版使用各自独立入口和存档。见 [留声机说明](docs/GRAMOPHONE_V44.md)。
 
 

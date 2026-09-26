@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "ghost_closed_bundle",
+      "name_key": "customer.customer_hawker.name",
+      "portrait_asset_id": "asset.customer_hawker",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 5,
+      "max_quote_rounds": 5,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell"
+      ],
+      "item_pool": [
+        "item_brass_holder",
+        "item_fountain_pen",
+        "item_pocket_watch",
+        "item_clay_teapot"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "？？？",
+        "introduction": "价钱可以谈，话也可以问。唯独一条：不许验货！伸手翻看，这笔买卖就作罢。",
+        "wait_minutes": 90,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.7,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "origin",
+          "prompt": "问：这东西从哪里来？",
+          "answer": "是经手留下的旧物。真假好坏，我的话也未必作数。",
+          "minutes": 5
+        },
+        {
+          "id": "condition",
+          "prompt": "问：用着可有什么不便？",
+          "answer": "旧物用久了，总有些细处。你若要收，凭自己的主意。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "东西随我来，问来处，我也只说经手得来的。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？",
+        "introduction": "价钱可以谈，话也可以问。唯独一条：不许验货！伸手翻看，这笔买卖就作罢。",
+        "condition": "外头看着还齐整，里面您自个儿掌眼。",
+        "evidence": "您说，我听着。",
+        "circumstance": "没有急着用钱的事。照我说的规矩办，价钱再谈。"
+      },
+      "life_status": "ghost",
+      "guest_rule": "no_appraisal",
+      "pawn_redemption_chance": 20
+    },
+    {
+      "id": "ghost_swap_guest",
+      "name_key": "customer.customer_hawker.name",
+      "portrait_asset_id": "asset.customer_hawker",
+      "identity_tags": [
+        "ordinary"
+      ],
+      "wealth_band": "modest",
+      "urgency_range": [
+        0.2,
+        0.6
+      ],
+      "honesty_profile": "unverified",
+      "patience": 5,
+      "max_quote_rounds": 5,
+      "alertness": 0.3,
+      "transaction_modes": [
+        "sell"
+      ],
+      "item_pool": [
+        "item_brass_holder",
+        "item_fountain_pen",
+        "item_pocket_watch",
+        "item_clay_teapot"
+      ],
+      "dialogue_profile_id": "",
+      "preferred_categories": [],
+      "schedule_tags": [
+        "m2"
+      ],
+      "counter_terms": {
+        "display_name": "？？？",
+        "introduction": "柜里替人保管的那件东西，我带了一件相似的。换给我，另奉八十银元。",
+        "wait_minutes": 90,
+        "quote_minutes": 5,
+        "pressure_minutes": 5,
+        "reject_minutes": 5,
+        "ask_multiplier": 1.25,
+        "reserve_ratio": 0.7,
+        "counter_step": 5,
+        "failed_quote_cost": 1,
+        "false_pressure_cost": 2
+      },
+      "questions": [
+        {
+          "id": "origin",
+          "prompt": "问：这东西从哪里来？",
+          "answer": "是经手留下的旧物。真假好坏，我的话也未必作数。",
+          "minutes": 5
+        },
+        {
+          "id": "condition",
+          "prompt": "问：用着可有什么不便？",
+          "answer": "旧物用久了，总有些细处。你若要收，凭自己的主意。",
+          "minutes": 5
+        }
+      ],
+      "pawn_terms_id": "",
+      "persona": {
+        "names": [
+          "文清",
+          "长庚",
+          "绍安",
+          "德顺",
+          "宗礼",
+          "培元",
+          "景生",
+          "正庭"
+        ],
+        "origin": "东西随我来，问来处，我也只说经手得来的。",
+        "redeem": "当票带来了，劳烦验票交还原物。",
+        "extend": "先付息费，再替我留一夜可好？",
+        "introduction": "柜里替人保管的那件东西，我带了一件相似的。换给我，另奉八十银元。",
+        "condition": "外头看着还齐整，里面您自个儿掌眼。",
+        "evidence": "您说，我听着。",
+        "circumstance": "没有急着用钱的事。照我说的规矩办，价钱再谈。"
+      },
+      "life_status": "ghost",
+      "guest_rule": "swap",
+      "pawn_redemption_chance": 20
+    }
+  ]
+}

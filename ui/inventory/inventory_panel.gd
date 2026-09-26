@@ -102,6 +102,7 @@ func _refresh_inventory() -> void:
 		AccountPaper.label(header, row.name + (" · 货签%d" % (visual.stock.find(row) + 1) if _model.has("goods_notes") else ""), 19)
 		AccountPaper.stamp(header, row.stamp, row.state != "pledged")
 		AccountPaper.label(column, "第%d夜入柜 · 原始%s %d 银元\n已知估值 %s 银元" % [row.night, row.cost_label, row.cost, row.estimate], 15)
+		if not row.get("wet_note", "").is_empty(): AccountPaper.label(column, row.wet_note, 15)
 		if not row.get("mirror_status", "").is_empty(): AccountPaper.label(column, row.mirror_status, 15)
 		var toggle := Button.new()
 		toggle.text = "查看货物 · " + row.name

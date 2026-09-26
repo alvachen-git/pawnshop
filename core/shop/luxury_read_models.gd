@@ -2,7 +2,7 @@ class_name LuxuryReadModels
 extends RefCounted
 
 static func enrich(model: Dictionary, day: DayController, service: CounterService, visit: CustomerVisit, message: String) -> void:
-	if not WealthyCustomers.active(day.state) or not WealthyCustomers.is_customer(visit.customer_id): return
+	if not WealthyCustomers.active(day.state) or (not WealthyCustomers.is_customer(visit.customer_id) and not (SpecialGuests.late(day.state, visit) and WealthyCustomers.is_item(visit.item.definition_id))): return
 	var appraisal := LuxuryAppraisalService.record(day.state,visit.item.instance_id)
 	var item := day.state.ghost_catalog.get_definition("items",visit.item.definition_id) as ItemDefinition
 	model.appraisal.body = item.display_name + "\n\n已查%d/2处。" % appraisal.get("checks",[]).size()
