@@ -1136,6 +1136,9 @@
         "lu_pawn_collateral",
         "lu_pawn_interest",
         "lu_pawn_maturity",
+        "silver_greeting",
+        "silver_goods",
+        "silver_farewell",
         "merit_incense"
       ],
       "flag_ids": [
@@ -1226,7 +1229,10 @@
         "lu_letters_unlocked",
         "lu_pawn_basics",
         "lu_pawn_rates",
-        "pawn_unlocked"
+        "pawn_unlocked",
+        "silver_intro_1",
+        "silver_intro_2",
+        "silver_trade_unlocked"
       ],
       "ghost_rule_ids": [
         "weeping_mirror"
@@ -4237,7 +4243,28 @@
           "item_luxury_embroidery": 120,
           "item_luxury_mantel_clock": 100
         },
-        "preopen_recycler_version": 1
+        "preopen_recycler_version": 1,
+        "silver_trade": {
+          "version": 1,
+          "items": {
+            "intro_silver_hairpin": {
+              "material": "silver",
+              "origin": "ordinary"
+            },
+            "item_silver_hairpin": {
+              "material": "silver",
+              "origin": "ordinary"
+            },
+            "item_silver_ring": {
+              "material": "silver",
+              "origin": "ordinary"
+            },
+            "item_silver_lock": {
+              "material": "silver",
+              "origin": "ordinary"
+            }
+          }
+        }
       },
       "batch_selling": true,
       "market": {

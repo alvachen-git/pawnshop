@@ -7,5 +7,5 @@ start_at_title = true
 
 [node name="Bootstrap" parent="." index="0"]
 manifest_path = "res://data/first_debt_merit_release_manifest.json"
-save_path = "user://first_debt_merit_release/autosave_v48.json"
-save_library_path = "user://first_debt_merit_release/save_library_v48.json"
+save_path = "user://first_debt_merit_release/autosave_v49.json"
+save_library_path = "user://first_debt_merit_release/save_library_v49.json"

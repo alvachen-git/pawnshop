@@ -4,7 +4,7 @@ var rendered_size := Vector2i(1280,720)
 
 func _run() -> void:
 	create_timer(150).timeout.connect(func() -> void: push_error("MERIT UI TIMEOUT"); quit(1))
-	aqi_manifest = "res://data/first_debt_merit_release_manifest.json"; aqi_version = 48
+	aqi_manifest = "res://data/first_debt_merit_release_manifest.json"; aqi_version = 49
 	var requested := Vector2i(1600,900) if "wide" in OS.get_cmdline_user_args() else Vector2i(1280,720)
 	rendered_size = requested
 	root.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
@@ -12,12 +12,12 @@ func _run() -> void:
 	root.max_size = requested
 	root.unresizable = true
 	root.size = requested
-	root.content_scale_size = requested; root.title = "香炉回应 · v48验收"; root.always_on_top = true
+	root.content_scale_size = requested; root.title = "香炉回应 · v49验收"; root.always_on_top = true
 	_main = load("res://scenes/start.tscn").instantiate()
 	_main.get_node("Bootstrap").manifest_path = aqi_manifest
-	_main.get_node("Bootstrap").save_path = "res://.godot/qa/v48/ui-unused.json"
+	_main.get_node("Bootstrap").save_path = "res://.godot/qa/v49/ui-unused.json"
 	root.add_child(_main); _session = _main.get_node("Bootstrap").session
-	_session._save.library.path = "res://.godot/qa/v48/ui-%d.json" % Time.get_ticks_usec()
+	_session._save.library.path = "res://.godot/qa/v49/ui-%d.json" % Time.get_ticks_usec()
 	_main.title_menu.configure(true,false); await _frames(); await _click_button(_main.title_menu.buttons[0])
 	_session.definition._initial_cash = 2000
 	_session._save.library.register_catalog(aqi_manifest,_session._counter.catalog)
@@ -25,7 +25,7 @@ func _run() -> void:
 	var view := screen._counter_view; var dialogue := screen.first_debt_conversation
 	var presenter := screen.merit_presenter; var stage := presenter.stage
 	for mode in ["return","pay"]:
-		aqi_fixture_dir = "res://.godot/qa/v48" + ("-pay" if mode == "pay" else "") + "/"
+		aqi_fixture_dir = "res://.godot/qa/v49" + ("-pay" if mode == "pay" else "") + "/"
 		await restore_stage("before-fd_compensation" if mode == "pay" else "before-fd_settle"); screen._close_drawer(); await _frames()
 		await _click_button(view._customer_hotspot); await _click("说说话")
 		while dialogue._next.visible and dialogue._page < dialogue._pages.size()-1: await _click_button(dialogue._next)
@@ -90,7 +90,7 @@ func _run() -> void:
 		_check(root.gui_get_focus_owner() != null,"keyboard focus retained")
 		# A restored pending reward must wait behind an open ledger.
 		presenter.set_process(false)
-		aqi_fixture_dir = "res://.godot/qa/v48/"
+		aqi_fixture_dir = "res://.godot/qa/v49/"
 		await restore_stage("merit-pending-" + mode)
 		screen._flow.show_panel(&"ledger"); await _frames()
 		presenter.set_process(true); await _frames()

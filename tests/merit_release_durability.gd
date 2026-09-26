@@ -2,15 +2,15 @@ extends "res://tests/merit_release_recovery_durability.gd"
 
 func run() -> void:
 	var loaded := JsonContentProvider.new(recovery_manifest()).load_catalog()
-	check(loaded.is_success(), "v48 catalog")
+	check(loaded.is_success(), "v49 catalog")
 	catalog = loaded.catalog; run_def = catalog.get_definition("runs", catalog.default_run_id); run_def._initial_cash = 2000
 	for mode in ["return", "pay"]:
 		var s := load_stage("before-fd_settle", "" if mode == "return" else "-pay")
 		if s == null: quit(1); return
-		var lib := SaveLibrary.new("res://.godot/qa/v48/merit-" + mode + ".json")
+		var lib := SaveLibrary.new("res://.godot/qa/v49/merit-" + mode + ".json")
 		lib.register_catalog(recovery_manifest(), catalog)
 		var store := SaveManager.new(); store.library = lib; store.catalog = catalog; s._save = store
-		check(lib.write_entry("auto/" + String(run_def.id), s._day.state, run_def, 48, catalog), "initial save")
+		check(lib.write_entry("auto/" + String(run_def.id), s._day.state, run_def, 49, catalog), "initial save")
 		var before := s.read_state(); var bytes := FileAccess.get_file_as_bytes(lib.path)
 		check(before.hidden_merit == 0, "no reward before settlement")
 		lib.fail_write = true
@@ -22,7 +22,7 @@ func run() -> void:
 		check(s.merit_feedback_model().pending and s.merit_feedback_model().safe, "pending safe animation")
 		# Both endings retain their independent ledger echo, even if investigated later.
 		var ledger_store := GhostReplayStore.new(); ledger_store.origin = s._day.state.ghost_origin
-		var ledger_probe := RunSession.new(run_def,48,ledger_store,catalog)
+		var ledger_probe := RunSession.new(run_def,49,ledger_store,catalog)
 		ledger_probe._day.state = RunSnapshot.copy(s._day.state)
 		for id in ["fd_spending", "fd_yin_link", "fd_yin_echo"]:
 			check(ledger_probe.event_command(id,"read").ok,"ledger observation " + id + " " + mode)
@@ -33,11 +33,11 @@ func run() -> void:
 		check(not s.event_command("fd_settle", mode).ok and committed == s.read_state(), "no duplicate reward")
 		var codec := SaveCodec.new()
 		for forged in [-101, 101, 20, 0, 9.5, "10"]:
-			var raw := codec.encode(s._day.state, 48); raw.hidden_merit = forged
-			check(codec.decode(raw, run_def, 48, catalog, true) == null, "reject merit tamper " + str(forged))
-		var raw := codec.encode(s._day.state, 48)
-		var file := FileAccess.open("res://.godot/qa/v48/merit-pending-" + mode + ".json", FileAccess.WRITE); file.store_string(JSON.stringify(raw)); file.close()
-		var restored := codec.decode(raw, run_def, 48, catalog, true)
+			var raw := codec.encode(s._day.state, 49); raw.hidden_merit = forged
+			check(codec.decode(raw, run_def, 49, catalog, true) == null, "reject merit tamper " + str(forged))
+		var raw := codec.encode(s._day.state, 49)
+		var file := FileAccess.open("res://.godot/qa/v49/merit-pending-" + mode + ".json", FileAccess.WRITE); file.store_string(JSON.stringify(raw)); file.close()
+		var restored := codec.decode(raw, run_def, 49, catalog, true)
 		check(restored != null and HiddenMerit.feedback(restored).pending, "pending survives replay")
 		for danger in ["crisis", "smoke", "dead", "bankrupt", "room", "mirror"]:
 			var probe := RunSnapshot.copy(s._day.state)
@@ -58,16 +58,16 @@ func run() -> void:
 		check(not s.event_command(HiddenMerit.ECHO,"seen").ok and acknowledged == s.read_state(), "duplicate animation ack rejected")
 		var saved := lib.read_entry("auto/" + String(run_def.id))
 		check(not saved.is_empty() and not HiddenMerit.feedback(saved.state).pending, "seen state saved")
-		raw = codec.encode(s._day.state, 48)
-		file = FileAccess.open("res://.godot/qa/v48/merit-seen-" + mode + ".json", FileAccess.WRITE); file.store_string(JSON.stringify(raw)); file.close()
+		raw = codec.encode(s._day.state, 49)
+		file = FileAccess.open("res://.godot/qa/v49/merit-seen-" + mode + ".json", FileAccess.WRITE); file.store_string(JSON.stringify(raw)); file.close()
 		# Deleting either acknowledgment journal or history cannot forge playback.
 		raw.action_journal.pop_back()
-		check(codec.decode(raw, run_def,48,catalog,true) == null, "forged echo rejected")
+		check(codec.decode(raw, run_def,49,catalog,true) == null, "forged echo rejected")
 	var bound := RunState.new(); bound.run_definition_id = HiddenMerit.RUN
 	HiddenMerit.change(bound, 200); check(bound.hidden_merit == 100,"upper bound")
 	HiddenMerit.change(bound,-400); check(bound.hidden_merit == -100,"lower bound")
 	var fresh_store := GhostReplayStore.new(); fresh_store.origin = {"seed":42,"run_token":"0123456789abcdef0123456789abcdef"}
-	var fresh := RunSession.new(run_def,48,fresh_store,catalog)
+	var fresh := RunSession.new(run_def,49,fresh_store,catalog)
 	check(fresh._day.state.hidden_merit == 0 and not fresh.event_command(HiddenMerit.ECHO,"seen").ok,"fresh cannot claim echo")
 	var old_loaded := JsonContentProvider.new("res://data/first_debt_recovery_release_manifest.json").load_catalog()
 	var old_run := old_loaded.catalog.get_definition("runs",old_loaded.catalog.default_run_id) as RunDefinition

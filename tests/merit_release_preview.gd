@@ -6,8 +6,8 @@ func run() -> void:
 	var s: RunSession = main.get_node("Bootstrap").session
 	if s == null: push_error("merit preview failed"); quit(1); return
 	var mode: String = main.get_node("Bootstrap").preview_stage
-	var okay := s.content_version == 48 and s.definition.initial_cash == 300 and main.title_menu == null and s._day.state.hidden_merit == 0
-	okay = okay and s._save.library.path.begins_with("user://tests/v48_preview/")
+	var okay := s.content_version == 49 and s.definition.initial_cash == 300 and main.title_menu == null and s._day.state.hidden_merit == 0
+	okay = okay and s._save.library.path.begins_with("user://tests/v49_preview/")
 	var before := s._day.state.cash
 	if mode == "pay": okay = okay and s.event_command("fd_compensation","offer").ok
 	var action := s.event_command("fd_settle",mode)

@@ -8,6 +8,7 @@ static func plan(tickets: Array, night: int, catalog: ContentCatalog, context: D
 	for ticket in tickets:
 		if ticket is Dictionary and not ticket.get("person", {}) is Dictionary: return []
 		if not ticket is Dictionary or not CounterSaveCodec._text_fields(ticket, ["ticket_id", "terms_id", "customer_id", "item_instance_id"]) or not RunSchema.integer(ticket.get("started_night")) or not ticket.get("extensions") is Array: return []
+		if ticket.get("status","") == "destroyed" and int(ticket.get("closed_night",0)) < night: continue
 		var terms := catalog.get_definition("pawn_terms", ticket.terms_id) as PawnTermsDefinition
 		if terms == null: continue
 		var mode := FamiliarStories.return_mode(ticket, context, terms.return_mode)

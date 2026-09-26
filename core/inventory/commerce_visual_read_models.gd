@@ -46,6 +46,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 			var visit := PawnReturnService.current(day.state)
 			if not visit.is_empty() and visit.ticket_id == ticket.ticket_id: request = "原当户已持票到店，请到柜台办理。"
 
+		if QingbangDamage.lost(day.state,ticket): request = "原物已报废，本金息费免还；当户来时说明损毁，不另付赔款。" if ticket.status == "active" else "原物损毁，已免本金息费核销。"
 		if not ticket.replacement_instance_id.is_empty(): request = "原物已换出，票下保管的是替物。\n" + request.replace("原物", "替物")
 		tickets.append({"id": ticket.ticket_id, "number": "%03d" % (index + 1), "item": definition.display_name,
 			"customer": VarietyService.name_for(ticket.person, customer), "principal": ticket.principal, "redemption": ticket.redemption_amount,
@@ -54,6 +55,7 @@ static func enrich(model: Dictionary, day: DayController, service: CommerceServi
 	var entries: Array = []
 	for entry in day.state.ledger_entries:
 		var subject := "铺面息费"
+		if entry.kind == "qingbang_expense": subject = "青帮街面往来"
 		if entry.kind == "facility_investment": subject = ShopGrowthService.NAMES.get(entry.transaction_id.trim_prefix("facility/"), "设施整修")
 		if entry.kind == "preparation": subject = {"attract": "招揽客人", "tea": "备茶候客", "seek": "寻配茶盏"}.get(entry.transaction_id.get_slice("/", entry.transaction_id.get_slice_count("/") - 1), "开铺准备")
 		if entry.kind == "expertise": subject = "行家复核"

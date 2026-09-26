@@ -16,11 +16,13 @@ param(
     [ValidateSet('natural','guide','good','wavering','stopping','rasping','muffled','worn-record','rebuilt','imitation','no-tools','partial','firm','exposed')][string]$GramophoneCase = 'good',
     [string]$GodotPath = '',
     [string]$Scene = 'res://scenes/start.tscn',
+    [switch]$SilverPreview,
     [switch]$Wide,
     [switch]$Verify
 )
 $ErrorActionPreference = 'Stop'
 $gameRoot = Split-Path -Parent $PSScriptRoot
+if ($SilverPreview -and ($Stage -ne 'normal' -or $Scene -ne 'res://scenes/start_silver_v48.tscn')) { throw 'Silver preview requires the v48 silver scene and normal stage.' }
 if (-not $GodotPath) {
     $engineRelativePath = '.tools/godot-4.6.1/Godot_v4.6.1-stable_win64_console.exe'
     $engineRoots = @($gameRoot)
@@ -78,8 +80,8 @@ if ($Stage -eq 'pearl') {
 $logDir = Join-Path $gameRoot ('.godot/qa/unified-launch/' + (Get-Date -Format 'yyyyMMdd-HHmmss-ffff') + '-' + $PID)
 New-Item -ItemType Directory -Force $logDir | Out-Null
 # Normal play shares the editor's save library. QA and previews are isolated.
-if ($Stage -ne 'normal' -or $Verify) {
-    $env:APPDATA = Join-Path $gameRoot ('.godot/play-data/unified-' + $Stage)
+if ($Stage -ne 'normal' -or $Verify -or $SilverPreview) {
+    $env:APPDATA = Join-Path $gameRoot $(if ($SilverPreview) { '.godot/play-data/silver-preview-v48' } else { '.godot/play-data/unified-' + $Stage })
     New-Item -ItemType Directory -Force $env:APPDATA | Out-Null
 }
 function Invoke-CheckedGodot([string[]]$GameArgs, [string]$LogName, [switch]$TestRun) {
@@ -106,7 +108,15 @@ try {
         Invoke-CheckedGodot @('--headless','--path',$gameRoot,'--script',"res://tests/$test.gd") "$test.log" -TestRun
     }
     $gameArgs = @('--path',$gameRoot,'--resolution',$(if ($Wide) { '1600x900' } else { '1280x720' }),$Scene)
+    if ($SilverPreview) {
+        $gameArgs = $gameArgs[0..($gameArgs.Count - 2)] + @('--script','res://tools/silver_preview.gd')
+    }
     if ($Verify) { $gameArgs += @('--quit-after','90') }
+    if ($SilverPreview) {
+        $gameArgs += @('--',"--silver-wide=$($Wide.IsPresent.ToString().ToLower())")
+        if ($Verify) { $gameArgs += '--silver-verify' }
+        Write-Output 'Silver preview: reputation 16, night 4, isolated and not saved.'
+    }
     if ($precisionPreview) {
         $precisionLevel = @{ 'gramophone'='standard'; 'camera'='standard'; 'porcelain'='standard'; 'watch'='standard'; 'pearl'='standard'; 'bangle'='standard'; 'wealthy'='standard'; 'wealthy-basic'='basic'; 'wealthy-deep'='deep' }[$Stage]
         $gameArgs += @('--',"--precision-preview=$precisionLevel","--precision-item=$Item","--precision-condition=$Condition","--precision-damage=$Damage","--precision-difficulty=$Difficulty","--precision-watch-case=$WatchCase","--precision-holder=$Holder")
@@ -117,7 +127,7 @@ try {
         if ($Stage -eq 'bangle') { $gameArgs += "--precision-bangle-case=$BangleCase" }
         Write-Output 'Appraisal test preset: isolated, progress is not saved.'
     } elseif ($Stage -ne 'normal') { $gameArgs += @('--',"--unified-preview=$Stage") }
-    $sceneVersions = @{ 'res://scenes/start.tscn'=47; 'res://scenes/start_recycler_v47.tscn'=47; 'res://scenes/start_gramophone_v46.tscn'=46; 'res://scenes/porcelain_v42.tscn'=42; 'res://scenes/lu_v43.tscn'=43; 'res://scenes/camera_v43.tscn'=43; 'res://scenes/start_camera_v43.tscn'=43; 'res://scenes/lu_v44.tscn'=44; 'res://scenes/start_lu_trade_v44.tscn'=44; 'res://scenes/start_gramophone_v44.tscn'=44; 'res://scenes/start_pawn_v45.tscn'=45 }
+    $sceneVersions = @{ 'res://scenes/start.tscn'=48; 'res://scenes/start_silver_v48.tscn'=48; 'res://scenes/start_recycler_v47.tscn'=47; 'res://scenes/start_gramophone_v46.tscn'=46; 'res://scenes/porcelain_v42.tscn'=42; 'res://scenes/lu_v43.tscn'=43; 'res://scenes/camera_v43.tscn'=43; 'res://scenes/start_camera_v43.tscn'=43; 'res://scenes/lu_v44.tscn'=44; 'res://scenes/start_lu_trade_v44.tscn'=44; 'res://scenes/start_gramophone_v44.tscn'=44; 'res://scenes/start_pawn_v45.tscn'=45 }
     $version = if ($Stage -eq 'normal' -or $precisionPreview) { if ($sceneVersions.ContainsKey($Scene)) { $sceneVersions[$Scene] } else { 46 } } elseif ($Stage -in @('wealthy-appraised','advertisement')) { 31 } else { 30 }
     Write-Output "Starting unified v${version}: $Stage"
     Invoke-CheckedGodot $gameArgs ('launch-' + $Stage + '.log')

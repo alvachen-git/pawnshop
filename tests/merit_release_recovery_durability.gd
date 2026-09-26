@@ -4,4 +4,4 @@ func recovery_manifest() -> String:
 	return "res://data/first_debt_merit_release_manifest.json"
 
 func recovery_version() -> int:
-	return 48
+	return 49

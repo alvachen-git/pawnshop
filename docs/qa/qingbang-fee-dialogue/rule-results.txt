@@ -1,0 +1,12 @@
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+
+STRATEGY pay seed=42 cash=1612 reputation=0 fees=3 raids=0 destroyed=0
+STRATEGY pay seed=1049 cash=1608 reputation=0 fees=3 raids=0 destroyed=0
+STRATEGY pay seed=709 cash=1478 reputation=0 fees=3 raids=0 destroyed=0
+STRATEGY refuse seed=42 cash=1852 reputation=-10 fees=3 raids=2 destroyed=4
+STRATEGY refuse seed=1049 cash=1848 reputation=-5 fees=3 raids=1 destroyed=2
+STRATEGY refuse seed=709 cash=1718 reputation=-5 fees=3 raids=1 destroyed=2
+STRATEGY repair seed=42 cash=1712 reputation=-5 fees=3 raids=1 destroyed=2
+STRATEGY repair seed=1049 cash=1708 reputation=0 fees=3 raids=0 destroyed=0
+STRATEGY repair seed=709 cash=1578 reputation=0 fees=3 raids=0 destroyed=0
+QINGBANG FEE DIALOGUE: 2531 passes, 0 failures

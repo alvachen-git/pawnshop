@@ -1,6 +1,6 @@
 # 完整游戏本地测试
 
-当前默认v48，包含第一账阴德与香炉反馈，保留v47经营规则。快速测试见 [v48发布说明](docs/FIRST_DEBT_MERIT_V48_RELEASE.md)。
+当前默认v49，包含第一账阴德与香炉反馈，保留v48银楼及经营规则。快速测试见 [v49发布说明](docs/FIRST_DEBT_MERIT_V49_RELEASE.md)。
 
 在本工程启动即可：
 

@@ -41,7 +41,7 @@ func _ready() -> void:
 			if argument.begins_with("--merit-release-preview=") and argument.trim_prefix("--merit-release-preview=") in ["return", "pay"]:
 				_bootstrap.manifest_path = "res://data/first_debt_merit_release_manifest.json"
 				_bootstrap.preview_stage = argument.trim_prefix("--merit-release-preview=")
-				_bootstrap.preview_version = 48
+				_bootstrap.preview_version = 49
 				start_at_title = false
 			if argument.begins_with("--merit-preview=") and argument.trim_prefix("--merit-preview=") in ["return", "pay"]:
 				_bootstrap.manifest_path = "res://data/first_debt_merit_balance_manifest.json"

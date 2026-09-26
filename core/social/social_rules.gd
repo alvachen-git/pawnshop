@@ -17,6 +17,7 @@ static func initial() -> Dictionary:
 
 static func initial_for(run: RunDefinition) -> Dictionary:
 	var result := initial()
+	if QingbangRules.enabled(run): result["qingbang"] = QingbangRules.initial()
 	# Separate, explicit scenario definitions; the normal run always starts at zero.
 	if String(run.id).begins_with("social_preview_"):
 		var preview: Dictionary = run.variety.get("social_preview", {})
@@ -53,7 +54,7 @@ static func closed(state: RunState) -> bool:
 
 static func preparation_count(state: RunState) -> int:
 	if not state.social_enabled: return 0
-	return state.social.gifts.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index).size()
+	return (state.social.qingbang.gifts.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index).size() if QingbangRules.active(state) else 0) + state.social.gifts.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index).size()
 
 static func blocked(state: RunState) -> bool:
 	return state.social_enabled and not state.social.pending.is_empty()

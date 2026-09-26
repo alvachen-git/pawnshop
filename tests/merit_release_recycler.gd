@@ -7,4 +7,4 @@ func fixture_directory() -> String:
 	return "res://.godot/qa/merit-release-recycler/"
 
 func expected_version() -> int:
-	return 48
+	return 49

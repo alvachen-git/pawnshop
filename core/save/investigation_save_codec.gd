@@ -72,6 +72,7 @@ func restore(data: Variant, run: RunDefinition, catalog: ContentCatalog, extende
 	var objects := {}
 	var context := JSON.stringify([_content_value(catalog, objects), _content_value(run, objects), origin, store.prior_deaths, store.prior_bankruptcies])
 	if SocialRules.enabled(run): context += JSON.stringify([SocialRules.config(), legacy_intro])
+	if QingbangRules.enabled(run): context += JSON.stringify(QingbangRules.config())
 	var start := 0
 	if _checkpoint.get("context", "") == context:
 		var verified: RunState = _checkpoint.state

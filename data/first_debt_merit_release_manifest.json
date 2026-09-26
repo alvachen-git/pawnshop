@@ -1,5 +1,5 @@
 {
-  "content_version": 48,
+  "content_version": 49,
   "default_run_id": "first_debt_merit_release",
   "sources": [
     {
@@ -93,6 +93,10 @@
     {
       "kind": "events",
       "path": "res://data/pawn_interest/events.json"
+    },
+    {
+      "kind": "events",
+      "path": "res://data/silver_market/events.json"
     },
     {
       "kind": "events",
