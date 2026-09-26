@@ -91,6 +91,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		visit.item.goods = row.get("goods", {}).duplicate(true)
 		if not row.source.is_empty(): visit.item.provenance = {"truth": row.source, "status": "unchecked", "evidence": [], "investigated": false}
 		var opening_value := float(item.base_value)
+		if TownLife.enabled(run) and item.id == "item_padded_vest": opening_value = item.find_variant(row.variant_id).true_value
 		if item.id == CoatProcurement.ITEM: opening_value = float(SocialRules.config().coat.sound_value if row.variant_id == "sound" else SocialRules.config().coat.worn_value)
 		visit.trade.opening_price = maxi(1, roundi(opening_value * customer.terms.ask_multiplier))
 		visit.trade.asking_price = visit.trade.opening_price
@@ -122,6 +123,7 @@ static func prepare(state: RunState, run: RunDefinition, catalog: ContentCatalog
 		NightMarketPlan.prepare(visit, row, run, item)
 		SpecialGuests.prepare(state, visit, row, item)
 		MedicineStory.prepare(state, visit, row, item)
+		TownLife.prepare(state, visit, item)
 		if PhoenixRecovery.enabled(state) and visit.customer_id == "fd_seller":
 			visit.voice["rejected"] = PhoenixRecovery.LEAVE
 		state.visits.append(visit)

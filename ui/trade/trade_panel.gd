@@ -313,6 +313,7 @@ func render(model: Dictionary) -> void:
 	# Keep actionable pawn context and supernatural warnings from current main,
 	# without bringing back the duplicated ordinary item/appraisal summary.
 	var context_lines: PackedStringArray = []
+	if model.has("profession_notice"): context_lines.append(String(model.profession_notice))
 	if visual.get("luxury",false): context_lines.append(String(visual.get("luxury_context","")))
 	if visual.has("fan_judgement"):
 		context_lines.append(visual.fan_judgement)

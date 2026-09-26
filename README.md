@@ -1,5 +1,7 @@
 # 鬼市当铺
 
+新增独立入口 **街巷百业 v50**：运行 `play-town-life.cmd`，包含四种普通职业、银耳坠等六种日常货、御寒衣物混合交付及新版人物/货物美术。使用独立存档；`-Version 49` / `-Legacy` 保留前两轮试玩进度。详见 [街巷百业说明](docs/TOWN_LIFE_V50.md) 与 [合并验收](docs/TOWN_LIFE_RELEASE.md)。通用默认入口和青帮独立入口保持各自规则。
+
 当前本地默认新局为 **v48 银楼商誉与白银行情版**。运行 `play-silver-v48.cmd`（或 `play-unified.cmd`）；商誉达到条件后，银楼掌柜次夜以 RPG 对话登门，之后可在开铺前用1行动点批量交货。独立存档，保留v47杂货回收及更早入口。详见 [v48 试玩、截图与验收](docs/SILVER_MARKET_V48.md)。本轮已完成本地验收，并获授权发布。
 
 新增独立入口：`play-medicine-huaian.cmd` 包含周怀安筹药费、特殊客跨夜回访及湿包货异响；`-Stage report` 可预览提前筹齐后的报平安，`-Stage saved` / `-Stage bereaved` 可查看两种结局，`-Wide` 使用1600×900。新局和存档独立，通用默认入口现为上述v48。见 [周怀安支线](docs/MEDICINE_HUAIAN_V47.md) 和 [本轮发布验收](docs/SPECIAL_GUESTS_RELEASE.md)。

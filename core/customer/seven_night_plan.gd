@@ -67,6 +67,7 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 			var candidates: Array = []
 			for c in config.contexts:
 				var customer := catalog.get_definition("customers", c.customer_id) as CustomerDefinition
+				if TownLife.enabled(run) and customer.id in TownLife.PROFESSIONS and (night < int(run.variety.town_life.start_night) or not role.is_empty()): continue
 				if not rows.is_empty() and rows.back().customer_id == customer.id: continue
 				if anchors.has(index + 1) and anchors[index + 1].customer_id == customer.id: continue
 				var modes: Array = c.transaction_modes.duplicate()
@@ -107,9 +108,10 @@ static func generate(run: RunDefinition, catalog: ContentCatalog, seed_value: in
 				if attempt == 100: print("EXHAUST seed=", seed_value, " index=", index, " role=", role, " previous=", rows.back())
 				assert(attempt < 100, "Seven-night compatible pool exhausted")
 				return generate(run, catalog, seed_value, attempt + 1, horizon)
-			var row: Dictionary = VarietyService.pick(candidates, seed_value, id + "/choice/%d" % attempt).duplicate(true)
+			var row: Dictionary = TownLife.pick_candidate(candidates, seed_value, id + "/choice/%d" % attempt) if TownLife.enabled(run) and role.is_empty() else VarietyService.pick(candidates, seed_value, id + "/choice/%d" % attempt).duplicate(true)
 			var customer := catalog.get_definition("customers", row.customer_id) as CustomerDefinition
 			var item := catalog.get_definition("items", row.item_id) as ItemDefinition
+			if TownLife.enabled(run) and row.item_id in TownLife.items(run) and role.is_empty(): row.variant_id = TownLife.variant(item, seed_value, id + "/town/condition")
 			var c: Dictionary = context_by_id[row.context_id]
 			var weights: Dictionary = item.provenance.weights
 			var sources: Array = []

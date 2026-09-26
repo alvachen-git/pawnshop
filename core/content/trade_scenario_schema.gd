@@ -79,5 +79,5 @@ static func domain(catalog: ContentCatalog) -> Array:
 				if pic.requires_clues.is_empty(): overviews.append(pic.id)
 				for clue in pic.requires_clues:
 					if item.find_clue(clue) == null: CounterDomainValidator._error(issues, scenario.id, "细节图证据不存在。")
-			if overviews != ["front", "back"]: CounterDomainValidator._error(issues, scenario.id, "仅正背面可在取证前展示。")
+			if overviews != (["front"] if TownLife.enabled(run) and item.id in TownLife.items(run) else ["front", "back"]): CounterDomainValidator._error(issues, scenario.id, "仅正背面可在取证前展示。")
 	return issues

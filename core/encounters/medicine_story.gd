@@ -53,7 +53,7 @@ static func overlay(state: RunState, run: RunDefinition, catalog: ContentCatalog
 			if not candidates.is_empty(): arrival = int(VarietyService.pick(candidates,state.run_seed,"medicine/arrival/"+key))
 		var item_id: String = VarietyService.pick(pool(run,catalog),state.run_seed,"medicine/item/"+key)
 		var item := catalog.get_definition("items",item_id) as ItemDefinition
-		plans[key] = {"visit_id":id,"night":n,"arrival":arrival,"customer_id":CUSTOMER,"context_id":"","item_id":item_id,"variant_id":VarietyService.pick(item.possible_variants,state.run_seed,"medicine/variant/"+key).id,"source":"none","situation":"ordinary","reaction":"admit","terms_id":"","transaction_modes":["sell"],"wait_minutes":90,"familiar_reserved":true,"medicine_stage":stage,"medicine_funds":funds(state),"person":{"id":"medicine/huaian","name":NAME,"portrait":"medicine.huaian"}}
+		plans[key] = {"visit_id":id,"night":n,"arrival":arrival,"customer_id":CUSTOMER,"context_id":"","item_id":item_id,"variant_id":TownLife.variant(item,state.run_seed,"medicine/variant/"+key) if TownLife.enabled(run) and item.id in TownLife.items(run) else VarietyService.pick(item.possible_variants,state.run_seed,"medicine/variant/"+key).id,"source":"none","situation":"ordinary","reaction":"admit","terms_id":"","transaction_modes":["sell"],"wait_minutes":90,"familiar_reserved":true,"medicine_stage":stage,"medicine_funds":funds(state),"person":{"id":"medicine/huaian","name":NAME,"portrait":"medicine.huaian"}}
 	var planned: Dictionary = plans[key]
 	var found := false
 	for i in rows.size():

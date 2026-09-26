@@ -4,20 +4,20 @@ extends RefCounted
 const ITEM := "item_cotton_coat"
 
 static func stock(state: RunState) -> Array[ItemInstance]:
-	return state.inventory_instances.filter(func(item: ItemInstance) -> bool: return item.definition_id == ITEM and item.ownership_state == "owned" and item.selected_variant_id in ["sound", "worn"])
+	return state.inventory_instances.filter(func(item: ItemInstance) -> bool: return TownLife.clothing(state, item.definition_id) and item.ownership_state == "owned" and item.selected_variant_id in ["sound", "worn"])
 
 static func delivery_reason(state: RunState, detail: String) -> String:
 	var payload: Variant = JSON.parse_string(detail)
-	if not payload is Dictionary or payload.size() != 2 or not payload.get("ids") is Array or not RunSchema.integer(payload.get("order")): return "请选择三件自有棉袄，一并交货。"
+	if not payload is Dictionary or payload.size() != 2 or not payload.get("ids") is Array or not RunSchema.integer(payload.get("order")): return "请选择三件自有棉袄，一并交货。".replace("棉袄", TownLife.clothing_name(state))
 	if state.social.contract.is_empty() or int(payload.order) != int(state.social.contract.number): return "这张采购单已经变动，请重新选货。"
 	var ids: Array = payload.ids
-	if ids.size() != int(state.social.contract.quantity): return "须选齐三件棉袄，才能一并交货。"
+	if ids.size() != int(state.social.contract.quantity): return "须选齐三件棉袄，才能一并交货。".replace("棉袄", TownLife.clothing_name(state))
 	var seen := {}
 	for id in ids:
-		if not id is String or seen.has(id): return "同一件棉袄不能重复交货。"
+		if not id is String or seen.has(id): return "同一件棉袄不能重复交货。".replace("棉袄", TownLife.clothing_name(state))
 		seen[id] = true
 		var item := InventoryManager.new().find(state, id)
-		if item == null or item not in stock(state): return "只能交自有、完整或旧而可穿的棉袄；不能挪用在当物。"
+		if item == null or item not in stock(state): return "只能交自有、完整或旧而可穿的棉袄；不能挪用在当物。".replace("棉袄", TownLife.clothing_name(state))
 	return ""
 
 static func deliver(state: RunState, detail: String) -> void:
@@ -44,7 +44,7 @@ static func overlay(state: RunState, rows: Array[Dictionary]) -> void:
 		if row.get("wealthy", false): continue
 		if row.get("coat_assigned", false): continue
 		if VarietyService.rng(state.run_seed, row.visit_id + "/cotton_coat").randi_range(0, 99) >= int(config.chance_percent): continue
-		row.item_id = ITEM
+		row.item_id = "item_padded_vest" if TownLife.active(state) and VarietyService.rng(state.run_seed, row.visit_id + "/town/clothing").randi_range(0,1) == 1 else ITEM
 		row.variant_id = "sound" if VarietyService.rng(state.run_seed, row.visit_id + "/cotton_condition").randi_range(0, 99) < int(config.sound_percent) else "worn"
 		row.source = ""
 		row.erase("goods")

@@ -139,6 +139,7 @@ static func trade(state: RunState, visit: CustomerVisit) -> Dictionary:
 	return data(state).get("trades",{}).get(visit.visit_id,{})
 
 static func item_minimum(state: RunState, visit: CustomerVisit) -> int:
+	if TownLife.active(state) and SpecialGuests.late(state, visit): return 0
 	if state.ghost_catalog == null or visit.item == null: return 0
 	var run := state.ghost_catalog.get_definition("runs",state.run_definition_id) as RunDefinition
 	return int(run.variety.get("luxury_minimum_prices",{}).get(visit.item.definition_id,0)) if run != null else 0

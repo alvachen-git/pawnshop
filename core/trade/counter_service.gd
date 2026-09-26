@@ -59,7 +59,10 @@ func reason(day: DayController, command: String, visit_id: String, detail := "",
 			if not appraisal.can_perform(visit.item, item, detail, day.definition.tools): return "动作已做过、工具缺失或前置证据不足。"
 			cost = ShopGrowthService.appraisal_minutes(day.state, item, detail)
 		"question":
-			if PawnInterestPolicy.timing_question(day, visit, detail):
+			if TownLife.repair_question(day.state, visit, detail):
+				if amount != 0 or detail in visit.asked_question_ids: return "修补情况已问过，不必再问。"
+				cost = 5
+			elif PawnInterestPolicy.timing_question(day, visit, detail):
 				if amount != 0 or detail in visit.asked_question_ids: return "这话已经问过，或不是询问用款的时机。"
 				cost = 5
 			elif scenario != null:
@@ -142,12 +145,13 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"fan_pressure": cost = int(day.definition.variety.fan_bargaining.minutes)
 		"verify_source": cost = int(item.provenance.check_minutes)
 		"appraise": cost = ShopGrowthService.appraisal_minutes(day.state, item, detail)
-		"question": cost = 5 if PawnInterestPolicy.timing_question(day, visit, detail) else (scenario.find_question(detail).minutes if scenario != null else customer.find_question(detail).minutes)
+		"question": cost = 5 if TownLife.repair_question(day.state, visit, detail) or PawnInterestPolicy.timing_question(day, visit, detail) else (scenario.find_question(detail).minutes if scenario != null else customer.find_question(detail).minutes)
 		"concession": cost = scenario.concession_minutes
 		"offer", "pawn": cost = customer.terms.quote_minutes
 		"pressure": cost = customer.terms.pressure_minutes
 		"belittle": cost = int(customer.belittle.minutes)
 		"reject": cost = customer.terms.reject_minutes
+	var fast_threshold := TownLife.fast_threshold(day.state, visit) if command == "offer" else -1
 	day.spend_action(cost)
 	# Resolve a quote begun in time before its speaker leaves. Other customers,
 	# inspections and shop closing retain their usual deadlines.
@@ -176,7 +180,9 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 		"appraise": message = appraisal.perform(visit.item, item, detail)
 		"question":
 			visit.asked_question_ids.append(detail)
-			if PawnInterestPolicy.timing_question(day, visit, detail):
+			if TownLife.repair_question(day.state, visit, detail):
+				message = TownLife.repair(day.state, visit)
+			elif PawnInterestPolicy.timing_question(day, visit, detail):
 				message = PawnInterestPolicy.cue(day.state, visit)
 			elif scenario != null:
 				var question := scenario.find_question(detail)
@@ -217,7 +223,7 @@ func _execute(day: DayController, command: String, visit_id: String, detail := "
 				visit.trade.offers.append(amount)
 				visit.trade.patience -= customer.terms.failed_quote_cost
 			else:
-				accepted = WealthyCustomers.quote(day.state, visit, customer, amount) if WealthyCustomers.active(day.state) and WealthyCustomers.is_customer(visit.customer_id) else (FanBargainingService.sale_quote(day.state, visit, customer, amount) if command == "offer" and FanBargainingService.enabled(day.definition) else trades.quote(visit.trade, customer, amount, threshold))
+				accepted = trades.quote(visit.trade, customer, amount, fast_threshold) if fast_threshold > 0 else (WealthyCustomers.quote(day.state, visit, customer, amount) if WealthyCustomers.active(day.state) and WealthyCustomers.is_customer(visit.customer_id) else (FanBargainingService.sale_quote(day.state, visit, customer, amount) if command == "offer" and FanBargainingService.enabled(day.definition) else trades.quote(visit.trade, customer, amount, threshold)))
 			if accepted:
 				if command == "pawn":
 					if interest_active:
