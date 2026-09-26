@@ -1,0 +1,791 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "id": "item_silver_earrings",
+      "display_name": "银耳坠",
+      "description": "一对水滴形耳坠并排搁着，银面泛着柔光，花纹凹处积了些黑。",
+      "category": "jewelry",
+      "base_value": 38,
+      "unknown_min": 7,
+      "unknown_max": 42,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 38,
+          "weight": 60,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "mended",
+          "true_value": 25,
+          "weight": 30,
+          "clue_ids": [
+            "form",
+            "mended"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 9,
+          "weight": 10,
+          "clue_ids": [
+            "form",
+            "flawed"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "一对水滴形耳坠并排搁着，银面泛着柔光，花纹凹处积了些黑。",
+          "min_value": 7,
+          "max_value": 42,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "两只耳坠分量相称，银质细密，耳钩与坠头连接牢靠。",
+          "min_value": 37,
+          "max_value": 39,
+          "leverage": 0,
+          "judgement": "sound",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "mended",
+          "text": "耳钩根部留着补焊痕，焊口尚牢，纹样有些磨平。",
+          "min_value": 24,
+          "max_value": 26,
+          "leverage": 6,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "flawed",
+          "text": "磨损处透出铜色，两只坠头的色泽也不一致，银成色很低。",
+          "min_value": 8,
+          "max_value": 10,
+          "leverage": 12,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "外观检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "深入检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "mended",
+            "flawed"
+          ]
+        }
+      ],
+      "name_key": "item.silver_earrings.name",
+      "type": "normal",
+      "tags": [
+        "jewelry"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "town.silver_earrings",
+      "provenance": {
+        "document": "旧银楼购货票",
+        "matching": "耳坠的花样、分量与银楼票记",
+        "weights": {
+          "none": 2,
+          "authentic": 1,
+          "mismatch": 1
+        },
+        "check_minutes": 5,
+        "inquiry_minutes": 10,
+        "inquiry_fee": 2,
+        "claim": "客人说随物带着一张旧购货票。",
+        "verified": "票上花样、分量与旧银楼存根相符。",
+        "mismatch": "票上记载与眼前物件对不上。",
+        "unconfirmed": "尚无能与实物相互印证的记录。"
+      }
+    },
+    {
+      "id": "item_copper_handwarmer",
+      "display_name": "铜手炉",
+      "description": "小手炉上扣着镂空炉盖，铜面暗哑。",
+      "category": "metal",
+      "base_value": 65,
+      "unknown_min": 16,
+      "unknown_max": 69,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 65,
+          "weight": 60,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "mended",
+          "true_value": 42,
+          "weight": 30,
+          "clue_ids": [
+            "form",
+            "mended"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 18,
+          "weight": 10,
+          "clue_ids": [
+            "form",
+            "flawed"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "小手炉上扣着镂空炉盖，铜面暗哑。",
+          "min_value": 16,
+          "max_value": 69,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "炉身为整铜，盖口扣合，内壁无穿漏。",
+          "min_value": 64,
+          "max_value": 66,
+          "leverage": 0,
+          "judgement": "sound",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "mended",
+          "text": "炉底有一圈补焊，接缝仍牢。",
+          "min_value": 41,
+          "max_value": 43,
+          "leverage": 6,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "flawed",
+          "text": "边缘磨损露出夹层，薄铜皮里另填了杂料。",
+          "min_value": 17,
+          "max_value": 19,
+          "leverage": 12,
+          "judgement": "fake",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "外观检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "深入检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "mended",
+            "flawed"
+          ]
+        }
+      ],
+      "name_key": "item.copper_handwarmer.name",
+      "type": "normal",
+      "tags": [
+        "metal"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "town.copper_handwarmer",
+      "provenance": {
+        "document": "旧铺购货票",
+        "matching": "铜手炉的式样与购货票记录",
+        "weights": {
+          "none": 2,
+          "authentic": 1,
+          "mismatch": 1
+        },
+        "check_minutes": 5,
+        "inquiry_minutes": 10,
+        "inquiry_fee": 2,
+        "claim": "客人说随物带着一张旧购货票。",
+        "verified": "票上式样、尺寸与旧铺记录相符。",
+        "mismatch": "票上记载与眼前物件对不上。",
+        "unconfirmed": "尚无能与实物相互印证的记录。"
+      }
+    },
+    {
+      "id": "item_kerosene_lamp",
+      "display_name": "煤油灯",
+      "description": "灯罩罩住灯芯，油壶底部落着旧烟尘。",
+      "category": "metal",
+      "base_value": 30,
+      "unknown_min": 4,
+      "unknown_max": 34,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 30,
+          "weight": 60,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "mended",
+          "true_value": 18,
+          "weight": 30,
+          "clue_ids": [
+            "form",
+            "mended"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 6,
+          "weight": 10,
+          "clue_ids": [
+            "form",
+            "flawed"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "灯罩罩住灯芯，油壶底部落着旧烟尘。",
+          "min_value": 4,
+          "max_value": 34,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "灯罩完整，升芯轮转动顺畅，油壶密合。",
+          "min_value": 29,
+          "max_value": 31,
+          "leverage": 0,
+          "judgement": "sound",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "mended",
+          "text": "灯罩换过，罩口略松，灯芯仍可调。",
+          "min_value": 17,
+          "max_value": 19,
+          "leverage": 6,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "flawed",
+          "text": "油壶底缝渗出油珠，不能放心点燃。",
+          "min_value": 5,
+          "max_value": 7,
+          "leverage": 12,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "外观检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "深入检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "mended",
+            "flawed"
+          ]
+        }
+      ],
+      "name_key": "item.kerosene_lamp.name",
+      "type": "normal",
+      "tags": [
+        "metal"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "town.kerosene_lamp",
+      "provenance": {
+        "document": "旧铺购货票",
+        "matching": "煤油灯的式样与购货票记录",
+        "weights": {
+          "none": 2,
+          "authentic": 1,
+          "mismatch": 1
+        },
+        "check_minutes": 5,
+        "inquiry_minutes": 10,
+        "inquiry_fee": 2,
+        "claim": "客人说随物带着一张旧购货票。",
+        "verified": "票上式样、尺寸与旧铺记录相符。",
+        "mismatch": "票上记载与眼前物件对不上。",
+        "unconfirmed": "尚无能与实物相互印证的记录。"
+      }
+    },
+    {
+      "id": "item_leather_suitcase",
+      "display_name": "皮箱",
+      "description": "旧皮箱提手发亮，两只搭扣扣在箱沿。",
+      "category": "misc",
+      "base_value": 55,
+      "unknown_min": 10,
+      "unknown_max": 59,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 55,
+          "weight": 60,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "mended",
+          "true_value": 32,
+          "weight": 30,
+          "clue_ids": [
+            "form",
+            "mended"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 12,
+          "weight": 10,
+          "clue_ids": [
+            "form",
+            "flawed"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "旧皮箱提手发亮，两只搭扣扣在箱沿。",
+          "min_value": 10,
+          "max_value": 59,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "皮面结实，提手与锁扣牢固，内衬完整。",
+          "min_value": 54,
+          "max_value": 56,
+          "leverage": 0,
+          "judgement": "sound",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "mended",
+          "text": "内衬角落暗补过，皮面尚牢。",
+          "min_value": 31,
+          "max_value": 33,
+          "leverage": 6,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "flawed",
+          "text": "箱角开裂，提起时裂口张开，难承重物。",
+          "min_value": 11,
+          "max_value": 13,
+          "leverage": 12,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "外观检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "深入检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "mended",
+            "flawed"
+          ]
+        }
+      ],
+      "name_key": "item.leather_suitcase.name",
+      "type": "normal",
+      "tags": [
+        "misc"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "town.leather_suitcase",
+      "provenance": {
+        "document": "旧铺购货票",
+        "matching": "皮箱的式样与购货票记录",
+        "weights": {
+          "none": 2,
+          "authentic": 1,
+          "mismatch": 1
+        },
+        "check_minutes": 5,
+        "inquiry_minutes": 10,
+        "inquiry_fee": 2,
+        "claim": "客人说随物带着一张旧购货票。",
+        "verified": "票上式样、尺寸与旧铺记录相符。",
+        "mismatch": "票上记载与眼前物件对不上。",
+        "unconfirmed": "尚无能与实物相互印证的记录。"
+      }
+    },
+    {
+      "id": "item_erhu",
+      "display_name": "二胡",
+      "description": "琴弓搭在两弦之间，琴筒蒙皮留下旧光。",
+      "category": "misc",
+      "base_value": 70,
+      "unknown_min": 16,
+      "unknown_max": 74,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 70,
+          "weight": 60,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "mended",
+          "true_value": 42,
+          "weight": 30,
+          "clue_ids": [
+            "form",
+            "mended"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 18,
+          "weight": 10,
+          "clue_ids": [
+            "form",
+            "flawed"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "琴弓搭在两弦之间，琴筒蒙皮留下旧光。",
+          "min_value": 16,
+          "max_value": 74,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "琴杆笔直，蒙皮紧实，轻试两弦音色清楚。",
+          "min_value": 69,
+          "max_value": 71,
+          "leverage": 0,
+          "judgement": "sound",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "mended",
+          "text": "琴杆曾经修接，接头平整，按弦时略有杂音。",
+          "min_value": 41,
+          "max_value": 43,
+          "leverage": 6,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "flawed",
+          "text": "琴筒蒙皮破损，拉弓只剩散碎嘶声。",
+          "min_value": 17,
+          "max_value": 19,
+          "leverage": 12,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "外观检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "深入检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "mended",
+            "flawed"
+          ]
+        }
+      ],
+      "name_key": "item.erhu.name",
+      "type": "normal",
+      "tags": [
+        "misc"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "town.erhu",
+      "provenance": {
+        "document": "旧铺购货票",
+        "matching": "二胡的式样与购货票记录",
+        "weights": {
+          "none": 2,
+          "authentic": 1,
+          "mismatch": 1
+        },
+        "check_minutes": 5,
+        "inquiry_minutes": 10,
+        "inquiry_fee": 2,
+        "claim": "客人说随物带着一张旧购货票。",
+        "verified": "票上式样、尺寸与旧铺记录相符。",
+        "mismatch": "票上记载与眼前物件对不上。",
+        "unconfirmed": "尚无能与实物相互印证的记录。"
+      }
+    },
+    {
+      "id": "item_padded_vest",
+      "display_name": "夹棉背心",
+      "description": "布面夹棉背心，襟前缝着寻常盘扣。",
+      "category": "textile",
+      "base_value": 15,
+      "unknown_min": 1,
+      "unknown_max": 19,
+      "possible_variants": [
+        {
+          "id": "sound",
+          "true_value": 15,
+          "weight": 60,
+          "clue_ids": [
+            "form",
+            "sound"
+          ]
+        },
+        {
+          "id": "worn",
+          "true_value": 10,
+          "weight": 30,
+          "clue_ids": [
+            "form",
+            "worn"
+          ]
+        },
+        {
+          "id": "flawed",
+          "true_value": 3,
+          "weight": 10,
+          "clue_ids": [
+            "form",
+            "flawed"
+          ]
+        }
+      ],
+      "clues": [
+        {
+          "id": "form",
+          "text": "布面夹棉背心，襟前缝着寻常盘扣。",
+          "min_value": 1,
+          "max_value": 19,
+          "leverage": 0,
+          "judgement": "unknown"
+        },
+        {
+          "id": "sound",
+          "text": "棉胎厚实完整，里衬牢靠，能挡夜里的寒气。",
+          "min_value": 14,
+          "max_value": 16,
+          "leverage": 0,
+          "judgement": "sound",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "worn",
+          "text": "布面磨白，棉胎稍薄，缝口仍牢，尚能御寒。",
+          "min_value": 9,
+          "max_value": 11,
+          "leverage": 6,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        },
+        {
+          "id": "flawed",
+          "text": "侧缝破开，棉胎脱落成团，穿着也难保暖。",
+          "min_value": 2,
+          "max_value": 4,
+          "leverage": 12,
+          "judgement": "damaged",
+          "bargain_response": "客人看了看你指出的地方，点头道：“这处确实如此，价钱可以再商量。”"
+        }
+      ],
+      "appraisal_actions": [
+        {
+          "id": "observe",
+          "label": "外观检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [],
+          "reveals": [
+            "form"
+          ]
+        },
+        {
+          "id": "inspect",
+          "label": "深入检查",
+          "minutes": 5,
+          "required_tool": "",
+          "requires_clues": [
+            "form"
+          ],
+          "reveals": [
+            "sound",
+            "worn",
+            "flawed"
+          ]
+        }
+      ],
+      "name_key": "item.padded_vest.name",
+      "type": "normal",
+      "tags": [
+        "textile"
+      ],
+      "value_variance": 0.1,
+      "liquidity": 0.8,
+      "valuation_rules": [],
+      "sell_channels": [
+        "regular"
+      ],
+      "buyer_tags": [],
+      "ghost_rule_id": "",
+      "visual_asset_id": "town.padded_vest",
+      "provenance": {
+        "document": "旧铺购货票",
+        "matching": "夹棉背心的式样与购货票记录",
+        "weights": {
+          "none": 2,
+          "authentic": 1,
+          "mismatch": 1
+        },
+        "check_minutes": 5,
+        "inquiry_minutes": 10,
+        "inquiry_fee": 2,
+        "claim": "客人说随物带着一张旧购货票。",
+        "verified": "票上式样、尺寸与旧铺记录相符。",
+        "mismatch": "票上记载与眼前物件对不上。",
+        "unconfirmed": "尚无能与实物相互印证的记录。"
+      }
+    }
+  ]
+}

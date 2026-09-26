@@ -76,6 +76,7 @@ func update(state: RunState, pending_quote_visit_id := "") -> void:
 				visit.status = "active"
 				GhostGuests.arrive(state, visit)
 				SpecialGuests.activate(state, visit)
+				TownLife.activate(state, visit)
 				ShopGrowthService.activate(state, visit)
 				if visit.status == "active": break
 

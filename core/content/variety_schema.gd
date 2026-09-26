@@ -3,6 +3,8 @@ extends RefCounted
 
 static func validate(kind: String, row: Dictionary, path: String, at: String) -> Array:
 	var issues: Array = []
+	if kind == "runs" and row.get("variety") is Dictionary and row.variety.has("town_life"):
+		if not TownLife.valid_config(row.variety.town_life): CounterDomainValidator._error(issues, at, "街巷百业规则配置无效。")
 	if kind == "runs" and row.get("variety") is Dictionary and row.variety.has("silver_trade"):
 		var silver: Variant = row.variety.silver_trade
 		var valid_silver: bool = silver is Dictionary and silver.get("version") == 1 and silver.get("items") is Dictionary and row.variety.get("preopen_recycler_version") == 1
@@ -114,7 +116,7 @@ static func validate(kind: String, row: Dictionary, path: String, at: String) ->
 			if value.has("preparation_version") and (value.preparation_version != 1 or value.get("seven_version") != 1):
 				CounterDomainValidator._error(issues, at, "开铺准备需要七夜编排与有效规则版本。")
 			if value.has("seven_version"):
-				if value.seven_version != 1 or not value.get("contexts") is Array or value.contexts.size() != 16:
+				if value.seven_version != 1 or not value.get("contexts") is Array or value.contexts.size() != (24 if value.get("town_life", {}).get("version", 0) == 1 else 16):
 					CounterDomainValidator._error(issues, at, "七夜版需要16种明确来访处境。")
 				else:
 					var ids: Array = []

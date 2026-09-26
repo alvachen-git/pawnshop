@@ -1,6 +1,7 @@
 class_name CounterVisualCatalog
 extends RefCounted
 
+const TOWN_ROOT := "res://assets/town_life/customers/"
 const SUN_PORTRAIT := "res://assets/social_v27/sun_dayuan_visit_halfbody.png"
 const ROOT := "res://assets/art02/"
 const NEIGHBOR_PORTRAIT := "res://assets/art04/customers/neighbor_v2.png"
@@ -71,6 +72,7 @@ const DETAILS := {
 }
 
 static func portrait(asset: String, customer_id := "", person_id := "") -> Texture2D:
+	if asset.begins_with("town."): return load(TOWN_ROOT + asset.trim_prefix("town.") + ".png") as Texture2D
 	if asset == "social.qingbang": return load("res://assets/qingbang/shen_bojun_enforcer.png") as Texture2D
 	if asset == "silver.owner": return load(SPECIAL_ROOT + "silver_owner_v48.png") as Texture2D
 	if asset == "fd.lu_elderly": return load(LU_ELDERLY_PORTRAIT) as Texture2D
@@ -106,14 +108,14 @@ static func portrait(asset: String, customer_id := "", person_id := "") -> Textu
 	return load(ROOT + "customers/" + PORTRAITS[asset] + ".svg") as Texture2D
 
 static func portrait_material(texture: Texture2D) -> ShaderMaterial:
-	if texture == null or (not texture.resource_path.begins_with("res://assets/art04/") and texture.resource_path != CHEN_PORTRAIT): return null
+	if texture == null or (not texture.resource_path.begins_with("res://assets/art04/") and not texture.resource_path.begins_with(TOWN_ROOT) and texture.resource_path != CHEN_PORTRAIT): return null
 	var material := ShaderMaterial.new()
 	material.shader = preload("res://ui/art/counter_cutout.gdshader")
 	material.set_shader_parameter("source_bottom", 1.0)
 	material.set_shader_parameter("chroma_key", is_wealthy_portrait(texture) or is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path.get_file() in ["citizen.png", "neighbor.png", "neighbor_v2.png"])
 	material.set_shader_parameter("clean_chroma_edges", is_wealthy_portrait(texture) or is_special_portrait(texture) or is_ordinary_portrait(texture) or texture.resource_path == NEIGHBOR_PORTRAIT)
 	# Repainted wealthy sprites have native alpha; chroma cleanup would alter cloth colors.
-	if texture.resource_path.begins_with(WEALTHY_PAINTED_ROOT) or texture.resource_path in [SPECIAL_ROOT + "silver_owner_v48.png", SPECIAL_ROOT + "wet_bundle_v45.png", SPECIAL_ROOT + "zhou_huaian_v47.png"]:
+	if texture.resource_path.begins_with(TOWN_ROOT) or texture.resource_path.begins_with(WEALTHY_PAINTED_ROOT) or texture.resource_path in [SPECIAL_ROOT + "silver_owner_v48.png", SPECIAL_ROOT + "wet_bundle_v45.png", SPECIAL_ROOT + "zhou_huaian_v47.png"]:
 		material.set_shader_parameter("chroma_key", false)
 		material.set_shader_parameter("clean_chroma_edges", false)
 	return material
@@ -135,9 +137,10 @@ static func sun_bounds() -> Vector4:
 	return Vector4(0.3175, hem - 0.46, 0.6825, hem)
 
 static func is_special_portrait(texture: Texture2D) -> bool:
-	return texture != null and texture.resource_path.begins_with(SPECIAL_ROOT)
+	return texture != null and (texture.resource_path.begins_with(SPECIAL_ROOT) or texture.resource_path.begins_with(TOWN_ROOT))
 
 static func special_placement(texture: Texture2D) -> Vector3:
+	if texture.resource_path.begins_with(TOWN_ROOT): return Vector3(0.64, 0.78, 0.5)
 	return SPECIAL_PLACEMENT[texture.resource_path.get_file().get_basename()]
 
 static func special_bounds(texture: Texture2D) -> Vector4:

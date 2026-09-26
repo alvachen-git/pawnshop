@@ -53,7 +53,7 @@ static func page(day: DayController, section := 0) -> Dictionary:
 				button(model, day, "claim_later", "说明暂时无力处理" if claim.postponed else "约旧主明夜再谈")
 		return model
 	var order: Dictionary = social.contract
-	model.body += "\n\n采购棉袄 · 自有棉袄%d／3\n三件一并交货，完成奖励50银元，期限不限。" % CoatProcurement.stock(state).size()
+	model.body += ("\n\n采购棉袄 · 自有棉袄%d／3\n三件一并交货，完成奖励50银元，期限不限。" % CoatProcurement.stock(state).size()).replace("棉袄", TownLife.clothing_name(state))
 	if order.is_empty(): button(model, day, "accept_contract", "接下采购单")
 	else: button(model, day, "cancel_contract", "退回已经接下的采购单")
 	button(model, day, "gift", "托人送礼 · 20银元 / 1行动点")

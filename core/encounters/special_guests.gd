@@ -31,8 +31,8 @@ static func late(state: RunState, visit: CustomerVisit) -> bool:
 static func available(state: RunState, row: Dictionary) -> bool:
 	return not NightMarketPlan.protected(row) and not row.get("wealthy", false) and not row.has("special_key") and not WealthyCustomers.invited(state, row) and row.visit_id not in OpeningPreparation.known_ids(state, int(row.night)) and not row.visit_id.ends_with("/prep_extra")
 
-static func pick_item(seed_value: int, key: String, ordinary_percent := 80) -> String:
-	var pool: Array = ORDINARY if VarietyService.rng(seed_value, key + "/tier").randi_range(0, 99) < ordinary_percent else LUXURY
+static func pick_item(seed_value: int, key: String, ordinary_percent := 80, extra: Array = []) -> String:
+	var pool: Array = ORDINARY + extra if VarietyService.rng(seed_value, key + "/tier").randi_range(0, 99) < ordinary_percent else LUXURY
 	return VarietyService.pick(pool, seed_value, key + "/item")
 
 static func target_night(state: RunState, rows: Array[Dictionary], key: String, window: Array) -> int:
@@ -88,10 +88,12 @@ static func overlay(state: RunState, run: RunDefinition, catalog: ContentCatalog
 static func make_row(state: RunState, catalog: ContentCatalog, old: Dictionary, key: String, policy: String) -> Dictionary:
 	var row: Dictionary = old.duplicate(true)
 	var closed := policy == "closed"
-	var item_id := "item_clay_teapot" if closed else pick_item(state.run_seed, "special/" + key, int(config(state).ordinary_percent))
+	var town_items: Array = TownLife.config(state).item_ids if TownLife.active(state) else []
+	var item_id := "item_clay_teapot" if closed else pick_item(state.run_seed, "special/" + key, int(config(state).ordinary_percent), town_items)
 	var item := catalog.get_definition("items", item_id) as ItemDefinition
 	row.merge({"customer_id": GhostGuests.CLOSED if closed else "customer_hawker" if policy == "one_quote" else "customer_citizen", "context_id": "", "item_id": item_id, "variant_id": VarietyService.pick(item.possible_variants, state.run_seed, "special/" + key + "/variant").id, "source": "", "reaction": "evade", "situation": "ordinary", "terms_id": "", "transaction_modes": ["sell"], "wait_minutes": 90 if closed else 70, "special_key": key, "person": {"id": "special/" + key, "name": NAME, "portrait": "asset.customer_hawker" if closed or policy == "one_quote" else "asset.customer_citizen"}}, true)
 	if policy == "wet_cloth" and WetGoodsRisk.enabled(state): row.person.portrait = "special.wet_bundle_v45"
+	if TownLife.active(state) and item.id in town_items: row.variant_id = TownLife.variant(item, state.run_seed, "special/" + key + "/variant")
 	row.erase("goods")
 	if not closed:
 		row["night_policy"] = policy
@@ -122,6 +124,7 @@ static func prepare(state: RunState, visit: CustomerVisit, row: Dictionary, item
 		visit.voice = voice
 	if item.id == CoatProcurement.ITEM:
 		normal = maxi(1, roundi(float(SocialRules.config().coat.sound_value if row.variant_id == "sound" else SocialRules.config().coat.worn_value) * 1.2))
+	if TownLife.active(state) and item.id == "item_padded_vest": normal = maxi(1, roundi(item.find_variant(row.variant_id).true_value * 1.2))
 	visit.trade.opening_price = maxi(1, roundi(normal * float(config(state).wet_discount))) if visit.night_policy == "wet_cloth" else maxi(1, roundi(item.base_value * 0.9))
 	visit.trade.asking_price = visit.trade.opening_price
 	visit.trade.reserve_price = maxi(1, roundi(visit.trade.opening_price * 0.85))
@@ -187,7 +190,7 @@ static func held_items(state: RunState) -> Array[String]:
 
 static func price_reason(state: RunState, visit: CustomerVisit, command: String) -> String:
 	if not late(state, visit): return ""
-	if command in ["luxury_pressure", "watch_bluff", "watch_claim", "camera_claim", "pearl_claim", "porcelain_claim", "bangle_claim"] or (visit.night_policy == "one_quote" and command in ["fan_pressure", "condition_pressure", "intimidate"]):
+	if command in ["luxury_pressure", "gramophone_claim", "watch_bluff", "watch_claim", "camera_claim", "pearl_claim", "porcelain_claim", "bangle_claim"] or (visit.night_policy == "one_quote" and command in ["fan_pressure", "condition_pressure", "intimidate"]):
 		return "请直接报出收购价。"
 	return ""
 
@@ -201,7 +204,7 @@ static func enrich(model: Dictionary, day: DayController, service: CounterServic
 			model[feature].visual.customer_name = NAME
 			if WetGoodsRisk.enabled(day.state) and visit.night_policy == "wet_cloth": model[feature].visual.portrait_asset = "special.wet_bundle_v45"
 	if not late(day.state, visit): return
-	for key in ["watch_claims", "pearl_claims", "bangle_claims", "camera_claims", "porcelain_claims"]:
+	for key in ["gramophone_claims", "watch_claims", "pearl_claims", "bangle_claims", "camera_claims", "porcelain_claims"]:
 		model.trade.erase(key)
 	model.trade.can_offer = service.reason(day, "offer", visit.visit_id, "", 1).is_empty()
 	model.trade.can_pawn = false

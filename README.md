@@ -1,5 +1,6 @@
 # 鬼市当铺
 
+新增独立入口 **街巷百业 v50**：运行 `play-town-life.cmd`，包含四种普通职业、银耳坠等六种日常货、御寒衣物混合交付及新版人物/货物美术。使用独立存档；`-Version 49` / `-Legacy` 保留前两轮试玩进度。详见 [街巷百业说明](docs/TOWN_LIFE_V50.md) 与 [合并验收](docs/TOWN_LIFE_RELEASE.md)。通用默认入口和青帮独立入口保持各自规则。
 新增独立入口：`play-medicine-huaian.cmd` 包含周怀安筹药费、特殊客跨夜回访及湿包货异响；`-Stage report` 可预览提前筹齐后的报平安，`-Stage saved` / `-Stage bereaved` 可查看两种结局，`-Wide` 使用1600×900。新局和存档独立，通用默认入口为下述v49。见 [周怀安支线](docs/MEDICINE_HUAIAN_V47.md) 和 [本轮发布验收](docs/SPECIAL_GUESTS_RELEASE.md)。
 
 当前默认新局为 **v49 阴德与第一账反馈整合版**，基于v48银楼版，保留银楼、开铺前回收、留声机、相机鉴定及活当利息。归还双镯阴德加10、现金和解加5（隐藏）；结案后香炉有短暂暖光，资金不足时付款按钮置灰。见 [发布与测试](docs/FIRST_DEBT_MERIT_V49_RELEASE.md)。旧运行保留原规则与独立存档。

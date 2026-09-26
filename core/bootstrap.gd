@@ -86,6 +86,7 @@ func initialize() -> ContentLoadResult:
 			saves.library = SaveLibrary.new("user://medicine_huaian_v47/library.json")
 		if FirstDebt.enabled(definition) and not preview_stage.is_empty():
 			saves.library = SaveLibrary.new("user://tests/v%d_preview/" % preview_version + preview_stage + "_library.json")
+		if TownLife.enabled(definition) and saves.library != null: saves.library = SaveLibrary.new("user://%s/library.json" % definition.id)
 		# Seed overrides mutate the runtime definition; keep save validation on the
 		# authored catalog in that debugging mode.
 		if saves.library != null and not Array(OS.get_cmdline_user_args()).any(func(arg: String) -> bool: return arg.begins_with("--seed=")):

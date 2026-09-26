@@ -4,6 +4,11 @@ extends RefCounted
 const CATEGORIES := {"porcelain": "瓷器", "metal": "金属器", "jewelry": "首饰", "watches": "钟表", "stationery": "文房", "textile": "绣品"}
 const COSTS := {"advertise": 30, "attract": 3, "target": 0, "seek": 3, "tea": 5, "visitors": 0, "investigate": 0, "finish": 0, "dragon_search": 0, "dragon_invite": 0, "chen_invite": 0, "phoenix_invite": 0}
 
+static func categories(state: RunState) -> Dictionary:
+	var result := CATEGORIES.duplicate()
+	if TownLife.active(state): result.merge({"misc":"杂项", "textile":"衣物与布货"}, true)
+	return result
+
 static func enabled(run: RunDefinition) -> bool:
 	return run.variety.get("preparation_version", 0) == 1
 
@@ -61,7 +66,7 @@ static func reason(state: RunState, action: String, category := "") -> String:
 	if state.cash < int(COSTS[action]): return "现银不足，需要%d大洋。" % COSTS[action]
 	if action == "target" and PreparationService.used(state, "seek", state.current_night_index): return "今夜已经托人寻配茶盏。"
 	if action == "seek": return GoodsSeeking.reason(state, category)
-	if action == "target" and not category.is_empty() and not CATEGORIES.has(category): return "没有这类收货方向。"
+	if action == "target" and not category.is_empty() and not categories(state).has(category): return "没有这类收货方向。"
 	return ""
 
 static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalog, id: String, arrival: int, category: String, name_rows: Array = []) -> Dictionary:
@@ -71,13 +76,14 @@ static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalo
 		if state.current_night_index < 3: modes.erase("pawn")
 		if modes.is_empty(): continue
 		var customer := catalog.get_definition("customers", context.customer_id) as CustomerDefinition
+		if TownLife.enabled(run) and state.current_night_index < 3 and customer.id in TownLife.PROFESSIONS: continue
 		for item_id in customer.item_pool:
 			var item := catalog.get_definition("items", item_id) as ItemDefinition
 			if item.item_type != "normal" or (not category.is_empty() and item.category != category): continue
 			candidates.append({"context_id": context.id, "customer_id": customer.id, "item_id": item.id, "transaction_modes": modes, "wait_minutes": int(context.wait_minutes), "situation": context.situation})
 	if candidates.is_empty(): return {}
 	var key := id + "/preparation/" + category
-	var row: Dictionary = VarietyService.pick(candidates, state.run_seed, key).duplicate(true)
+	var row: Dictionary = TownLife.pick_candidate(candidates, state.run_seed, key) if TownLife.enabled(run) else VarietyService.pick(candidates, state.run_seed, key).duplicate(true)
 	var item := catalog.get_definition("items", row.item_id) as ItemDefinition
 	var customer := catalog.get_definition("customers", row.customer_id) as CustomerDefinition
 	var sources: Array = []
@@ -94,7 +100,7 @@ static func make_row(state: RunState, run: RunDefinition, catalog: ContentCatalo
 		person_name = surnames[index / names.size()] + names[index % names.size()]
 		if person_name not in existing_names and (not FamiliarStories.enabled(run) or person_name not in FamiliarStories.NAMES): break
 	row.merge({"visit_id": id, "night": state.current_night_index, "arrival": arrival,
-		"variant_id": VarietyService.pick(item.possible_variants, state.run_seed, key + "/variant").id,
+		"variant_id": TownLife.variant(item, state.run_seed, key + "/variant") if TownLife.enabled(run) and item.id in TownLife.items(run) else VarietyService.pick(item.possible_variants, state.run_seed, key + "/variant").id,
 		"source": "" if sources.is_empty() else VarietyService.pick(sources, state.run_seed, key + "/source"),
 		"reaction": VarietyService.pick(["admit", "explain", "evade"], state.run_seed, key + "/reaction"),
 		"terms_id": VarietyService.pick(run.variety.terms_ids, state.run_seed, key + "/terms"),
@@ -144,7 +150,7 @@ static func perform(state: RunState, run: RunDefinition, catalog: ContentCatalog
 	state.preparation_history.append(record)
 	if record.cost > 0:
 		EconomyManager.new().commit(state, -record.cost, "preparation", posting_id(record), "preparation", 0)
-	var messages := {"phoenix_invite": "已约卖镯人带凤镯来。今夜19:00起，待柜前得空便可验货谈价。", "chen_invite": "已约陈小满今夜来谈，开铺后待柜前得空便可说话。", "dragon_search": "已托人寻找龙镯，收铺后会有口信。", "dragon_invite": "已约陆掌眼带龙镯来。今夜19:00起，待柜前得空便可验看。", "advertise": "告示与口信已托人送出，关铺时再听街面回音。", "seek": "寻配口信已送出，今夜会有人带同纹样、相对式样的茶盏来。是否原配，还须验看；价钱另谈。", "attract": "口信已经送出，今夜会多一位客人带货来。", "target": "已托人捎话，今夜有位客人带%s来。" % CATEGORIES.get(category, "旧物"), "tea": "茶水备好了，今夜普通来客会多等20分钟。", "visitors": "两位来客的口信已记在铺中记事里。", "investigate": PreparationService.DETAILS, "finish": "准备妥当，可以开铺了。"}
+	var messages := {"phoenix_invite": "已约卖镯人带凤镯来。今夜19:00起，待柜前得空便可验货谈价。", "chen_invite": "已约陈小满今夜来谈，开铺后待柜前得空便可说话。", "dragon_search": "已托人寻找龙镯，收铺后会有口信。", "dragon_invite": "已约陆掌眼带龙镯来。今夜19:00起，待柜前得空便可验看。", "advertise": "告示与口信已托人送出，关铺时再听街面回音。", "seek": "寻配口信已送出，今夜会有人带同纹样、相对式样的茶盏来。是否原配，还须验看；价钱另谈。", "attract": "口信已经送出，今夜会多一位客人带货来。", "target": "已托人捎话，今夜有位客人带%s来。" % categories(state).get(category, "旧物"), "tea": "茶水备好了，今夜普通来客会多等20分钟。", "visitors": "两位来客的口信已记在铺中记事里。", "investigate": PreparationService.DETAILS, "finish": "准备妥当，可以开铺了。"}
 	return ActionResult.new(true, messages[action])
 
 static func posting_id(record: Dictionary) -> String:
@@ -169,7 +175,7 @@ static func notice(state: RunState, catalog: ContentCatalog) -> String:
 			var item := catalog.get_definition("items", row.item_id) as ItemDefinition
 			var start := int(row.arrival) / 60 * 60
 			var intent := "想办活当" if row.transaction_modes == ["pawn"] else ("只想出售" if row.transaction_modes == ["sell"] else "出售、活当都愿谈")
-			lines.append("第%d夜来客口信：约%s–%s，有人带%s来，%s。原当户办理若占了时辰，来客也会稍晚。" % [row.night, TimeController.clock_text(1080, start), TimeController.clock_text(1080, start + 60), CATEGORIES.get(item.category, "旧物"), intent])
+			lines.append("第%d夜来客口信：约%s–%s，有人带%s来，%s。原当户办理若占了时辰，来客也会稍晚。" % [row.night, TimeController.clock_text(1080, start), TimeController.clock_text(1080, start + 60), categories(state).get(item.category, "旧物"), intent])
 	return "\n\n".join(lines)
 
 static func refresh_visits(state: RunState, run: RunDefinition, catalog: ContentCatalog) -> void:
