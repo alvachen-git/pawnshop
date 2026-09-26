@@ -7,6 +7,7 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 	var market := MarketService.current(day.definition, day.state.run_seed, day.state.current_night_index, day.state.game_minutes)
 	var demand := MarketService.demand(day.definition, market)
 	for id in day.definition.buyer_ids:
+		if not RecyclerPolicy.visible(day, id): continue
 		var buyer := service.catalog.get_definition("buyers", id) as BuyerDefinition
 		var special := MarketService.is_special(day.definition, buyer)
 		if special and not LuIntroduction.unlocked(day.state, day.definition): continue
@@ -22,14 +23,16 @@ static func build(day: DayController, service: CommerceService) -> Dictionary:
 			var item_error := service.item_reason(day, item, buyer)
 			if not unlocked: item_error = "取得介绍后才能询价。"
 			elif not known: item_error = "收货细目尚未问清；可提前调查，或等开收后看收货单。"
-			var price := service.quote(item, buyer) if item_error.is_empty() else 0
+			var price := service.quote(item, buyer, day) if item_error.is_empty() else 0
 			var base := service.base_quote(item, buyer)
 			var label := definition.display_name + (" · 货签%d" % (day.state.inventory_instances.find(item) + 1) if GoodsExpertise.enabled(day.definition) else "")
-			stock.append({"id": item.instance_id, "name": label, "cost": item.acquisition_price, "price": price,
-				"premium": ProvenanceService.premium(item, buyer, base) if item_error.is_empty() else 0, "reason": item_error})
-		buyers.append({"id": id, "name": buyer.display_name, "wanted": "、".join(wanted), "reason": reason, "stock": stock,
-			"window": "第六夜，时段待打听" if not known else "%s–%s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end)],
-			"note": demand.body if special else "按实物品相报价，收货件数不限。"})
+			var recycler: bool = RecyclerPolicy.enabled(day.definition) and id == RecyclerPolicy.BUYER
+			stock.append({"base_value": definition.base_value, "daily_rate": RecyclerPolicy.rate(day.state.run_seed, day.state.current_night_index, item.definition_id) if recycler else 0, "id": item.instance_id, "name": label, "cost": item.acquisition_price, "price": price,
+				"premium": ProvenanceService.premium(item, buyer, base) if item_error.is_empty() and not recycler else 0, "reason": item_error})
+		var preopen: bool = RecyclerPolicy.enabled(day.definition) and id == RecyclerPolicy.BUYER
+		buyers.append({"preopen": preopen, "action_points": PreparationService.action_points(day.state, day.definition), "draft_key": "recycler/%d" % day.state.current_night_index if preopen else market.get("id", "fixed"), "id": id, "name": buyer.display_name, "wanted": "、".join(wanted), "reason": reason, "stock": stock,
+			"window": "开铺前 · 每批1行动点" if preopen else "第六夜，时段待打听" if not known else "%s–%s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end)],
+			"note": "每日各货各价，按件收货。" if preopen else demand.body if special else "按实物品相报价，收货件数不限。"})
 	if FirstDebt.enabled(day.definition):
 		for row in buyers:
 			var phoenix := FirstDebt.owned(day.state, FirstDebt.PHOENIX)

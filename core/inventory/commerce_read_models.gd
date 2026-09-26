@@ -22,6 +22,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 		var bounds := AppraisalSystem.new().valuation(item, definition)
 		inventory.body += ("参考价值 " + FanConditionService.estimate(item, definition) + "\n" + FanConditionService.note(item) + "\n") if FanConditionService.applies(item) else "已知估值 %d–%d（未出售，盈亏未实现）\n" % [bounds.x, bounds.y]
 		for buyer_id in day.definition.buyer_ids:
+			if RecyclerPolicy.enabled(day.definition): continue
 			var buyer := service.catalog.get_definition("buyers", buyer_id) as BuyerDefinition
 			var reason := service.sale_reason(day, item, buyer)
 			var window := "%s–%s" % [TimeController.clock_text(day.definition.opening_minute, buyer.window_start), TimeController.clock_text(day.definition.opening_minute, buyer.window_end)]
@@ -66,6 +67,7 @@ static func build(day: DayController, service: CommerceService, message: String)
 		model.inventory.cash_flow = flow
 		model.ledger.cash_flow = flow
 	CommerceVisualReadModels.enrich(model, day, service, message)
+	model.inventory.business_selling = RecyclerPolicy.enabled(day.definition)
 	if day.definition.batch_selling: model.inventory.sales = BatchSaleReadModel.build(day, service)
 	return model
 

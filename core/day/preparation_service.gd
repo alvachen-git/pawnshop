@@ -8,7 +8,7 @@ static func used(state: RunState, action: String, night := 0) -> bool:
 	return state.preparation_history.any(func(row: Dictionary) -> bool: return row.action == action and (night == 0 or row.night == night))
 
 static func count(state: RunState) -> int:
-	return SocialRules.preparation_count(state) + ShopGrowthService.preparation_count(state) + state.preparation_history.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index and row.action != "finish").size()
+	return RecyclerPolicy.spent(state) + SocialRules.preparation_count(state) + ShopGrowthService.preparation_count(state) + state.preparation_history.filter(func(row: Dictionary) -> bool: return row.night == state.current_night_index and row.action != "finish").size()
 
 # Presentation-only balance; the existing history remains the source of truth.
 # -1 means this run/night has not opened the action-point system.
